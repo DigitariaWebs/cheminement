@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header, Footer } from "@/components/layout";
 import { Petrona } from "next/font/google";
 
 const petrona = Petrona({
@@ -22,9 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${petrona.className} antialiased`}>
         <div className="flex min-h-screen flex-col">
-          <Header />
           <main className="flex-1">{children}</main>
-          <Footer />
         </div>
       </body>
     </html>
