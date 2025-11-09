@@ -12,11 +12,13 @@ import {
 
 interface MegaMenuProps {
   isOpen: boolean;
+  onMouseEnter?: () => void;
 }
 
-export function MegaMenu({ isOpen }: MegaMenuProps) {
+export function MegaMenu({ isOpen, onMouseEnter }: MegaMenuProps) {
   return (
     <div
+      onMouseEnter={onMouseEnter}
       className={`absolute left-0 right-0 top-full w-full border-b border-border bg-card shadow-lg transition-all duration-300 ${
         isOpen
           ? "opacity-100 translate-y-0 pointer-events-auto"
