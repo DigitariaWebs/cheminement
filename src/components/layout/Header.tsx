@@ -29,9 +29,9 @@ export function Header() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="text-4xl font-bold text-primary hover:text-primary/80 transition-colors"
+              className="flex items-center hover:opacity-80 transition-opacity"
             >
-              Cheminement
+              <img src="/Logo.png" alt="Cheminement" className="h-10 w-auto" />
             </Link>
           </div>
 

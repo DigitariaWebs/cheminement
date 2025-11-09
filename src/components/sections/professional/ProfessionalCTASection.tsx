@@ -33,7 +33,7 @@ export default function ProfessionalCTASection() {
   return (
     <section className="py-20 bg-linear-to-br from-background via-muted to-accent relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
+      <div className="absolute inset-0 opacity-5"></div>
 
       <motion.div
         initial="hidden"

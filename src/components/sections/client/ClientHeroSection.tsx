@@ -26,7 +26,7 @@ export default function ClientHeroSection() {
   return (
     <section className="relative h-screen flex items-center justify-center bg-linear-to-br from-background via-muted to-accent overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
+      <div className="absolute inset-0 opacity-5"></div>
 
       <div className="container mx-auto px-6 pt-20 pb-8 relative z-10">
         <motion.div

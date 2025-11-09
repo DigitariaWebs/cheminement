@@ -8,8 +8,9 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
-      <ColorTransition />
+      <ColorTransition fromColor="accent" toColor="background" />
       <ValueSection />
+      <ColorTransition fromColor="accent" toColor="muted" />
       <ServiceSection />
       <HowItWorksSection />
     </main>

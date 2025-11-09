@@ -44,6 +44,13 @@ export default function ValueSection() {
         <div className="absolute top-20 left-10 w-64 h-64 bg-[#8b7355] rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#d4a574] rounded-full blur-3xl"></div>
       </div>
+      <div
+        className="absolute top-0 left-1/3 w-[1200px] h-[1200px] rounded-full animate-fade-in"
+        style={{
+          background:
+            "radial-gradient(circle, oklch(0.92 0.015 75) 0%, oklch(0.92 0.015 75 / 0) 70%)",
+        }}
+      ></div>
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Staggered Grid Layout - Stairs Pattern */}
