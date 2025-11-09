@@ -38,7 +38,7 @@ const values = [
 
 export default function ValueSection() {
   return (
-    <section className="relative py-24 bg-linear-to-b from-accent to-muted overflow-hidden">
+    <section className="relative py-24 bg-linear-to-b from-background via-muted to-accent overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-64 h-64 bg-[#8b7355] rounded-full blur-3xl"></div>
@@ -51,6 +51,15 @@ export default function ValueSection() {
           {/* First Column - Starts at top with card */}
           <div className="lg:mt-0">
             <ValueCard value={values[0]} index={0} />
+            <div className="-mt-1 relative ">
+              <img
+                src="/ValueSection.png"
+                alt="Inner Child Healing"
+                className="w-full h-auto transform scale-x-[-1] scale-110"
+              />
+              {/* Fading effect at bottom */}
+              <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
+            </div>
           </div>
 
           {/* Second and Third Columns with Header Text on top */}
@@ -58,10 +67,10 @@ export default function ValueSection() {
             {/* Section Header - aligned to start */}
             <div className="text-left mb-12">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
-                Tear down the walls between benefits.
+                Heal Your Inner Child
               </h2>
               <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
-                Improve team well-being with Dialogue.
+                Find peace and well-being through personalized care.
               </p>
               <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed pb-27">
                 Overspending on benefits programs with a web of providers?
