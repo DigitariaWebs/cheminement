@@ -97,7 +97,7 @@ export default function ProfessionalCTASection() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/professional/signup"
+              href="/signup/professional"
               className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
               <span className="relative z-10">Start Your Application</span>

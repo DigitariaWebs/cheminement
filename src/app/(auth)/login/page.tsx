@@ -30,7 +30,7 @@ const item = {
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-12">
+    <div className="w-full max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -38,10 +38,10 @@ export default function LoginPage() {
         transition={{ duration: 0.4 }}
         className="text-center mb-12"
       >
-        <h1 className="text-4xl font-bold text-foreground mb-3">
-          Choose Your Login Type
+        <h1 className="text-4xl font-serif font-light text-foreground mb-3">
+          Welcome Back
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-muted-foreground text-lg font-light">
           Select the option that best describes you
         </p>
       </motion.div>
@@ -51,24 +51,24 @@ export default function LoginPage() {
         initial="hidden"
         animate="show"
         exit="exit"
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl w-full"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto"
       >
         {/* Member Card */}
         <motion.div variants={item}>
           <Link href="/login/member" className="block group h-full">
-            <div className="h-full rounded-lg border border-border bg-card p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary hover:-translate-y-1">
+            <div className="h-full rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary hover:-translate-y-1 hover:bg-card">
               <div className="flex flex-col items-center text-center h-full">
                 <div className="mb-6 rounded-full bg-primary/10 p-4 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <Users className="h-8 w-8" />
                 </div>
-                <h2 className="text-2xl font-semibold text-foreground mb-4 group-hover:text-primary transition-colors">
+                <h2 className="text-2xl font-serif font-light text-foreground mb-4 group-hover:text-primary transition-colors">
                   Member
                 </h2>
-                <p className="text-muted-foreground leading-relaxed grow">
+                <p className="text-muted-foreground leading-relaxed grow font-light">
                   Access your personal account to manage appointments, view your
                   mental health journey, and connect with professionals.
                 </p>
-                <div className="mt-6 text-primary font-medium group-hover:underline">
+                <div className="mt-6 text-primary font-light group-hover:underline">
                   Sign in as Member →
                 </div>
               </div>
@@ -79,19 +79,19 @@ export default function LoginPage() {
         {/* Professional Card */}
         <motion.div variants={item}>
           <Link href="/login/professional" className="block group h-full">
-            <div className="h-full rounded-lg border border-border bg-card p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary hover:-translate-y-1">
+            <div className="h-full rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary hover:-translate-y-1 hover:bg-card">
               <div className="flex flex-col items-center text-center h-full">
                 <div className="mb-6 rounded-full bg-primary/10 p-4 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <Briefcase className="h-8 w-8" />
                 </div>
-                <h2 className="text-2xl font-semibold text-foreground mb-4 group-hover:text-primary transition-colors">
+                <h2 className="text-2xl font-serif font-light text-foreground mb-4 group-hover:text-primary transition-colors">
                   Professional
                 </h2>
-                <p className="text-muted-foreground leading-relaxed grow">
+                <p className="text-muted-foreground leading-relaxed grow font-light">
                   Log in to manage your practice, schedule appointments, and
                   provide quality mental health services to your clients.
                 </p>
-                <div className="mt-6 text-primary font-medium group-hover:underline">
+                <div className="mt-6 text-primary font-light group-hover:underline">
                   Sign in as Professional →
                 </div>
               </div>
@@ -99,6 +99,23 @@ export default function LoginPage() {
           </Link>
         </motion.div>
       </motion.div>
-    </main>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="mt-8 text-center"
+      >
+        <p className="text-sm text-muted-foreground font-light">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/signup"
+            className="text-primary hover:text-primary/80 transition-colors"
+          >
+            Create one
+          </Link>
+        </p>
+      </motion.div>
+    </div>
   );
 }

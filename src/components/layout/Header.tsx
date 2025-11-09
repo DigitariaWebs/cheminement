@@ -1,7 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "Who We Are" },
+  { href: "/tips", label: "Psychologist Tips" },
+  { href: "/why-us", label: "Why Us" },
+  { href: "/pathways", label: "Pathways" },
+  { href: "/contact", label: "Contact" },
+];
+
 export function Header() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/signup") || pathname.startsWith("/login")) return;
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/20 bg-card/80 backdrop-blur supports-backdrop-filter:bg-card/40">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,42 +32,19 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Who We Are
-            </Link>
-            <Link
-              href="/tips"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Psychologist Tips
-            </Link>
-            <Link
-              href="/why-us"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Why Us
-            </Link>
-            <Link
-              href="/pathways"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Pathways
-            </Link>
-            <Link
-              href="/contact"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors"
-            >
-              Contact
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-base font-medium transition-all duration-300 ease-in-out ${
+                  pathname === link.href
+                    ? "text-primary font-semibold underline underline-offset-4 animate-in slide-in-from-bottom-1 duration-300"
+                    : "text-foreground hover:text-primary"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* CTA Buttons */}
