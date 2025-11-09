@@ -1,6 +1,12 @@
 "use client";
 
-import { ArrowRight, Search, UserPlus, CalendarCheck, FileText } from "lucide-react";
+import {
+  ArrowRight,
+  Search,
+  UserPlus,
+  CalendarCheck,
+  FileText,
+} from "lucide-react";
 
 const clientJourneySteps = [
   {
