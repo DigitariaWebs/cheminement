@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="relative h-screen flex items-center justify-center bg-linear-to-br from-background via-muted to-accent overflow-hidden">
+    <section className="relative h-screen flex items-center justify-center bg-linear-to-b from-background via-muted to-accent overflow-hidden">
       {/* Background Pattern/Decoration */}
       <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
 
