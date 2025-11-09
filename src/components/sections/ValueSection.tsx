@@ -39,7 +39,7 @@ const values = [
 
 export default function ValueSection() {
   return (
-    <section className="relative py-24 bg-linear-to-b from-accent to-accent overflow-hidden">
+    <section className="relative py-24 bg-linear-to-b from-accent to-muted overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-64 h-64 bg-[#8b7355] rounded-full blur-3xl"></div>
@@ -58,13 +58,13 @@ export default function ValueSection() {
           <div className="lg:col-span-2">
             {/* Section Header - aligned to start */}
             <div className="text-left mb-12">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#2c2416] mb-4">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
                 Tear down the walls between benefits.
               </h2>
-              <p className="text-xl md:text-2xl text-[#2c2416] font-semibold mb-6">
+              <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
                 Improve team well-being with Dialogue.
               </p>
-              <p className="text-base md:text-lg text-gray-700 font-normal leading-relaxed pb-27">
+              <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed pb-27">
                 Overspending on benefits programs with a web of providers?
                 Struggling to boost team productivity and measure ROI? You've
                 come to the right place. Our{" "}
@@ -106,29 +106,32 @@ function ValueCard({
 
   return (
     <div
-      className="bg-white/80 backdrop-blur-sm rounded-3xl p-10 lg:p-12 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
+      className="bg-card rounded-3xl p-10 lg:p-12 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
       style={{ animationDelay: `${index * 0.15}s` }}
     >
       {/* Icon and Title */}
       <div className="flex items-center gap-4 mb-10">
-        <div className="p-4 bg-gray-900 rounded-2xl shrink-0">
-          <Icon className="w-8 h-8 text-white" strokeWidth={2} />
+        <div className="p-4 bg-foreground rounded-2xl shrink-0">
+          <Icon className="w-8 h-8 text-card" strokeWidth={2} />
         </div>
-        <h3 className="text-xl md:text-2xl font-serif font-medium text-gray-900 leading-tight">
+        <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground leading-tight">
           {value.title}
         </h3>
       </div>
 
       {/* Description */}
-      <p className="text-xl text-gray-600 mb-10 leading-relaxed text-justify">
+      <p className="text-xl text-muted-foreground mb-10 leading-relaxed text-justify">
         {value.description}
       </p>
 
       {/* Features List - Simple bullets */}
       <ul className="space-y-6">
         {value.features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-3 text-lg text-gray-700">
-            <span className="w-2 h-2 bg-gray-900 rounded-full"></span>
+          <li
+            key={i}
+            className="flex items-center gap-3 text-lg text-card-foreground"
+          >
+            <span className="w-2 h-2 bg-foreground rounded-full"></span>
             <span className="leading-relaxed">{feature}</span>
           </li>
         ))}
