@@ -1,40 +1,39 @@
-import { 
-  Users, 
-  Shield, 
-  Heart
-} from "lucide-react";
+import { Users, Shield, Heart } from "lucide-react";
 
 const values = [
   {
     icon: Shield,
     title: "Evidence-based care quality",
-    description: "Our mental health professionals deliver evidence-based care, avoiding unnecessary and ineffective treatments that delay recovery and drive up benefit costs.",
+    description:
+      "Our mental health professionals deliver evidence-based care, avoiding unnecessary and ineffective treatments that delay recovery and drive up benefit costs.",
     features: [
       "Accredited and vetted care",
       "Regular clinical audits",
-      "Improved health outcomes"
-    ]
+      "Improved health outcomes",
+    ],
   },
   {
     icon: Users,
     title: "Personalized experience",
-    description: "Our in-house primary care, mental health, and EAP practitioners work together to deliver a seamless experience, tailored to each member's unique needs.",
+    description:
+      "Our in-house primary care, mental health, and EAP practitioners work together to deliver a seamless experience, tailored to each member's unique needs.",
     features: [
       "Speed up return to function",
       "Guide the member throughout their care journey",
-      "Promote proactive, ongoing well-being"
-    ]
+      "Promote proactive, ongoing well-being",
+    ],
   },
   {
     icon: Heart,
     title: "Integrated Health Platform",
-    description: "Tear down the walls between benefits. Improve team well-being with our integrated platform that centralizes care programs in a single application.",
+    description:
+      "Tear down the walls between benefits. Improve team well-being with our integrated platform that centralizes care programs in a single application.",
     features: [
       "24/7/365 access to services",
       "Coordinated care approach",
-      "Seamless provider collaboration"
-    ]
-  }
+      "Seamless provider collaboration",
+    ],
+  },
 ];
 
 export default function ValueSection() {
@@ -66,8 +65,8 @@ export default function ValueSection() {
               </p>
               <p className="text-base md:text-lg text-gray-700 font-normal leading-relaxed pb-27">
                 Overspending on benefits programs with a web of providers?
-                Struggling to boost team productivity and measure ROI? You've
-                come to the right place. Our{" "}
+                Struggling to boost team productivity and measure ROI?
+                You&apos;ve come to the right place. Our{" "}
                 <span className="font-semibold">
                   Integrated Health Platform™
                 </span>{" "}
