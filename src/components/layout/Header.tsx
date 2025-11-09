@@ -13,7 +13,7 @@ import {
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "Who We Are" },
-  { href: "/tips", label: "Psychologist Tips" },
+  { href: "/blog", label: "Blog" },
   { href: "/why-us", label: "Why Us" },
   { href: "/pathways", label: "Pathways" },
   { href: "/contact", label: "Contact" },
