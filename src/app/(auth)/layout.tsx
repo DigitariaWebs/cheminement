@@ -15,7 +15,7 @@ export default function AuthLayout({
         href="/"
         className="absolute top-6 left-6 text-4xl font-semibold text-primary hover:text-primary/80 transition-colors z-20"
       >
-        Cheminement
+        Je Chemine
       </Link>
 
       {/* Content */}

@@ -31,7 +31,7 @@ export function Header() {
               href="/"
               className="flex items-center hover:opacity-80 transition-opacity"
             >
-              <img src="/Logo.png" alt="Cheminement" className="h-10 w-auto" />
+              <img src="/Logo.png" alt="Je Chemine" className="h-10 w-auto" />
             </Link>
           </div>
 
