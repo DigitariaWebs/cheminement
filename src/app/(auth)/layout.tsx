@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthLayout({
@@ -15,7 +16,7 @@ export default function AuthLayout({
         href="/"
         className="absolute top-6 left-6 text-4xl font-semibold text-primary hover:text-primary/80 transition-colors z-20"
       >
-        Je Chemine
+        <Image src="/Logo.png" alt="Logo" width={175} height={100} />
       </Link>
 
       {/* Content */}

@@ -9,7 +9,8 @@ const petrona = Petrona({
 
 export const metadata: Metadata = {
   title: "Je Chemine - Integrated Health Platform",
-  description: "Your journey to better health and wellness with our comprehensive platform featuring mental health support, primary care, and employee assistance programs.",
+  description:
+    "Your journey to better health and wellness with our comprehensive platform featuring mental health support, primary care, and employee assistance programs.",
   icons: {
     icon: "/favicon.png",
   },

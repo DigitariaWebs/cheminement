@@ -1,78 +1,37 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
-
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-  },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
-    },
-  },
-};
 
 export default function ClientHeroSection() {
   return (
-    <section className="relative h-screen flex items-center justify-center bg-linear-to-br from-background via-muted to-accent overflow-hidden">
+    <section className="relative h-screen flex items-center justify-center bg-accent overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5"></div>
 
       <div className="container mx-auto px-6 pt-20 pb-8 relative z-10">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-          className="max-w-5xl mx-auto text-center"
-        >
+        <div className="max-w-5xl mx-auto text-center">
           {/* Top Tagline */}
-          <motion.div
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            className="mb-4"
-          >
+          <div className="mb-4 animate-fade-in">
             <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
               YOUR JOURNEY TO WELLNESS STARTS HERE
             </p>
             <div className="w-32 h-0.5 bg-muted-foreground mx-auto"></div>
-          </motion.div>
+          </div>
 
           {/* Main Headline */}
-          <motion.h1
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-light text-foreground mb-8 leading-tight"
-          >
+          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-light text-foreground mb-8 leading-tight animate-fade-in-up">
             Find the Right Mental Health Support, Fast
-          </motion.h1>
+          </h1>
 
           {/* Description */}
-          <motion.p
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed font-light"
-          >
+          <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed font-light animate-fade-in-up animation-delay-200">
             Connect with qualified professionals who understand your needs, no
             matter where you are. Begin your journey to better mental health
             today.
-          </motion.p>
+          </p>
 
           {/* CTA Buttons */}
-          <motion.div
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
             <Link
               href="/book/appointment"
               className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
@@ -87,14 +46,10 @@ export default function ClientHeroSection() {
             >
               <span>Explore Resources</span>
             </Link>
-          </motion.div>
+          </div>
 
           {/* Additional Info Tags */}
-          <motion.div
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground"
-          >
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground animate-fade-in animation-delay-600">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent"></div>
               <span>Fast Access to Care</span>
@@ -107,8 +62,8 @@ export default function ClientHeroSection() {
               <div className="w-2 h-2 rounded-full bg-accent"></div>
               <span>Confidential Support</span>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -127,7 +127,7 @@ export default function PlatformBenefitsSection() {
   ];
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20 bg-muted">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -178,7 +178,7 @@ export default function PlatformBenefitsSection() {
                 variants={scaleIn}
                 transition={{ duration: 0.5 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                className="p-6 rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300"
+                className="p-6 rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300"
               >
                 <div className="mb-4">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -199,7 +199,7 @@ export default function PlatformBenefitsSection() {
           <motion.div
             variants={fadeInUp}
             transition={{ duration: 0.6 }}
-            className="bg-linear-to-br from-muted/30 to-accent/10 rounded-2xl p-8 md:p-12 border border-border/20"
+            className="bg-linear-to-br from-muted/30 to-accent/10 rounded-2xl p-8 md:p-12"
           >
             <h3 className="text-2xl font-serif font-light text-foreground mb-6 text-center">
               Additional Perks & Opportunities

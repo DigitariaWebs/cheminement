@@ -111,7 +111,7 @@ export default function MatchingSystemSection() {
                 variants={scaleIn}
                 transition={{ duration: 0.5 }}
                 whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="p-8 rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300"
+                className="p-8 rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
                   <div className="shrink-0">
@@ -136,7 +136,7 @@ export default function MatchingSystemSection() {
           <motion.div
             variants={fadeInUp}
             transition={{ duration: 0.6 }}
-            className="bg-linear-to-br from-muted/30 to-accent/10 rounded-2xl p-8 md:p-12 border border-border/20"
+            className="bg-linear-to-br from-muted/30 to-accent/10 rounded-2xl p-8 md:p-12"
           >
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="shrink-0">
