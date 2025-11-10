@@ -86,14 +86,14 @@ export default function SchedulePage() {
     day: string,
     index: number,
     field: "start" | "end",
-    value: string
+    value: string,
   ) => {
     setSchedule((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
         slots: prev[day].slots.map((slot, i) =>
-          i === index ? { ...slot, [field]: value } : slot
+          i === index ? { ...slot, [field]: value } : slot,
         ),
       },
     }));
@@ -256,7 +256,7 @@ export default function SchedulePage() {
                                   day.key,
                                   index,
                                   "start",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
@@ -277,7 +277,7 @@ export default function SchedulePage() {
                                   day.key,
                                   index,
                                   "end",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
@@ -338,10 +338,7 @@ export default function SchedulePage() {
               Working Days
             </p>
             <p className="text-foreground">
-              {
-                DAYS_OF_WEEK.filter((day) => schedule[day.key].enabled)
-                  .length
-              }{" "}
+              {DAYS_OF_WEEK.filter((day) => schedule[day.key].enabled).length}{" "}
               days per week
             </p>
           </div>
