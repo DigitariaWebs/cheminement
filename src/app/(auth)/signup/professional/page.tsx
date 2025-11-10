@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Briefcase,
   Mail,
@@ -30,6 +31,7 @@ const STEPS = [
 ];
 
 export default function ProfessionalSignupPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -71,6 +73,8 @@ export default function ProfessionalSignupPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Signup attempt:", formData);
+    // Redirect to dashboard after successful signup
+    router.push("/dashboard");
   };
 
   return (

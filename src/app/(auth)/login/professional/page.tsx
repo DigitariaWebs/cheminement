@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Briefcase, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
@@ -14,12 +15,15 @@ import {
 import { SocialLogin } from "@/components/auth/SocialLogin";
 
 export default function ProfessionalLoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Login attempt:", { email, password });
+    // Redirect to dashboard after successful login
+    router.push("/dashboard");
   };
 
   return (
