@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Shield, Heart } from "lucide-react";
+import { Route, Award, Clock, Lock } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 
 export default function ValueSection() {
@@ -9,61 +9,54 @@ export default function ValueSection() {
 
   const values = [
     {
-      icon: Shield,
-      titleEn: "Evidence-based care quality",
-      titleFr: "Qualité des soins fondée sur des données probantes",
+      icon: Route,
+      titleEn: "Personalized pathway",
+      titleFr: "Un parcours personnalisé",
       descriptionEn:
-        "Our mental health professionals deliver evidence-based care, avoiding unnecessary and ineffective treatments that delay recovery and drive up benefit costs.",
+        "Our service is designed to create a fully personalized pathway, because we believe that your need and your journey do not follow a single path.",
       descriptionFr:
-        "Nos professionnels de la santé mentale fournissent des soins fondés sur des données probantes, évitant les traitements inutiles et inefficaces qui retardent la guérison et augmentent les coûts des prestations.",
-      featuresEn: [
-        "Accredited and vetted care",
-        "Regular clinical audits",
-        "Improved health outcomes",
-      ],
-      featuresFr: [
-        "Soins accrédités et vérifiés",
-        "Audits cliniques réguliers",
-        "Amélioration des résultats de santé",
-      ],
+        "Notre service est conçu pour créer un parcours entièrement personnalisé, car nous croyons que votre besoin et votre démarche ne suivent pas un chemin unique.",
+      featuresEn: [],
+      featuresFr: [],
     },
     {
-      icon: Users,
-      titleEn: "Personalized experience",
-      titleFr: "Expérience personnalisée",
+      icon: Award,
+      titleEn: "Recognized expertise",
+      titleFr: "Une expertise reconnue",
       descriptionEn:
-        "Our in-house primary care, mental health, and EAP practitioners work together to deliver a seamless experience, tailored to each member's unique needs.",
+        "Whether it's a psychologist, psychotherapist or another professional, you will always work with an expert whose practice is regulated and recognized by their professional order.",
       descriptionFr:
-        "Nos praticiens internes en soins primaires, santé mentale et PAE travaillent ensemble pour offrir une expérience fluide, adaptée aux besoins uniques de chaque membre.",
-      featuresEn: [
-        "Speed up return to function",
-        "Guide the member throughout their care journey",
-        "Promote proactive, ongoing well-being",
-      ],
-      featuresFr: [
-        "Accélérer le retour aux fonctions",
-        "Guider le membre tout au long de son parcours de soins",
-        "Promouvoir un bien-être proactif et continu",
-      ],
+        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel, vous allez toujours travaillez avec un expert dont la pratique est encadrée et reconnue par son ordre professionnel.",
+      featuresEn: [],
+      featuresFr: [],
     },
     {
-      icon: Heart,
-      titleEn: "Integrated Health Platform",
-      titleFr: "Plateforme de santé intégrée",
+      icon: Clock,
+      titleEn: "Accessibility and flexibility",
+      titleFr: "Accessibilité et flexibilité",
+      subtitleEn: "Where and when you want",
+      subtitleFr: "Où et quand vous le souhaitez",
       descriptionEn:
-        "Tear down the walls between benefits. Improve team well-being with our integrated platform that centralizes care programs in a single application.",
+        "We offer flexible support tailored to your needs: remote consultations via secure video calls for accessibility from anywhere, or in-person appointments in our welcoming offices. Our matching process helps you find the right professional for your specific needs and preferences, strengthening engagement and ensuring a successful therapeutic journey.",
       descriptionFr:
-        "Abattez les murs entre les avantages. Améliorez le bien-être de l'équipe avec notre plateforme intégrée qui centralise les programmes de soins dans une seule application.",
-      featuresEn: [
-        "24/7/365 access to services",
-        "Coordinated care approach",
-        "Seamless provider collaboration",
-      ],
-      featuresFr: [
-        "Accès aux services 24h/24, 7j/7, 365j/an",
-        "Approche de soins coordonnés",
-        "Collaboration transparente entre fournisseurs",
-      ],
+        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance via appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en personne dans nos bureaux accueillants. Notre processus de jumelage vous aide à trouver le bon professionnel pour vos besoins spécifiques et vos préférences, renforçant l'engagement et assurant un parcours thérapeutique réussi.",
+      featuresEn: [],
+      featuresFr: [],
+    },
+    {
+      icon: Lock,
+      titleEn: "Confidentiality and ethics",
+      titleFr: "Confidentialité et éthique",
+      subtitleEn:
+        "Ethics and confidentiality: The foundation of our commitment",
+      subtitleFr:
+        "Éthique et confidentialité : La fondation de notre engagement",
+      descriptionEn:
+        "Your well-being and your trust are our absolute priorities. This is why our service is based on an unwavering commitment to professional ethics and rigorous protection of your privacy and your information according to current regulations (Bill 25). These two principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
+      descriptionFr:
+        "Votre bien-être et votre confiance sont nos priorités absolues. C'est pourquoi notre service repose sur un engagement inébranlable envers l'éthique professionnelle et la protection rigoureuse de votre vie privée et de vos informations selon les règles en vigueur (Loi 25). Ces deux principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux.",
+      featuresEn: [],
+      featuresFr: [],
     },
   ];
   return (
@@ -82,9 +75,24 @@ export default function ValueSection() {
       ></div>
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Staggered Grid Layout - Stairs Pattern */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 max-w-7xl mx-auto">
-          {/* First Column - Starts at top with card */}
+        {/* Section Header */}
+        <div className="text-center mb-16 max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
+            {t("title")}
+          </h2>
+          <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
+            {t("subtitle")}
+          </p>
+          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed">
+            {t("description", {
+              integratedPlatform: t("integratedPlatform"),
+            })}
+          </p>
+        </div>
+
+        {/* Staggered Grid Layout - 4 Column Stairs Pattern */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 max-w-[1600px] mx-auto">
+          {/* First Column - Starts at top */}
           <div className="lg:mt-0">
             <ValueCard value={values[0]} index={0} locale={locale} />
             <div className="-mt-1 relative ">
@@ -98,35 +106,19 @@ export default function ValueSection() {
             </div>
           </div>
 
-          {/* Second and Third Columns with Header Text on top */}
-          <div className="lg:col-span-2">
-            {/* Section Header - aligned to start */}
-            <div className="text-left mb-12">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
-                {t("title")}
-              </h2>
-              <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
-                {t("subtitle")}
-              </p>
-              <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed pb-27">
-                {t("description", {
-                  integratedPlatform: t("integratedPlatform"),
-                })}
-              </p>
-            </div>
+          {/* Second Column - Staggered down */}
+          <div className="lg:mt-32">
+            <ValueCard value={values[1]} index={1} locale={locale} />
+          </div>
 
-            {/* Nested grid for second and third columns */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-              {/* Second Column */}
-              <div>
-                <ValueCard value={values[1]} index={1} locale={locale} />
-              </div>
+          {/* Third Column - Staggered down more */}
+          <div className="lg:mt-64">
+            <ValueCard value={values[2]} index={2} locale={locale} />
+          </div>
 
-              {/* Third Column - Starts at half height */}
-              <div className="lg:mt-64">
-                <ValueCard value={values[2]} index={2} locale={locale} />
-              </div>
-            </div>
+          {/* Fourth Column - Staggered down most */}
+          <div className="lg:mt-96">
+            <ValueCard value={values[3]} index={3} locale={locale} />
           </div>
         </div>
       </div>
@@ -143,6 +135,8 @@ function ValueCard({
     icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
     titleEn: string;
     titleFr: string;
+    subtitleEn?: string;
+    subtitleFr?: string;
     descriptionEn: string;
     descriptionFr: string;
     featuresEn: string[];
@@ -153,42 +147,52 @@ function ValueCard({
 }) {
   const Icon = value.icon;
   const title = locale === "fr" ? value.titleFr : value.titleEn;
+  const subtitle = locale === "fr" ? value.subtitleFr : value.subtitleEn;
   const description =
     locale === "fr" ? value.descriptionFr : value.descriptionEn;
   const features = locale === "fr" ? value.featuresFr : value.featuresEn;
 
   return (
     <div
-      className="bg-card rounded-3xl p-10 lg:p-12 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
+      className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
       style={{ animationDelay: `${index * 0.15}s` }}
     >
       {/* Icon and Title */}
-      <div className="flex items-center gap-4 mb-10">
-        <div className="p-4 bg-foreground rounded-2xl shrink-0">
-          <Icon className="w-8 h-8 text-card" strokeWidth={2} />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-3 bg-foreground rounded-2xl shrink-0">
+          <Icon className="w-6 h-6 text-card" strokeWidth={2} />
         </div>
-        <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground leading-tight">
+        <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
           {title}
         </h3>
       </div>
 
+      {/* Subtitle */}
+      {subtitle && (
+        <p className="text-base font-semibold text-foreground mb-4">
+          {subtitle}
+        </p>
+      )}
+
       {/* Description */}
-      <p className="text-xl text-muted-foreground mb-10 leading-relaxed text-justify">
+      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed text-justify whitespace-pre-line">
         {description}
       </p>
 
       {/* Features List - Simple bullets */}
-      <ul className="space-y-6">
-        {features.map((feature, i) => (
-          <li
-            key={i}
-            className="flex items-center gap-3 text-lg text-card-foreground"
-          >
-            <span className="w-2 h-2 bg-foreground rounded-full"></span>
-            <span className="leading-relaxed">{feature}</span>
-          </li>
-        ))}
-      </ul>
+      {features.length > 0 && (
+        <ul className="space-y-4">
+          {features.map((feature, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-2 text-sm text-card-foreground"
+            >
+              <span className="w-1.5 h-1.5 bg-foreground rounded-full"></span>
+              <span className="leading-relaxed">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

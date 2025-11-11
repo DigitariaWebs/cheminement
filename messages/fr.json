@@ -233,6 +233,12 @@
     "explorePremium": "Explorer les ressources premium",
     "benefitsNote": "Commencez avec des ressources gratuites pour construire vos bases, puis explorez les options premium lorsque vous êtes prêt à approfondir votre pratique et accélérer votre croissance."
   },
+  "ExploreTopics": {
+    "badge": "TROUVEZ DES RÉPONSES",
+    "title": "Explorez une problématique",
+    "subtitle": "Accédez à du contenu gratuit et complet sur diverses problématiques de santé mentale. Explorez nos ressources éducatives pour mieux comprendre votre situation et trouver le soutien adapté à vos besoins.",
+    "learnMore": "En savoir plus"
+  },
   "ClientCTA": {
     "badge": "COMMENCEZ VOTRE PARCOURS",
     "title": "Faites le premier pas aujourd'hui",
@@ -651,7 +657,6 @@
         "clientInfo": "Informations sur le client",
         "status": "Statut",
         "issueType": "Type de problème",
-        "joinedDate": "Date d'inscription",
         "joinedDate": "Date d'adhésion",
         "lastSession": "Dernière séance",
         "totalSessions": "Total des séances",

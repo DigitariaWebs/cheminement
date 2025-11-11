@@ -233,6 +233,12 @@
     "explorePremium": "Explore Premium Resources",
     "benefitsNote": "Start with free resources to build your foundation, then explore premium options when you're ready to deepen your practice and accelerate your growth."
   },
+  "ExploreTopics": {
+    "badge": "FIND ANSWERS",
+    "title": "Explore a topic",
+    "subtitle": "Access extensive free content on various mental health topics. Explore our educational resources to better understand your situation and find the right support for your needs.",
+    "learnMore": "Learn more"
+  },
   "ClientCTA": {
     "badge": "BEGIN YOUR JOURNEY",
     "title": "Take the First Step Today",
