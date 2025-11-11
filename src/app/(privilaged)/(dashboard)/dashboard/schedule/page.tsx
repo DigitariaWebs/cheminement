@@ -1,359 +1,512 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Label } from "@/components/ui/label";
-import { Clock, Plus, X, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, User, Filter, Eye } from "lucide-react";
 
-interface TimeSlot {
-  start: string;
-  end: string;
+interface Session {
+  id: string;
+  clientName: string;
+  time: string;
+  duration: number;
+  type: "video" | "in-person" | "phone";
+  status: "scheduled" | "completed" | "cancelled";
+  issueType: string;
 }
 
-interface DaySchedule {
-  enabled: boolean;
-  slots: TimeSlot[];
+interface Request {
+  id: string;
+  patientName: string;
+  requestedDate: string;
+  requestedTime: string;
+  issueType: string;
+  urgency: "low" | "medium" | "high";
+  isNewClient: boolean;
 }
 
-interface WeekSchedule {
-  [key: string]: DaySchedule;
-}
+const MOCK_SESSIONS: Session[] = [
+  {
+    id: "1",
+    clientName: "Sarah Johnson",
+    time: "09:00",
+    duration: 60,
+    type: "video",
+    status: "scheduled",
+    issueType: "Anxiety",
+  },
+  {
+    id: "2",
+    clientName: "Michael Chen",
+    time: "14:00",
+    duration: 60,
+    type: "in-person",
+    status: "scheduled",
+    issueType: "Depression",
+  },
+];
 
-const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
-  const hour = Math.floor(i / 2);
-  const minute = i % 2 === 0 ? "00" : "30";
-  return `${hour.toString().padStart(2, "0")}:${minute}`;
-});
+const MOCK_REQUESTS: Request[] = [
+  {
+    id: "1",
+    patientName: "Emma Wilson",
+    requestedDate: "2024-01-20",
+    requestedTime: "10:00",
+    issueType: "Anxiety",
+    urgency: "high",
+    isNewClient: true,
+  },
+  {
+    id: "2",
+    patientName: "James Anderson",
+    requestedDate: "2024-01-22",
+    requestedTime: "14:00",
+    issueType: "Depression",
+    urgency: "medium",
+    isNewClient: false,
+  },
+];
 
 export default function SchedulePage() {
-  const t = useTranslations("Dashboard.schedule");
+  const t = useTranslations("Dashboard.scheduleCalendar");
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [view, setView] = useState<"day" | "week" | "month">("week");
+  const [showRequests, setShowRequests] = useState(false);
 
-  const DAYS_OF_WEEK = [
-    { key: "monday", label: t("days.monday") },
-    { key: "tuesday", label: t("days.tuesday") },
-    { key: "wednesday", label: t("days.wednesday") },
-    { key: "thursday", label: t("days.thursday") },
-    { key: "friday", label: t("days.friday") },
-    { key: "saturday", label: t("days.saturday") },
-    { key: "sunday", label: t("days.sunday") },
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  const [schedule, setSchedule] = useState<WeekSchedule>({
-    monday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    tuesday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    wednesday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    thursday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    friday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    saturday: { enabled: false, slots: [] },
-    sunday: { enabled: false, slots: [] },
-  });
-
-  const [sessionDuration, setSessionDuration] = useState("60");
-  const [breakBetweenSessions, setBreakBetweenSessions] = useState("15");
-
-  const toggleDay = (day: string) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        enabled: !prev[day].enabled,
-        slots:
-          !prev[day].enabled && prev[day].slots.length === 0
-            ? [{ start: "09:00", end: "17:00" }]
-            : prev[day].slots,
-      },
-    }));
+  const navigateDate = (direction: "prev" | "next") => {
+    const newDate = new Date(currentDate);
+    if (view === "day") {
+      newDate.setDate(currentDate.getDate() + (direction === "next" ? 1 : -1));
+    } else if (view === "week") {
+      newDate.setDate(currentDate.getDate() + (direction === "next" ? 7 : -7));
+    } else {
+      newDate.setMonth(
+        currentDate.getMonth() + (direction === "next" ? 1 : -1),
+      );
+    }
+    setCurrentDate(newDate);
   };
 
-  const addTimeSlot = (day: string) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        slots: [...prev[day].slots, { start: "09:00", end: "17:00" }],
-      },
-    }));
+  const goToToday = () => {
+    setCurrentDate(new Date());
   };
 
-  const removeTimeSlot = (day: string, index: number) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        slots: prev[day].slots.filter((_, i) => i !== index),
-      },
-    }));
-  };
-
-  const updateTimeSlot = (
-    day: string,
-    index: number,
-    field: "start" | "end",
-    value: string,
-  ) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        slots: prev[day].slots.map((slot, i) =>
-          i === index ? { ...slot, [field]: value } : slot,
-        ),
-      },
-    }));
-  };
-
-  const handleSave = () => {
-    console.log("Saving schedule:", {
-      schedule,
-      sessionDuration,
-      breakBetweenSessions,
+  const getWeekDays = () => {
+    const start = new Date(currentDate);
+    start.setDate(currentDate.getDate() - currentDate.getDay());
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(start);
+      day.setDate(start.getDate() + i);
+      return day;
     });
-    // Here you would save to your backend
   };
 
-  const copyToAllDays = (sourceDay: string) => {
-    const sourceSchedule = schedule[sourceDay];
-    const updatedSchedule: WeekSchedule = { ...schedule };
+  const getMonthDays = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - startDate.getDay());
 
-    DAYS_OF_WEEK.forEach((day) => {
-      updatedSchedule[day.key] = {
-        enabled: sourceSchedule.enabled,
-        slots: sourceSchedule.slots.map((slot) => ({ ...slot })),
-      };
-    });
+    const days = [];
+    const current = new Date(startDate);
 
-    setSchedule(updatedSchedule);
+    while (days.length < 42) {
+      days.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+
+    return days;
+  };
+
+  const hours = Array.from({ length: 13 }, (_, i) => i + 8);
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  const isSameMonth = (date: Date) => {
+    return date.getMonth() === currentDate.getMonth();
+  };
+
+  const formatDate = (date: Date) => {
+    return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "video":
+        return "📹";
+      case "in-person":
+        return "👤";
+      case "phone":
+        return "📞";
+      default:
+        return "📅";
+    }
+  };
+
+  const getUrgencyColor = (urgency: string) => {
+    switch (urgency) {
+      case "high":
+        return "bg-red-100 text-red-700";
+      case "medium":
+        return "bg-yellow-100 text-yellow-700";
+      case "low":
+        return "bg-green-100 text-green-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-serif font-light text-foreground">
-          {t("title")}
-        </h1>
-        <p className="text-muted-foreground font-light mt-2">{t("subtitle")}</p>
-      </div>
-
-      {/* Session Settings */}
-      <div className="rounded-xl bg-card p-6">
-        <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          {t("sessionSettings")}
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2">
+    <div className="w-full p-6">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
           <div>
-            <Label htmlFor="sessionDuration" className="font-light mb-2">
-              {t("defaultDuration")}
-            </Label>
-            <select
-              id="sessionDuration"
-              value={sessionDuration}
-              onChange={(e) => setSessionDuration(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            >
-              <option value="30">30 {t("minutes")}</option>
-              <option value="45">45 {t("minutes")}</option>
-              <option value="60">60 {t("minutes")}</option>
-              <option value="90">90 {t("minutes")}</option>
-              <option value="120">120 {t("minutes")}</option>
-            </select>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              {t("title")}
+            </h1>
+            <p className="text-muted-foreground font-light mt-1">
+              {t("subtitle")}
+            </p>
           </div>
 
-          <div>
-            <Label htmlFor="breakBetweenSessions" className="font-light mb-2">
-              {t("breakBetween")}
-            </Label>
-            <select
-              id="breakBetweenSessions"
-              value={breakBetweenSessions}
-              onChange={(e) => setBreakBetweenSessions(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            >
-              <option value="0">{t("noBreak")}</option>
-              <option value="5">5 {t("minutes")}</option>
-              <option value="10">10 {t("minutes")}</option>
-              <option value="15">15 {t("minutes")}</option>
-              <option value="30">30 {t("minutes")}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Weekly Schedule */}
-      <div className="rounded-xl bg-card p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-serif font-light text-foreground">
-            {t("weeklySchedule")}
-          </h2>
-          <p className="text-sm text-muted-foreground font-light">
-            {t("setHours")}
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {DAYS_OF_WEEK.map((day) => (
-            <div
-              key={day.key}
-              className={`rounded-lg p-4 transition-colors ${
-                schedule[day.key].enabled
-                  ? "bg-muted/30"
-                  : "bg-muted/10 opacity-60"
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowRequests(!showRequests)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-light text-sm transition-colors ${
+                showRequests
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground hover:bg-muted/80"
               }`}
             >
-              <div className="flex items-start gap-4">
-                {/* Day Toggle */}
-                <div className="flex items-center pt-2">
-                  <input
-                    type="checkbox"
-                    id={day.key}
-                    checked={schedule[day.key].enabled}
-                    onChange={() => toggleDay(day.key)}
-                    className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
-                  />
-                </div>
+              <Filter className="h-4 w-4" />
+              {showRequests ? t("showSessions") : t("showRequests")}
+            </button>
+          </div>
+        </div>
 
-                {/* Day Content */}
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <Label
-                      htmlFor={day.key}
-                      className="font-light text-base text-foreground cursor-pointer"
+        <div className="rounded-xl bg-card p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigateDate("prev")}
+                className="p-2 rounded-full hover:bg-muted transition-colors"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <h2 className="text-xl font-serif font-light text-foreground min-w-[200px] text-center">
+                {view === "day" && formatDate(currentDate)}
+                {view === "week" &&
+                  `${t("weekOf")} ${formatDate(getWeekDays()[0])}`}
+                {view === "month" &&
+                  `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
+              </h2>
+              <button
+                onClick={() => navigateDate("next")}
+                className="p-2 rounded-full hover:bg-muted transition-colors"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToToday}
+                className="px-4 py-2 text-sm font-light text-primary hover:bg-primary/10 rounded-full transition-colors"
+              >
+                {t("today")}
+              </button>
+              <div className="flex items-center gap-1 bg-muted rounded-full p-1">
+                <button
+                  onClick={() => setView("day")}
+                  className={`px-3 py-1 text-sm font-light rounded-full transition-colors ${
+                    view === "day"
+                      ? "bg-background text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {t("day")}
+                </button>
+                <button
+                  onClick={() => setView("week")}
+                  className={`px-3 py-1 text-sm font-light rounded-full transition-colors ${
+                    view === "week"
+                      ? "bg-background text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {t("week")}
+                </button>
+                <button
+                  onClick={() => setView("month")}
+                  className={`px-3 py-1 text-sm font-light rounded-full transition-colors ${
+                    view === "month"
+                      ? "bg-background text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {t("month")}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {view === "week" && (
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                <div className="grid grid-cols-8 gap-px bg-border/40 border border-border/40 rounded-lg overflow-hidden">
+                  <div className="bg-muted/30 p-2"></div>
+                  {getWeekDays().map((day, idx) => (
+                    <div
+                      key={idx}
+                      className={`bg-card p-3 text-center ${
+                        isToday(day) ? "bg-primary/10" : ""
+                      }`}
                     >
-                      {day.label}
-                    </Label>
-                    {schedule[day.key].enabled && (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => copyToAllDays(day.key)}
-                          className="text-xs text-primary hover:text-primary/80 font-light"
-                        >
-                          {t("copyToAll")}
-                        </button>
-                        <button
-                          onClick={() => addTimeSlot(day.key)}
-                          className="p-1 rounded-full hover:bg-muted transition-colors"
-                          title={t("addTimeSlot")}
-                        >
-                          <Plus className="h-4 w-4 text-primary" />
-                        </button>
+                      <div className="text-xs font-light text-muted-foreground mb-1">
+                        {dayNames[day.getDay()]}
                       </div>
-                    )}
-                  </div>
+                      <div
+                        className={`text-sm font-light ${
+                          isToday(day)
+                            ? "text-primary font-medium"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {day.getDate()}
+                      </div>
+                    </div>
+                  ))}
 
-                  {/* Time Slots */}
-                  {schedule[day.key].enabled && (
-                    <div className="space-y-2">
-                      {schedule[day.key].slots.map((slot, index) => (
+                  {hours.map((hour) => (
+                    <React.Fragment key={hour}>
+                      <div className="bg-muted/30 p-2 text-xs font-light text-muted-foreground text-right">
+                        {hour}:00
+                      </div>
+                      {getWeekDays().map((day, idx) => (
                         <div
-                          key={index}
-                          className="flex items-center gap-3 bg-background/50 rounded-lg p-3"
+                          key={`day-${day}-${hour}-${idx}`}
+                          className="bg-card p-2 min-h-[60px] relative"
                         >
-                          <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-
-                          <div className="flex items-center gap-2 flex-1">
-                            <select
-                              value={slot.start}
-                              onChange={(e) =>
-                                updateTimeSlot(
-                                  day.key,
-                                  index,
-                                  "start",
-                                  e.target.value,
-                                )
-                              }
-                              className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                            >
-                              {TIME_OPTIONS.map((time) => (
-                                <option key={time} value={time}>
-                                  {time}
-                                </option>
-                              ))}
-                            </select>
-
-                            <span className="text-muted-foreground">
-                              {t("to")}
-                            </span>
-
-                            <select
-                              value={slot.end}
-                              onChange={(e) =>
-                                updateTimeSlot(
-                                  day.key,
-                                  index,
-                                  "end",
-                                  e.target.value,
-                                )
-                              }
-                              className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                            >
-                              {TIME_OPTIONS.map((time) => (
-                                <option key={time} value={time}>
-                                  {time}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {schedule[day.key].slots.length > 1 && (
-                            <button
-                              onClick={() => removeTimeSlot(day.key, index)}
-                              className="p-1 rounded-full hover:bg-muted transition-colors"
-                              title={t("removeTimeSlot")}
-                            >
-                              <X className="h-4 w-4 text-muted-foreground" />
-                            </button>
-                          )}
+                          {!showRequests &&
+                            MOCK_SESSIONS.filter(
+                              (s) => parseInt(s.time.split(":")[0]) === hour,
+                            ).map((session) => (
+                              <div
+                                key={session.id}
+                                className="bg-primary/10 border border-primary/20 rounded p-2 mb-1 hover:bg-primary/20 transition-colors cursor-pointer"
+                              >
+                                <div className="flex items-center gap-1 text-xs font-light">
+                                  <span>{getTypeIcon(session.type)}</span>
+                                  <span className="text-foreground">
+                                    {session.clientName}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-muted-foreground font-light mt-1">
+                                  {session.time} ({session.duration}m)
+                                </div>
+                              </div>
+                            ))}
+                          {showRequests &&
+                            MOCK_REQUESTS.filter(
+                              (r) =>
+                                parseInt(r.requestedTime.split(":")[0]) ===
+                                hour,
+                            ).map((request) => (
+                              <div
+                                key={request.id}
+                                className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-1 hover:bg-yellow-100 transition-colors cursor-pointer"
+                              >
+                                <div className="flex items-center gap-1 text-xs font-light">
+                                  <User className="h-3 w-3" />
+                                  <span className="text-foreground">
+                                    {request.patientName}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1 mt-1">
+                                  <span
+                                    className={`text-xs px-2 py-0.5 rounded-full font-light ${getUrgencyColor(request.urgency)}`}
+                                  >
+                                    {request.urgency}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
                         </div>
                       ))}
-                    </div>
-                  )}
-
-                  {!schedule[day.key].enabled && (
-                    <p className="text-sm text-muted-foreground font-light">
-                      {t("unavailable")}
-                    </p>
-                  )}
+                    </React.Fragment>
+                  ))}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* Save Button */}
-      <div className="flex justify-end gap-4">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
-        >
-          <Save className="h-4 w-4" />
-          <span>{t("save")}</span>
-        </button>
-      </div>
+          {view === "month" && (
+            <div className="grid grid-cols-7 gap-px bg-border/40 border border-border/40 rounded-lg overflow-hidden">
+              {dayNames.map((day) => (
+                <div
+                  key={day}
+                  className="bg-muted/30 p-3 text-center text-sm font-light text-muted-foreground"
+                >
+                  {day}
+                </div>
+              ))}
+              {getMonthDays().map((day, idx) => (
+                <div
+                  key={idx}
+                  className={`bg-card p-3 min-h-[100px] ${
+                    !isSameMonth(day) ? "opacity-40" : ""
+                  } ${isToday(day) ? "bg-primary/5 ring-1 ring-primary/20" : ""}`}
+                >
+                  <div
+                    className={`text-sm font-light mb-2 ${isToday(day) ? "text-primary font-medium" : "text-foreground"}`}
+                  >
+                    {day.getDate()}
+                  </div>
+                  <div className="space-y-1">
+                    {!showRequests &&
+                      MOCK_SESSIONS.slice(0, 2).map((session) => (
+                        <div
+                          key={session.id}
+                          className="bg-primary/10 rounded px-2 py-1 text-xs font-light truncate"
+                        >
+                          {session.time} {session.clientName}
+                        </div>
+                      ))}
+                    {showRequests &&
+                      MOCK_REQUESTS.slice(0, 2).map((request) => (
+                        <div
+                          key={request.id}
+                          className="bg-yellow-50 rounded px-2 py-1 text-xs font-light truncate"
+                        >
+                          {request.requestedTime} {request.patientName}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-      {/* Schedule Summary */}
-      <div className="rounded-xl bg-muted/30 p-6">
-        <h3 className="font-serif font-light text-lg text-foreground mb-4">
-          {t("summary")}
-        </h3>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-muted-foreground font-light mb-2">
-              {t("workingDays")}
-            </p>
-            <p className="text-foreground">
-              {DAYS_OF_WEEK.filter((day) => schedule[day.key].enabled).length}{" "}
-              {t("daysPerWeek")}
-            </p>
-          </div>
-          <div>
-            <p className="text-muted-foreground font-light mb-2">
-              {t("sessionLength")}
-            </p>
-            <p className="text-foreground">
-              {sessionDuration} {t("minutes")} + {breakBetweenSessions}{" "}
-              {t("minBreak")}
-            </p>
-          </div>
+          {view === "day" && (
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <div className="text-sm font-light text-muted-foreground mb-1">
+                    {t("totalSessions")}
+                  </div>
+                  <div className="text-2xl font-serif font-light text-foreground">
+                    {MOCK_SESSIONS.length}
+                  </div>
+                </div>
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <div className="text-sm font-light text-muted-foreground mb-1">
+                    {t("pendingRequests")}
+                  </div>
+                  <div className="text-2xl font-serif font-light text-foreground">
+                    {MOCK_REQUESTS.length}
+                  </div>
+                </div>
+              </div>
+
+              {hours.map((hour) => (
+                <div key={hour} className="flex gap-4">
+                  <div className="w-20 text-sm font-light text-muted-foreground pt-2">
+                    {hour}:00
+                  </div>
+                  <div className="flex-1 min-h-[60px] border-l border-border/40 pl-4 space-y-2">
+                    {!showRequests &&
+                      MOCK_SESSIONS.filter(
+                        (s) => parseInt(s.time.split(":")[0]) === hour,
+                      ).map((session) => (
+                        <div
+                          key={session.id}
+                          className="bg-primary/10 border border-primary/20 rounded-lg p-3 hover:bg-primary/20 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xl">
+                                {getTypeIcon(session.type)}
+                              </span>
+                              <div>
+                                <div className="font-light text-foreground">
+                                  {session.clientName}
+                                </div>
+                                <div className="text-sm text-muted-foreground font-light">
+                                  {session.time} - {session.duration} minutes •{" "}
+                                  {session.issueType}
+                                </div>
+                              </div>
+                            </div>
+                            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform">
+                              {t("startSession")}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    {showRequests &&
+                      MOCK_REQUESTS.filter(
+                        (r) => parseInt(r.requestedTime.split(":")[0]) === hour,
+                      ).map((request) => (
+                        <div
+                          key={request.id}
+                          className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 hover:bg-yellow-100 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <User className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-light text-foreground">
+                                  {request.patientName}
+                                </div>
+                                <div className="text-sm text-muted-foreground font-light flex items-center gap-2">
+                                  {request.requestedTime} • {request.issueType}
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full text-xs font-light ${getUrgencyColor(request.urgency)}`}
+                                  >
+                                    {request.urgency}
+                                  </span>
+                                  {request.isNewClient && (
+                                    <span className="px-2 py-0.5 rounded-full text-xs font-light bg-purple-100 text-purple-700">
+                                      {t("new")}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button className="p-2 rounded-full hover:bg-muted transition-colors">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform">
+                                {t("accept")}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

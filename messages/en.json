@@ -485,7 +485,8 @@
       "benefit3": "Virtual library with books, articles, and tests",
       "benefit4": "Free supervision and professional development",
       "benefit5": "Support community and clinical discussions",
-      "benefit6": "Content development assistance (podcasts, videos)"
+      "benefit6": "Content development assistance (podcasts, videos)",
+      "save": "Save"
     },
     "schedule": {
       "title": "Availability Schedule",
@@ -712,6 +713,24 @@
       "decline": "Decline",
       "noRequests": "No requests found",
       "adjustFilters": "Try adjusting your filters."
+    },
+    "scheduleCalendar": {
+      "title": "Schedule",
+      "subtitle": "Manage your sessions and appointments",
+      "showSessions": "Show Sessions",
+      "showRequests": "Show Requests",
+      "today": "Today",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "totalSessions": "Total Sessions",
+      "pendingRequests": "Pending Requests",
+      "startSession": "Start Session",
+      "viewDetails": "View Details",
+      "new": "New",
+      "weekOf": "Week of",
+      "noSessionsScheduled": "No sessions scheduled",
+      "noRequestsPending": "No requests pending"
     }
   }
 }

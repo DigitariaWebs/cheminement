@@ -485,7 +485,8 @@
       "benefit3": "Bibliothèque virtuelle avec livres, articles et tests",
       "benefit4": "Supervision gratuite et développement professionnel",
       "benefit5": "Communauté de soutien et discussions cliniques",
-      "benefit6": "Assistance au développement de contenu (podcasts, vidéos)"
+      "benefit6": "Aide au développement de contenu (podcasts, vidéos)",
+      "save": "Enregistrer"
     },
     "schedule": {
       "title": "Horaire de disponibilité",
@@ -713,6 +714,24 @@
       "decline": "Refuser",
       "noRequests": "Aucune demande trouvée",
       "adjustFilters": "Essayez d'ajuster vos filtres."
+    },
+    "scheduleCalendar": {
+      "title": "Horaire",
+      "subtitle": "Gérer vos séances et rendez-vous",
+      "showSessions": "Afficher les séances",
+      "showRequests": "Afficher les demandes",
+      "today": "Aujourd'hui",
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "totalSessions": "Total des séances",
+      "pendingRequests": "Demandes en attente",
+      "startSession": "Commencer la séance",
+      "viewDetails": "Voir les détails",
+      "new": "Nouveau",
+      "weekOf": "Semaine du",
+      "noSessionsScheduled": "Aucune séance planifiée",
+      "noRequestsPending": "Aucune demande en attente"
     }
   }
 }
