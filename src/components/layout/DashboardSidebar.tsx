@@ -119,20 +119,13 @@ export function DashboardSidebar() {
           href="/dashboard"
           className="flex items-center gap-2 font-serif text-xl font-light text-foreground"
         >
-          {state === "expanded" ? (
+          {state === "expanded" && (
             <Image
               src="/Logo.png"
               alt={t("logo")}
               className="w-full px-8"
               width={256}
               height={32}
-            />
-          ) : (
-            <Image
-              src="/favicon.png"
-              alt={t("favicon")}
-              width={64}
-              height={16}
             />
           )}
         </Link>

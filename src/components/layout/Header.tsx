@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import Image from "next/image";
 
 export function Header() {
   const pathname = usePathname();
@@ -36,7 +37,13 @@ export function Header() {
               href="/"
               className="flex items-center hover:opacity-80 transition-opacity"
             >
-              <img src="/Logo.png" alt="Je Chemine" className="h-10 w-auto" />
+              <Image
+                width={256}
+                height={256}
+                src="/Logo.png"
+                alt="Je Chemine"
+                className="h-10 w-auto"
+              />
             </Link>
           </div>
 

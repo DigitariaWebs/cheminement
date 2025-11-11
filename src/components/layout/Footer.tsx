@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const t = useTranslations("Footer");
 
   return (
-    <footer className="w-full bg-[#1a1a1a] text-white">
+    <footer className="w-full bg-primary text-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Section */}
@@ -18,15 +19,19 @@ export function Footer() {
               href="/"
               className="flex items-center hover:opacity-80 transition-opacity"
             >
-              <img src="/Logo.png" alt="Je Chemine" className="h-16 w-auto" />
+              <Image
+                width={256}
+                height={256}
+                src="/Logo.png"
+                alt="Je Chemine"
+                className="w-full"
+              />
             </Link>
           </div>
 
           {/* Partners */}
-          <div>
-            <h3 className="text-lg font-semibold text-primary mb-6">
-              {t("partners")}
-            </h3>
+          <div className="text-secondary">
+            <h3 className="text-lg font-semibold mb-6">{t("partners")}</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -41,9 +46,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold text-primary mb-6">
-              {t("company")}
-            </h3>
+            <h3 className="text-lg font-semibold mb-6">{t("company")}</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -90,9 +93,7 @@ export function Footer() {
 
           {/* Platform */}
           <div>
-            <h3 className="text-lg font-semibold text-primary mb-6">
-              {t("platform")}
-            </h3>
+            <h3 className="text-lg font-semibold mb-6">{t("platform")}</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -139,9 +140,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold text-primary mb-6">
-              {t("contact")}
-            </h3>
+            <h3 className="text-lg font-semibold mb-6">{t("contact")}</h3>
             <ul className="space-y-3">
               <li>
                 <Link
