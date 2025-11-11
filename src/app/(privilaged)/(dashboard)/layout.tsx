@@ -20,7 +20,7 @@ export default async function DashboardLayout({
             <div className="flex-1" />
             <LocaleSwitcher currentLocale={locale} />
           </div>
-          <div className="p-6">{children}</div>
+          <div className="p-6 w-full">{children}</div>
         </main>
       </div>
     </SidebarProvider>

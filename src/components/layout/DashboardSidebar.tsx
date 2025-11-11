@@ -14,6 +14,7 @@ import {
   HelpCircle,
   LogOut,
   ChevronRight,
+  Inbox,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -62,6 +63,11 @@ export function DashboardSidebar() {
     {
       title: t("clientManagement"),
       items: [
+        {
+          title: t("myRequests"),
+          url: "/dashboard/requests",
+          icon: Inbox,
+        },
         {
           title: t("myClients"),
           url: "/dashboard/clients",
