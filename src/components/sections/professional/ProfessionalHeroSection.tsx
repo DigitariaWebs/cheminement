@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function ProfessionalHeroSection() {
+  const t = useTranslations("ProfessionalHero");
+
   return (
     <section className="relative h-screen flex items-center justify-center bg-accent overflow-hidden">
       {/* Background Pattern */}
@@ -13,21 +16,19 @@ export default function ProfessionalHeroSection() {
           {/* Top Tagline */}
           <div className="mb-4 animate-fade-in">
             <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
-              FOR MENTAL HEALTH PROFESSIONALS
+              {t("tagline")}
             </p>
             <div className="w-32 h-0.5 bg-muted-foreground mx-auto"></div>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-light text-foreground mb-8 leading-tight animate-fade-in-up">
-            Focus on What You Do Best: Helping People
+            {t("headline")}
           </h1>
 
           {/* Description */}
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed font-light animate-fade-in-up animation-delay-200">
-            Join our platform and let us handle the administrative work. Connect
-            with clients who match your expertise, optimize your practice, and
-            grow your impact.
+            {t("description")}
           </p>
 
           {/* CTA Buttons */}
@@ -36,7 +37,7 @@ export default function ProfessionalHeroSection() {
               href="/signup/professional"
               className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
-              <span className="relative z-10">Join Our Platform</span>
+              <span className="relative z-10">{t("joinPlatform")}</span>
               <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </Link>
 
@@ -44,7 +45,7 @@ export default function ProfessionalHeroSection() {
               href="/professional/learn-more"
               className="group flex items-center gap-3 px-8 py-5 text-foreground text-lg font-light tracking-wide transition-all duration-300 hover:gap-4 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
             >
-              <span>Learn More</span>
+              <span>{t("learnMore")}</span>
             </Link>
           </div>
 
@@ -52,15 +53,15 @@ export default function ProfessionalHeroSection() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground animate-fade-in animation-delay-600">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent"></div>
-              <span>1000+ Active Professionals</span>
+              <span>{t("activeProfessionals")}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent"></div>
-              <span>95% Satisfaction Rate</span>
+              <span>{t("satisfactionRate")}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent"></div>
-              <span>24/7 Platform Support</span>
+              <span>{t("platformSupport")}</span>
             </div>
           </div>
         </div>

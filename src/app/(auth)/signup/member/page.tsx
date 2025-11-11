@@ -10,6 +10,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,14 +22,18 @@ import {
 import { SocialLogin } from "@/components/auth/SocialLogin";
 import { Stepper } from "@/components/ui/stepper";
 
-const STEPS = [
-  { title: "Personal Info", description: "Basic information" },
-  { title: "Security", description: "Create password" },
-  { title: "Confirm", description: "Terms & conditions" },
-];
-
 export default function MemberSignupPage() {
+  const t = useTranslations("Auth.memberSignup");
   const [currentStep, setCurrentStep] = useState(0);
+
+  const STEPS = [
+    {
+      title: t("steps.personalInfo"),
+      description: t("steps.personalInfoDesc"),
+    },
+    { title: t("steps.security"), description: t("steps.securityDesc") },
+    { title: t("steps.confirm"), description: t("steps.confirmDesc") },
+  ];
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -68,8 +73,8 @@ export default function MemberSignupPage() {
     <AuthContainer maxWidth="xl">
       <AuthHeader
         icon={<UserCircle className="w-8 h-8 text-primary" />}
-        title="Join as a Member"
-        description="Start your journey to better mental health"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -89,7 +94,7 @@ export default function MemberSignupPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName" className="font-light mb-2">
-                    First Name
+                    {t("firstName")}
                   </Label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,14 +108,14 @@ export default function MemberSignupPage() {
                       value={formData.firstName}
                       onChange={handleChange}
                       className="pl-9 h-10"
-                      placeholder="John"
+                      placeholder={t("firstNamePlaceholder")}
                     />
                   </div>
                 </div>
 
                 <div>
                   <Label htmlFor="lastName" className="font-light mb-2">
-                    Last Name
+                    {t("lastName")}
                   </Label>
                   <Input
                     id="lastName"
@@ -120,14 +125,14 @@ export default function MemberSignupPage() {
                     value={formData.lastName}
                     onChange={handleChange}
                     className="h-10"
-                    placeholder="Doe"
+                    placeholder={t("lastNamePlaceholder")}
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="email" className="font-light mb-2">
-                  Email Address
+                  {t("email")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -142,7 +147,7 @@ export default function MemberSignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="you@example.com"
+                    placeholder={t("emailPlaceholder")}
                   />
                 </div>
               </div>
@@ -154,7 +159,7 @@ export default function MemberSignupPage() {
             <div className="space-y-6">
               <div>
                 <Label htmlFor="password" className="font-light mb-2">
-                  Password
+                  {t("password")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -169,17 +174,17 @@ export default function MemberSignupPage() {
                     value={formData.password}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  At least 8 characters with a mix of letters and numbers
+                  {t("passwordHint")}
                 </p>
               </div>
 
               <div>
                 <Label htmlFor="confirmPassword" className="font-light mb-2">
-                  Confirm Password
+                  {t("confirmPassword")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -194,7 +199,7 @@ export default function MemberSignupPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                   />
                 </div>
               </div>
@@ -206,17 +211,17 @@ export default function MemberSignupPage() {
             <div className="space-y-6">
               <div className="rounded-lg bg-muted/50 p-6 space-y-4">
                 <h3 className="font-serif font-light text-lg">
-                  Review Your Information
+                  {t("reviewTitle")}
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Name:</span>
+                    <span className="text-muted-foreground">{t("name")}</span>
                     <span className="font-medium">
                       {formData.firstName} {formData.lastName}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Email:</span>
+                    <span className="text-muted-foreground">{t("email")}</span>
                     <span className="font-medium">{formData.email}</span>
                   </div>
                 </div>
@@ -233,19 +238,19 @@ export default function MemberSignupPage() {
                   className="h-4 w-4 mt-1 text-primary focus:ring-primary border-border/20 rounded"
                 />
                 <Label htmlFor="agreeToTerms" className="ml-2 font-light">
-                  I agree to the{" "}
+                  {t("agreeToTerms")}{" "}
                   <Link
                     href="/terms"
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
-                    Terms of Service
+                    {t("termsOfService")}
                   </Link>{" "}
-                  and{" "}
+                  {t("and")}{" "}
                   <Link
                     href="/privacy"
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
-                    Privacy Policy
+                    {t("privacyPolicy")}
                   </Link>
                 </Label>
               </div>
@@ -261,7 +266,7 @@ export default function MemberSignupPage() {
               className="flex items-center gap-2 px-6 py-3 text-foreground font-light transition-opacity disabled:opacity-0 disabled:pointer-events-none"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
+              <span>{t("back")}</span>
             </button>
 
             <button
@@ -270,8 +275,8 @@ export default function MemberSignupPage() {
             >
               <span>
                 {currentStep === STEPS.length - 1
-                  ? "Create Account"
-                  : "Continue"}
+                  ? t("createAccount")
+                  : t("continue")}
               </span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -283,12 +288,12 @@ export default function MemberSignupPage() {
 
       <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
-          Already have an account?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login/member"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </AuthFooter>
@@ -298,7 +303,7 @@ export default function MemberSignupPage() {
           href="/"
           className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
         >
-          ← Back to Home
+          {t("backToHome")}
         </Link>
       </AuthFooter>
     </AuthContainer>

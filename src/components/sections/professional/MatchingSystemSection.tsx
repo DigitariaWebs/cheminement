@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Target, Users, Briefcase, Calendar } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -31,30 +32,45 @@ const scaleIn = {
 };
 
 export default function MatchingSystemSection() {
+  const t = useTranslations("MatchingSystem");
+  const locale = useLocale();
+
   const matchingCriteria = [
     {
       icon: Target,
-      title: "Issue Type",
-      description:
+      titleEn: "Issue Type",
+      titleFr: "Type de problème",
+      descriptionEn:
         "Match with clients based on the specific mental health challenges you specialize in treating",
+      descriptionFr:
+        "Jumelage avec des clients en fonction des défis spécifiques de santé mentale que vous êtes spécialisé à traiter",
     },
     {
       icon: Briefcase,
-      title: "Therapeutic Approach",
-      description:
+      titleEn: "Therapeutic Approach",
+      titleFr: "Approche thérapeutique",
+      descriptionEn:
         "Connect with clients who prefer your therapeutic methods and techniques",
+      descriptionFr:
+        "Connectez-vous avec des clients qui préfèrent vos méthodes et techniques thérapeutiques",
     },
     {
       icon: Users,
-      title: "Age Category",
-      description:
+      titleEn: "Age Category",
+      titleFr: "Catégorie d'âge",
+      descriptionEn:
         "Work with the age groups you're most experienced and comfortable with",
+      descriptionFr:
+        "Travaillez avec les groupes d'âge avec lesquels vous êtes le plus expérimenté et à l'aise",
     },
     {
       icon: Calendar,
-      title: "Expertise & Skills",
-      description:
+      titleEn: "Expertise & Skills",
+      titleFr: "Expertise et compétences",
+      descriptionEn:
         "Leverage your unique competencies to help those who need them most",
+      descriptionFr:
+        "Tirez parti de vos compétences uniques pour aider ceux qui en ont le plus besoin",
     },
   ];
 
@@ -76,7 +92,7 @@ export default function MatchingSystemSection() {
               className="mb-4"
             >
               <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
-                SMART MATCHING SYSTEM
+                {t("badge")}
               </p>
               <div className="w-32 h-0.5 bg-muted-foreground mx-auto"></div>
             </motion.div>
@@ -86,7 +102,7 @@ export default function MatchingSystemSection() {
               transition={{ duration: 0.6 }}
               className="text-3xl md:text-4xl lg:text-5xl font-serif font-light text-foreground mb-6"
             >
-              Find Clients Who Are Right for You
+              {t("title")}
             </motion.h2>
 
             <motion.p
@@ -94,9 +110,7 @@ export default function MatchingSystemSection() {
               transition={{ duration: 0.6 }}
               className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed"
             >
-              Save time and energy with our intelligent matching system. Focus
-              on the clinical aspects of your practice while we connect you with
-              clients who align perfectly with your expertise and preferences.
+              {t("subtitle")}
             </motion.p>
           </div>
 
@@ -121,10 +135,12 @@ export default function MatchingSystemSection() {
                   </div>
                   <div>
                     <h3 className="text-xl font-light text-foreground mb-2">
-                      {criterion.title}
+                      {locale === "fr" ? criterion.titleFr : criterion.titleEn}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed font-light">
-                      {criterion.description}
+                      {locale === "fr"
+                        ? criterion.descriptionFr
+                        : criterion.descriptionEn}
                     </p>
                   </div>
                 </div>
@@ -146,14 +162,10 @@ export default function MatchingSystemSection() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-serif font-light text-foreground mb-3">
-                  Work Smarter, Not Harder
+                  {t("benefitTitle")}
                 </h3>
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-light">
-                  Our precision matching means you spend less time on
-                  administrative tasks and more time doing what you
-                  love—providing quality mental health care. Every client
-                  connection is tailored to your professional strengths and
-                  preferences.
+                  {t("benefitDesc")}
                 </p>
               </div>
             </div>

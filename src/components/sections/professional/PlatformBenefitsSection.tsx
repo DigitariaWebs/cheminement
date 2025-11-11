@@ -15,6 +15,7 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -44,86 +45,137 @@ const scaleIn = {
 };
 
 export default function PlatformBenefitsSection() {
+  const t = useTranslations("PlatformBenefits");
+  const locale = useLocale();
+
   const benefits = [
     {
       icon: Clock,
-      title: "Simple & Efficient Management",
-      description:
+      titleEn: "Simple & Efficient Management",
+      titleFr: "Gestion simple et efficace",
+      descriptionEn:
         "Provide us with your available time slots, meet your clients, and we handle the rest—scheduling, billing, and administrative tasks.",
+      descriptionFr:
+        "Fournissez-nous vos plages horaires disponibles, rencontrez vos clients et nous nous occupons du reste—planification, facturation et tâches administratives.",
     },
     {
       icon: TrendingUp,
-      title: "Stabilize Your Practice",
-      description:
+      titleEn: "Stabilize Your Practice",
+      titleFr: "Stabilisez votre pratique",
+      descriptionEn:
         "Maintain a consistent client base and steady revenue stream. Focus on growth without worrying about fluctuating income.",
+      descriptionFr:
+        "Maintenez une clientèle constante et un flux de revenus stable. Concentrez-vous sur la croissance sans vous soucier des revenus fluctuants.",
     },
     {
       icon: BookOpen,
-      title: "Optimize Your Time",
-      description:
+      titleEn: "Optimize Your Time",
+      titleFr: "Optimisez votre temps",
+      descriptionEn:
         "Concentrate on clinical aspects of your practice and free up time for your personal life. We handle the business side.",
+      descriptionFr:
+        "Concentrez-vous sur les aspects cliniques de votre pratique et libérez du temps pour votre vie personnelle. Nous gérons le côté commercial.",
     },
     {
       icon: Calendar,
-      title: "Practice Management Tools",
-      description:
+      titleEn: "Practice Management Tools",
+      titleFr: "Outils de gestion de pratique",
+      descriptionEn:
         "Access OWL Practice-style features including record keeping, scheduling, billing, and payroll management—all in one place.",
+      descriptionFr:
+        "Accédez aux fonctionnalités de style OWL Practice, y compris la tenue de dossiers, la planification, la facturation et la gestion de la paie—le tout en un seul endroit.",
     },
     {
       icon: FileText,
-      title: "Virtual Library Access",
-      description:
+      titleEn: "Virtual Library Access",
+      titleFr: "Accès à la bibliothèque virtuelle",
+      descriptionEn:
         "Unlimited access to PDF books, research articles, psychological tests, and test correction platforms when needed.",
+      descriptionFr:
+        "Accès illimité aux livres PDF, articles de recherche, tests psychologiques et plateformes de correction de tests au besoin.",
     },
     {
       icon: Video,
-      title: "Content Development Support",
-      description:
+      titleEn: "Content Development Support",
+      titleFr: "Soutien au développement de contenu",
+      descriptionEn:
         "Get help creating podcasts, videos, and articles to expand your reach and generate additional revenue streams.",
+      descriptionFr:
+        "Obtenez de l'aide pour créer des podcasts, des vidéos et des articles afin d'élargir votre portée et de générer des flux de revenus supplémentaires.",
     },
     {
       icon: Award,
-      title: "Professional Development",
-      description:
+      titleEn: "Professional Development",
+      titleFr: "Développement professionnel",
+      descriptionEn:
         "Free training programs and receive a note-taking tablet after completing a certain number of sessions.",
+      descriptionFr:
+        "Programmes de formation gratuits et recevez une tablette de prise de notes après avoir complété un certain nombre de séances.",
     },
     {
       icon: Lightbulb,
-      title: "Startup Kit & Mentorship",
-      description:
+      titleEn: "Startup Kit & Mentorship",
+      titleFr: "Kit de démarrage et mentorat",
+      descriptionEn:
         "New psychologists receive comprehensive startup assistance and mentorship from experienced professionals.",
+      descriptionFr:
+        "Les nouveaux psychologues reçoivent une assistance complète au démarrage et un mentorat de professionnels expérimentés.",
     },
     {
       icon: Users,
-      title: "Free Supervision Access",
-      description:
+      titleEn: "Free Supervision Access",
+      titleFr: "Accès gratuit à la supervision",
+      descriptionEn:
         "Get access to professional supervision when you need it, included in your membership at no extra cost.",
+      descriptionFr:
+        "Accédez à une supervision professionnelle lorsque vous en avez besoin, incluse dans votre adhésion sans frais supplémentaires.",
     },
     {
       icon: Heart,
-      title: "Support Community",
-      description:
+      titleEn: "Support Community",
+      titleFr: "Communauté de soutien",
+      descriptionEn:
         "Join support groups for mutual aid, reflection, clinical discussions, and professional community building.",
+      descriptionFr:
+        "Rejoignez des groupes de soutien pour l'entraide, la réflexion, les discussions cliniques et la construction d'une communauté professionnelle.",
     },
     {
       icon: Shield,
-      title: "Psychiatry Collaboration",
-      description:
+      titleEn: "Psychiatry Collaboration",
+      titleFr: "Collaboration en psychiatrie",
+      descriptionEn:
         "Access discussions with psychiatrists through our partnership with Averroes for comprehensive patient care.",
+      descriptionFr:
+        "Accédez à des discussions avec des psychiatres grâce à notre partenariat avec Averroès pour des soins complets aux patients.",
     },
     {
       icon: DollarSign,
-      title: "Financial Benefits",
-      description:
+      titleEn: "Financial Benefits",
+      titleFr: "Avantages financiers",
+      descriptionEn:
         "Preferential rates with accountants, OPQ membership fee support based on sessions, and investment fund opportunities.",
+      descriptionFr:
+        "Tarifs préférentiels avec les comptables, soutien des frais d'adhésion à l'OPQ selon les séances et opportunités de fonds d'investissement.",
     },
   ];
 
   const additionalPerks = [
-    "Become a shareholder and collectively benefit from our success",
-    "Social mission: Priority support for clients in remote regions",
-    "Reduced rates for family/child cases with joint platform support",
-    "$1 per session contribution to an investment fund",
+    {
+      en: "Become a shareholder and collectively benefit from our success",
+      fr: "Devenez actionnaire et bénéficiez collectivement de notre succès",
+    },
+    {
+      en: "Social mission: Priority support for clients in remote regions",
+      fr: "Mission sociale : soutien prioritaire pour les clients des régions éloignées",
+    },
+    {
+      en: "Reduced rates for family/child cases with joint platform support",
+      fr: "Tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
+    },
+    {
+      en: "$1 per session contribution to an investment fund",
+      fr: "Contribution de 1 $ par séance à un fonds d'investissement",
+    },
   ];
 
   return (
@@ -144,7 +196,7 @@ export default function PlatformBenefitsSection() {
               className="mb-4"
             >
               <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
-                WHY CHOOSE US
+                {t("badge")}
               </p>
               <div className="w-32 h-0.5 bg-muted-foreground mx-auto"></div>
             </motion.div>
@@ -154,7 +206,7 @@ export default function PlatformBenefitsSection() {
               transition={{ duration: 0.6 }}
               className="text-3xl md:text-4xl lg:text-5xl font-serif font-light text-foreground mb-6"
             >
-              Platform Benefits for Professionals
+              {t("title")}
             </motion.h2>
 
             <motion.p
@@ -162,8 +214,7 @@ export default function PlatformBenefitsSection() {
               transition={{ duration: 0.6 }}
               className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed"
             >
-              We provide comprehensive support so you can focus on what matters
-              most—delivering exceptional mental health care to your clients.
+              {t("subtitle")}
             </motion.p>
           </div>
 
@@ -186,10 +237,12 @@ export default function PlatformBenefitsSection() {
                   </div>
                 </div>
                 <h3 className="text-lg font-light text-foreground mb-3">
-                  {benefit.title}
+                  {locale === "fr" ? benefit.titleFr : benefit.titleEn}
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed font-light">
-                  {benefit.description}
+                  {locale === "fr"
+                    ? benefit.descriptionFr
+                    : benefit.descriptionEn}
                 </p>
               </motion.div>
             ))}
@@ -202,7 +255,7 @@ export default function PlatformBenefitsSection() {
             className="bg-linear-to-br from-muted/30 to-accent/10 rounded-2xl p-8 md:p-12"
           >
             <h3 className="text-2xl font-serif font-light text-foreground mb-6 text-center">
-              Additional Perks & Opportunities
+              {t("additionalPerksTitle")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
               {additionalPerks.map((perk, index) => (
@@ -228,7 +281,7 @@ export default function PlatformBenefitsSection() {
                     </svg>
                   </div>
                   <p className="text-foreground leading-relaxed font-light">
-                    {perk}
+                    {locale === "fr" ? perk.fr : perk.en}
                   </p>
                 </motion.div>
               ))}

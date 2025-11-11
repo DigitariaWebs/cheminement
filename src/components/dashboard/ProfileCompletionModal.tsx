@@ -5,13 +5,7 @@ import { X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Stepper } from "@/components/ui/stepper";
-
-const STEPS = [
-  { title: "Issue Types", description: "Specializations" },
-  { title: "Approaches", description: "Methods" },
-  { title: "Age Groups", description: "Categories" },
-  { title: "Additional Info", description: "Skills & Bio" },
-];
+import { useTranslations } from "next-intl";
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
@@ -33,7 +27,19 @@ export default function ProfileCompletionModal({
   onClose,
   onComplete,
 }: ProfileCompletionModalProps) {
+  const t = useTranslations("Dashboard.profileModal");
   const [currentStep, setCurrentStep] = useState(0);
+
+  const STEPS = [
+    { title: t("steps.issueTypes"), description: t("steps.issueTypesDesc") },
+    { title: t("steps.approaches"), description: t("steps.approachesDesc") },
+    { title: t("steps.ageGroups"), description: t("steps.ageGroupsDesc") },
+    {
+      title: t("steps.additionalInfo"),
+      description: t("steps.additionalInfoDesc"),
+    },
+  ];
+
   const [formData, setFormData] = useState<ProfileData>({
     problematics: [],
     approaches: [],
@@ -156,10 +162,10 @@ export default function ProfileCompletionModal({
         <div className="sticky top-0 z-10 bg-background border-b border-border/40 px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-serif font-light text-foreground">
-              Complete Your Profile
+              {t("title")}
             </h2>
             <p className="text-sm text-muted-foreground font-light mt-1">
-              Help us match you with the right clients
+              {t("subtitle")}
             </p>
           </div>
           <button
@@ -182,11 +188,13 @@ export default function ProfileCompletionModal({
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-light text-foreground mb-2">
-                  Issue Types You Specialize In
-                  <span className="text-primary ml-1">*</span>
+                  {t("step1.title")}
+                  <span className="text-primary ml-1">
+                    {t("step1.required")}
+                  </span>
                 </h3>
                 <p className="text-sm text-muted-foreground font-light">
-                  Select the mental health challenges you are qualified to treat
+                  {t("step1.subtitle")}
                 </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -213,11 +221,13 @@ export default function ProfileCompletionModal({
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-light text-foreground mb-2">
-                  Therapeutic Approaches
-                  <span className="text-primary ml-1">*</span>
+                  {t("step2.title")}
+                  <span className="text-primary ml-1">
+                    {t("step1.required")}
+                  </span>
                 </h3>
                 <p className="text-sm text-muted-foreground font-light">
-                  Select your preferred therapeutic methods and techniques
+                  {t("step2.subtitle")}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -244,12 +254,13 @@ export default function ProfileCompletionModal({
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-light text-foreground mb-2">
-                  Age Categories
-                  <span className="text-primary ml-1">*</span>
+                  {t("step3.title")}
+                  <span className="text-primary ml-1">
+                    {t("step1.required")}
+                  </span>
                 </h3>
                 <p className="text-sm text-muted-foreground font-light">
-                  Select the age groups you are experienced and comfortable
-                  working with
+                  {t("step3.subtitle")}
                 </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -276,20 +287,43 @@ export default function ProfileCompletionModal({
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-light text-foreground mb-2">
-                  Additional Skills & Information
+                  {t("step4.title")}
                 </h3>
                 <p className="text-sm text-muted-foreground font-light">
-                  Complete your profile with additional details
+                  {t("step4.subtitle")}
                 </p>
+              </div>
+
+              {/* Years of Experience */}
+              <div>
+                <Label
+                  htmlFor="yearsOfExperience"
+                  className="font-light mb-3 text-base"
+                >
+                  {t("step4.yearsExp")}
+                  <span className="text-primary ml-1">
+                    {t("step4.yearsExpRequired")}
+                  </span>
+                </Label>
+                <Input
+                  id="yearsOfExperience"
+                  name="yearsOfExperience"
+                  type="number"
+                  min="0"
+                  value={formData.yearsOfExperience}
+                  onChange={handleChange}
+                  className="max-w-xs"
+                  placeholder={t("step4.yearsPlaceholder")}
+                />
               </div>
 
               {/* Skills */}
               <div>
                 <Label className="font-light mb-3 text-base">
-                  Additional Skills & Competencies
+                  {t("step4.additionalSkills")}
                 </Label>
                 <p className="text-sm text-muted-foreground font-light mb-4">
-                  Highlight your unique expertise and qualifications
+                  {t("step4.additionalSkillsDesc")}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {skills.map((item) => (
@@ -312,12 +346,13 @@ export default function ProfileCompletionModal({
               {/* Professional Bio */}
               <div>
                 <Label htmlFor="bio" className="font-light mb-3 text-base">
-                  Professional Bio
-                  <span className="text-primary ml-1">*</span>
+                  {t("step4.bio")}
+                  <span className="text-primary ml-1">
+                    {t("step4.bioRequired")}
+                  </span>
                 </Label>
                 <p className="text-sm text-muted-foreground font-light mb-4">
-                  Share your background, philosophy, and what clients can expect
-                  from working with you
+                  {t("step4.subtitle")}
                 </p>
                 <textarea
                   id="bio"
@@ -326,28 +361,7 @@ export default function ProfileCompletionModal({
                   onChange={handleChange}
                   rows={6}
                   className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
-                  placeholder="Tell potential clients about your approach, experience, and what makes you unique..."
-                />
-              </div>
-
-              {/* Years of Experience */}
-              <div>
-                <Label
-                  htmlFor="yearsOfExperience"
-                  className="font-light mb-3 text-base"
-                >
-                  Years of Experience
-                  <span className="text-primary ml-1">*</span>
-                </Label>
-                <Input
-                  id="yearsOfExperience"
-                  name="yearsOfExperience"
-                  type="number"
-                  min="0"
-                  value={formData.yearsOfExperience}
-                  onChange={handleChange}
-                  className="max-w-xs"
-                  placeholder="5"
+                  placeholder={t("step4.bioPlaceholder")}
                 />
               </div>
             </div>
@@ -362,7 +376,7 @@ export default function ProfileCompletionModal({
             disabled={currentStep === 0}
             className="px-6 py-3 text-foreground font-light transition-opacity disabled:opacity-0 disabled:pointer-events-none hover:text-muted-foreground"
           >
-            Back
+            {t("buttons.back")}
           </button>
 
           <div className="flex items-center gap-3">
@@ -380,7 +394,7 @@ export default function ProfileCompletionModal({
                 disabled={!canProceed()}
                 className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                Continue
+                {t("buttons.next")}
               </button>
             ) : (
               <button
@@ -389,7 +403,7 @@ export default function ProfileCompletionModal({
                 disabled={!canProceed()}
                 className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                Complete Profile
+                {t("buttons.complete")}
               </button>
             )}
           </div>

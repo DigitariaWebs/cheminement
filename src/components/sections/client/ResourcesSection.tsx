@@ -10,6 +10,7 @@ import {
   Lock,
   Unlock,
 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -39,30 +40,45 @@ const scaleIn = {
 };
 
 export default function ResourcesSection() {
+  const t = useTranslations("Resources");
+  const locale = useLocale();
+
   const freeResources = [
     {
       icon: BookOpen,
-      title: "Educational Articles",
-      description:
+      titleEn: "Educational Articles",
+      titleFr: "Articles éducatifs",
+      descriptionEn:
         "Access a comprehensive library of articles about mental health, self-care strategies, and wellness tips.",
+      descriptionFr:
+        "Accédez à une bibliothèque complète d'articles sur la santé mentale, les stratégies d'auto-soin et les conseils de bien-être.",
     },
     {
       icon: Video,
-      title: "Video Guides",
-      description:
+      titleEn: "Video Guides",
+      titleFr: "Guides vidéo",
+      descriptionEn:
         "Watch educational videos on managing stress, anxiety, and building healthy habits to prepare for your journey.",
+      descriptionFr:
+        "Regardez des vidéos éducatives sur la gestion du stress, de l'anxiété et l'adoption d'habitudes saines pour préparer votre parcours.",
     },
     {
       icon: FileText,
-      title: "Self-Assessment Tools",
-      description:
+      titleEn: "Self-Assessment Tools",
+      titleFr: "Outils d'auto-évaluation",
+      descriptionEn:
         "Use our guided questionnaires to better understand your needs and communicate effectively with professionals.",
+      descriptionFr:
+        "Utilisez nos questionnaires guidés pour mieux comprendre vos besoins et communiquer efficacement avec les professionnels.",
     },
     {
       icon: Headphones,
-      title: "Guided Meditations",
-      description:
+      titleEn: "Guided Meditations",
+      titleFr: "Méditations guidées",
+      descriptionEn:
         "Begin your self-care practice with free guided meditation and mindfulness exercises.",
+      descriptionFr:
+        "Commencez votre pratique d'auto-soin avec des exercices gratuits de méditation guidée et de pleine conscience.",
     },
   ];
 
@@ -84,7 +100,7 @@ export default function ResourcesSection() {
               className="mb-4"
             >
               <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
-                EMPOWER YOURSELF
+                {t("badge")}
               </p>
               <div className="w-32 h-0.5 bg-muted-foreground mx-auto"></div>
             </motion.div>
@@ -94,7 +110,7 @@ export default function ResourcesSection() {
               transition={{ duration: 0.6 }}
               className="text-3xl md:text-4xl lg:text-5xl font-serif font-light text-foreground mb-6"
             >
-              Take Charge of Your Mental Wellness
+              {t("title")}
             </motion.h2>
 
             <motion.p
@@ -102,8 +118,7 @@ export default function ResourcesSection() {
               transition={{ duration: 0.6 }}
               className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed"
             >
-              Increase your knowledge, practice self-care, and prepare for your
-              journey with our comprehensive educational resources.
+              {t("subtitle")}
             </motion.p>
           </div>
 
@@ -116,7 +131,7 @@ export default function ResourcesSection() {
             <div className="flex items-center justify-center gap-2 mb-8">
               <Unlock className="w-5 h-5 text-primary" />
               <h3 className="text-2xl font-serif font-light text-foreground">
-                Free Access Resources
+                {t("freeAccessTitle")}
               </h3>
             </div>
 
@@ -138,10 +153,12 @@ export default function ResourcesSection() {
                     </div>
                   </div>
                   <h4 className="text-lg font-light text-foreground mb-3">
-                    {resource.title}
+                    {locale === "fr" ? resource.titleFr : resource.titleEn}
                   </h4>
                   <p className="text-muted-foreground text-sm leading-relaxed font-light">
-                    {resource.description}
+                    {locale === "fr"
+                      ? resource.descriptionFr
+                      : resource.descriptionEn}
                   </p>
                 </motion.div>
               ))}
@@ -162,19 +179,16 @@ export default function ResourcesSection() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-serif font-light text-foreground mb-3">
-                  Ready to Go Further?
+                  {t("premiumTitle")}
                 </h3>
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-light mb-6">
-                  Unlock premium resources including personalized learning
-                  paths, advanced self-care techniques, exclusive workshops, and
-                  one-on-one guidance to accelerate your mental wellness
-                  journey.
+                  {t("premiumDesc")}
                 </p>
                 <Link
                   href="/resources/premium"
                   className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  Explore Premium Resources
+                  {t("explorePremium")}
                 </Link>
               </div>
             </div>
@@ -187,9 +201,7 @@ export default function ResourcesSection() {
             className="mt-12 text-center"
           >
             <p className="text-sm text-muted-foreground font-light max-w-2xl mx-auto">
-              Start with free resources to build your foundation, then explore
-              premium options when you&apos;re ready to deepen your practice and
-              accelerate your growth.
+              {t("benefitsNote")}
             </p>
           </motion.div>
         </motion.div>

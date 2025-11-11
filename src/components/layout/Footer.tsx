@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Twitter, Linkedin, Facebook, Instagram } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const t = useTranslations("Footer");
 
   return (
     <footer className="w-full bg-[#1a1a1a] text-white">
@@ -21,7 +25,7 @@ export function Footer() {
           {/* Partners */}
           <div>
             <h3 className="text-lg font-semibold text-primary mb-6">
-              Partners
+              {t("partners")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -29,7 +33,7 @@ export function Footer() {
                   href="/partner"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Partner with us
+                  {t("partnerWithUs")}
                 </Link>
               </li>
             </ul>
@@ -37,14 +41,16 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold text-primary mb-6">Company</h3>
+            <h3 className="text-lg font-semibold text-primary mb-6">
+              {t("company")}
+            </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/about"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  About Us
+                  {t("aboutUs")}
                 </Link>
               </li>
               <li>
@@ -52,7 +58,7 @@ export function Footer() {
                   href="/careers"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Careers
+                  {t("careers")}
                 </Link>
               </li>
               <li>
@@ -60,7 +66,7 @@ export function Footer() {
                   href="/press"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Press
+                  {t("press")}
                 </Link>
               </li>
               <li>
@@ -68,7 +74,7 @@ export function Footer() {
                   href="/culture"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Culture, care and community
+                  {t("culture")}
                 </Link>
               </li>
               <li>
@@ -76,7 +82,7 @@ export function Footer() {
                   href="/brand"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Brand guidelines
+                  {t("brandGuidelines")}
                 </Link>
               </li>
             </ul>
@@ -85,7 +91,7 @@ export function Footer() {
           {/* Platform */}
           <div>
             <h3 className="text-lg font-semibold text-primary mb-6">
-              Platform
+              {t("platform")}
             </h3>
             <ul className="space-y-3">
               <li>
@@ -93,7 +99,7 @@ export function Footer() {
                   href="/platform"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Integrated Health Platform
+                  {t("integratedHealthPlatform")}
                 </Link>
               </li>
               <li>
@@ -101,7 +107,7 @@ export function Footer() {
                   href="/eap"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Employee Assistance Program (EAP)
+                  {t("eap")}
                 </Link>
               </li>
               <li>
@@ -109,7 +115,7 @@ export function Footer() {
                   href="/mental-health"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Mental Health+
+                  {t("mentalHealthPlus")}
                 </Link>
               </li>
               <li>
@@ -117,7 +123,7 @@ export function Footer() {
                   href="/primary-care"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Primary Care Wellness
+                  {t("primaryCareWellness")}
                 </Link>
               </li>
               <li>
@@ -125,7 +131,7 @@ export function Footer() {
                   href="/calculator"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  EAP cost savings calculator
+                  {t("eapCalculator")}
                 </Link>
               </li>
             </ul>
@@ -133,14 +139,16 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold text-primary mb-6">Contact</h3>
+            <h3 className="text-lg font-semibold text-primary mb-6">
+              {t("contact")}
+            </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/blog"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Blog
+                  {t("blog")}
                 </Link>
               </li>
               <li>
@@ -148,7 +156,7 @@ export function Footer() {
                   href="/ios"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Je Chemine for iOS
+                  {t("ios")}
                 </Link>
               </li>
               <li>
@@ -156,7 +164,7 @@ export function Footer() {
                   href="/android"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Je Chemine for Android
+                  {t("android")}
                 </Link>
               </li>
               <li>
@@ -164,7 +172,7 @@ export function Footer() {
                   href="/help"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Help Centre
+                  {t("helpCentre")}
                 </Link>
               </li>
               <li>
@@ -172,7 +180,7 @@ export function Footer() {
                   href="/status"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Status
+                  {t("status")}
                 </Link>
               </li>
               <li>
@@ -180,7 +188,7 @@ export function Footer() {
                   href="/contact"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
-                  Contact Us
+                  {t("contactUs")}
                 </Link>
               </li>
             </ul>
@@ -192,33 +200,33 @@ export function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             {/* Legal Links */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/70">
-              <span>Je Chemine © {currentYear}</span>
+              <span>{t("copyright", { year: currentYear })}</span>
               <Link
                 href="/privacy"
                 className="hover:text-white transition-colors"
               >
-                Privacy Policy
+                {t("privacyPolicy")}
               </Link>
               <Link
                 href="/terms"
                 className="hover:text-white transition-colors"
               >
-                Terms of Use
+                {t("termsOfUse")}
               </Link>
               <Link href="/aoda" className="hover:text-white transition-colors">
-                AODA
+                {t("aoda")}
               </Link>
               <Link
                 href="/cookie-policy"
                 className="hover:text-white transition-colors"
               >
-                Cookie Policy
+                {t("cookiePolicy")}
               </Link>
               <Link
                 href="/rights"
                 className="hover:text-white transition-colors"
               >
-                Rights and Responsibilities
+                {t("rightsAndResponsibilities")}
               </Link>
             </div>
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Briefcase, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,6 +16,7 @@ import {
 import { SocialLogin } from "@/components/auth/SocialLogin";
 
 export default function ProfessionalLoginPage() {
+  const t = useTranslations("Auth.professionalLogin");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,8 +32,8 @@ export default function ProfessionalLoginPage() {
     <AuthContainer>
       <AuthHeader
         icon={<Briefcase className="w-8 h-8 text-primary" />}
-        title="Professional Login"
-        description="Access your professional dashboard"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -39,7 +41,7 @@ export default function ProfessionalLoginPage() {
           {/* Email Field */}
           <div>
             <Label htmlFor="email" className="font-light mb-2">
-              Email Address
+              {t("email")}
             </Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -54,7 +56,7 @@ export default function ProfessionalLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-9 h-10"
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
               />
             </div>
           </div>
@@ -62,7 +64,7 @@ export default function ProfessionalLoginPage() {
           {/* Password Field */}
           <div>
             <Label htmlFor="password" className="font-light mb-2">
-              Password
+              {t("password")}
             </Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -77,7 +79,7 @@ export default function ProfessionalLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-9 h-10"
-                placeholder="••••••••"
+                placeholder={t("passwordPlaceholder")}
               />
             </div>
           </div>
@@ -92,7 +94,7 @@ export default function ProfessionalLoginPage() {
                 className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
               />
               <Label htmlFor="remember-me" className="ml-2 font-light">
-                Remember me
+                {t("rememberMe")}
               </Label>
             </div>
 
@@ -101,7 +103,7 @@ export default function ProfessionalLoginPage() {
                 href={`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`}
                 className="font-light text-primary hover:text-primary/80 transition-colors"
               >
-                Forgot password?
+                {t("forgotPassword")}
               </Link>
             </div>
           </div>
@@ -111,7 +113,7 @@ export default function ProfessionalLoginPage() {
             type="submit"
             className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
           >
-            <span>Sign In</span>
+            <span>{t("signIn")}</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
@@ -121,12 +123,12 @@ export default function ProfessionalLoginPage() {
 
       <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
-          Don&apos;t have an account?{" "}
+          {t("noAccount")}{" "}
           <Link
             href="/signup/professional"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Join as a Professional
+            {t("joinProfessional")}
           </Link>
         </p>
       </AuthFooter>
@@ -136,7 +138,7 @@ export default function ProfessionalLoginPage() {
           href="/"
           className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
         >
-          ← Back to Home
+          {t("backToHome")}
         </Link>
       </AuthFooter>
     </AuthContainer>

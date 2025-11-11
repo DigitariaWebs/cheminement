@@ -13,6 +13,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,16 +24,23 @@ import {
 } from "@/components/auth";
 import { Stepper } from "@/components/ui/stepper";
 
-const STEPS = [
-  { title: "Personal Info", description: "Basic information" },
-  { title: "Professional", description: "Credentials" },
-  { title: "Security", description: "Create password" },
-  { title: "Confirm", description: "Terms & conditions" },
-];
-
 export default function ProfessionalSignupPage() {
+  const t = useTranslations("Auth.professionalSignup");
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+
+  const STEPS = [
+    {
+      title: t("steps.personalInfo"),
+      description: t("steps.personalInfoDesc"),
+    },
+    {
+      title: t("steps.professional"),
+      description: t("steps.professionalDesc"),
+    },
+    { title: t("steps.security"), description: t("steps.securityDesc") },
+    { title: t("steps.confirm"), description: t("steps.confirmDesc") },
+  ];
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -81,8 +89,8 @@ export default function ProfessionalSignupPage() {
     <AuthContainer maxWidth="2xl">
       <AuthHeader
         icon={<Briefcase className="w-8 h-8 text-primary" />}
-        title="Join as a Professional"
-        description="Create your professional account and start connecting with clients"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -102,7 +110,7 @@ export default function ProfessionalSignupPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName" className="font-light mb-2">
-                    First Name
+                    {t("firstName")}
                   </Label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -116,14 +124,14 @@ export default function ProfessionalSignupPage() {
                       value={formData.firstName}
                       onChange={handleChange}
                       className="pl-9 h-10"
-                      placeholder="John"
+                      placeholder={t("firstNamePlaceholder")}
                     />
                   </div>
                 </div>
 
                 <div>
                   <Label htmlFor="lastName" className="font-light mb-2">
-                    Last Name
+                    {t("lastName")}
                   </Label>
                   <Input
                     id="lastName"
@@ -133,14 +141,14 @@ export default function ProfessionalSignupPage() {
                     value={formData.lastName}
                     onChange={handleChange}
                     className="h-10"
-                    placeholder="Doe"
+                    placeholder={t("lastNamePlaceholder")}
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="email" className="font-light mb-2">
-                  Email Address
+                  {t("email")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -155,14 +163,14 @@ export default function ProfessionalSignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="you@example.com"
+                    placeholder={t("emailPlaceholder")}
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="phone" className="font-light mb-2">
-                  Phone Number
+                  {t("phone")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -176,7 +184,7 @@ export default function ProfessionalSignupPage() {
                     value={formData.phone}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder={t("phonePlaceholder")}
                   />
                 </div>
               </div>
@@ -189,7 +197,7 @@ export default function ProfessionalSignupPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="license" className="font-light mb-2">
-                    License Number
+                    {t("license")}
                   </Label>
                   <Input
                     id="license"
@@ -199,13 +207,13 @@ export default function ProfessionalSignupPage() {
                     value={formData.license}
                     onChange={handleChange}
                     className="h-10"
-                    placeholder="PSY-12345"
+                    placeholder={t("licensePlaceholder")}
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="specialty" className="font-light mb-2">
-                    Specialty
+                    {t("specialty")}
                   </Label>
                   <select
                     id="specialty"
@@ -215,19 +223,29 @@ export default function ProfessionalSignupPage() {
                     onChange={handleChange}
                     className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                   >
-                    <option value="">Select specialty</option>
-                    <option value="psychologist">Psychologist</option>
-                    <option value="psychiatrist">Psychiatrist</option>
-                    <option value="therapist">Therapist</option>
-                    <option value="counselor">Counselor</option>
-                    <option value="social-worker">Social Worker</option>
+                    <option value="">{t("specialtyPlaceholder")}</option>
+                    <option value="psychologist">
+                      {t("specialtyOptions.psychologist")}
+                    </option>
+                    <option value="psychiatrist">
+                      {t("specialtyOptions.psychiatrist")}
+                    </option>
+                    <option value="therapist">
+                      {t("specialtyOptions.therapist")}
+                    </option>
+                    <option value="counselor">
+                      {t("specialtyOptions.counselor")}
+                    </option>
+                    <option value="social-worker">
+                      {t("specialtyOptions.socialWorker")}
+                    </option>
                   </select>
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="location" className="font-light mb-2">
-                  Location
+                  {t("location")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -241,7 +259,7 @@ export default function ProfessionalSignupPage() {
                     value={formData.location}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="City, State/Province"
+                    placeholder={t("locationPlaceholder")}
                   />
                 </div>
               </div>
@@ -253,7 +271,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-6">
               <div>
                 <Label htmlFor="password" className="font-light mb-2">
-                  Password
+                  {t("password")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -268,17 +286,17 @@ export default function ProfessionalSignupPage() {
                     value={formData.password}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  At least 8 characters with a mix of letters and numbers
+                  {t("passwordHint")}
                 </p>
               </div>
 
               <div>
                 <Label htmlFor="confirmPassword" className="font-light mb-2">
-                  Confirm Password
+                  {t("confirmPassword")}
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -293,7 +311,7 @@ export default function ProfessionalSignupPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     className="pl-9 h-10"
-                    placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                   />
                 </div>
               </div>
@@ -305,49 +323,59 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-6">
               <div className="rounded-lg bg-muted/50 p-6 space-y-4">
                 <h3 className="font-serif font-light text-lg">
-                  Review Your Information
+                  {t("reviewTitle")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground mb-2">
-                      Personal Information
+                      {t("personalInformation")}
                     </p>
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Name:</span>
+                        <span className="text-muted-foreground">
+                          {t("name")}
+                        </span>
                         <span className="font-medium">
                           {formData.firstName} {formData.lastName}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Email:</span>
+                        <span className="text-muted-foreground">
+                          {t("email")}
+                        </span>
                         <span className="font-medium">{formData.email}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Phone:</span>
+                        <span className="text-muted-foreground">
+                          {t("phone")}
+                        </span>
                         <span className="font-medium">{formData.phone}</span>
                       </div>
                     </div>
                   </div>
                   <div>
                     <p className="text-muted-foreground mb-2">
-                      Professional Details
+                      {t("professionalDetails")}
                     </p>
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">License:</span>
+                        <span className="text-muted-foreground">
+                          {t("license")}
+                        </span>
                         <span className="font-medium">{formData.license}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">
-                          Specialty:
+                          {t("specialty")}
                         </span>
                         <span className="font-medium capitalize">
                           {formData.specialty.replace("-", " ")}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Location:</span>
+                        <span className="text-muted-foreground">
+                          {t("location")}
+                        </span>
                         <span className="font-medium">{formData.location}</span>
                       </div>
                     </div>
@@ -366,19 +394,19 @@ export default function ProfessionalSignupPage() {
                   className="h-4 w-4 mt-1 text-primary focus:ring-primary border-border/20 rounded"
                 />
                 <Label htmlFor="agreeToTerms" className="ml-2 font-light">
-                  I agree to the{" "}
+                  {t("agreeToTerms")}{" "}
                   <Link
                     href="/terms"
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
-                    Terms of Service
+                    {t("termsOfService")}
                   </Link>{" "}
-                  and{" "}
+                  {t("and")}{" "}
                   <Link
                     href="/privacy"
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
-                    Privacy Policy
+                    {t("privacyPolicy")}
                   </Link>
                 </Label>
               </div>
@@ -394,7 +422,7 @@ export default function ProfessionalSignupPage() {
               className="flex items-center gap-2 px-6 py-3 text-foreground font-light transition-opacity disabled:opacity-0 disabled:pointer-events-none"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
+              <span>{t("back")}</span>
             </button>
 
             <button
@@ -403,8 +431,8 @@ export default function ProfessionalSignupPage() {
             >
               <span>
                 {currentStep === STEPS.length - 1
-                  ? "Create Account"
-                  : "Continue"}
+                  ? t("createAccount")
+                  : t("continue")}
               </span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -414,12 +442,12 @@ export default function ProfessionalSignupPage() {
 
       <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
-          Already have an account?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login/professional"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </AuthFooter>
@@ -429,7 +457,7 @@ export default function ProfessionalSignupPage() {
           href="/"
           className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
         >
-          ← Back to Home
+          {t("backToHome")}
         </Link>
       </AuthFooter>
     </AuthContainer>

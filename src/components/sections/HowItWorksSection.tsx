@@ -7,36 +7,51 @@ import {
   CalendarCheck,
   FileText,
 } from "lucide-react";
-
-const clientJourneySteps = [
-  {
-    icon: Search,
-    title: "Explore services",
-    description:
-      "Discover our services and find the right support for your needs",
-    step: "01",
-  },
-  {
-    icon: UserPlus,
-    title: "Create profile",
-    description: "Set up your account with secure, confidential information",
-    step: "02",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Get appointment",
-    description: "Book a consultation at a time that works for you",
-    step: "03",
-  },
-  {
-    icon: FileText,
-    title: "Access content",
-    description: "Connect with professionals and access resources",
-    step: "04",
-  },
-];
+import { useTranslations, useLocale } from "next-intl";
 
 export default function HowItWorksSection() {
+  const t = useTranslations("HowItWorksSection");
+  const locale = useLocale();
+
+  const clientJourneySteps = [
+    {
+      icon: Search,
+      titleEn: "Explore services",
+      titleFr: "Explorez les services",
+      descriptionEn:
+        "Discover our services and find the right support for your needs",
+      descriptionFr:
+        "Découvrez nos services et trouvez le soutien adapté à vos besoins",
+      step: "01",
+    },
+    {
+      icon: UserPlus,
+      titleEn: "Create profile",
+      titleFr: "Créez un profil",
+      descriptionEn:
+        "Set up your account with secure, confidential information",
+      descriptionFr:
+        "Configurez votre compte avec des informations sécurisées et confidentielles",
+      step: "02",
+    },
+    {
+      icon: CalendarCheck,
+      titleEn: "Get appointment",
+      titleFr: "Obtenez un rendez-vous",
+      descriptionEn: "Book a consultation at a time that works for you",
+      descriptionFr: "Réservez une consultation à un moment qui vous convient",
+      step: "03",
+    },
+    {
+      icon: FileText,
+      titleEn: "Access content",
+      titleFr: "Accédez au contenu",
+      descriptionEn: "Connect with professionals and access resources",
+      descriptionFr:
+        "Connectez-vous avec des professionnels et accédez aux ressources",
+      step: "04",
+    },
+  ];
   return (
     <section className="relative py-24 bg-linear-to-b from-background to-muted overflow-hidden">
       <div className="relative max-w-7xl mx-auto">
@@ -49,14 +64,14 @@ export default function HowItWorksSection() {
         <div className="text-center mb-20">
           <div className="inline-block mb-6">
             <span className="text-sm font-bold text-primary uppercase tracking-widest">
-              Simple Process
+              {t("badge")}
             </span>
           </div>
           <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
-            How It Works
+            {t("title")}
           </h3>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Your journey to better health and wellness in four simple steps
+            {t("subtitle")}
           </p>
         </div>
 
@@ -110,10 +125,12 @@ export default function HowItWorksSection() {
                   {/* Content */}
                   <div className="relative">
                     <h4 className="text-xl md:text-2xl font-serif font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
-                      {step.title}
+                      {locale === "fr" ? step.titleFr : step.titleEn}
                     </h4>
                     <p className="text-base text-muted-foreground leading-relaxed">
-                      {step.description}
+                      {locale === "fr"
+                        ? step.descriptionFr
+                        : step.descriptionEn}
                     </p>
                   </div>
 
@@ -133,11 +150,9 @@ export default function HowItWorksSection() {
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
-          <p className="text-muted-foreground mb-6">
-            Ready to start your journey?
-          </p>
+          <p className="text-muted-foreground mb-6">{t("cta.question")}</p>
           <button className="inline-flex items-center gap-3 bg-foreground text-primary-foreground px-8 py-4 rounded-full font-semibold hover:bg-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group">
-            <span>Get Started Today</span>
+            <span>{t("cta.button")}</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

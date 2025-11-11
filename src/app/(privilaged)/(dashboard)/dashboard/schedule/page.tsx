@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Clock, Plus, X, Save } from "lucide-react";
 
@@ -18,16 +19,6 @@ interface WeekSchedule {
   [key: string]: DaySchedule;
 }
 
-const DAYS_OF_WEEK = [
-  { key: "monday", label: "Monday" },
-  { key: "tuesday", label: "Tuesday" },
-  { key: "wednesday", label: "Wednesday" },
-  { key: "thursday", label: "Thursday" },
-  { key: "friday", label: "Friday" },
-  { key: "saturday", label: "Saturday" },
-  { key: "sunday", label: "Sunday" },
-];
-
 const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
   const hour = Math.floor(i / 2);
   const minute = i % 2 === 0 ? "00" : "30";
@@ -35,6 +26,18 @@ const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
 });
 
 export default function SchedulePage() {
+  const t = useTranslations("Dashboard.schedule");
+
+  const DAYS_OF_WEEK = [
+    { key: "monday", label: t("days.monday") },
+    { key: "tuesday", label: t("days.tuesday") },
+    { key: "wednesday", label: t("days.wednesday") },
+    { key: "thursday", label: t("days.thursday") },
+    { key: "friday", label: t("days.friday") },
+    { key: "saturday", label: t("days.saturday") },
+    { key: "sunday", label: t("days.sunday") },
+  ];
+
   const [schedule, setSchedule] = useState<WeekSchedule>({
     monday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
     tuesday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
@@ -126,22 +129,20 @@ export default function SchedulePage() {
     <div className="max-w-5xl space-y-6">
       <div>
         <h1 className="text-3xl font-serif font-light text-foreground">
-          Availability Schedule
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-light mt-2">
-          Define your working hours and availability for client bookings
-        </p>
+        <p className="text-muted-foreground font-light mt-2">{t("subtitle")}</p>
       </div>
 
       {/* Session Settings */}
       <div className="rounded-xl bg-card p-6">
         <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          Session Settings
+          {t("sessionSettings")}
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div>
             <Label htmlFor="sessionDuration" className="font-light mb-2">
-              Default Session Duration (minutes)
+              {t("defaultDuration")}
             </Label>
             <select
               id="sessionDuration"
@@ -149,17 +150,17 @@ export default function SchedulePage() {
               onChange={(e) => setSessionDuration(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             >
-              <option value="30">30 minutes</option>
-              <option value="45">45 minutes</option>
-              <option value="60">60 minutes</option>
-              <option value="90">90 minutes</option>
-              <option value="120">120 minutes</option>
+              <option value="30">30 {t("minutes")}</option>
+              <option value="45">45 {t("minutes")}</option>
+              <option value="60">60 {t("minutes")}</option>
+              <option value="90">90 {t("minutes")}</option>
+              <option value="120">120 {t("minutes")}</option>
             </select>
           </div>
 
           <div>
             <Label htmlFor="breakBetweenSessions" className="font-light mb-2">
-              Break Between Sessions (minutes)
+              {t("breakBetween")}
             </Label>
             <select
               id="breakBetweenSessions"
@@ -167,11 +168,11 @@ export default function SchedulePage() {
               onChange={(e) => setBreakBetweenSessions(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             >
-              <option value="0">No break</option>
-              <option value="5">5 minutes</option>
-              <option value="10">10 minutes</option>
-              <option value="15">15 minutes</option>
-              <option value="30">30 minutes</option>
+              <option value="0">{t("noBreak")}</option>
+              <option value="5">5 {t("minutes")}</option>
+              <option value="10">10 {t("minutes")}</option>
+              <option value="15">15 {t("minutes")}</option>
+              <option value="30">30 {t("minutes")}</option>
             </select>
           </div>
         </div>
@@ -181,10 +182,10 @@ export default function SchedulePage() {
       <div className="rounded-xl bg-card p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-serif font-light text-foreground">
-            Weekly Schedule
+            {t("weeklySchedule")}
           </h2>
           <p className="text-sm text-muted-foreground font-light">
-            Set your available hours for each day
+            {t("setHours")}
           </p>
         </div>
 
@@ -225,12 +226,12 @@ export default function SchedulePage() {
                           onClick={() => copyToAllDays(day.key)}
                           className="text-xs text-primary hover:text-primary/80 font-light"
                         >
-                          Copy to all days
+                          {t("copyToAll")}
                         </button>
                         <button
                           onClick={() => addTimeSlot(day.key)}
                           className="p-1 rounded-full hover:bg-muted transition-colors"
-                          title="Add time slot"
+                          title={t("addTimeSlot")}
                         >
                           <Plus className="h-4 w-4 text-primary" />
                         </button>
@@ -268,7 +269,9 @@ export default function SchedulePage() {
                               ))}
                             </select>
 
-                            <span className="text-muted-foreground">to</span>
+                            <span className="text-muted-foreground">
+                              {t("to")}
+                            </span>
 
                             <select
                               value={slot.end}
@@ -294,7 +297,7 @@ export default function SchedulePage() {
                             <button
                               onClick={() => removeTimeSlot(day.key, index)}
                               className="p-1 rounded-full hover:bg-muted transition-colors"
-                              title="Remove time slot"
+                              title={t("removeTimeSlot")}
                             >
                               <X className="h-4 w-4 text-muted-foreground" />
                             </button>
@@ -306,7 +309,7 @@ export default function SchedulePage() {
 
                   {!schedule[day.key].enabled && (
                     <p className="text-sm text-muted-foreground font-light">
-                      Unavailable
+                      {t("unavailable")}
                     </p>
                   )}
                 </div>
@@ -323,31 +326,32 @@ export default function SchedulePage() {
           className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
         >
           <Save className="h-4 w-4" />
-          <span>Save Schedule</span>
+          <span>{t("save")}</span>
         </button>
       </div>
 
       {/* Schedule Summary */}
       <div className="rounded-xl bg-muted/30 p-6">
         <h3 className="font-serif font-light text-lg text-foreground mb-4">
-          Schedule Summary
+          {t("summary")}
         </h3>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground font-light mb-2">
-              Working Days
+              {t("workingDays")}
             </p>
             <p className="text-foreground">
               {DAYS_OF_WEEK.filter((day) => schedule[day.key].enabled).length}{" "}
-              days per week
+              {t("daysPerWeek")}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground font-light mb-2">
-              Session Length
+              {t("sessionLength")}
             </p>
             <p className="text-foreground">
-              {sessionDuration} minutes + {breakBetweenSessions} min break
+              {sessionDuration} {t("minutes")} + {breakBetweenSessions}{" "}
+              {t("minBreak")}
             </p>
           </div>
         </div>

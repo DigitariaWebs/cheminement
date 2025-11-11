@@ -1,13 +1,17 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 export default function DashboardPage() {
+  const t = useTranslations("Dashboard.overview");
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-serif font-light text-foreground">
-          Welcome Back
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-light mt-2">
-          Here&apos;s an overview of your practice
-        </p>
+        <p className="text-muted-foreground font-light mt-2">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -15,7 +19,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Clients
+                {t("totalClients")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 0
@@ -28,7 +32,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                This Week&apos;s Sessions
+                {t("weekSessions")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 0
@@ -41,7 +45,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Pending Bookings
+                {t("pendingBookings")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 0
@@ -54,10 +58,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Profile Status
+                {t("profileStatus")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
-                Pending Review
+                {t("pendingReview")}
               </p>
             </div>
           </div>
@@ -66,7 +70,7 @@ export default function DashboardPage() {
 
       <div className="rounded-xl bg-card p-6">
         <h2 className="text-xl font-serif font-light text-foreground mb-4">
-          Quick Actions
+          {t("quickActions")}
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
           <a
@@ -74,11 +78,10 @@ export default function DashboardPage() {
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
             <h3 className="font-light text-foreground mb-2">
-              Complete Your Profile
+              {t("completeProfile")}
             </h3>
             <p className="text-sm text-muted-foreground font-light">
-              Add your specializations, approaches, and availability to start
-              matching with clients
+              {t("completeProfileDesc")}
             </p>
           </a>
           <a
@@ -86,10 +89,10 @@ export default function DashboardPage() {
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
             <h3 className="font-light text-foreground mb-2">
-              Set Your Schedule
+              {t("setSchedule")}
             </h3>
             <p className="text-sm text-muted-foreground font-light">
-              Define your available time slots for client bookings
+              {t("setScheduleDesc")}
             </p>
           </a>
         </div>

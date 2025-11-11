@@ -13,43 +13,59 @@ import {
   Target,
   AlertCircle,
 } from "lucide-react";
-
-const services = [
-  {
-    id: "eap",
-    icon: Scale,
-    title: "Employee Assistance Program",
-    highlighted: true,
-    description:
-      "Outdated, fragmented, slow. This should not describe your EAP. Reimagined to answer the needs of today's organizations, our EAP gives you peace of mind knowing that your employees have easy access to the right support, at a time that works for them.",
-  },
-  {
-    id: "mental-health",
-    icon: Brain,
-    title: "Mental Health+",
-    highlighted: false,
-    description:
-      "Outdated, fragmented, slow. This should not describe your mental health support. Reimagined to answer the needs of today's organizations, our Mental Health+ programs give you peace of mind knowing that your employees have easy access to comprehensive support connecting them with qualified professionals for assessments, therapy, and ongoing care, at a time that works for them.",
-  },
-  {
-    id: "primary-care",
-    icon: Heart,
-    title: "Primary Care",
-    highlighted: false,
-    description:
-      "Outdated, fragmented, slow. This should not describe your primary care access. Reimagined to answer the needs of today's organizations, our primary care services give you peace of mind knowing that your employees have easy access to physicians for general health concerns, preventive care, and medical consultations, at a time that works for them.",
-  },
-  {
-    id: "wellness",
-    icon: Sparkles,
-    title: "Wellness",
-    highlighted: false,
-    description:
-      "Outdated, fragmented, slow. This should not describe your wellness programs. Reimagined to answer the needs of today's organizations, our wellness programs give you peace of mind knowing that your employees have easy access to holistic support for nutrition, fitness, and lifestyle coaching, at a time that works for them.",
-  },
-];
+import { useTranslations, useLocale } from "next-intl";
 
 export default function ServiceSection() {
+  const t = useTranslations("ServiceSection");
+  const locale = useLocale();
+
+  const services = [
+    {
+      id: "eap",
+      icon: Scale,
+      titleEn: "Employee Assistance Program",
+      titleFr: "Programme d'aide aux employés",
+      highlighted: true,
+      descriptionEn:
+        "Outdated, fragmented, slow. This should not describe your EAP. Reimagined to answer the needs of today's organizations, our EAP gives you peace of mind knowing that your employees have easy access to the right support, at a time that works for them.",
+      descriptionFr:
+        "Dépassé, fragmenté, lent. Cela ne devrait pas décrire votre PAE. Réinventé pour répondre aux besoins des organisations d'aujourd'hui, notre PAE vous donne la tranquillité d'esprit en sachant que vos employés ont facilement accès au bon soutien, au moment qui leur convient.",
+    },
+    {
+      id: "mental-health",
+      icon: Brain,
+      titleEn: "Mental Health+",
+      titleFr: "Santé mentale+",
+      highlighted: false,
+      descriptionEn:
+        "Outdated, fragmented, slow. This should not describe your mental health support. Reimagined to answer the needs of today's organizations, our Mental Health+ programs give you peace of mind knowing that your employees have easy access to comprehensive support connecting them with qualified professionals for assessments, therapy, and ongoing care, at a time that works for them.",
+      descriptionFr:
+        "Dépassé, fragmenté, lent. Cela ne devrait pas décrire votre soutien en santé mentale. Réinventé pour répondre aux besoins des organisations d'aujourd'hui, nos programmes Santé mentale+ vous donnent la tranquillité d'esprit en sachant que vos employés ont facilement accès à un soutien complet les mettant en contact avec des professionnels qualifiés pour des évaluations, une thérapie et des soins continus, au moment qui leur convient.",
+    },
+    {
+      id: "primary-care",
+      icon: Heart,
+      titleEn: "Primary Care",
+      titleFr: "Soins primaires",
+      highlighted: false,
+      descriptionEn:
+        "Outdated, fragmented, slow. This should not describe your primary care access. Reimagined to answer the needs of today's organizations, our primary care services give you peace of mind knowing that your employees have easy access to physicians for general health concerns, preventive care, and medical consultations, at a time that works for them.",
+      descriptionFr:
+        "Dépassé, fragmenté, lent. Cela ne devrait pas décrire votre accès aux soins primaires. Réinventés pour répondre aux besoins des organisations d'aujourd'hui, nos services de soins primaires vous donnent la tranquillité d'esprit en sachant que vos employés ont facilement accès à des médecins pour des préoccupations de santé générales, des soins préventifs et des consultations médicales, au moment qui leur convient.",
+    },
+    {
+      id: "wellness",
+      icon: Sparkles,
+      titleEn: "Wellness",
+      titleFr: "Bien-être",
+      highlighted: false,
+      descriptionEn:
+        "Outdated, fragmented, slow. This should not describe your wellness programs. Reimagined to answer the needs of today's organizations, our wellness programs give you peace of mind knowing that your employees have easy access to holistic support for nutrition, fitness, and lifestyle coaching, at a time that works for them.",
+      descriptionFr:
+        "Dépassé, fragmenté, lent. Cela ne devrait pas décrire vos programmes de bien-être. Réinventés pour répondre aux besoins des organisations d'aujourd'hui, nos programmes de bien-être vous donnent la tranquillité d'esprit en sachant que vos employés ont facilement accès à un soutien holistique pour la nutrition, la forme physique et le coaching de style de vie, au moment qui leur convient.",
+    },
+  ];
+
   const [selectedService, setSelectedService] = useState(services[0]);
 
   return (
@@ -63,12 +79,12 @@ export default function ServiceSection() {
         {/* Section Header */}
         <div className="text-center mb-24">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
-            Our Integrated Health Platform™
+            {t("title")}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Multiple health and wellness programs to support your organization.
+            {t("subtitle")}
             <br />
-            They work great on their own, but are even stronger together.
+            {t("subtitleLine2")}
           </p>
         </div>
 
@@ -93,10 +109,14 @@ export default function ServiceSection() {
           >
             {/* Visual Design */}
             <div className="relative order-2 lg:order-1">
-              {selectedService.id === "eap" && <EAPDesign />}
-              {selectedService.id === "mental-health" && <MentalHealthDesign />}
-              {selectedService.id === "primary-care" && <PrimaryCareDesign />}
-              {selectedService.id === "wellness" && <WellnessDesign />}
+              {selectedService.id === "eap" && <EAPDesign t={t} />}
+              {selectedService.id === "mental-health" && (
+                <MentalHealthDesign t={t} />
+              )}
+              {selectedService.id === "primary-care" && (
+                <PrimaryCareDesign t={t} />
+              )}
+              {selectedService.id === "wellness" && <WellnessDesign t={t} />}
             </div>
 
             {/* Content */}
@@ -111,11 +131,15 @@ export default function ServiceSection() {
               </div>
 
               <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-8">
-                {selectedService.title}
+                {locale === "fr"
+                  ? selectedService.titleFr
+                  : selectedService.titleEn}
               </h3>
 
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                {selectedService.description}
+                {locale === "fr"
+                  ? selectedService.descriptionFr
+                  : selectedService.descriptionEn}
               </p>
             </div>
           </div>
@@ -126,7 +150,7 @@ export default function ServiceSection() {
 }
 
 // EAP Design - Floating Cards Interface (inspired by consultation cards)
-function EAPDesign() {
+function EAPDesign({ t }: { t: (key: string) => string }) {
   return (
     <div className="relative w-full max-w-md mx-auto min-h-[500px] flex items-center justify-center">
       {/* Background gradient blob */}
@@ -141,10 +165,10 @@ function EAPDesign() {
             </div>
             <div>
               <h4 className="font-bold text-lg text-gray-900">
-                Start a consultation
+                {t("services.eap.startConsultation")}
               </h4>
               <p className="text-sm text-gray-600">
-                Speak with a professional.
+                {t("services.eap.speakProfessional")}
               </p>
             </div>
           </div>
@@ -158,12 +182,12 @@ function EAPDesign() {
             </div>
             <div>
               <h4 className="font-bold text-lg text-gray-900 mb-2">
-                Perfect! Your virtual appointment today at 8:45 AM is confirmed.
+                {t("services.eap.appointmentConfirmed")}
               </h4>
             </div>
           </div>
           <button className="w-full bg-gray-900 text-white text-sm font-semibold py-3 rounded-full hover:bg-gray-800 transition-colors">
-            GO TO CHAT
+            {t("services.eap.goToChat")}
           </button>
         </div>
 
@@ -172,10 +196,10 @@ function EAPDesign() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="font-bold text-base text-gray-900 mb-1">
-                Care Plans
+                {t("services.eap.carePlans")}
               </h4>
               <p className="text-xs text-gray-600">
-                You don&apos;t have any care plans yet
+                {t("services.eap.noCarePlans")}
               </p>
             </div>
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
@@ -183,7 +207,7 @@ function EAPDesign() {
             </div>
           </div>
           <button className="bg-[#d4a574] text-white text-xs font-semibold px-6 py-2.5 rounded-full hover:bg-[#c09564] transition-colors">
-            GET CARE
+            {t("services.eap.getCare")}
           </button>
         </div>
       </div>
@@ -192,7 +216,7 @@ function EAPDesign() {
 }
 
 // Mental Health Design - Floating Cards Interface
-function MentalHealthDesign() {
+function MentalHealthDesign({ t }: { t: (key: string) => string }) {
   return (
     <div className="relative w-full max-w-md mx-auto min-h-[500px] flex items-center justify-center">
       {/* Background gradient blob */}
@@ -207,14 +231,14 @@ function MentalHealthDesign() {
             </div>
             <div className="flex-1">
               <h4 className="font-bold text-lg text-gray-900 mb-2">
-                Video Session Available
+                {t("services.mentalHealth.videoSessionAvailable")}
               </h4>
               <p className="text-sm text-gray-600 mb-3">
-                Dr. Sarah Johnson is ready for your scheduled therapy session.
+                {t("services.mentalHealth.therapistReady")}
               </p>
               <div className="flex items-center gap-2 text-xs text-blue-600 font-semibold">
                 <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-                <span>Online now</span>
+                <span>{t("services.mentalHealth.onlineNow")}</span>
               </div>
             </div>
           </div>
@@ -228,14 +252,18 @@ function MentalHealthDesign() {
             </div>
             <div>
               <h4 className="font-bold text-base text-gray-900">
-                Your Progress
+                {t("services.mentalHealth.yourProgress")}
               </h4>
-              <p className="text-xs text-gray-600">Week 6 of treatment</p>
+              <p className="text-xs text-gray-600">
+                {t("services.mentalHealth.weekOfTreatment")}
+              </p>
             </div>
           </div>
           <div className="space-y-2 mb-3">
             <div className="flex justify-between text-xs">
-              <span className="text-gray-600">Mood tracking</span>
+              <span className="text-gray-600">
+                {t("services.mentalHealth.moodTracking")}
+              </span>
               <span className="font-bold text-blue-600">85%</span>
             </div>
             <div className="w-full bg-blue-200 rounded-full h-2">
@@ -246,7 +274,7 @@ function MentalHealthDesign() {
             </div>
           </div>
           <button className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white text-xs font-semibold py-2.5 rounded-lg hover:shadow-lg transition-shadow">
-            View Full Report
+            {t("services.mentalHealth.viewFullReport")}
           </button>
         </div>
 
@@ -259,14 +287,16 @@ function MentalHealthDesign() {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-gray-900">
-                  Self-Help Resources
+                  {t("services.mentalHealth.selfHelpResources")}
                 </h4>
-                <p className="text-xs text-gray-600">12 new guides available</p>
+                <p className="text-xs text-gray-600">
+                  {t("services.mentalHealth.newGuides")}
+                </p>
               </div>
             </div>
           </div>
           <button className="bg-blue-100 text-blue-700 text-xs font-semibold px-5 py-2 rounded-full hover:bg-blue-200 transition-colors">
-            Browse Library
+            {t("services.mentalHealth.browseLibrary")}
           </button>
         </div>
       </div>
@@ -275,7 +305,7 @@ function MentalHealthDesign() {
 }
 
 // Primary Care Design - Floating Cards Interface
-function PrimaryCareDesign() {
+function PrimaryCareDesign({ t }: { t: (key: string) => string }) {
   return (
     <div className="relative w-full max-w-md mx-auto min-h-[500px] flex items-center justify-center">
       {/* Background gradient blob */}
@@ -290,15 +320,16 @@ function PrimaryCareDesign() {
             </div>
             <div className="flex-1">
               <h4 className="font-bold text-lg text-gray-900 mb-2">
-                Doctor Available Now
+                {t("services.primaryCare.doctorAvailable")}
               </h4>
               <p className="text-sm text-gray-600 mb-3">
-                Dr. Michael Chen is ready to discuss your health concerns and
-                medical questions.
+                {t("services.primaryCare.doctorReady")}
               </p>
               <div className="flex items-center gap-2 text-xs text-red-600 font-semibold">
                 <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
-                <span>Available for consultation</span>
+                <span>
+                  {t("services.primaryCare.availableForConsultation")}
+                </span>
               </div>
             </div>
           </div>
@@ -312,24 +343,28 @@ function PrimaryCareDesign() {
             </div>
             <div>
               <h4 className="font-bold text-base text-gray-900">
-                Appointment Scheduled
+                {t("services.primaryCare.appointmentScheduled")}
               </h4>
-              <p className="text-xs text-gray-600">Tomorrow at 10:30 AM</p>
+              <p className="text-xs text-gray-600">
+                {t("services.primaryCare.tomorrowTime")}
+              </p>
             </div>
           </div>
           <div className="space-y-2 mb-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Dr. Emily Roberts</span>
+              <span className="text-gray-600">
+                {t("services.primaryCare.doctorName")}
+              </span>
               <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-semibold">
-                In-person
+                {t("services.primaryCare.inPerson")}
               </span>
             </div>
             <p className="text-xs text-gray-600">
-              General checkup and health assessment
+              {t("services.primaryCare.checkupType")}
             </p>
           </div>
           <button className="w-full bg-red-600 text-white text-xs font-semibold py-2.5 rounded-lg hover:bg-red-700 transition-colors">
-            View Details
+            {t("services.primaryCare.viewDetails")}
           </button>
         </div>
 
@@ -342,16 +377,16 @@ function PrimaryCareDesign() {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-gray-900">
-                  Prescription Ready
+                  {t("services.primaryCare.prescriptionReady")}
                 </h4>
                 <p className="text-xs text-gray-600">
-                  Available at your pharmacy
+                  {t("services.primaryCare.availableAtPharmacy")}
                 </p>
               </div>
             </div>
           </div>
           <button className="bg-red-100 text-red-700 text-xs font-semibold px-5 py-2 rounded-full hover:bg-red-200 transition-colors">
-            View Prescription
+            {t("services.primaryCare.viewPrescription")}
           </button>
         </div>
       </div>
@@ -360,7 +395,7 @@ function PrimaryCareDesign() {
 }
 
 // Wellness Design - Floating Cards Interface
-function WellnessDesign() {
+function WellnessDesign({ t }: { t: (key: string) => string }) {
   return (
     <div className="relative w-full max-w-md mx-auto min-h-[500px] flex items-center justify-center">
       {/* Background gradient blob */}
@@ -376,12 +411,12 @@ function WellnessDesign() {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h4 className="font-bold text-base text-gray-900">
-                  Daily Wellness Goals
+                  {t("services.wellness.dailyWellnessGoals")}
                 </h4>
                 <span className="text-base">🔥</span>
               </div>
               <p className="text-sm text-gray-600">
-                Track nutrition, fitness, and mindfulness activities.
+                {t("services.wellness.trackActivities")}
               </p>
             </div>
           </div>
@@ -395,15 +430,15 @@ function WellnessDesign() {
             </div>
             <div>
               <h4 className="font-bold text-base text-gray-900">
-                Lifestyle Coaching
+                {t("services.wellness.lifestyleCoaching")}
               </h4>
               <p className="text-xs text-gray-600">
-                Personalized guidance available
+                {t("services.wellness.personalizedGuidance")}
               </p>
             </div>
           </div>
           <button className="w-full bg-green-600 text-white text-xs font-semibold py-2.5 rounded-lg hover:bg-green-700 transition-colors">
-            Book Coach Session
+            {t("services.wellness.bookCoachSession")}
           </button>
         </div>
 
@@ -416,14 +451,16 @@ function WellnessDesign() {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-gray-900">
-                  Activity Programs
+                  {t("services.wellness.activityPrograms")}
                 </h4>
-                <p className="text-xs text-gray-600">Yoga, fitness & more</p>
+                <p className="text-xs text-gray-600">
+                  {t("services.wellness.yogaFitness")}
+                </p>
               </div>
             </div>
           </div>
           <button className="bg-green-100 text-green-700 text-xs font-semibold px-5 py-2 rounded-full hover:bg-green-200 transition-colors">
-            View Schedule
+            {t("services.wellness.viewSchedule")}
           </button>
         </div>
       </div>
@@ -437,12 +474,21 @@ function ServiceCard({
   isSelected,
   onClick,
 }: {
-  service: (typeof services)[0];
+  service: {
+    id: string;
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+    titleEn: string;
+    titleFr: string;
+    highlighted: boolean;
+    descriptionEn: string;
+    descriptionFr: string;
+  };
   index: number;
   isSelected: boolean;
   onClick: () => void;
 }) {
   const Icon = service.icon;
+  const locale = useLocale();
 
   return (
     <button
@@ -466,7 +512,7 @@ function ServiceCard({
       <h3
         className={`text-base md:text-lg font-serif font-bold leading-snug ${isSelected ? "text-primary-foreground" : "text-foreground"}`}
       >
-        {service.title}
+        {locale === "fr" ? service.titleFr : service.titleEn}
       </h3>
     </button>
   );
