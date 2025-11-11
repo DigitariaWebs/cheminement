@@ -423,6 +423,7 @@
       "profile": "Profile",
       "schedule": "Schedule",
       "clientManagement": "Client Management",
+      "myRequests": "My Requests",
       "myClients": "My Clients",
       "sessions": "Sessions",
       "resources": "Resources",
@@ -652,7 +653,10 @@
         "joinedDate": "Joined Date",
         "lastSession": "Last Session",
         "totalSessions": "Total Sessions",
-        "sessions": "sessions"
+        "sessions": "sessions",
+        "active": "Active",
+        "inactive": "Inactive",
+        "pending": "Pending"
       },
       "sessions": {
         "title": "Session History",
@@ -664,13 +668,50 @@
         "payment": "Payment",
         "notes": "Notes",
         "viewNotes": "View notes",
-        "noNotes": "No notes"
+        "noNotes": "No notes",
+        "paid": "Paid",
+        "pending": "Pending",
+        "overdue": "Overdue"
       },
       "actions": {
         "schedule": "Schedule Session",
         "message": "Send Message",
         "close": "Close"
       }
+    },
+    "requests": {
+      "title": "My Requests",
+      "subtitle": "Review and manage appointment requests from patients",
+      "totalRequests": "Total Requests",
+      "pending": "Pending",
+      "newClients": "New Clients",
+      "highPriority": "High Priority",
+      "searchPlaceholder": "Search by patient name, email, or issue type...",
+      "filters": "Filters",
+      "showFilters": "Show Filters",
+      "hideFilters": "Hide Filters",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "clientType": "Client Type",
+      "allTypes": "All Types",
+      "newClientsFilter": "New Clients",
+      "returningClients": "Returning Clients",
+      "urgency": "Urgency",
+      "allUrgencyLevels": "All Urgency Levels",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "patient": "Patient",
+      "type": "Type",
+      "issue": "Issue",
+      "preferredDate": "Preferred Date",
+      "requested": "Requested",
+      "actions": "Actions",
+      "viewProfile": "View Profile",
+      "accept": "Accept",
+      "decline": "Decline",
+      "noRequests": "No requests found",
+      "adjustFilters": "Try adjusting your filters."
     }
   }
 }

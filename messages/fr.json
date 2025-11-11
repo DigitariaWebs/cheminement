@@ -423,6 +423,7 @@
       "profile": "Profil",
       "schedule": "Horaire",
       "clientManagement": "Gestion des clients",
+      "myRequests": "Mes demandes",
       "myClients": "Mes clients",
       "sessions": "Séances",
       "resources": "Ressources",
@@ -650,9 +651,13 @@
         "status": "Statut",
         "issueType": "Type de problème",
         "joinedDate": "Date d'inscription",
+        "joinedDate": "Date d'adhésion",
         "lastSession": "Dernière séance",
         "totalSessions": "Total des séances",
-        "sessions": "séances"
+        "sessions": "séances",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "pending": "En attente"
       },
       "sessions": {
         "title": "Historique des séances",
@@ -664,13 +669,50 @@
         "payment": "Paiement",
         "notes": "Notes",
         "viewNotes": "Voir les notes",
-        "noNotes": "Aucune note"
+        "noNotes": "Aucune note",
+        "paid": "Payé",
+        "pending": "En attente",
+        "overdue": "En retard"
       },
       "actions": {
         "schedule": "Planifier une séance",
         "message": "Envoyer un message",
         "close": "Fermer"
       }
+    },
+    "requests": {
+      "title": "Mes demandes",
+      "subtitle": "Examiner et gérer les demandes de rendez-vous des patients",
+      "totalRequests": "Total des demandes",
+      "pending": "En attente",
+      "newClients": "Nouveaux clients",
+      "highPriority": "Haute priorité",
+      "searchPlaceholder": "Rechercher par nom de patient, courriel ou type de problème...",
+      "filters": "Filtres",
+      "showFilters": "Afficher les filtres",
+      "hideFilters": "Masquer les filtres",
+      "status": "Statut",
+      "allStatuses": "Tous les statuts",
+      "clientType": "Type de client",
+      "allTypes": "Tous les types",
+      "newClientsFilter": "Nouveaux clients",
+      "returningClients": "Clients récurrents",
+      "urgency": "Urgence",
+      "allUrgencyLevels": "Tous les niveaux d'urgence",
+      "high": "Élevé",
+      "medium": "Moyen",
+      "low": "Faible",
+      "patient": "Patient",
+      "type": "Type",
+      "issue": "Problème",
+      "preferredDate": "Date préférée",
+      "requested": "Demandé",
+      "actions": "Actions",
+      "viewProfile": "Voir le profil",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "noRequests": "Aucune demande trouvée",
+      "adjustFilters": "Essayez d'ajuster vos filtres."
     }
   }
 }
