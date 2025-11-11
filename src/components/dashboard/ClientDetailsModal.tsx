@@ -9,6 +9,7 @@ import {
   Clock,
   FileText,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Session {
   id: string;
@@ -102,6 +103,8 @@ export default function ClientDetailsModal({
   onClose,
   client,
 }: ClientDetailsModalProps) {
+  const t = useTranslations("Dashboard.clientModal");
+
   if (!isOpen || !client) return null;
 
   const getStatusBadge = (status: Client["status"]) => {
@@ -115,7 +118,7 @@ export default function ClientDetailsModal({
       <span
         className={`px-3 py-1 rounded-full text-xs font-light ${styles[status]}`}
       >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {t(`overview.${status}`)}
       </span>
     );
   };
@@ -127,17 +130,13 @@ export default function ClientDetailsModal({
       "no-show": "bg-orange-100 text-orange-700",
     };
 
-    const labels = {
-      completed: "Completed",
-      cancelled: "Cancelled",
-      "no-show": "No Show",
-    };
-
     return (
       <span
         className={`px-2 py-1 rounded-full text-xs font-light ${styles[status]}`}
       >
-        {labels[status]}
+        {status === "completed" && t("sessions.status")}
+        {status === "cancelled" && t("sessions.status")}
+        {status === "no-show" && t("sessions.status")}
       </span>
     );
   };
@@ -149,17 +148,11 @@ export default function ClientDetailsModal({
       overdue: "bg-red-100 text-red-700",
     };
 
-    const labels = {
-      paid: "Paid",
-      pending: "Pending",
-      overdue: "Overdue",
-    };
-
     return (
       <span
         className={`px-2 py-1 rounded-full text-xs font-light ${styles[paymentStatus]}`}
       >
-        {labels[paymentStatus]}
+        {t(`sessions.${paymentStatus}`)}
       </span>
     );
   };
@@ -189,7 +182,7 @@ export default function ClientDetailsModal({
               <div className="flex items-center gap-2 mt-1">
                 {getStatusBadge(client.status)}
                 <span className="text-sm text-muted-foreground font-light">
-                  Client since {formatShortDate(client.joinedDate)}
+                  {formatShortDate(client.joinedDate)}
                 </span>
               </div>
             </div>
@@ -207,7 +200,7 @@ export default function ClientDetailsModal({
           {/* Client Information */}
           <div className="rounded-xl bg-card p-6">
             <h3 className="text-lg font-serif font-light text-foreground mb-4">
-              Client Information
+              {t("overview.contactInfo")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
@@ -215,7 +208,7 @@ export default function ClientDetailsModal({
                   <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
                     <p className="text-xs text-muted-foreground font-light mb-1">
-                      Email Address
+                      {t("overview.email")}
                     </p>
                     <p className="text-sm text-foreground">{client.email}</p>
                   </div>
@@ -225,7 +218,7 @@ export default function ClientDetailsModal({
                   <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
                     <p className="text-xs text-muted-foreground font-light mb-1">
-                      Phone Number
+                      {t("overview.phone")}
                     </p>
                     <p className="text-sm text-foreground">{client.phone}</p>
                   </div>
@@ -251,7 +244,7 @@ export default function ClientDetailsModal({
                   <FileText className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
                     <p className="text-xs text-muted-foreground font-light mb-1">
-                      Primary Concern
+                      {t("overview.issueType")}
                     </p>
                     <p className="text-sm text-foreground">
                       {client.issueType}
@@ -263,10 +256,10 @@ export default function ClientDetailsModal({
                   <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
                     <p className="text-xs text-muted-foreground font-light mb-1">
-                      Total Sessions
+                      {t("overview.totalSessions")}
                     </p>
                     <p className="text-sm text-foreground">
-                      {client.totalSessions} sessions completed
+                      {client.totalSessions} {t("overview.sessions")}
                     </p>
                   </div>
                 </div>
@@ -320,10 +313,10 @@ export default function ClientDetailsModal({
           <div className="rounded-xl bg-card p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-serif font-light text-foreground">
-                Recent Sessions
+                {t("sessions.title")}
               </h3>
               <button className="text-sm text-primary hover:text-primary/80 font-light transition-colors">
-                View All
+                {t("sessions.viewNotes")}
               </button>
             </div>
 
@@ -349,7 +342,9 @@ export default function ClientDetailsModal({
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          <span>{session.duration} minutes</span>
+                          <span>
+                            {session.duration} {t("sessions.duration")}
+                          </span>
                         </div>
                         {session.amount !== undefined && session.amount > 0 && (
                           <div className="flex items-center gap-1">
@@ -377,13 +372,13 @@ export default function ClientDetailsModal({
               onClick={onClose}
               className="px-6 py-2.5 text-foreground font-light transition-colors hover:text-muted-foreground rounded-full"
             >
-              Close
+              {t("actions.close")}
             </button>
             <button className="px-6 py-2.5 bg-muted text-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:bg-muted/80">
-              Edit Client
+              {t("actions.message")}
             </button>
             <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              Schedule Session
+              {t("actions.schedule")}
             </button>
           </div>
         </div>

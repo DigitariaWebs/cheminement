@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -112,6 +113,7 @@ const MOCK_CLIENTS: Client[] = [
 ];
 
 export default function ClientsPage() {
+  const t = useTranslations("Dashboard.clients");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [issueTypeFilter, setIssueTypeFilter] = useState<string>("all");
@@ -153,7 +155,7 @@ export default function ClientsPage() {
       <span
         className={`px-2 py-1 rounded-full text-xs font-light ${styles[status]}`}
       >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {t(status)}
       </span>
     );
   };
@@ -177,18 +179,16 @@ export default function ClientsPage() {
     <div className="max-w-7xl space-y-6">
       <div>
         <h1 className="text-3xl font-serif font-light text-foreground">
-          My Clients
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-light mt-2">
-          Manage and view all your clients
-        </p>
+        <p className="text-muted-foreground font-light mt-2">{t("subtitle")}</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Total Clients
+            {t("totalClients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {MOCK_CLIENTS.length}
@@ -196,7 +196,7 @@ export default function ClientsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Active Clients
+            {t("activeClients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {MOCK_CLIENTS.filter((c) => c.status === "active").length}
@@ -204,7 +204,7 @@ export default function ClientsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Pending Clients
+            {t("pendingClients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {MOCK_CLIENTS.filter((c) => c.status === "pending").length}
@@ -212,7 +212,7 @@ export default function ClientsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Total Sessions
+            {t("totalSessions")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {MOCK_CLIENTS.reduce((sum, c) => sum + c.totalSessions, 0)}
@@ -231,7 +231,7 @@ export default function ClientsPage() {
             >
               <Filter className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-serif font-light text-foreground">
-                Search & Filters
+                {t("filters")}
               </h2>
               {isFilterExpanded ? (
                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -250,7 +250,7 @@ export default function ClientsPage() {
                 }}
                 className="text-sm text-primary hover:text-primary/80 font-light transition-colors"
               >
-                Clear all
+                {t("hideFilters")}
               </button>
             )}
           </div>
@@ -263,17 +263,17 @@ export default function ClientsPage() {
               <div className="mt-3 flex items-center gap-2 flex-wrap">
                 {searchQuery && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Search: {searchQuery}
+                    {searchQuery}
                   </span>
                 )}
                 {statusFilter !== "all" && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Status: {statusFilter}
+                    {t("status")}: {t(statusFilter)}
                   </span>
                 )}
                 {issueTypeFilter !== "all" && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Type: {issueTypeFilter}
+                    {t("issueType")}: {issueTypeFilter}
                   </span>
                 )}
               </div>
@@ -286,12 +286,12 @@ export default function ClientsPage() {
             {/* Search Bar */}
             <div>
               <label className="text-sm font-light text-muted-foreground mb-2 block">
-                Search Clients
+                {t("filters")}
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by name or email..."
+                  placeholder={t("searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-11"
@@ -304,32 +304,32 @@ export default function ClientsPage() {
               {/* Status Filter */}
               <div>
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
-                  Client Status
+                  {t("status")}
                 </label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Filter by status" />
+                    <SelectValue placeholder={t("status")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      <span className="font-light">All Statuses</span>
+                      <span className="font-light">{t("all")}</span>
                     </SelectItem>
                     <SelectItem value="active">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                        <span className="font-light">Active</span>
+                        <span className="font-light">{t("active")}</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="inactive">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-gray-500"></span>
-                        <span className="font-light">Inactive</span>
+                        <span className="font-light">{t("inactive")}</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="pending">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                        <span className="font-light">Pending</span>
+                        <span className="font-light">{t("pending")}</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -339,18 +339,18 @@ export default function ClientsPage() {
               {/* Issue Type Filter */}
               <div>
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
-                  Issue Type
+                  {t("issueType")}
                 </label>
                 <Select
                   value={issueTypeFilter}
                   onValueChange={setIssueTypeFilter}
                 >
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Filter by issue type" />
+                    <SelectValue placeholder={t("issueType")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      <span className="font-light">All Issue Types</span>
+                      <span className="font-light">{t("all")}</span>
                     </SelectItem>
                     {issueTypes.map((type) => (
                       <SelectItem key={type} value={type}>
@@ -369,11 +369,13 @@ export default function ClientsPage() {
                   <span className="font-medium text-foreground">
                     {filteredClients.length}
                   </span>
-                  <span>of {MOCK_CLIENTS.length} clients</span>
+                  <span>
+                    {MOCK_CLIENTS.length} {t("totalClients")}
+                  </span>
                 </div>
                 {filteredClients.length !== MOCK_CLIENTS.length && (
                   <span className="text-xs text-primary font-light">
-                    Filters applied
+                    {t("showFilters")}
                   </span>
                 )}
               </div>
@@ -387,13 +389,13 @@ export default function ClientsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-light">Client Name</TableHead>
-              <TableHead className="font-light">Contact</TableHead>
-              <TableHead className="font-light">Status</TableHead>
-              <TableHead className="font-light">Issue Type</TableHead>
-              <TableHead className="font-light">Last Session</TableHead>
-              <TableHead className="font-light">Total Sessions</TableHead>
-              <TableHead className="font-light">Actions</TableHead>
+              <TableHead className="font-light">{t("name")}</TableHead>
+              <TableHead className="font-light">{t("contact")}</TableHead>
+              <TableHead className="font-light">{t("status")}</TableHead>
+              <TableHead className="font-light">{t("issueType")}</TableHead>
+              <TableHead className="font-light">{t("lastSession")}</TableHead>
+              <TableHead className="font-light">{t("totalSessions")}</TableHead>
+              <TableHead className="font-light">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -403,7 +405,7 @@ export default function ClientsPage() {
                   colSpan={7}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
-                  No clients found matching your filters
+                  {t("noClients")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -415,7 +417,7 @@ export default function ClientsPage() {
                         {client.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Joined {formatDate(client.joinedDate)}
+                        {formatDate(client.joinedDate)}
                       </p>
                     </div>
                   </TableCell>
@@ -445,20 +447,22 @@ export default function ClientsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="font-light">
-                    <span className="text-sm">{client.totalSessions}</span>
+                    <span className="text-sm">
+                      {client.totalSessions} {t("sessions")}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleViewDetails(client)}
                         className="p-2 rounded-lg hover:bg-muted transition-colors"
-                        title="View details"
+                        title={t("viewDetails")}
                       >
                         <Eye className="h-4 w-4 text-muted-foreground" />
                       </button>
                       <button
                         className="p-2 rounded-lg hover:bg-muted transition-colors"
-                        title="Schedule session"
+                        title={t("schedule")}
                       >
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                       </button>

@@ -1,42 +1,71 @@
-import { Users, Shield, Heart } from "lucide-react";
+"use client";
 
-const values = [
-  {
-    icon: Shield,
-    title: "Evidence-based care quality",
-    description:
-      "Our mental health professionals deliver evidence-based care, avoiding unnecessary and ineffective treatments that delay recovery and drive up benefit costs.",
-    features: [
-      "Accredited and vetted care",
-      "Regular clinical audits",
-      "Improved health outcomes",
-    ],
-  },
-  {
-    icon: Users,
-    title: "Personalized experience",
-    description:
-      "Our in-house primary care, mental health, and EAP practitioners work together to deliver a seamless experience, tailored to each member's unique needs.",
-    features: [
-      "Speed up return to function",
-      "Guide the member throughout their care journey",
-      "Promote proactive, ongoing well-being",
-    ],
-  },
-  {
-    icon: Heart,
-    title: "Integrated Health Platform",
-    description:
-      "Tear down the walls between benefits. Improve team well-being with our integrated platform that centralizes care programs in a single application.",
-    features: [
-      "24/7/365 access to services",
-      "Coordinated care approach",
-      "Seamless provider collaboration",
-    ],
-  },
-];
+import { Users, Shield, Heart } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function ValueSection() {
+  const t = useTranslations("ValueSection");
+  const locale = useLocale();
+
+  const values = [
+    {
+      icon: Shield,
+      titleEn: "Evidence-based care quality",
+      titleFr: "Qualité des soins fondée sur des données probantes",
+      descriptionEn:
+        "Our mental health professionals deliver evidence-based care, avoiding unnecessary and ineffective treatments that delay recovery and drive up benefit costs.",
+      descriptionFr:
+        "Nos professionnels de la santé mentale fournissent des soins fondés sur des données probantes, évitant les traitements inutiles et inefficaces qui retardent la guérison et augmentent les coûts des prestations.",
+      featuresEn: [
+        "Accredited and vetted care",
+        "Regular clinical audits",
+        "Improved health outcomes",
+      ],
+      featuresFr: [
+        "Soins accrédités et vérifiés",
+        "Audits cliniques réguliers",
+        "Amélioration des résultats de santé",
+      ],
+    },
+    {
+      icon: Users,
+      titleEn: "Personalized experience",
+      titleFr: "Expérience personnalisée",
+      descriptionEn:
+        "Our in-house primary care, mental health, and EAP practitioners work together to deliver a seamless experience, tailored to each member's unique needs.",
+      descriptionFr:
+        "Nos praticiens internes en soins primaires, santé mentale et PAE travaillent ensemble pour offrir une expérience fluide, adaptée aux besoins uniques de chaque membre.",
+      featuresEn: [
+        "Speed up return to function",
+        "Guide the member throughout their care journey",
+        "Promote proactive, ongoing well-being",
+      ],
+      featuresFr: [
+        "Accélérer le retour aux fonctions",
+        "Guider le membre tout au long de son parcours de soins",
+        "Promouvoir un bien-être proactif et continu",
+      ],
+    },
+    {
+      icon: Heart,
+      titleEn: "Integrated Health Platform",
+      titleFr: "Plateforme de santé intégrée",
+      descriptionEn:
+        "Tear down the walls between benefits. Improve team well-being with our integrated platform that centralizes care programs in a single application.",
+      descriptionFr:
+        "Abattez les murs entre les avantages. Améliorez le bien-être de l'équipe avec notre plateforme intégrée qui centralise les programmes de soins dans une seule application.",
+      featuresEn: [
+        "24/7/365 access to services",
+        "Coordinated care approach",
+        "Seamless provider collaboration",
+      ],
+      featuresFr: [
+        "Accès aux services 24h/24, 7j/7, 365j/an",
+        "Approche de soins coordonnés",
+        "Collaboration transparente entre fournisseurs",
+      ],
+    },
+  ];
   return (
     <section className="relative py-24 bg-linear-to-b from-background via-muted to-accent overflow-hidden">
       {/* Background decoration */}
@@ -57,7 +86,7 @@ export default function ValueSection() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 max-w-7xl mx-auto">
           {/* First Column - Starts at top with card */}
           <div className="lg:mt-0">
-            <ValueCard value={values[0]} index={0} />
+            <ValueCard value={values[0]} index={0} locale={locale} />
             <div className="-mt-1 relative ">
               <img
                 src="/ValueSection.png"
@@ -74,20 +103,15 @@ export default function ValueSection() {
             {/* Section Header - aligned to start */}
             <div className="text-left mb-12">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
-                Heal Your Inner Child
+                {t("title")}
               </h2>
               <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
-                Find peace and well-being through personalized care.
+                {t("subtitle")}
               </p>
               <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed pb-27">
-                Overspending on benefits programs with a web of providers?
-                Struggling to boost team productivity and measure ROI?
-                You&apos;ve come to the right place. Our{" "}
-                <span className="font-semibold">
-                  Integrated Health Platform™
-                </span>{" "}
-                is a one-stop care hub that centralizes our programs in a single
-                application, providing access to services 24/7/365.
+                {t("description", {
+                  integratedPlatform: t("integratedPlatform"),
+                })}
               </p>
             </div>
 
@@ -95,12 +119,12 @@ export default function ValueSection() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
               {/* Second Column */}
               <div>
-                <ValueCard value={values[1]} index={1} />
+                <ValueCard value={values[1]} index={1} locale={locale} />
               </div>
 
               {/* Third Column - Starts at half height */}
               <div className="lg:mt-64">
-                <ValueCard value={values[2]} index={2} />
+                <ValueCard value={values[2]} index={2} locale={locale} />
               </div>
             </div>
           </div>
@@ -113,11 +137,25 @@ export default function ValueSection() {
 function ValueCard({
   value,
   index,
+  locale,
 }: {
-  value: (typeof values)[0];
+  value: {
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+    titleEn: string;
+    titleFr: string;
+    descriptionEn: string;
+    descriptionFr: string;
+    featuresEn: string[];
+    featuresFr: string[];
+  };
   index: number;
+  locale: string;
 }) {
   const Icon = value.icon;
+  const title = locale === "fr" ? value.titleFr : value.titleEn;
+  const description =
+    locale === "fr" ? value.descriptionFr : value.descriptionEn;
+  const features = locale === "fr" ? value.featuresFr : value.featuresEn;
 
   return (
     <div
@@ -130,18 +168,18 @@ function ValueCard({
           <Icon className="w-8 h-8 text-card" strokeWidth={2} />
         </div>
         <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground leading-tight">
-          {value.title}
+          {title}
         </h3>
       </div>
 
       {/* Description */}
       <p className="text-xl text-muted-foreground mb-10 leading-relaxed text-justify">
-        {value.description}
+        {description}
       </p>
 
       {/* Features List - Simple bullets */}
       <ul className="space-y-6">
-        {value.features.map((feature, i) => (
+        {features.map((feature, i) => (
           <li
             key={i}
             className="flex items-center gap-3 text-lg text-card-foreground"

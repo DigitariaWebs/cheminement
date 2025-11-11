@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { KeyRound, Mail, ArrowRight, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +15,7 @@ import {
 } from "@/components/auth";
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations("Auth.forgotPassword");
   const searchParams = useSearchParams();
   const [email, setEmail] = useState(searchParams.get("email"));
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -29,8 +31,8 @@ export default function ForgotPasswordPage() {
       <AuthContainer>
         <AuthHeader
           icon={<Mail className="w-8 h-8 text-primary" />}
-          title="Check Your Email"
-          description="We've sent you a password reset link"
+          title={t("checkEmailTitle")}
+          description={t("checkEmailDescription")}
         />
 
         <AuthCard>
@@ -39,12 +41,10 @@ export default function ForgotPasswordPage() {
               <Mail className="w-8 h-8 text-primary" />
             </div>
             <p className="text-muted-foreground font-light">
-              If an account exists for{" "}
-              <strong className="text-foreground">{email}</strong>, you will
-              receive a password reset link shortly.
+              {t("checkEmailMessage", { email: email || "" })}
             </p>
             <p className="text-sm text-muted-foreground font-light">
-              Please check your inbox and spam folder.
+              {t("checkEmailSpam")}
             </p>
           </div>
 
@@ -54,13 +54,13 @@ export default function ForgotPasswordPage() {
               className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span>Back to Login</span>
+              <span>{t("backToLogin")}</span>
             </Link>
             <button
               onClick={() => setIsSubmitted(false)}
               className="w-full px-6 py-3 text-primary hover:text-primary/80 rounded-full text-base font-light tracking-wide transition-colors"
             >
-              Resend Email
+              {t("resendEmail")}
             </button>
           </div>
         </AuthCard>
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
             href="/"
             className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
           >
-            ← Back to Home
+            {t("backToHome")}
           </Link>
         </AuthFooter>
       </AuthContainer>
@@ -81,8 +81,8 @@ export default function ForgotPasswordPage() {
     <AuthContainer>
       <AuthHeader
         icon={<KeyRound className="w-8 h-8 text-primary" />}
-        title="Reset Your Password"
-        description="Enter your email address and we'll send you a reset link"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
           {/* Email Field */}
           <div>
             <Label htmlFor="email" className="font-light mb-2">
-              Email Address
+              {t("email")}
             </Label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -105,11 +105,11 @@ export default function ForgotPasswordPage() {
                 value={email || ""}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-9 h-10"
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
               />
             </div>
             <p className="mt-2 text-sm text-muted-foreground font-light">
-              We&apos;ll send a password reset link to this email address
+              {t("emailHint")}
             </p>
           </div>
 
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
             type="submit"
             className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
           >
-            <span>Send Reset Link</span>
+            <span>{t("sendResetLink")}</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
@@ -130,19 +130,19 @@ export default function ForgotPasswordPage() {
             className="group w-full flex items-center justify-center gap-2 px-6 py-3 border border-border/20 text-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:border-primary hover:text-primary"
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span>Back to Login</span>
+            <span>{t("backToLogin")}</span>
           </Link>
         </div>
       </AuthCard>
 
       <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
-          Don&apos;t have an account?{" "}
+          {t("noAccount")}{" "}
           <Link
             href="/signup"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Sign up
+            {t("signUp")}
           </Link>
         </p>
       </AuthFooter>
@@ -152,7 +152,7 @@ export default function ForgotPasswordPage() {
           href="/"
           className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
         >
-          ← Back to Home
+          {t("backToHome")}
         </Link>
       </AuthFooter>
     </AuthContainer>

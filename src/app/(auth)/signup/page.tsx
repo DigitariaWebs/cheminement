@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Users, Briefcase } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const container = {
   hidden: { opacity: 0 },
@@ -29,6 +30,8 @@ const item = {
 };
 
 export default function SignupPage() {
+  const t = useTranslations("Auth.signupSelection");
+
   return (
     <div className="w-full max-w-6xl mx-auto">
       <motion.div
@@ -39,10 +42,10 @@ export default function SignupPage() {
         className="text-center mb-12"
       >
         <h1 className="text-4xl font-serif font-light text-foreground mb-3">
-          Create Your Account
+          {t("title")}
         </h1>
         <p className="text-muted-foreground text-lg font-light">
-          Select the option that best describes you
+          {t("subtitle")}
         </p>
       </motion.div>
 
@@ -62,14 +65,13 @@ export default function SignupPage() {
                   <Users className="h-8 w-8" />
                 </div>
                 <h2 className="text-2xl font-serif font-light text-foreground mb-4 group-hover:text-primary transition-colors">
-                  Member
+                  {t("member.title")}
                 </h2>
                 <p className="text-muted-foreground leading-relaxed grow font-light">
-                  Create a personal account to book appointments, access
-                  resources, and begin your mental wellness journey.
+                  {t("member.description")}
                 </p>
                 <div className="mt-6 text-primary font-light group-hover:underline">
-                  Sign up as Member →
+                  {t("member.cta")}
                 </div>
               </div>
             </div>
@@ -85,14 +87,13 @@ export default function SignupPage() {
                   <Briefcase className="h-8 w-8" />
                 </div>
                 <h2 className="text-2xl font-serif font-light text-foreground mb-4 group-hover:text-primary transition-colors">
-                  Professional
+                  {t("professional.title")}
                 </h2>
                 <p className="text-muted-foreground leading-relaxed grow font-light">
-                  Join our platform as a mental health professional to connect
-                  with clients and grow your practice.
+                  {t("professional.description")}
                 </p>
                 <div className="mt-6 text-primary font-light group-hover:underline">
-                  Sign up as Professional →
+                  {t("professional.cta")}
                 </div>
               </div>
             </div>
@@ -107,12 +108,12 @@ export default function SignupPage() {
         className="mt-8 text-center"
       >
         <p className="text-sm text-muted-foreground font-light">
-          Already have an account?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </motion.div>

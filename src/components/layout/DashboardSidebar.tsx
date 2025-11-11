@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
 
 import {
   Sidebar,
@@ -32,77 +33,78 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 
-const navigationItems = [
-  {
-    title: "Dashboard",
-    items: [
-      {
-        title: "Overview",
-        url: "/dashboard",
-        icon: Home,
-      },
-      {
-        title: "Profile",
-        url: "/dashboard/profile",
-        icon: User,
-      },
-      {
-        title: "Schedule",
-        url: "/dashboard/schedule",
-        icon: Calendar,
-      },
-    ],
-  },
-  {
-    title: "Client Management",
-    items: [
-      {
-        title: "My Clients",
-        url: "/dashboard/clients",
-        icon: Users,
-      },
-      {
-        title: "Sessions",
-        url: "/dashboard/sessions",
-        icon: FileText,
-      },
-    ],
-  },
-  {
-    title: "Resources",
-    items: [
-      {
-        title: "Library",
-        url: "/dashboard/library",
-        icon: BookOpen,
-      },
-      {
-        title: "Analytics",
-        url: "/dashboard/analytics",
-        icon: BarChart3,
-      },
-    ],
-  },
-  {
-    title: "Support",
-    items: [
-      {
-        title: "Help Center",
-        url: "/dashboard/help",
-        icon: HelpCircle,
-      },
-      {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: Settings,
-      },
-    ],
-  },
-];
-
 export function DashboardSidebar() {
   const pathname = usePathname();
   const { state } = useSidebar();
+  const t = useTranslations("Dashboard.sidebar");
+
+  const navigationItems = [
+    {
+      title: t("dashboard"),
+      items: [
+        {
+          title: t("overview"),
+          url: "/dashboard",
+          icon: Home,
+        },
+        {
+          title: t("profile"),
+          url: "/dashboard/profile",
+          icon: User,
+        },
+        {
+          title: t("schedule"),
+          url: "/dashboard/schedule",
+          icon: Calendar,
+        },
+      ],
+    },
+    {
+      title: t("clientManagement"),
+      items: [
+        {
+          title: t("myClients"),
+          url: "/dashboard/clients",
+          icon: Users,
+        },
+        {
+          title: t("sessions"),
+          url: "/dashboard/sessions",
+          icon: FileText,
+        },
+      ],
+    },
+    {
+      title: t("resources"),
+      items: [
+        {
+          title: t("library"),
+          url: "/dashboard/library",
+          icon: BookOpen,
+        },
+        {
+          title: t("analytics"),
+          url: "/dashboard/analytics",
+          icon: BarChart3,
+        },
+      ],
+    },
+    {
+      title: t("support"),
+      items: [
+        {
+          title: t("helpCenter"),
+          url: "/dashboard/help",
+          icon: HelpCircle,
+        },
+        {
+          title: t("settings"),
+          url: "/dashboard/settings",
+          icon: Settings,
+        },
+      ],
+    },
+  ];
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/40">
@@ -114,13 +116,18 @@ export function DashboardSidebar() {
           {state === "expanded" ? (
             <Image
               src="/Logo.png"
-              alt="Logo"
+              alt={t("logo")}
               className="w-full px-8"
               width={256}
               height={32}
             />
           ) : (
-            <Image src="/favicon.png" alt="favicon" width={64} height={16} />
+            <Image
+              src="/favicon.png"
+              alt={t("favicon")}
+              width={64}
+              height={16}
+            />
           )}
         </Link>
       </SidebarHeader>
@@ -165,7 +172,7 @@ export function DashboardSidebar() {
             <SidebarMenuButton asChild className="font-light">
               <Link href="/logout">
                 <LogOut className="h-4 w-4" />
-                <span>Logout</span>
+                <span>{t("logout")}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

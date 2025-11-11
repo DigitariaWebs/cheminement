@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -169,6 +170,7 @@ const MOCK_SESSIONS: Session[] = [
 ];
 
 export default function SessionsPage() {
+  const t = useTranslations("Dashboard.sessions");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -263,10 +265,10 @@ export default function SessionsPage() {
     };
 
     const labels = {
-      scheduled: "Scheduled",
-      completed: "Completed",
-      cancelled: "Cancelled",
-      "no-show": "No Show",
+      scheduled: t("scheduled"),
+      completed: t("completed"),
+      cancelled: t("cancelled"),
+      "no-show": t("noShow"),
     };
 
     return (
@@ -289,7 +291,7 @@ export default function SessionsPage() {
       <span
         className={`px-2 py-1 rounded-full text-xs font-light ${styles[paymentStatus]}`}
       >
-        {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+        {t(paymentStatus)}
       </span>
     );
   };
@@ -336,18 +338,16 @@ export default function SessionsPage() {
     <div className="max-w-7xl space-y-6">
       <div>
         <h1 className="text-3xl font-serif font-light text-foreground">
-          Sessions
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-light mt-2">
-          Manage your appointments and sessions
-        </p>
+        <p className="text-muted-foreground font-light mt-2">{t("subtitle")}</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Today&apos;s Sessions
+            {t("todaySchedule")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {stats.today}
@@ -355,7 +355,7 @@ export default function SessionsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Upcoming Sessions
+            {t("upcomingTitle")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {stats.upcoming}
@@ -363,7 +363,7 @@ export default function SessionsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Completed This Week
+            {t("completed")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {stats.completed}
@@ -371,7 +371,7 @@ export default function SessionsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            Revenue (Paid)
+            {t("payment")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             ${stats.revenue}
@@ -387,7 +387,7 @@ export default function SessionsPage() {
               <div className="flex items-center gap-2 mb-2">
                 <Clock className="h-5 w-5 text-primary" />
                 <h2 className="text-lg font-serif font-light text-foreground">
-                  Next Session
+                  {t("nextSession")}
                 </h2>
               </div>
               <div className="grid md:grid-cols-2 gap-4 mt-4">
@@ -407,7 +407,7 @@ export default function SessionsPage() {
                     <Clock className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-light">
                       {formatTime(nextSession.time)} ({nextSession.duration}{" "}
-                      min)
+                      {t("minutes")})
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -423,7 +423,7 @@ export default function SessionsPage() {
               </div>
             </div>
             <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              Start Session
+              {t("startSession")}
             </button>
           </div>
         </div>
@@ -433,7 +433,7 @@ export default function SessionsPage() {
       {todaysSessions.length > 0 && (
         <div className="rounded-xl bg-card p-6">
           <h2 className="text-xl font-serif font-light text-foreground mb-4">
-            Today&apos;s Schedule
+            {t("todaySchedule")}
           </h2>
           <div className="space-y-3">
             {todaysSessions.map((session) => (
@@ -447,7 +447,7 @@ export default function SessionsPage() {
                       {formatTime(session.time)}
                     </p>
                     <p className="text-xs text-muted-foreground font-light">
-                      {session.duration} min
+                      {session.duration} {t("minutes")}
                     </p>
                   </div>
                   <div className="w-px h-12 bg-border/40" />
@@ -471,7 +471,7 @@ export default function SessionsPage() {
                   </div>
                 </div>
                 <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm transition-all duration-300 hover:scale-105">
-                  Start
+                  {t("startSession")}
                 </button>
               </div>
             ))}
@@ -484,10 +484,10 @@ export default function SessionsPage() {
         <div className="rounded-xl bg-card p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-serif font-light text-foreground">
-              Upcoming Sessions
+              {t("upcomingTitle")}
             </h2>
             <span className="text-sm text-muted-foreground font-light">
-              Next 5 sessions
+              {t("noUpcoming")}
             </span>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -513,7 +513,8 @@ export default function SessionsPage() {
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     <span>
-                      {formatTime(session.time)} • {session.duration} min
+                      {formatTime(session.time)} • {session.duration}{" "}
+                      {t("minutes")}
                     </span>
                   </div>
                 </div>
@@ -533,7 +534,7 @@ export default function SessionsPage() {
             >
               <Filter className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-serif font-light text-foreground">
-                Search & Filters
+                {t("filters")}
               </h2>
               {isFilterExpanded ? (
                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -554,7 +555,7 @@ export default function SessionsPage() {
                 }}
                 className="text-sm text-primary hover:text-primary/80 font-light transition-colors"
               >
-                Clear all
+                {t("hideFilters")}
               </button>
             )}
           </div>
@@ -593,12 +594,12 @@ export default function SessionsPage() {
           <div className="px-6 pb-6 space-y-6 border-t border-border/40 pt-6">
             <div>
               <label className="text-sm font-light text-muted-foreground mb-2 block">
-                Search Sessions
+                {t("allSessions")}
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by client name or issue type..."
+                  placeholder={t("searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-11"
@@ -609,27 +610,27 @@ export default function SessionsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
-                  Session Status
+                  {t("status")}
                 </label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Filter by status" />
+                    <SelectValue placeholder={t("status")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      <span className="font-light">All Statuses</span>
+                      <span className="font-light">{t("all")}</span>
                     </SelectItem>
                     <SelectItem value="scheduled">
-                      <span className="font-light">Scheduled</span>
+                      <span className="font-light">{t("scheduled")}</span>
                     </SelectItem>
                     <SelectItem value="completed">
-                      <span className="font-light">Completed</span>
+                      <span className="font-light">{t("completed")}</span>
                     </SelectItem>
                     <SelectItem value="cancelled">
-                      <span className="font-light">Cancelled</span>
+                      <span className="font-light">{t("cancelled")}</span>
                     </SelectItem>
                     <SelectItem value="no-show">
-                      <span className="font-light">No Show</span>
+                      <span className="font-light">{t("noShow")}</span>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -637,24 +638,24 @@ export default function SessionsPage() {
 
               <div>
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
-                  Session Type
+                  {t("type")}
                 </label>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Filter by type" />
+                    <SelectValue placeholder={t("type")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      <span className="font-light">All Types</span>
+                      <span className="font-light">{t("all")}</span>
                     </SelectItem>
                     <SelectItem value="video">
-                      <span className="font-light">Video</span>
+                      <span className="font-light">{t("video")}</span>
                     </SelectItem>
                     <SelectItem value="in-person">
-                      <span className="font-light">In-Person</span>
+                      <span className="font-light">{t("inPerson")}</span>
                     </SelectItem>
                     <SelectItem value="phone">
-                      <span className="font-light">Phone</span>
+                      <span className="font-light">{t("phone")}</span>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -662,24 +663,24 @@ export default function SessionsPage() {
 
               <div>
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
-                  Payment Status
+                  {t("payment")}
                 </label>
                 <Select value={paymentFilter} onValueChange={setPaymentFilter}>
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Filter by payment" />
+                    <SelectValue placeholder={t("payment")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      <span className="font-light">All Payments</span>
+                      <span className="font-light">{t("all")}</span>
                     </SelectItem>
                     <SelectItem value="paid">
-                      <span className="font-light">Paid</span>
+                      <span className="font-light">{t("paid")}</span>
                     </SelectItem>
                     <SelectItem value="pending">
-                      <span className="font-light">Pending</span>
+                      <span className="font-light">{t("pending")}</span>
                     </SelectItem>
                     <SelectItem value="overdue">
-                      <span className="font-light">Overdue</span>
+                      <span className="font-light">{t("overdue")}</span>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -692,11 +693,13 @@ export default function SessionsPage() {
                   <span className="font-medium text-foreground">
                     {filteredSessions.length}
                   </span>
-                  <span>of {MOCK_SESSIONS.length} sessions</span>
+                  <span>
+                    {MOCK_SESSIONS.length} {t("allSessions")}
+                  </span>
                 </div>
                 {filteredSessions.length !== MOCK_SESSIONS.length && (
                   <span className="text-xs text-primary font-light">
-                    Filters applied
+                    {t("showFilters")}
                   </span>
                 )}
               </div>
@@ -709,20 +712,20 @@ export default function SessionsPage() {
       <div className="rounded-xl bg-card overflow-hidden">
         <div className="px-6 py-4 border-b border-border/40">
           <h2 className="text-lg font-serif font-light text-foreground">
-            All Sessions
+            {t("allSessions")}
           </h2>
         </div>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-light">Client</TableHead>
-              <TableHead className="font-light">Date & Time</TableHead>
-              <TableHead className="font-light">Type</TableHead>
-              <TableHead className="font-light">Duration</TableHead>
-              <TableHead className="font-light">Status</TableHead>
-              <TableHead className="font-light">Payment</TableHead>
-              <TableHead className="font-light">Amount</TableHead>
-              <TableHead className="font-light">Actions</TableHead>
+              <TableHead className="font-light">{t("client")}</TableHead>
+              <TableHead className="font-light">{t("dateTime")}</TableHead>
+              <TableHead className="font-light">{t("type")}</TableHead>
+              <TableHead className="font-light">{t("duration")}</TableHead>
+              <TableHead className="font-light">{t("status")}</TableHead>
+              <TableHead className="font-light">{t("payment")}</TableHead>
+              <TableHead className="font-light">{t("amount")}</TableHead>
+              <TableHead className="font-light">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -732,7 +735,7 @@ export default function SessionsPage() {
                   colSpan={8}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
-                  No sessions found matching your filters
+                  {t("noSessions")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -769,7 +772,9 @@ export default function SessionsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="font-light">
-                    <span className="text-sm">{session.duration} min</span>
+                    <span className="text-sm">
+                      {session.duration} {t("minutes")}
+                    </span>
                   </TableCell>
                   <TableCell>{getStatusBadge(session.status)}</TableCell>
                   <TableCell>
@@ -784,13 +789,13 @@ export default function SessionsPage() {
                     <div className="flex items-center gap-2">
                       <button
                         className="p-2 rounded-lg hover:bg-muted transition-colors"
-                        title="View details"
+                        title={t("viewDetails")}
                       >
                         <Eye className="h-4 w-4 text-muted-foreground" />
                       </button>
                       {session.status === "scheduled" && (
                         <button className="px-3 py-1.5 bg-primary text-primary-foreground rounded-full font-light text-xs transition-all duration-300 hover:scale-105">
-                          Start
+                          {t("startSession")}
                         </button>
                       )}
                     </div>
