@@ -85,6 +85,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    overflow-y: scroll;
+  }
+  button {
+    cursor: pointer;
+  }
 }
 
 @layer utilities {

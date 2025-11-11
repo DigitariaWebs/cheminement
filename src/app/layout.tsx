@@ -30,9 +30,7 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className={`${petrona.className} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <div className="flex min-h-screen flex-col">
-            <main className="flex-1">{children}</main>
-          </div>
+          {children}
         </NextIntlClientProvider>
       </body>
     </html>
