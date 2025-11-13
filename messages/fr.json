@@ -3,9 +3,10 @@
     "nav": {
       "home": "Accueil",
       "whoWeAre": "Qui sommes-nous",
-      "blog": "Blog",
       "whyUs": "Pourquoi nous",
-      "pathways": "Parcours",
+      "approaches": "Approches",
+      "services": "Services",
+      "blog": "Blog",
       "contact": "Contact"
     },
     "login": "Connexion",

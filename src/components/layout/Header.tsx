@@ -20,10 +20,11 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: t("nav.home") },
-    { href: "/about", label: t("nav.whoWeAre") },
-    { href: "/blog", label: t("nav.blog") },
+    { href: "/who-we-are", label: t("nav.whoWeAre") },
     { href: "/why-us", label: t("nav.whyUs") },
-    { href: "/pathways", label: t("nav.pathways") },
+    { href: "/approaches", label: t("nav.approaches") },
+    { href: "/services", label: t("nav.services") },
+    { href: "/blog", label: t("nav.blog") },
     { href: "/contact", label: t("nav.contact") },
   ];
 
