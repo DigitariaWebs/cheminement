@@ -739,5 +739,569 @@
       "noSessionsScheduled": "Aucune séance planifiée",
       "noRequestsPending": "Aucune demande en attente"
     }
+  },
+  "About": {
+    "hero": {
+      "badge": "Qui nous sommes",
+      "headline": "Chez Je chemine, nous croyons que chaque personne mérite un accompagnement humain, sécuritaire et adapté à sa réalité.",
+      "description1": "Notre mission est de vous soutenir dans votre bien-être émotionnel et psychologique grâce à un parcours personnalisé, conçu pour répondre à vos besoins uniques et à votre rythme. Nous offrons un accès simple et bienveillant à une équipe d'experts dont la pratique est encadrée, reconnue et conforme aux exigences de leur ordre professionnel.",
+      "description2": "Quelle que soit votre situation, vous êtes accompagné par un professionnel qualifié, prêt à cheminer avec vous vers une vie plus sereine, équilibrée et épanouie."
+    },
+    "commitment": {
+      "title": "Notre engagement",
+      "description1": "Avec Je chemine, vous n'êtes plus seul. Nous sommes là pour vous soutenir, vous guider et vous aider à cheminer vers une vie plus sereine, équilibrée et épanouie.",
+      "description2": "Notre plateforme offre une porte d'entrée simple, humaine et sécurisée pour prendre soin de votre santé mentale – pour vous ou votre famille – tout en vous donnant accès à des outils pertinents, des informations claires et un accompagnement professionnel fiable."
+    },
+    "expertise": {
+      "badge": "Une expertise encadrée et reconnue",
+      "title": "Éthique, rigueur et confidentialité au cœur de chaque échange.",
+      "description1": "Nous nous engageons à protéger votre vie privée et vos informations personnelles conformément aux règles en vigueur, notamment la Loi 25. Chaque intervention repose sur des standards rigoureux et un profond respect de votre dignité.",
+      "description2": "Que vous consultiez un psychologue, un psychothérapeute ou un autre professionnel, vous avez la certitude d'être accompagné par un expert qualifié, reconnu par son ordre professionnel.",
+      "cards": {
+        "confidentiality": {
+          "title": "Respect de la confidentialité",
+          "description": "Protection stricte de vos informations sensibles et respect des normes déontologiques."
+        },
+        "quality": {
+          "title": "Qualité professionnelle",
+          "description": "Pratiques encadrées, supervision rigoureuse et formation continue pour chaque intervenant."
+        }
+      }
+    },
+    "personalizedJourney": {
+      "badge": "Un parcours entièrement personnalisé",
+      "title": "Votre démarche est unique, votre accompagnement aussi.",
+      "description": "Notre processus de jumelage vise à vous connecter avec le professionnel qui correspond le mieux à votre réalité. Chaque rencontre est pensée pour faciliter un engagement durable et pour favoriser la réussite de votre parcours thérapeutique.",
+      "matchingTitle": "Nous tenons compte",
+      "matchingPoints": [
+        "À votre problématique",
+        "À vos préférences d'approche",
+        "À votre style de communication"
+      ],
+      "goal": "L'objectif : bâtir une relation thérapeutique forte et adaptée à vos besoins."
+    },
+    "accessibility": {
+      "badge": "Accessible, flexible, où que vous soyez",
+      "title": "Une plateforme pensée pour s'adapter à votre quotidien.",
+      "description": "Nous savons que votre réalité est unique. Je chemine rend l'aide accessible selon vos préférences, pour que vous puissiez avancer à votre rythme, où que vous soyez.",
+      "options": {
+        "remote": {
+          "title": "Consultations à distance",
+          "description": "Des appels vidéo sécurisés pour vous accompagner, que vous soyez à la maison, en déplacement ou en région éloignée.",
+          "details": "Plus de barrières géographiques, plus d'obstacles logistiques."
+        },
+        "office": {
+          "title": "Consultations en bureau",
+          "description": "Un accueil chaleureux et professionnel pour celles et ceux qui privilégient le contact humain direct.",
+          "details": "Des espaces pensés pour votre confort, votre confidentialité et votre bien-être."
+        },
+        "choice": {
+          "title": "Choix du professionnel",
+          "description": "Vous gardez le contrôle : trouvez le spécialiste qui vous convient et construisez une relation thérapeutique solide.",
+          "details": "Notre plateforme vous offre des profils transparents et un accompagnement pour faire le bon choix."
+        }
+      }
+    }
+  },
+  "Services": {
+    "hero": {
+      "badge": "Nos services",
+      "headline": "Un écosystème complet de services en santé mentale pour les adultes, les enfants, les familles et les écoles.",
+      "description": "Nous réunissons des professionnels qualifiés et des programmes spécialisés pour soutenir chaque personne, à toutes les étapes de son parcours. Découvrez comment nous pouvons vous accompagner, vous et votre famille.",
+      "foundations": {
+        "title": "Nos fondations",
+        "items": [
+          "Des experts qualifiés pour chaque problématique.",
+          "Un jumelage intelligent pour un accompagnement rapide.",
+          "Une plateforme simple et rassurante pour suivre votre parcours."
+        ]
+      }
+    },
+    "therapySpectrum": {
+      "badge": "1 · Une couverture complète des besoins thérapeutiques",
+      "title": "Des services dédiés aux adultes, enfants, couples et familles.",
+      "services": {
+        "adult": {
+          "title": "Psychothérapie adulte",
+          "description": "Accompagnement pour la dépression, l'anxiété, le stress post-traumatique, les troubles obsessionnels-compulsifs, le trouble panique, le TDAH (évaluation & suivi), la gestion des émotions, l'estime de soi, les défis relationnels et l'adaptation aux transitions de vie."
+        },
+        "child": {
+          "title": "Psychothérapie enfant & adolescent",
+          "description": "Interventions ciblées pour les difficultés d'apprentissage, les troubles du comportement, le TDAH, l'anxiété, le trouble oppositionnel avec provocation, la gestion des émotions, les relations sociales et l'estime de soi."
+        },
+        "family": {
+          "title": "Thérapie familiale",
+          "description": "Comprendre les dynamiques, restaurer la communication et construire un climat plus harmonieux pour avancer ensemble."
+        },
+        "couple": {
+          "title": "Thérapie de couple",
+          "description": "Naviguer les conflits, renforcer la connexion, mieux communiquer et bâtir une relation respectueuse et stable."
+        },
+        "parenting": {
+          "title": "Coaching parental",
+          "description": "Un accompagnement pour mieux comprendre le développement de votre enfant, gérer les défis comportementaux, les émotions, l'encadrement positif et la continuité entre école et maison."
+        }
+      }
+    },
+    "sentiersProgram": {
+      "badge": "2 · Volet scolaire — Programme Sentiers",
+      "title": "Un espace dédié aux enfants, adolescents, familles et écoles.",
+      "description": "Le programme Sentiers offre un accompagnement global qui allie expertise clinique, outils éducatifs et collaboration étroite avec le milieu scolaire.",
+      "pillarsTitle": "Les piliers du programme",
+      "pillars": {
+        "assessment": {
+          "title": "Évaluation scolaire complète",
+          "description": "Tests, observations et analyses pour comprendre le profil d'apprentissage et les besoins spécifiques."
+        },
+        "iep": {
+          "title": "Plans d'intervention (PI)",
+          "description": "Conception collaborative de plans individualisés avec des objectifs clairs et mesurables."
+        },
+        "collaboration": {
+          "title": "Analyse clinique & collaboration école-famille",
+          "description": "Une équipe interdisciplinaire qui travaille avec les enseignants, les directions et les parents."
+        },
+        "support": {
+          "title": "Accompagnement individualisé",
+          "description": "Suivi psychosocial, coaching parental, guidance TDAH/anxiété/apprentissages, interventions en classe."
+        }
+      },
+      "professionalsTitle": "Nous travaillons avec",
+      "professionals": [
+        "Psychologues scolaires",
+        "Psychoéducateurs",
+        "Techniciens en éducation spécialisée (TES)",
+        "Intervenants spécialisés"
+      ],
+      "customSupport": "Un accompagnement sur mesure pour soutenir la réussite, l'estime de soi et le bien-être des jeunes, en partenariat avec leur entourage scolaire et familial.",
+      "networkTitle": "Un réseau coordonné",
+      "networkDescription": "Équipes-écoles, intervenants, famille : nous travaillons ensemble pour mettre en place les meilleures stratégies."
+    },
+    "complementaryServices": {
+      "badge": "3 · Services complémentaires",
+      "title": "Des ressources pour aller plus loin, à votre rythme.",
+      "services": {
+        "adhd": {
+          "title": "Évaluation TDAH (adulte & enfant)",
+          "description": "Processus complet avec recommandations, suivis, interventions et stratégies d'adaptation pour l'école, la maison et le travail."
+        },
+        "selfLearning": {
+          "title": "Autoapprentissage & ressources éducatives",
+          "description": "Accès gratuit à des outils pour amorcer votre cheminement : psychoéducation, exercices de respiration, méditations guidées, fiches de compréhension des problématiques."
+        },
+        "paidContent": {
+          "title": "Contenu spécialisé payant",
+          "description": "Programmes thématiques, vidéos spécialisées, ateliers, contenus créés par nos professionnels, podcasts, articles et capsules pour approfondir vos apprentissages."
+        }
+      },
+      "badge2": "Un accompagnement éducatif pour soutenir la thérapie"
+    },
+    "modelWorks": {
+      "title": "Pourquoi notre modèle fonctionne",
+      "description": "Que vous amorciez un premier pas ou poursuiviez un suivi déjà entamé, Je chemine vous offre un espace fiable pour avancer.",
+      "reasons": [
+        "Des experts qualifiés et encadrés",
+        "Une approche profondément humaine",
+        "Un jumelage intelligent qui fait gagner du temps",
+        "Un accès rapide aux services pertinents",
+        "Des offres variées pour chaque besoin",
+        "Une flexibilité totale (en ligne et en personne)",
+        "Un accompagnement éducatif pour soutenir la thérapie",
+        "Une plateforme simple, rassurante et sécurisée"
+      ]
+    }
+  },
+  "Approaches": {
+    "hero": {
+      "badge": "Nos approches",
+      "headline": "Une démarche construite autour de vous, par des experts qui vous écoutent et s'adaptent à votre réalité.",
+      "description": "Chaque accompagnement est singulier. Nous combinons une approche profondément humaine à des pratiques cliniques reconnues pour bâtir un parcours sur mesure, respectueux de votre histoire, de vos objectifs et de votre rythme.",
+      "values": {
+        "title": "Ce que nous défendons",
+        "respect": {
+          "title": "Respect de la personne",
+          "description": "Vous êtes au cœur de la démarche, jamais dans un modèle imposé."
+        },
+        "rigor": {
+          "title": "Rigueur clinique",
+          "description": "Des approches validées, encadrées et actualisées en continu."
+        },
+        "trust": {
+          "title": "Confiance et sécurité",
+          "description": "Un cadre éthique, confidentiel et rassurant pour avancer."
+        }
+      }
+    },
+    "personCentered": {
+      "badge": "1 · Une approche centrée sur la personne",
+      "title": "Nous adaptons notre soutien à vos besoins, pas l'inverse.",
+      "description": "Chaque individu a une histoire, un rythme, une sensibilité. Construire un parcours thérapeutique sur mesure signifie permettre à votre voix d'être entendue, vos préférences d'être respectées et votre rythme d'être suivi, sans modèle préfabriqué.",
+      "note": "Inspiré de notre concept de parcours personnalisé : une démarche unique, des ajustements continus, un accompagnement évolutif.",
+      "focus": {
+        "objectives": {
+          "title": "Vos objectifs",
+          "description": "Clarifiez ce que vous souhaitez transformer, améliorer ou consolider pour orienter chaque séance."
+        },
+        "issue": {
+          "title": "Votre problématique",
+          "description": "Nous analysons finement vos enjeux pour proposer des interventions alignées sur votre réalité."
+        },
+        "style": {
+          "title": "Votre style relationnel",
+          "description": "Nous adaptons notre présence, notre rythme et notre langage à votre manière d'entrer en relation."
+        },
+        "preferences": {
+          "title": "Vos préférences thérapeutiques",
+          "description": "Nous ajustons les méthodes, les outils et la structure des rencontres afin que vous vous sentiez reconnu et respecté à chaque étape."
+        }
+      }
+    },
+    "clinicalApproaches": {
+      "badge": "2 · Approches reconnues et encadrées",
+      "title": "Des modèles cliniques validés, portés par des experts reconnus.",
+      "description": "Nos professionnels pratiquent selon des approches scientifiquement reconnues et encadrées par leurs ordres professionnels. Chaque méthode est choisie spécifiquement pour votre situation.",
+      "approaches": {
+        "cbt": {
+          "title": "Thérapies cognitivo-comportementales (TCC)",
+          "description": "Des outils éprouvés pour agir sur les pensées, comportements et émotions qui vous freinent."
+        },
+        "psychodynamic": {
+          "title": "Approches psychodynamiques",
+          "description": "Comprendre vos dynamiques profondes et vos schémas relationnels pour transformer durablement."
+        },
+        "systemic": {
+          "title": "Approches systémiques",
+          "description": "Famille, couple, groupes : intervenir sur les interactions pour rétablir un équilibre collectif."
+        },
+        "humanistic": {
+          "title": "Approches humanistes",
+          "description": "Une présence authentique, empathique et non jugeante pour favoriser votre autonomie."
+        },
+        "mindfulness": {
+          "title": "Mindfulness / Pleine conscience",
+          "description": "Renforcer l'attention, la régulation émotionnelle et la connexion à soi par des pratiques guidées."
+        },
+        "psychoeducation": {
+          "title": "Psychoéducation",
+          "description": "Un accompagnement structuré pour comprendre, s'outiller et mettre en place des stratégies adaptées."
+        },
+        "neuropsych": {
+          "title": "Interventions scolaires et neuropsychologiques",
+          "description": "Évaluations, plans d'intervention et suivis spécialisés pour soutenir la réussite éducative."
+        },
+        "coaching": {
+          "title": "Coaching parental & Guidance spécialisée",
+          "description": "Un soutien concret pour le TDAH, l'anxiété, la gestion des émotions, les comportements opposants, etc."
+        }
+      }
+    },
+    "ethics": {
+      "badge": "3 · Éthique et confidentialité",
+      "title": "Nous protégeons votre confiance, à chaque instant.",
+      "description": "La confidentialité n'est pas une option, c'est notre fondation. Nous avons conçu notre plateforme et nos processus pour assurer une protection maximale de votre vie privée, du premier contact à la clôture de votre dossier.",
+      "note": "Chaque professionnel est signataire d'engagements précis en matière de protection des données et bénéficie d'une formation continue sur la confidentialité.",
+      "commitments": {
+        "ethics": {
+          "title": "Respect des règles déontologiques",
+          "description": "Nos intervenants respectent les codes éthiques de leurs ordres professionnels et s'assurent de protéger votre dignité."
+        },
+        "law25": {
+          "title": "Conformité à la Loi 25",
+          "description": "Nous appliquons des politiques strictes pour la protection de vos données personnelles et sensibles."
+        },
+        "security": {
+          "title": "Gestion sécurisée des informations",
+          "description": "Des systèmes technologiques robustes et des processus internes rigoureux pour garantir la confidentialité."
+        },
+        "confidentiality": {
+          "title": "Confidentialité absolue",
+          "description": "Votre démarche est protégée : échanges, documents et suivis sont strictement confidentiels."
+        }
+      }
+    },
+    "flexibility": {
+      "badge": "4 · Flexibilité : où et quand vous le souhaitez",
+      "title": "Choisissez le mode d'accompagnement qui correspond à votre réalité.",
+      "modalities": {
+        "online": {
+          "title": "Consultations en ligne",
+          "bullets": [
+            "Appels vidéo sécurisés, cryptés et simples à rejoindre",
+            "Aucun déplacement requis, idéal pour les horaires chargés",
+            "Accessibles partout, même en région éloignée"
+          ]
+        },
+        "office": {
+          "title": "Consultations en bureau",
+          "bullets": [
+            "Rencontres en personne dans un cadre chaleureux",
+            "Pour ceux qui préfèrent un contact direct",
+            "Des espaces pensés pour la confidentialité et le confort"
+          ]
+        }
+      },
+      "extras": {
+        "schedule": "Souplesse horaire",
+        "accessibility": "Accessibilité partout",
+        "description": "Nous ajustons la planification et la logistique selon vos besoins pour vous offrir une expérience fluide et rassurante."
+      }
+    },
+    "matching": {
+      "badge": "5 · Le jumelage intelligent",
+      "title": "Le bon professionnel, pour la bonne personne, au bon moment.",
+      "description": "Notre processus de jumelage permet de faire gagner du temps et d'offrir un accompagnement de grande qualité. Vous êtes relié à un professionnel qui correspond à vos besoins cliniques, vos attentes relationnelles et votre réalité quotidienne.",
+      "highlight": "Une force majeure de Je chemine",
+      "criteriaTitle": "Critères analysés",
+      "criteria": [
+        "Problématique et besoins cliniques",
+        "Approche thérapeutique souhaitée",
+        "Âge, cycle de vie et contexte",
+        "Expérience clinique recherchée",
+        "Préférences personnelles et disponibilité"
+      ],
+      "steps": [
+        {
+          "title": "Analyse approfondie de votre demande",
+          "description": "Nous recueillons les informations clés concernant votre problématique, vos objectifs et votre contexte."
+        },
+        {
+          "title": "Identification des critères de jumelage",
+          "description": "Approche souhaitée, âge, expérience clinique recherchée, préférences personnelles : nous précisons chaque paramètre."
+        },
+        {
+          "title": "Sélection du professionnel idéal",
+          "description": "Notre plateforme identifie la personne qui possède l'expertise, le style et la disponibilité adaptés à votre situation."
+        },
+        {
+          "title": "Suivi et ajustements continus",
+          "description": "Nous restons présents pour assurer la qualité de l'accompagnement et ajuster si nécessaire."
+        }
+      ],
+      "stepLabel": "Étape"
+    }
+  },
+  "Contact": {
+    "hero": {
+      "badge": "Page contact",
+      "headline": "Nous sommes là pour vous accompagner.",
+      "description": "Que vous amorciez une démarche, cherchiez des informations ou souhaitiez être guidé vers le bon professionnel, notre équipe est disponible pour vous. Chaque demande est traitée avec respect, confidentialité et bienveillance.",
+      "expectations": {
+        "title": "Ce que vous pouvez attendre",
+        "items": [
+          "Une écoute attentive et une réponse personnalisée.",
+          "Un accompagnement pour clarifier vos besoins.",
+          "Des solutions adaptées à votre réalité."
+        ]
+      }
+    },
+    "channels": {
+      "badge": "Contactez-nous",
+      "title": "Un courriel suffit pour amorcer la conversation.",
+      "emailLabel": "Écrivez-nous",
+      "email": "contact@monimpression.com",
+      "inquiries": {
+        "services": {
+          "title": "Services et approches",
+          "description": "Comprendre nos services, nos approches cliniques et les modalités disponibles."
+        },
+        "matching": {
+          "title": "Jumelage avec un professionnel",
+          "description": "Identifier la personne la mieux adaptée à votre problématique et à vos préférences."
+        },
+        "sentiers": {
+          "title": "Programme Sentiers",
+          "description": "Obtenir des informations sur l'accompagnement dédié aux enfants, adolescents et écoles."
+        },
+        "support": {
+          "title": "Profil, facturation et support",
+          "description": "Créer ou mettre à jour votre profil, recevoir de l'aide administrative ou des précisions sur la facturation."
+        }
+      },
+      "responseTime": "Nous répondons à chaque message dans les meilleurs délais et planifions, au besoin, un appel d'exploration pour préciser vos attentes."
+    },
+    "form": {
+      "badge": "Formulaire de contact",
+      "title": "Vous préférez nous écrire autrement ? Remplissez notre formulaire.",
+      "description": "Partagez vos besoins, vos questions et votre disponibilité. Un gestionnaire vous contactera dès que possible pour assurer un suivi personnalisé.",
+      "reasons": [
+        "Demander un rendez-vous ou planifier une première rencontre.",
+        "Obtenir des informations détaillées sur nos approches et services.",
+        "Préciser vos besoins, vos objectifs et le contexte de votre démarche.",
+        "Recevoir de l'aide pour préparer votre premier rendez-vous."
+      ],
+      "guidance": "Nous vous orienterons vers le bon professionnel et vous guiderons pour bien préparer votre première rencontre."
+    },
+    "emergency": {
+      "title": "En cas d'urgence",
+      "description": "Si vous vivez une situation urgente, rendez-vous immédiatement au centre médical le plus proche ou contactez les services d'urgence de votre région.",
+      "callToAction": "Appelez le 911 ou votre service d'urgence local"
+    },
+    "joinUs": {
+      "badge": "Rejoignez notre équipe",
+      "title": "Vous êtes un professionnel en santé mentale ? Rejoignez notre mission.",
+      "description": "Faites partie d'une plateforme collaborative dédiée à la qualité des soins, à une pratique encadrée et à des relations clients significatives. Ensemble, construisons un écosystème de santé mentale plus humain, accessible et professionnel.",
+      "highlights": {
+        "matching": {
+          "title": "Jumelage intelligent",
+          "description": "Rencontrez des clients qui correspondent à votre expertise et à votre style d'intervention."
+        },
+        "support": {
+          "title": "Support administratif",
+          "description": "Planification, facturation et suivi : concentrez-vous sur la clinique, nous gérons le reste."
+        },
+        "tools": {
+          "title": "Outils de pratique & mentorat",
+          "description": "Accès à des outils de gestion, à du mentorat, de la supervision et au programme Je Diversifie."
+        },
+        "flexibility": {
+          "title": "Modèle flexible",
+          "description": "Travaillez selon votre disponibilité, en ligne ou en bureau, avec un soutien constant de l'équipe."
+        }
+      }
+    },
+    "support": {
+      "badge": "Nous sommes là pour vous accompagner",
+      "title": "Une question sur un service, une consultation ou votre profil ?",
+      "description": "Notre équipe vous offre un soutien personnalisé pour vous guider à chaque étape de votre démarche et résoudre vos doutes ou interrogations.",
+      "areas": {
+        "services": {
+          "title": "Compréhension des services",
+          "description": "Nous vous aidons à explorer votre problématique, à clarifier vos besoins et à identifier les ressources adaptées."
+        },
+        "consultations": {
+          "title": "Fonctionnement des consultations",
+          "description": "Explications détaillées sur les rencontres en ligne ou en bureau, la planification et les suivis."
+        },
+        "billing": {
+          "title": "Facturation et paiements",
+          "description": "Support administratif pour les reçus, les assurances, les plans de paiement et les remboursements."
+        }
+      },
+      "contactPrompt": "Utilisez notre formulaire de contact ou écrivez-nous directement. Nous répondons rapidement et vous guidons avec clarté."
+    }
+  },
+  "Why": {
+    "hero": {
+      "badge": "Pourquoi nous choisir",
+      "headline": "Choisir Je chemine, c'est choisir une approche humaine, professionnelle et structurée pour prendre soin de votre santé mentale.",
+      "description": "Notre plateforme a été pensée pour éliminer les obstacles, simplifier l'accès à l'aide et vous accompagner à chaque étape de votre démarche. Nous avançons avec vous, à votre rythme, pour que chaque interaction soit fluide, rassurante et profondément humaine.",
+      "subtitle": "Une expérience bâtie sur la confiance et la bienveillance"
+    },
+    "reasons": {
+      "badge": "Pourquoi nous choisir",
+      "title": "Une approche humaine, professionnelle et structurée pour prendre soin de votre santé mentale.",
+      "description": "Nous éliminons les obstacles, simplifions l'accès et vous accompagnons à chaque étape. Découvrez ce qui rend Je chemine unique.",
+      "timeline": {
+        "personalized": {
+          "id": "01",
+          "title": "Un parcours réellement personnalisé",
+          "description": "Votre histoire, vos défis et vos objectifs sont uniques. Notre jumelage intelligent identifie le professionnel le mieux adapté à votre réalité pour bâtir une relation thérapeutique authentique et motivante. Vous cheminez avec quelqu'un qui vous correspond vraiment.",
+          "chips": [
+            "Votre problématique",
+            "Vos besoins cliniques",
+            "Vos préférences d'approche"
+          ]
+        },
+        "qualified": {
+          "id": "02",
+          "title": "Des professionnels qualifiés et encadrés",
+          "description": "Psychologues, psychothérapeutes, psychoéducateurs et autres spécialistes : vous êtes accompagné par des experts dont la pratique est reconnue et rigoureusement encadrée par leur ordre professionnel.",
+          "chips": [
+            "Compétence clinique",
+            "Supervision continue",
+            "Pratiques éprouvées"
+          ]
+        },
+        "ethics": {
+          "id": "03",
+          "title": "Un engagement solide envers l'éthique et la confidentialité",
+          "description": "Votre confiance est essentielle. Nous appliquons des standards élevés de protection de la vie privée, notamment la Loi 25, pour garantir un espace sécuritaire et respectueux. Votre information est protégée. Votre démarche est respectée. Votre espace est sécuritaire.",
+          "chips": [
+            "Protection des données",
+            "Respect de la démarche",
+            "Cadre sécuritaire"
+          ]
+        }
+      }
+    },
+    "access": {
+      "badge": "Accessible où que vous soyez, quand vous en avez besoin",
+      "title": "Vous choisissez la modalité qui vous convient, nous assurons la qualité de l'expérience.",
+      "description": "Nous éliminons les barrières qui empêchent de consulter et simplifions votre cheminement grâce à une plateforme pensée pour vous. Vous choisissez l'option qui vous convient le mieux, nous vous accompagnons avec la même qualité de soins.",
+      "modes": {
+        "remote": {
+          "title": "À distance",
+          "description": "Accédez à un soutien professionnel via des appels vidéo sécurisés, peu importe où vous vous trouvez — à la maison, au travail, en déplacement ou en région éloignée.",
+          "highlight": "Souplesse totale et continuité des suivis."
+        },
+        "office": {
+          "title": "En bureau",
+          "description": "Profitez d'un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
+          "highlight": "Un espace accueillant, confidentiel et serein."
+        }
+      },
+      "platform": {
+        "badge": "Une plateforme simple, humaine et conçue pour vous",
+        "title": "Votre démarche est fluide, rassurante et soutenue en continu.",
+        "highlights": {
+          "navigation": {
+            "title": "Navigation intuitive",
+            "description": "Une interface claire qui simplifie chaque action et vous guide sans effort."
+          },
+          "access": {
+            "title": "Accès rapide",
+            "description": "Retrouvez immédiatement les services pertinents et adaptez votre parcours à vos besoins."
+          },
+          "support": {
+            "title": "Accompagnement continu",
+            "description": "Notre équipe est disponible pour vous épauler, répondre à vos questions et vous rassurer."
+          }
+        }
+      }
+    },
+    "familySupport": {
+      "badge": "Un soutien pour toute la famille",
+      "title": "Peu importe votre défi, nous avons un professionnel pour vous aider.",
+      "description": "Psychothérapie adulte, thérapie familiale, évaluation scolaire, accompagnement pour le TDAH, soutien parental ou psychoéducation : chaque membre de votre famille peut trouver sa place et recevoir l'aide nécessaire.",
+      "coordinated": "Une approche coordonnée pour toute la famille.",
+      "services": {
+        "adult": {
+          "title": "Psychothérapie adulte",
+          "description": "Un accompagnement individualisé pour traverser vos défis personnels et émotionnels."
+        },
+        "family": {
+          "title": "Thérapie familiale",
+          "description": "Des espaces de dialogue pour renforcer les liens, apaiser les tensions et avancer ensemble."
+        },
+        "assessment": {
+          "title": "Évaluation scolaire et TDAH",
+          "description": "Des évaluations complètes et un plan d'action adapté aux besoins spécifiques de chaque enfant."
+        },
+        "parenting": {
+          "title": "Soutien parental et psychoéducation",
+          "description": "Des outils concrets pour soutenir le développement de votre enfant et votre rôle de parent."
+        }
+      }
+    },
+    "supportCommitment": {
+      "badge": "Un engagement à vous soutenir à chaque étape",
+      "title": "Nous vous accompagnons du premier contact jusqu'à la fin de votre parcours.",
+      "description": "Du moment où vous nous écrivez jusqu'à votre dernière séance, nous veillons à ce que votre expérience soit fluide, humaine et soutenue. Vous n'êtes jamais seul.",
+      "steps": {
+        "contact": {
+          "title": "Contact initial",
+          "description": "Notre équipe répond rapidement et personnellement pour comprendre vos besoins et vous orienter vers la meilleure solution."
+        },
+        "matching": {
+          "title": "Jumelage avec un professionnel",
+          "description": "Nous vous connectons avec un professionnel qui correspond à votre réalité, à vos préférences et à vos objectifs."
+        },
+        "followUp": {
+          "title": "Suivi et ajustement",
+          "description": "Tout au long de votre parcours, nous demeurons disponibles pour ajuster, répondre à vos questions et assurer votre bien-être."
+        }
+      },
+      "goal": "Notre objectif : que chaque personne se sente écoutée, soutenue et accompagnée à chaque étape."
+    }
   }
 }

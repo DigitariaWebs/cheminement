@@ -1,8 +1,10 @@
 "use client";
 
 import { AlertTriangle, PhoneCall } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function EmergencySection() {
+  const t = useTranslations("Contact.emergency");
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-accent via-muted to-background py-16">
       <div className="absolute inset-0 opacity-[0.08]">
@@ -16,20 +18,17 @@ export default function EmergencySection() {
             <AlertTriangle className="h-7 w-7" />
           </div>
           <h2 className="font-serif text-2xl font-medium text-foreground md:text-3xl">
-            En cas d’urgence
+            {t("title")}
           </h2>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-            Si vous vivez une situation urgente, rendez-vous immédiatement au
-            centre médical le plus proche ou contactez les services d’urgence de
-            votre région.
+            {t("description")}
           </p>
           <div className="inline-flex items-center gap-3 rounded-full border border-primary/35 bg-muted/40 px-6 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-muted-foreground">
             <PhoneCall className="h-4 w-4" />
-            <span>Appelez le 911 ou votre service d’urgence local</span>
+            <span>{t("callToAction")}</span>
           </div>
         </div>
       </div>
     </section>
   );
 }
-

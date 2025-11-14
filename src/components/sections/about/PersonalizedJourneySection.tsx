@@ -1,14 +1,10 @@
 "use client";
 
 import { Compass, ListChecks, Sparkle } from "lucide-react";
-
-const matchingPoints = [
-  "À votre problématique",
-  "À vos préférences d’approche",
-  "À votre style de communication",
-];
+import { useTranslations } from "next-intl";
 
 export default function PersonalizedJourneySection() {
+  const t = useTranslations("About.personalizedJourney");
   return (
     <section className="relative overflow-hidden bg-background py-24">
       <div className="absolute inset-0 opacity-5">
@@ -21,16 +17,13 @@ export default function PersonalizedJourneySection() {
           <div className="space-y-6">
             <div className="flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
               <Compass className="h-5 w-5 text-foreground" />
-              <span>Un parcours entièrement personnalisé</span>
+              <span>{t("badge")}</span>
             </div>
             <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-              Votre démarche est unique, votre accompagnement aussi.
+              {t("title")}
             </h2>
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Notre processus de jumelage vise à vous connecter avec le
-              professionnel qui correspond le mieux à votre réalité. Chaque
-              rencontre est pensée pour faciliter un engagement durable et pour
-              favoriser la réussite de votre parcours thérapeutique.
+              {t("description")}
             </p>
           </div>
 
@@ -40,12 +33,12 @@ export default function PersonalizedJourneySection() {
                 <ListChecks className="h-6 w-6" />
               </div>
               <p className="text-base font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-                Nous tenons compte
+                {t("matchingTitle")}
               </p>
             </div>
 
             <ul className="space-y-4">
-              {matchingPoints.map((point) => (
+              {t.raw("matchingPoints").map((point: string) => (
                 <li
                   key={point}
                   className="flex items-start gap-3 rounded-2xl bg-card/80 p-4 text-base text-card-foreground shadow-sm"
@@ -58,10 +51,7 @@ export default function PersonalizedJourneySection() {
 
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
               <Sparkle className="h-4 w-4" />
-              <span>
-                L’objectif : bâtir une relation thérapeutique forte et adaptée à
-                vos besoins.
-              </span>
+              <span>{t("goal")}</span>
             </div>
           </div>
         </div>
@@ -69,4 +59,3 @@ export default function PersonalizedJourneySection() {
     </section>
   );
 }
-
