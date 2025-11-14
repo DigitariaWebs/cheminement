@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +17,9 @@ export async function GET(
 
     await connectToDatabase();
 
-    const request = await Request.findById(params.id)
+    const { id } = await params;
+
+    const request = await Request.findById(id)
       .populate("patientId", "firstName lastName email phone")
       .populate("assignedProfessional", "firstName lastName email");
 
@@ -37,7 +39,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -48,9 +50,10 @@ export async function PATCH(
 
     await connectToDatabase();
 
+    const { id } = await params;
     const data = await req.json();
 
-    const request = await Request.findByIdAndUpdate(params.id, data, {
+    const request = await Request.findByIdAndUpdate(id, data, {
       new: true,
     })
       .populate("patientId", "firstName lastName email phone")
@@ -72,7 +75,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -83,7 +86,9 @@ export async function DELETE(
 
     await connectToDatabase();
 
-    const request = await Request.findByIdAndDelete(params.id);
+    const { id } = await params;
+
+    const request = await Request.findByIdAndDelete(id);
 
     if (!request) {
       return NextResponse.json({ error: "Request not found" }, { status: 404 });

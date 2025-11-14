@@ -73,7 +73,6 @@ const BlogSchema = new Schema<IBlog>(
   }
 );
 
-BlogSchema.index({ slug: 1 });
 BlogSchema.index({ category: 1, published: 1 });
 BlogSchema.index({ published: 1, date: -1 });
 

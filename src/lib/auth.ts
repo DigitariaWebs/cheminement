@@ -37,6 +37,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
+        if (!user._id) {
+          throw new Error("User ID not found");
+        }
+
         return {
           id: user._id.toString(),
           email: user.email,

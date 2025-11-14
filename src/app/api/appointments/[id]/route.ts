@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +17,9 @@ export async function GET(
 
     await connectToDatabase();
 
-    const appointment = await Appointment.findById(params.id)
+    const { id } = await params;
+
+    const appointment = await Appointment.findById(id)
       .populate("clientId", "firstName lastName email phone")
       .populate("professionalId", "firstName lastName email phone");
 
@@ -49,7 +51,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -60,13 +62,12 @@ export async function PATCH(
 
     await connectToDatabase();
 
+    const { id } = await params;
     const data = await req.json();
 
-    const appointment = await Appointment.findByIdAndUpdate(
-      params.id,
-      data,
-      { new: true }
-    )
+    const appointment = await Appointment.findByIdAndUpdate(id, data, {
+      new: true,
+    })
       .populate("clientId", "firstName lastName email phone")
       .populate("professionalId", "firstName lastName email phone");
 
@@ -89,7 +90,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -100,7 +101,9 @@ export async function DELETE(
 
     await connectToDatabase();
 
-    const appointment = await Appointment.findByIdAndDelete(params.id);
+    const { id } = await params;
+
+    const appointment = await Appointment.findByIdAndDelete(id);
 
     if (!appointment) {
       return NextResponse.json(

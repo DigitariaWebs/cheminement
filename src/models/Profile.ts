@@ -83,7 +83,6 @@ const ProfileSchema = new Schema<IProfile>(
   }
 );
 
-ProfileSchema.index({ userId: 1 });
 ProfileSchema.index({ specialty: 1 });
 ProfileSchema.index({ problematics: 1 });
 

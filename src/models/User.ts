@@ -66,7 +66,6 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Indexes for better query performance
-UserSchema.index({ email: 1 });
 UserSchema.index({ role: 1, status: 1 });
 
 const User: Model<IUser> =
