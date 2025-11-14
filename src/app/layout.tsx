@@ -3,6 +3,7 @@ import "./globals.css";
 import { Petrona } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { Providers } from "@/components/providers";
 
 const petrona = Petrona({
   subsets: ["latin"],
@@ -30,7 +31,7 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className={`${petrona.className} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <Providers>{children}</Providers>
         </NextIntlClientProvider>
       </body>
     </html>

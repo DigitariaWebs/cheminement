@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   UserCircle,
   Mail,
@@ -8,9 +9,12 @@ import {
   User,
   ArrowRight,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { authAPI } from "@/lib/api-client";
+import { signIn } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,7 +28,10 @@ import { Stepper } from "@/components/ui/stepper";
 
 export default function MemberSignupPage() {
   const t = useTranslations("Auth.memberSignup");
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const STEPS = [
     {
@@ -64,9 +71,46 @@ export default function MemberSignupPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signup attempt:", formData);
+    setError("");
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Create account
+      await authAPI.signup({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: "client",
+      });
+
+      // Sign in automatically
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Account created but sign in failed. Please try logging in.");
+        router.push("/login/member");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -82,6 +126,12 @@ export default function MemberSignupPage() {
         <div className="mb-8">
           <Stepper steps={STEPS} currentStep={currentStep} />
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
+            {error}
+          </div>
+        )}
 
         <form
           onSubmit={
@@ -271,14 +321,24 @@ export default function MemberSignupPage() {
 
             <button
               type="submit"
-              className="group flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              disabled={isLoading}
+              className="group flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <span>
-                {currentStep === STEPS.length - 1
-                  ? t("createAccount")
-                  : t("continue")}
-              </span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{t("creating") || "Creating account..."}</span>
+                </>
+              ) : (
+                <>
+                  <span>
+                    {currentStep === STEPS.length - 1
+                      ? t("createAccount")
+                      : t("continue")}
+                  </span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </div>
         </form>

@@ -346,6 +346,7 @@
       "back": "Back",
       "continue": "Continue",
       "createAccount": "Create Account",
+      "creating": "Creating account...",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
       "backToHome": "← Back to Home"
@@ -399,6 +400,7 @@
       "back": "Back",
       "continue": "Continue",
       "createAccount": "Create Account",
+      "creating": "Creating account...",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
       "backToHome": "← Back to Home"
