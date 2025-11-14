@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     console.error("Get users error:", error);
     return NextResponse.json(
       { error: "Failed to fetch users", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

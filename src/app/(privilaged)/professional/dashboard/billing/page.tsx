@@ -111,19 +111,22 @@ const mockPayments: Payment[] = [
 
 export default function ProfessionalBillingPage() {
   const [activeTab, setActiveTab] = useState<"receivables" | "history">(
-    "receivables"
+    "receivables",
   );
   const [showBankDetails, setShowBankDetails] = useState(false);
   const t = useTranslations("Professional.billing");
 
   const receivablePayments = mockPayments.filter(
-    (p) => p.status === "pending" || p.status === "upcoming" || p.status === "processing"
+    (p) =>
+      p.status === "pending" ||
+      p.status === "upcoming" ||
+      p.status === "processing",
   );
   const paidPayments = mockPayments.filter((p) => p.status === "paid");
 
   const totalReceivables = receivablePayments.reduce(
     (sum, p) => sum + p.netAmount,
-    0
+    0,
   );
   const totalReceived = paidPayments.reduce((sum, p) => sum + p.netAmount, 0);
   const monthlyRevenue = paidPayments
@@ -176,7 +179,8 @@ export default function ProfessionalBillingPage() {
     });
   };
 
-  const payments = activeTab === "receivables" ? receivablePayments : paidPayments;
+  const payments =
+    activeTab === "receivables" ? receivablePayments : paidPayments;
 
   return (
     <div className="space-y-8">
@@ -361,7 +365,7 @@ export default function ProfessionalBillingPage() {
                     </div>
                     <span
                       className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider ${getStatusColor(
-                        payment.status
+                        payment.status,
                       )}`}
                     >
                       {getStatusIcon(payment.status)}

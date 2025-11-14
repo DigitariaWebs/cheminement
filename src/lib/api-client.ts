@@ -16,7 +16,7 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: FetchOptions = {}
+    options: FetchOptions = {},
   ): Promise<T> {
     const { data, ...fetchOptions } = options;
 
@@ -55,17 +55,29 @@ class ApiClient {
   }
 
   // POST request
-  async post<T>(endpoint: string, data?: any, options?: FetchOptions): Promise<T> {
+  async post<T>(
+    endpoint: string,
+    data?: any,
+    options?: FetchOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "POST", data });
   }
 
   // PUT request
-  async put<T>(endpoint: string, data?: any, options?: FetchOptions): Promise<T> {
+  async put<T>(
+    endpoint: string,
+    data?: any,
+    options?: FetchOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "PUT", data });
   }
 
   // PATCH request
-  async patch<T>(endpoint: string, data?: any, options?: FetchOptions): Promise<T> {
+  async patch<T>(
+    endpoint: string,
+    data?: any,
+    options?: FetchOptions,
+  ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "PATCH", data });
   }
 
@@ -99,13 +111,18 @@ export const profileAPI = {
 
 // Appointments
 export const appointmentsAPI = {
-  list: (params?: { status?: string; startDate?: string; endDate?: string }) => {
+  list: (params?: {
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+  }) => {
     const query = new URLSearchParams(params as any).toString();
     return apiClient.get(`/appointments${query ? `?${query}` : ""}`);
   },
   create: (data: any) => apiClient.post("/appointments", data),
   get: (id: string) => apiClient.get(`/appointments/${id}`),
-  update: (id: string, data: any) => apiClient.patch(`/appointments/${id}`, data),
+  update: (id: string, data: any) =>
+    apiClient.patch(`/appointments/${id}`, data),
   delete: (id: string) => apiClient.delete(`/appointments/${id}`),
 };
 

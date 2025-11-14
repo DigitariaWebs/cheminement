@@ -33,10 +33,7 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
 
     const [blogs, total] = await Promise.all([
-      Blog.find(query)
-        .sort({ date: -1 })
-        .skip(skip)
-        .limit(limit),
+      Blog.find(query).sort({ date: -1 }).skip(skip).limit(limit),
       Blog.countDocuments(query),
     ]);
 
@@ -53,7 +50,7 @@ export async function GET(req: NextRequest) {
     console.error("Get blogs error:", error);
     return NextResponse.json(
       { error: "Failed to fetch blogs", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -78,7 +75,7 @@ export async function POST(req: NextRequest) {
     console.error("Create blog error:", error);
     return NextResponse.json(
       { error: "Failed to create blog", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

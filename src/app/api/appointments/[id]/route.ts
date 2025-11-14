@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -26,7 +26,7 @@ export async function GET(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -44,14 +44,14 @@ export async function GET(
     console.error("Get appointment error:", error);
     return NextResponse.json(
       { error: "Failed to fetch appointment", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -74,7 +74,7 @@ export async function PATCH(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -83,14 +83,14 @@ export async function PATCH(
     console.error("Update appointment error:", error);
     return NextResponse.json(
       { error: "Failed to update appointment", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -108,7 +108,7 @@ export async function DELETE(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -117,7 +117,7 @@ export async function DELETE(
     console.error("Delete appointment error:", error);
     return NextResponse.json(
       { error: "Failed to delete appointment", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

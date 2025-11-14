@@ -70,7 +70,7 @@ const BlogSchema = new Schema<IBlog>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 BlogSchema.index({ category: 1, published: 1 });

@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -32,14 +32,14 @@ export async function GET(
     console.error("Get request error:", error);
     return NextResponse.json(
       { error: "Failed to fetch request", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -68,14 +68,14 @@ export async function PATCH(
     console.error("Update request error:", error);
     return NextResponse.json(
       { error: "Failed to update request", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -99,7 +99,7 @@ export async function DELETE(
     console.error("Delete request error:", error);
     return NextResponse.json(
       { error: "Failed to delete request", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

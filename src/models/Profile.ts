@@ -80,7 +80,7 @@ const ProfileSchema = new Schema<IProfile>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 ProfileSchema.index({ specialty: 1 });

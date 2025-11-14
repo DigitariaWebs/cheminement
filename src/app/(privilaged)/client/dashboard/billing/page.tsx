@@ -123,7 +123,10 @@ export default function ClientBillingPage() {
   const t = useTranslations("Client.billing");
 
   const owedPayments = mockPayments.filter(
-    (p) => p.status === "pending" || p.status === "upcoming" || p.status === "overdue"
+    (p) =>
+      p.status === "pending" ||
+      p.status === "upcoming" ||
+      p.status === "overdue",
   );
   const paidPayments = mockPayments.filter((p) => p.status === "paid");
 
@@ -241,7 +244,11 @@ export default function ClientBillingPage() {
             variant="outline"
             className="gap-2 rounded-full"
           >
-            {showPaymentMethods ? <Eye className="h-4 w-4" /> : <Filter className="h-4 w-4" />}
+            {showPaymentMethods ? (
+              <Eye className="h-4 w-4" />
+            ) : (
+              <Filter className="h-4 w-4" />
+            )}
             {showPaymentMethods ? t("hide") : t("show")}
           </Button>
         </div>
@@ -354,7 +361,7 @@ export default function ClientBillingPage() {
                     </div>
                     <span
                       className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider ${getStatusColor(
-                        payment.status
+                        payment.status,
                       )}`}
                     >
                       {getStatusIcon(payment.status)}

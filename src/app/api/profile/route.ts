@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     console.error("Get profile error:", error);
     return NextResponse.json(
       { error: "Failed to fetch profile", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest) {
     const profile = await Profile.findOneAndUpdate(
       { userId: session.user.id },
       { ...data, profileCompleted: true },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
 
     return NextResponse.json(profile);
@@ -53,7 +53,7 @@ export async function PUT(req: NextRequest) {
     console.error("Update profile error:", error);
     return NextResponse.json(
       { error: "Failed to update profile", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

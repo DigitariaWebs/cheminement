@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     console.error("Get requests error:", error);
     return NextResponse.json(
       { error: "Failed to fetch requests", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     console.error("Create request error:", error);
     return NextResponse.json(
       { error: "Failed to create request", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

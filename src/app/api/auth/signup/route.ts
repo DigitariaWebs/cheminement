@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     if (!email || !password || !firstName || !lastName || !role) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists with this email" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,13 +62,13 @@ export async function POST(req: NextRequest) {
           role: user.role,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Signup error:", error);
     return NextResponse.json(
       { error: "Failed to create user", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

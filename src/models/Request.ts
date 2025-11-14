@@ -90,7 +90,7 @@ const RequestSchema = new Schema<IRequest>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 RequestSchema.index({ status: 1, requestDate: -1 });
@@ -98,7 +98,6 @@ RequestSchema.index({ email: 1 });
 RequestSchema.index({ assignedProfessional: 1 });
 
 const Request: Model<IRequest> =
-  mongoose.models.Request ||
-  mongoose.model<IRequest>("Request", RequestSchema);
+  mongoose.models.Request || mongoose.model<IRequest>("Request", RequestSchema);
 
 export default Request;

@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth";
  */
 export async function withAuth(
   handler: (req: Request, context?: any) => Promise<NextResponse>,
-  allowedRoles?: string[]
+  allowedRoles?: string[],
 ) {
   return async (req: Request, context?: any) => {
     try {
@@ -16,7 +16,7 @@ export async function withAuth(
       if (!session || !session.user) {
         return NextResponse.json(
           { error: "Unauthorized - Please sign in" },
-          { status: 401 }
+          { status: 401 },
         );
       }
 
@@ -24,7 +24,7 @@ export async function withAuth(
       if (allowedRoles && !allowedRoles.includes(session.user.role)) {
         return NextResponse.json(
           { error: "Forbidden - Insufficient permissions" },
-          { status: 403 }
+          { status: 403 },
         );
       }
 
@@ -36,7 +36,7 @@ export async function withAuth(
       console.error("Auth middleware error:", error);
       return NextResponse.json(
         { error: "Authentication failed" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   };
@@ -46,7 +46,7 @@ export async function withAuth(
  * Middleware to allow only admins
  */
 export function adminOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>
+  handler: (req: Request, context?: any) => Promise<NextResponse>,
 ) {
   return withAuth(handler, ["admin"]);
 }
@@ -55,7 +55,7 @@ export function adminOnly(
  * Middleware to allow only professionals and admins
  */
 export function professionalOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>
+  handler: (req: Request, context?: any) => Promise<NextResponse>,
 ) {
   return withAuth(handler, ["professional", "admin"]);
 }
@@ -64,7 +64,7 @@ export function professionalOnly(
  * Middleware to allow only clients and admins
  */
 export function clientOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>
+  handler: (req: Request, context?: any) => Promise<NextResponse>,
 ) {
   return withAuth(handler, ["client", "admin"]);
 }
