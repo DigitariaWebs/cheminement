@@ -439,7 +439,12 @@
       "support": "Support",
       "helpCenter": "Help Center",
       "settings": "Settings",
-      "logout": "Logout"
+      "logout": "Logout",
+      "platformManagement": "Platform Management",
+      "professionals": "Professionals",
+      "patients": "Patients",
+      "systemSettings": "System Settings",
+      "reports": "Reports"
     },
     "overview": {
       "title": "Welcome Back",

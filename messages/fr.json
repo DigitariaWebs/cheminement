@@ -439,7 +439,12 @@
       "support": "Soutien",
       "helpCenter": "Centre d'aide",
       "settings": "Paramètres",
-      "logout": "Déconnexion"
+      "logout": "Déconnexion",
+      "platformManagement": "Gestion de la plateforme",
+      "professionals": "Professionnels",
+      "patients": "Patients",
+      "systemSettings": "Paramètres système",
+      "reports": "Rapports"
     },
     "overview": {
       "title": "Bienvenue",
