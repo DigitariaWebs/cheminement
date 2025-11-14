@@ -9,16 +9,13 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Download,
   FileText,
   Heart,
   HelpCircle,
   Inbox,
   Link as LinkIcon,
   Mail,
-  MapPin,
   Pencil,
-  Phone,
   PlayCircle,
   ShieldAlert,
   Sparkles,
@@ -29,9 +26,21 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const changeHistory = [
-  { date: "12 février 2025", change: "Mise à jour des disponibilités (soir ajouté)", by: "Vous" },
-  { date: "04 février 2025", change: "Précision de la problématique : anxiété et sommeil", by: "Vous" },
-  { date: "29 janvier 2025", change: "Dossier analysé par l’équipe jumelage", by: "Équipe Je chemine" },
+  {
+    date: "12 février 2025",
+    change: "Mise à jour des disponibilités (soir ajouté)",
+    by: "Vous",
+  },
+  {
+    date: "04 février 2025",
+    change: "Précision de la problématique : anxiété et sommeil",
+    by: "Vous",
+  },
+  {
+    date: "29 janvier 2025",
+    change: "Dossier analysé par l’équipe jumelage",
+    by: "Équipe Je chemine",
+  },
 ];
 
 const upcomingOptions = [
@@ -43,7 +52,8 @@ const upcomingOptions = [
 const freeSelfCare = [
   {
     title: "Comprendre l’anxiété",
-    description: "Capsule psychoéducative sur les mécanismes et signes de l’anxiété.",
+    description:
+      "Capsule psychoéducative sur les mécanismes et signes de l’anxiété.",
     format: "Article · 8 min",
     icon: BookOpen,
   },
@@ -55,13 +65,15 @@ const freeSelfCare = [
   },
   {
     title: "Les approches thérapeutiques",
-    description: "Comparatif des approches offertes (TCC, humaniste, systémique…).",
+    description:
+      "Comparatif des approches offertes (TCC, humaniste, systémique…).",
     format: "Article · 10 min",
     icon: Sparkles,
   },
   {
     title: "Routine de pleine conscience",
-    description: "Mini-programme quotidien pour prendre soin de vous avant la thérapie.",
+    description:
+      "Mini-programme quotidien pour prendre soin de vous avant la thérapie.",
     format: "PDF · 4 pages",
     icon: Calendar,
   },
@@ -71,13 +83,15 @@ const paidPrograms = [
   {
     title: "Programme « Anxiété sereine »",
     progress: "40 % complété",
-    description: "Parcours guidé de 4 semaines avec vidéos, exercices et journal de suivi.",
+    description:
+      "Parcours guidé de 4 semaines avec vidéos, exercices et journal de suivi.",
     includes: ["4 modules", "8 vidéos", "Journal numérique"],
   },
   {
     title: "Capsules « Apaiser le sommeil »",
     progress: "À commencer",
-    description: "Série de capsules audio pour instaurer une routine de sommeil stable.",
+    description:
+      "Série de capsules audio pour instaurer une routine de sommeil stable.",
     includes: ["6 audios", "1 plan d’action"],
   },
 ];
@@ -168,19 +182,23 @@ export default function ClientDashboardPage() {
               Bienvenue Jean Pierre !
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Je chemine est là pour vous accompagner, pas à pas. Nous mettons tout en place pour que
-              votre démarche soit humaine, bienveillante et alignée sur vos besoins. Chaque action ici
-              est pensée pour soutenir votre cheminement vers une vie plus sereine.
+              Je chemine est là pour vous accompagner, pas à pas. Nous mettons
+              tout en place pour que votre démarche soit humaine, bienveillante
+              et alignée sur vos besoins. Chaque action ici est pensée pour
+              soutenir votre cheminement vers une vie plus sereine.
             </p>
             <p className="text-sm font-medium text-primary">
-              « Vous avancez déjà. Continuez à votre rythme, nous sommes avec vous. »
+              « Vous avancez déjà. Continuez à votre rythme, nous sommes avec
+              vous. »
             </p>
           </div>
           <div className="rounded-3xl bg-card/70 p-6 text-sm leading-relaxed text-muted-foreground">
-            <p className="font-medium text-foreground">Votre mission aujourd’hui</p>
+            <p className="font-medium text-foreground">
+              Votre mission aujourd’hui
+            </p>
             <p className="mt-3">
-              Prenez un moment pour respirer profondément, notez votre état d’esprit et explorez un
-              outil d’auto-soins ci-dessous.
+              Prenez un moment pour respirer profondément, notez votre état
+              d’esprit et explorez un outil d’auto-soins ci-dessous.
             </p>
           </div>
         </div>
@@ -192,9 +210,12 @@ export default function ClientDashboardPage() {
           <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-serif text-2xl font-light text-foreground">Statut de ma demande</h2>
+                <h2 className="font-serif text-2xl font-light text-foreground">
+                  Statut de ma demande
+                </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Nous analysons votre profil pour identifier le professionnel le mieux adapté.
+                  Nous analysons votre profil pour identifier le professionnel
+                  le mieux adapté.
                 </p>
               </div>
               <span className="rounded-full bg-primary/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
@@ -208,12 +229,16 @@ export default function ClientDashboardPage() {
                 Jumelage pris en charge par l’équipe Je chemine
               </p>
               <p>
-                Dernière mise à jour : <span className="font-medium text-foreground">12 février 2025</span>
+                Dernière mise à jour :{" "}
+                <span className="font-medium text-foreground">
+                  12 février 2025
+                </span>
               </p>
               <p>
                 Prochaine étape :{" "}
                 <span className="font-medium text-foreground">
-                  Confirmation de votre professionnel et proposition de rendez-vous
+                  Confirmation de votre professionnel et proposition de
+                  rendez-vous
                 </span>
               </p>
             </div>
@@ -223,7 +248,10 @@ export default function ClientDashboardPage() {
                 <Pencil className="h-4 w-4" />
                 Modifier mon profil
               </Button>
-              <Button variant="outline" className="gap-2 rounded-full px-5 py-5 text-sm font-medium">
+              <Button
+                variant="outline"
+                className="gap-2 rounded-full px-5 py-5 text-sm font-medium"
+              >
                 <Inbox className="h-4 w-4" />
                 Contacter l’équipe jumelage
               </Button>
@@ -234,15 +262,26 @@ export default function ClientDashboardPage() {
                 onClick={() => setIsHistoryOpen((prev) => !prev)}
                 className="flex w-full items-center justify-between rounded-2xl bg-muted/30 px-4 py-3 text-sm text-muted-foreground transition hover:bg-muted/50"
               >
-                <span className="font-medium text-foreground">Historique des changements</span>
-                {isHistoryOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                <span className="font-medium text-foreground">
+                  Historique des changements
+                </span>
+                {isHistoryOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
               </button>
 
               {isHistoryOpen && (
                 <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                   {changeHistory.map((entry) => (
-                    <li key={entry.date} className="rounded-2xl border border-border/30 px-4 py-3">
-                      <p className="font-medium text-foreground">{entry.date}</p>
+                    <li
+                      key={entry.date}
+                      className="rounded-2xl border border-border/30 px-4 py-3"
+                    >
+                      <p className="font-medium text-foreground">
+                        {entry.date}
+                      </p>
                       <p>{entry.change}</p>
                       <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/70">
                         {entry.by}
@@ -258,12 +297,18 @@ export default function ClientDashboardPage() {
           <section className="space-y-6 rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-serif text-2xl font-light text-foreground">Mes informations</h2>
+                <h2 className="font-serif text-2xl font-light text-foreground">
+                  Mes informations
+                </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Gardez vos données à jour pour faciliter le jumelage et la prise de rendez-vous.
+                  Gardez vos données à jour pour faciliter le jumelage et la
+                  prise de rendez-vous.
                 </p>
               </div>
-              <Button variant="outline" className="gap-2 rounded-full px-5 py-5 text-sm font-medium">
+              <Button
+                variant="outline"
+                className="gap-2 rounded-full px-5 py-5 text-sm font-medium"
+              >
                 <Pencil className="h-4 w-4" />
                 Modifier
               </Button>
@@ -271,7 +316,9 @@ export default function ClientDashboardPage() {
 
             <div className="grid gap-5 lg:grid-cols-2">
               <div className="rounded-2xl border border-border/20 bg-card/70 p-5">
-                <h3 className="font-serif text-lg text-foreground">Informations personnelles</h3>
+                <h3 className="font-serif text-lg text-foreground">
+                  Informations personnelles
+                </h3>
                 <dl className="mt-4 space-y-3 text-sm text-muted-foreground">
                   <div className="flex justify-between">
                     <dt>Nom</dt>
@@ -306,20 +353,41 @@ export default function ClientDashboardPage() {
 
               <div className="space-y-5">
                 <div className="rounded-2xl border border-border/20 bg-card/70 p-5">
-                  <h3 className="font-serif text-lg text-foreground">Informations de rendez-vous</h3>
+                  <h3 className="font-serif text-lg text-foreground">
+                    Informations de rendez-vous
+                  </h3>
                   <div className="mt-4 space-y-3 text-sm text-muted-foreground">
-                    <p>Disponibilités : <span className="text-foreground">Matin, Soir, Week-end</span></p>
-                    <p>Modalité souhaitée : <span className="text-foreground">En ligne</span></p>
-                    <p>Localisation : <span className="text-foreground">Montréal, QC</span></p>
-                    <p>Note : <span className="text-foreground">Préférence pour un suivi bilingue</span></p>
+                    <p>
+                      Disponibilités :{" "}
+                      <span className="text-foreground">
+                        Matin, Soir, Week-end
+                      </span>
+                    </p>
+                    <p>
+                      Modalité souhaitée :{" "}
+                      <span className="text-foreground">En ligne</span>
+                    </p>
+                    <p>
+                      Localisation :{" "}
+                      <span className="text-foreground">Montréal, QC</span>
+                    </p>
+                    <p>
+                      Note :{" "}
+                      <span className="text-foreground">
+                        Préférence pour un suivi bilingue
+                      </span>
+                    </p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-border/20 bg-card/70 p-5">
-                  <h3 className="font-serif text-lg text-foreground">Données bancaires</h3>
+                  <h3 className="font-serif text-lg text-foreground">
+                    Données bancaires
+                  </h3>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Ajoutez une carte pour confirmer votre premier rendez-vous (aucun paiement ne sera
-                    effectué tant que le rendez-vous n’est pas confirmé).
+                    Ajoutez une carte pour confirmer votre premier rendez-vous
+                    (aucun paiement ne sera effectué tant que le rendez-vous
+                    n’est pas confirmé).
                   </p>
                   <Button className="mt-4 gap-2 rounded-full px-5 py-5 text-sm font-medium">
                     <Wallet className="h-4 w-4" />
@@ -330,16 +398,26 @@ export default function ClientDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-border/20 bg-muted/30 p-5">
-              <h3 className="font-serif text-lg text-foreground">Mandat / Situation particulière</h3>
+              <h3 className="font-serif text-lg text-foreground">
+                Mandat / Situation particulière
+              </h3>
               <div className="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
-                <span className="rounded-full border border-border/30 px-3 py-1">CNESST</span>
-                <span className="rounded-full border border-border/30 px-3 py-1">Revenu Québec</span>
+                <span className="rounded-full border border-border/30 px-3 py-1">
+                  CNESST
+                </span>
+                <span className="rounded-full border border-border/30 px-3 py-1">
+                  Revenu Québec
+                </span>
               </div>
               <p className="mt-3 text-sm text-muted-foreground">
-                Vous pouvez modifier cette information si votre situation change (IVAC, SAAQ, MSP…). Cela
-                nous aide à vous orienter vers un professionnel qualifié pour ce type de mandat.
+                Vous pouvez modifier cette information si votre situation change
+                (IVAC, SAAQ, MSP…). Cela nous aide à vous orienter vers un
+                professionnel qualifié pour ce type de mandat.
               </p>
-              <Button variant="outline" className="mt-4 gap-2 rounded-full px-5 py-5 text-sm font-medium">
+              <Button
+                variant="outline"
+                className="mt-4 gap-2 rounded-full px-5 py-5 text-sm font-medium"
+              >
                 <Pencil className="h-4 w-4" />
                 Changer le type de mandat
               </Button>
@@ -350,15 +428,21 @@ export default function ClientDashboardPage() {
           <section className="rounded-3xl border border-border/20 bg-linear-to-br from-primary/10 via-card to-card/70 p-7 shadow-lg">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="space-y-4">
-                <h2 className="font-serif text-2xl font-light text-foreground">Prendre un rendez-vous</h2>
+                <h2 className="font-serif text-2xl font-light text-foreground">
+                  Prendre un rendez-vous
+                </h2>
                 <p className="max-w-xl text-sm text-muted-foreground">
-                  Lorsque votre jumelage sera confirmé, vous pourrez réserver directement dans notre
-                  système. Si vous avez déjà un professionnel attitré, il vous suffit de choisir « continuer
+                  Lorsque votre jumelage sera confirmé, vous pourrez réserver
+                  directement dans notre système. Si vous avez déjà un
+                  professionnel attitré, il vous suffit de choisir « continuer
                   avec le même professionnel ».
                 </p>
                 <div className="flex flex-wrap gap-2 text-xs text-primary">
                   {upcomingOptions.map((option) => (
-                    <span key={option} className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 uppercase tracking-[0.3em]">
+                    <span
+                      key={option}
+                      className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 uppercase tracking-[0.3em]"
+                    >
                       {option}
                     </span>
                   ))}
@@ -379,10 +463,14 @@ export default function ClientDashboardPage() {
                   Historique des rendez-vous & reçus
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  L’agenda, les reçus, la facturation et les dossiers sont gérés via OWL Practice.
+                  L’agenda, les reçus, la facturation et les dossiers sont gérés
+                  via OWL Practice.
                 </p>
               </div>
-              <Button variant="outline" className="gap-2 rounded-full px-6 py-5 text-base font-medium">
+              <Button
+                variant="outline"
+                className="gap-2 rounded-full px-6 py-5 text-base font-medium"
+              >
                 <LinkIcon className="h-4 w-4" />
                 Accéder à OWL Practice
               </Button>
@@ -408,29 +496,42 @@ export default function ClientDashboardPage() {
         <div className="space-y-10">
           {/* 6. Self care */}
           <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
-            <h2 className="font-serif text-2xl font-light text-foreground">Outils d’auto-soins</h2>
+            <h2 className="font-serif text-2xl font-light text-foreground">
+              Outils d’auto-soins
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Accédez gratuitement à des ressources pour amorcer votre démarche.
             </p>
             <div className="mt-5 grid gap-4">
               {freeSelfCare.map((item) => (
-                <div key={item.title} className="flex items-start gap-4 rounded-2xl border border-border/20 bg-card/70 p-4 text-sm text-muted-foreground">
+                <div
+                  key={item.title}
+                  className="flex items-start gap-4 rounded-2xl border border-border/20 bg-card/70 p-4 text-sm text-muted-foreground"
+                >
                   <item.icon className="mt-1 h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium text-foreground">{item.title}</p>
                     <p>{item.description}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.3em]">{item.format}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.3em]">
+                      {item.format}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="mt-6 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground">Pour aller plus loin</p>
-              <p className="mt-2">
-                Explorez nos programmes payants créés par des professionnels de la plateforme.
+              <p className="font-medium text-foreground">
+                Pour aller plus loin
               </p>
-              <Button variant="outline" className="mt-4 gap-2 rounded-full px-4 py-4 text-sm font-medium">
+              <p className="mt-2">
+                Explorez nos programmes payants créés par des professionnels de
+                la plateforme.
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4 gap-2 rounded-full px-4 py-4 text-sm font-medium"
+              >
                 <PlayCircle className="h-4 w-4" />
                 Parcourir les programmes spécialisés
               </Button>
@@ -439,15 +540,23 @@ export default function ClientDashboardPage() {
 
           {/* 7. Purchased programs */}
           <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
-            <h2 className="font-serif text-2xl font-light text-foreground">Mes programmes</h2>
+            <h2 className="font-serif text-2xl font-light text-foreground">
+              Mes programmes
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Retrouvez les contenus que vous avez achetés et suivez votre progression.
+              Retrouvez les contenus que vous avez achetés et suivez votre
+              progression.
             </p>
             <div className="mt-5 space-y-4">
               {paidPrograms.map((program) => (
-                <div key={program.title} className="rounded-2xl border border-border/20 bg-card/70 p-5 text-sm text-muted-foreground">
+                <div
+                  key={program.title}
+                  className="rounded-2xl border border-border/20 bg-card/70 p-5 text-sm text-muted-foreground"
+                >
                   <div className="flex items-start justify-between">
-                    <p className="font-medium text-foreground">{program.title}</p>
+                    <p className="font-medium text-foreground">
+                      {program.title}
+                    </p>
                     <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
                       {program.progress}
                     </span>
@@ -455,12 +564,18 @@ export default function ClientDashboardPage() {
                   <p className="mt-2">{program.description}</p>
                   <ul className="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
                     {program.includes.map((item) => (
-                      <li key={item} className="rounded-full border border-border/30 px-3 py-1">
+                      <li
+                        key={item}
+                        className="rounded-full border border-border/30 px-3 py-1"
+                      >
                         {item}
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="mt-4 gap-2 rounded-full px-4 py-4 text-sm font-medium">
+                  <Button
+                    variant="outline"
+                    className="mt-4 gap-2 rounded-full px-4 py-4 text-sm font-medium"
+                  >
                     <PlayCircle className="h-4 w-4" />
                     Continuer
                   </Button>
@@ -471,15 +586,23 @@ export default function ClientDashboardPage() {
 
           {/* 8. Resources */}
           <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
-            <h2 className="font-serif text-2xl font-light text-foreground">Ressources & informations</h2>
+            <h2 className="font-serif text-2xl font-light text-foreground">
+              Ressources & informations
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Articles, outils et psychoéducation pour mieux comprendre votre parcours.
+              Articles, outils et psychoéducation pour mieux comprendre votre
+              parcours.
             </p>
             <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
               {educationalResources.map((resource) => (
-                <li key={resource.title} className="flex items-center justify-between rounded-2xl border border-border/20 bg-card/70 px-4 py-3">
+                <li
+                  key={resource.title}
+                  className="flex items-center justify-between rounded-2xl border border-border/20 bg-card/70 px-4 py-3"
+                >
                   <div>
-                    <p className="font-medium text-foreground">{resource.title}</p>
+                    <p className="font-medium text-foreground">
+                      {resource.title}
+                    </p>
                     <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/70">
                       {resource.type}
                     </p>
@@ -494,18 +617,27 @@ export default function ClientDashboardPage() {
 
           {/* 9. Support */}
           <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
-            <h2 className="font-serif text-2xl font-light text-foreground">Support & aide</h2>
+            <h2 className="font-serif text-2xl font-light text-foreground">
+              Support & aide
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Une question ? Notre équipe est disponible pour vous guider à chaque étape.
+              Une question ? Notre équipe est disponible pour vous guider à
+              chaque étape.
             </p>
             <div className="mt-5 grid gap-4">
               {supportCards.map((card) => (
-                <div key={card.title} className="flex items-start gap-4 rounded-2xl border border-border/20 bg-card/70 p-4 text-sm text-muted-foreground">
+                <div
+                  key={card.title}
+                  className="flex items-start gap-4 rounded-2xl border border-border/20 bg-card/70 p-4 text-sm text-muted-foreground"
+                >
                   <card.icon className="mt-1 h-5 w-5 text-primary" />
                   <div className="space-y-2">
                     <p className="font-medium text-foreground">{card.title}</p>
                     <p>{card.description}</p>
-                    <Link href={card.href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80">
+                    <Link
+                      href={card.href}
+                      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
+                    >
                       {card.actionLabel} <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
@@ -518,25 +650,34 @@ export default function ClientDashboardPage() {
           <section className="rounded-3xl border border-border/20 bg-linear-to-br from-accent/20 via-card to-card/80 p-7 text-center shadow-lg">
             <div className="mx-auto flex max-w-sm flex-col items-center gap-3 text-sm text-muted-foreground">
               <ShieldAlert className="h-8 w-8 text-primary" />
-              <h2 className="font-serif text-xl font-light text-foreground">En cas d’urgence</h2>
+              <h2 className="font-serif text-xl font-light text-foreground">
+                En cas d’urgence
+              </h2>
               <p>
-                Veuillez vous rendre immédiatement au centre médical le plus proche ou contacter les
-                services d’urgence (911).
+                Veuillez vous rendre immédiatement au centre médical le plus
+                proche ou contacter les services d’urgence (911).
               </p>
             </div>
           </section>
 
           {/* 11. Account settings */}
           <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
-            <h2 className="font-serif text-2xl font-light text-foreground">Réglages du compte</h2>
+            <h2 className="font-serif text-2xl font-light text-foreground">
+              Réglages du compte
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Gérez votre compte, vos préférences et vos abonnements.
             </p>
             <div className="mt-5 space-y-3">
               {accountSettings.map((setting) => (
-                <div key={setting.title} className="flex items-center justify-between gap-4 rounded-2xl border border-border/20 bg-card/70 px-4 py-3 text-sm text-muted-foreground">
+                <div
+                  key={setting.title}
+                  className="flex items-center justify-between gap-4 rounded-2xl border border-border/20 bg-card/70 px-4 py-3 text-sm text-muted-foreground"
+                >
                   <div>
-                    <p className="font-medium text-foreground">{setting.title}</p>
+                    <p className="font-medium text-foreground">
+                      {setting.title}
+                    </p>
                     <p>{setting.description}</p>
                   </div>
                   <Button variant="ghost" className="gap-1 text-sm font-medium">
@@ -554,10 +695,12 @@ export default function ClientDashboardPage() {
                 <Bell className="h-4 w-4" />
                 Restez dans la boucle
               </div>
-              <h2 className="font-serif text-2xl font-light text-foreground">Infolettre Je chemine</h2>
+              <h2 className="font-serif text-2xl font-light text-foreground">
+                Infolettre Je chemine
+              </h2>
               <p>
-                Recevez des conseils, des ressources exclusives et des nouvelles sur les services qui
-                pourraient vous intéresser.
+                Recevez des conseils, des ressources exclusives et des nouvelles
+                sur les services qui pourraient vous intéresser.
               </p>
               <div className="rounded-2xl border border-border/20 bg-card/70 p-4">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -575,8 +718,8 @@ export default function ClientDashboardPage() {
                   </Button>
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Vous pouvez modifier vos préférences d’abonnement à tout moment dans les réglages du
-                  compte.
+                  Vous pouvez modifier vos préférences d’abonnement à tout
+                  moment dans les réglages du compte.
                 </p>
               </div>
             </div>
@@ -586,4 +729,3 @@ export default function ClientDashboardPage() {
     </div>
   );
 }
-

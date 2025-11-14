@@ -738,6 +738,46 @@
       "weekOf": "Week of",
       "noSessionsScheduled": "No sessions scheduled",
       "noRequestsPending": "No requests pending"
+    },
+    "analytics": {
+      "badge": "Analytics",
+      "title": "Analytics coming soon.",
+      "description": "We're finalizing an analytics space to track your key metrics: engagement rate, client retention, clinical progress, and marketplace resource performance. Our team is actively working on setting up dashboards and custom exports.",
+      "whatsComing": "What's coming:",
+      "features": {
+        "dashboards": "Interactive dashboards",
+        "reports": "Downloadable reports",
+        "stats": "Statistics by intervention type",
+        "satisfaction": "Client satisfaction analysis"
+      },
+      "currentPhase": "Current phase",
+      "phaseDescription": "Data collection is ready and we're finishing the visualization interfaces. You'll gradually see the first reports appear as we iterate on the product.",
+      "specificNeeds": "Have specific needs?",
+      "specificNeedsDesc": "Tell us which metrics you'd like us to prioritize and we'll integrate them into the roadmap.",
+      "contactTeam": "Write to the product team",
+      "thankYou": "Thank you for your patience — this feature will be activated when the full platform launches. We'll notify you via email and in the dashboard."
+    },
+    "library": {
+      "badge": "Resource marketplace",
+      "title": "Share and discover the best of your expertise.",
+      "description": "Upload your videos, books, guides or webinars to support the professional community. Get inspired by your colleagues' creations, collaborate and make your practice shine.",
+      "uploadResource": "Upload a resource",
+      "myDownloads": "My downloads",
+      "searchPlaceholder": "Search for a resource, author or topic...",
+      "categories": {
+        "all": "All",
+        "videos": "Videos",
+        "ebooks": "Books & eBooks",
+        "webinars": "Webinars",
+        "guides": "Practical guides"
+      },
+      "popularResources": "Popular resources",
+      "resourceCount": "resource available",
+      "resourceCountPlural": "resources available",
+      "format": "Format",
+      "sharedOn": "Shared on Cheminement marketplace",
+      "pages": "pages",
+      "noResults": "No resources match your search at the moment. Try broadening your filters or be the first to share content!"
     }
   },
   "About": {

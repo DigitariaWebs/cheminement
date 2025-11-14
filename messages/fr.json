@@ -738,6 +738,46 @@
       "weekOf": "Semaine du",
       "noSessionsScheduled": "Aucune séance planifiée",
       "noRequestsPending": "Aucune demande en attente"
+    },
+    "analytics": {
+      "badge": "Analytics",
+      "title": "Les analytics arrivent bientôt.",
+      "description": "Nous finalisons un espace analytique pour suivre vos indicateurs clés : taux d'engagement, rétention des clients, progression clinique et performances de vos ressources marketplace. Notre équipe travaille activement à la mise en place des tableaux et exports personnalisés.",
+      "whatsComing": "Ce qui arrive :",
+      "features": {
+        "dashboards": "Tableaux de bord interactifs",
+        "reports": "Rapports téléchargeables",
+        "stats": "Statistiques par type d'intervention",
+        "satisfaction": "Analyse de la satisfaction clients"
+      },
+      "currentPhase": "Phase actuelle",
+      "phaseDescription": "La collecte des données est prête et nous terminons les interfaces de visualisation. Vous verrez progressivement apparaître les premiers rapports au fur et à mesure des itérations produit.",
+      "specificNeeds": "Vous avez des besoins précis ?",
+      "specificNeedsDesc": "Dites-nous quels indicateurs vous souhaitez prioriser et nous les intégrerons dans la feuille de route.",
+      "contactTeam": "Écrire à l'équipe produit",
+      "thankYou": "Merci de votre patience — cette fonctionnalité sera activée dès le lancement de la plateforme complète. Nous vous avertirons via courriel et dans le tableau de bord."
+    },
+    "library": {
+      "badge": "Marketplace de ressources",
+      "title": "Partagez et découvrez le meilleur de votre expertise.",
+      "description": "Déposez vos vidéos, livres, guides ou webinaires pour soutenir la communauté des professionnels. Inspirez-vous des créations de vos collègues, collaborez et faites rayonner votre pratique.",
+      "uploadResource": "Déposer une ressource",
+      "myDownloads": "Mes téléchargements",
+      "searchPlaceholder": "Rechercher une ressource, un auteur ou une thématique…",
+      "categories": {
+        "all": "Tout",
+        "videos": "Vidéos",
+        "ebooks": "Livres & eBooks",
+        "webinars": "Webinaires",
+        "guides": "Guides pratiques"
+      },
+      "popularResources": "Ressources populaires",
+      "resourceCount": "ressource disponible",
+      "resourceCountPlural": "ressources disponibles",
+      "format": "Format",
+      "sharedOn": "Partagé le marketplace Cheminement",
+      "pages": "pages",
+      "noResults": "Aucune ressource ne correspond à votre recherche pour le moment. Essayez d'élargir vos filtres ou soyez le premier à partager un contenu !"
     }
   },
   "About": {
