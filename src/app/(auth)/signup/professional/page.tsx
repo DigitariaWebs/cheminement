@@ -11,9 +11,12 @@ import {
   MapPin,
   ArrowRight,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { authAPI } from "@/lib/api-client";
+import { signIn } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +31,8 @@ export default function ProfessionalSignupPage() {
   const t = useTranslations("Auth.professionalSignup");
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const STEPS = [
     {
@@ -55,7 +60,7 @@ export default function ProfessionalSignupPage() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -78,11 +83,46 @@ export default function ProfessionalSignupPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signup attempt:", formData);
-    // Redirect to dashboard after successful signup
-    router.push("/dashboard");
+    setError("");
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Create account
+      await authAPI.signup({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: "professional",
+      });
+
+      // Sign in automatically
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Account created but sign in failed. Please try logging in.");
+        router.push("/login/professional");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -98,6 +138,12 @@ export default function ProfessionalSignupPage() {
         <div className="mb-8">
           <Stepper steps={STEPS} currentStep={currentStep} />
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
+            {error}
+          </div>
+        )}
 
         <form
           onSubmit={
@@ -427,14 +473,24 @@ export default function ProfessionalSignupPage() {
 
             <button
               type="submit"
-              className="group flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              disabled={isLoading}
+              className="group flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <span>
-                {currentStep === STEPS.length - 1
-                  ? t("createAccount")
-                  : t("continue")}
-              </span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{t("creating") || "Creating account..."}</span>
+                </>
+              ) : (
+                <>
+                  <span>
+                    {currentStep === STEPS.length - 1
+                      ? t("createAccount")
+                      : t("continue")}
+                  </span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </div>
         </form>
