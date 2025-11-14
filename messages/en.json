@@ -1408,6 +1408,7 @@
       "subtitle": "Manage your personal information and preferences",
       "edit": "Edit",
       "save": "Save Changes",
+      "saving": "Saving...",
       "cancel": "Cancel",
       "personalInfo": {
         "title": "Personal Information",
@@ -1415,15 +1416,27 @@
         "lastName": "Last Name",
         "email": "Email Address",
         "phone": "Phone Number",
+        "addPhone": "Add",
+        "phonePlaceholder": "Enter phone number",
         "language": "Preferred Language",
         "gender": "Gender",
-        "age": "Age",
+        "dateOfBirth": "Date of Birth",
+        "location": "Location",
         "concernedPerson": "Who is concerned?",
         "myself": "Myself",
         "myChild": "My child",
         "myPartner": "My partner",
         "other": "Other",
         "years": "years"
+      },
+      "issue": {
+        "title": "Issue & Concern Details",
+        "concernedPerson": "Who is concerned?",
+        "primaryIssue": "Primary Issue",
+        "secondaryIssues": "Secondary Concerns",
+        "description": "Description",
+        "severity": "Severity Level",
+        "duration": "Duration"
       },
       "issueDetails": {
         "title": "Issue & Concern Details",
@@ -1455,7 +1468,10 @@
         "location": "Location",
         "locationPlaceholder": "City, Province",
         "notes": "Additional Notes",
-        "notesPlaceholder": "Any preferences for your professional or appointments..."
+        "notesPlaceholder": "Any preferences for your professional or appointments...",
+        "preferredGender": "Preferred Professional Gender",
+        "preferredAge": "Preferred Age Range",
+        "preferredApproach": "Preferred Therapeutic Approach"
       },
       "matching": {
         "title": "Professional Matching",

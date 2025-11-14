@@ -3,6 +3,8 @@
  * Provides helper functions for making API calls with proper error handling
  */
 
+import { IUser } from "@/models/User";
+
 interface FetchOptions extends RequestInit {
   data?: any;
 }
@@ -154,6 +156,8 @@ export const blogsAPI = {
 
 // Users
 export const usersAPI = {
+  get: () => apiClient.get("/users/me"),
+  update: (data: any) => apiClient.patch("/users/me", data),
   list: (params?: { role?: string }) => {
     const query = new URLSearchParams(params as any).toString();
     return apiClient.get(`/users${query ? `?${query}` : ""}`);

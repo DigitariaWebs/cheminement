@@ -16,13 +16,10 @@ import {
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 // Mock data - replace with real data from API
 const mockData = {
-  user: {
-    firstName: "Jean",
-    lastName: "Pierre",
-  },
   requestStatus: {
     status: "analyzing", // analyzing | matched | pending
     lastUpdate: "12 février 2025",
@@ -51,6 +48,7 @@ const mockData = {
 
 export default function ClientDashboardPage() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const { data: session, status } = useSession();
   const t = useTranslations("Client.overview");
 
   return (
@@ -63,8 +61,7 @@ export default function ClientDashboardPage() {
               {t("tagline")}
             </p>
             <h1 className="font-serif text-3xl font-light text-foreground lg:text-4xl">
-              {t("welcome")} {mockData.user.firstName} {mockData.user.lastName}{" "}
-              !
+              {t("welcome")} {status !== "loading" && session?.user.name} !
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               {t("welcomeMessage")}

@@ -2,12 +2,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user) {
+    const role = session.user.role as string;
+    const dashboardMap: Record<string, string> = {
+      client: "/client/dashboard",
+      professional: "/professional/dashboard",
+      admin: "/admin/dashboard",
+    };
+    const dashboardUrl = dashboardMap[role] || "/";
+    redirect(dashboardUrl);
+  }
+
   const t = await getTranslations("Auth.layout");
   const locale = await getLocale();
 

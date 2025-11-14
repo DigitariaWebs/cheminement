@@ -7,6 +7,9 @@ export interface IUser extends Document {
   lastName: string;
   role: "client" | "professional" | "admin";
   phone?: string;
+  language?: string;
+  gender?: string;
+  dateOfBirth?: Date;
   location?: string;
   status: "active" | "pending" | "inactive";
   emailVerified?: Date;
@@ -45,6 +48,18 @@ const UserSchema = new Schema<IUser>(
       default: "client",
     },
     phone: {
+      type: String,
+      trim: true,
+    },
+    language: {
+      type: String,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      trim: true,
+    },
+    dateOfBirth: {
       type: String,
       trim: true,
     },

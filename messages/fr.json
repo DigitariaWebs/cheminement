@@ -346,6 +346,7 @@
       "back": "Retour",
       "continue": "Continuer",
       "createAccount": "Créer un compte",
+      "creating": "Création du compte...",
       "hasAccount": "Vous avez déjà un compte ?",
       "signIn": "Se connecter",
       "backToHome": "← Retour à l'accueil"
@@ -399,6 +400,7 @@
       "back": "Retour",
       "continue": "Continuer",
       "createAccount": "Créer un compte",
+      "creating": "Création du compte...",
       "hasAccount": "Vous avez déjà un compte ?",
       "signIn": "Se connecter",
       "backToHome": "← Retour à l'accueil"
@@ -1406,6 +1408,7 @@
       "subtitle": "Gérez vos informations personnelles et préférences",
       "edit": "Modifier",
       "save": "Enregistrer les modifications",
+      "saving": "Enregistrement...",
       "cancel": "Annuler",
       "personalInfo": {
         "title": "Informations personnelles",
@@ -1413,15 +1416,27 @@
         "lastName": "Nom",
         "email": "Adresse courriel",
         "phone": "Numéro de téléphone",
+        "addPhone": "Ajouter",
+        "phonePlaceholder": "Entrez le numéro de téléphone",
         "language": "Langue préférée",
         "gender": "Genre",
-        "age": "Âge",
+        "dateOfBirth": "Date de naissance",
+        "location": "Localisation",
         "concernedPerson": "Qui est concerné ?",
         "myself": "Moi-même",
         "myChild": "Mon enfant",
         "myPartner": "Mon partenaire",
         "other": "Autre",
         "years": "ans"
+      },
+      "issue": {
+        "title": "Détails de la problématique",
+        "concernedPerson": "Qui est concerné ?",
+        "primaryIssue": "Problématique principale",
+        "secondaryIssues": "Préoccupations secondaires",
+        "description": "Description",
+        "severity": "Niveau de gravité",
+        "duration": "Durée"
       },
       "issueDetails": {
         "title": "Détails de la problématique",
@@ -1453,7 +1468,10 @@
         "location": "Localisation",
         "locationPlaceholder": "Ville, Province",
         "notes": "Notes additionnelles",
-        "notesPlaceholder": "Préférences pour votre professionnel ou rendez-vous..."
+        "notesPlaceholder": "Préférences pour votre professionnel ou rendez-vous...",
+        "preferredGender": "Genre du professionnel préféré",
+        "preferredAge": "Tranche d'âge préférée",
+        "preferredApproach": "Approche thérapeutique préférée"
       },
       "matching": {
         "title": "Jumelage professionnel",

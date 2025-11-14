@@ -15,7 +15,6 @@ import {
   AuthFooter,
 } from "@/components/auth";
 import { SocialLogin } from "@/components/auth/SocialLogin";
-import { redirect } from "next/navigation";
 
 export default function MemberLoginPage() {
   const t = useTranslations("Auth.memberLogin");
@@ -41,9 +40,9 @@ export default function MemberLoginPage() {
         setError("Invalid email or password");
       } else {
         // Redirect based on user role - for now assume member dashboard
-        router.push("/dashboard/member");
+        router.push("/client/dashboard");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred during login");
     } finally {
       setIsLoading(false);

@@ -1,0 +1,86 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
+import { authOptions } from "@/lib/auth";
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+
+    const user = await User.findById(session.user.id).select("-password");
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    console.log("Current user fetched:", {
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      status: user.status,
+    });
+
+    return NextResponse.json(user);
+  } catch (error: any) {
+    console.error("Get current user error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch user", details: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+
+    const body = await req.json();
+
+    // Don't allow updating certain fields
+    delete body._id;
+    delete body.password;
+    delete body.role;
+    delete body.email;
+    delete body.createdAt;
+    delete body.updatedAt;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      session.user.id,
+      { $set: body },
+      { new: true, runValidators: true },
+    ).select("-password");
+
+    if (!updatedUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    console.log("Current user updated:", {
+      id: updatedUser._id,
+      email: updatedUser.email,
+      updatedFields: Object.keys(body),
+    });
+
+    return NextResponse.json(updatedUser);
+  } catch (error: any) {
+    console.error("Update current user error:", error);
+    return NextResponse.json(
+      { error: "Failed to update user", details: error.message },
+      { status: 500 },
+    );
+  }
+}
