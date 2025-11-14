@@ -23,9 +23,7 @@ export default function ProfessionalLoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password });
-    // Redirect to dashboard after successful login
-    router.push("/dashboard");
+    router.push("/professional/dashboard");
   };
 
   return (

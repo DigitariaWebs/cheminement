@@ -116,7 +116,7 @@ export function ProfessionalSidebar() {
     <Sidebar collapsible="icon" className="border-r border-border/40">
       <SidebarHeader className="border-b border-border/40 px-4 py-4">
         <Link
-          href="/professional/dashboard"
+          href="/"
           className="flex items-center gap-2 font-serif text-xl font-light text-foreground"
         >
           {state === "expanded" && (

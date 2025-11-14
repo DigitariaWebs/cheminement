@@ -1348,5 +1348,207 @@
       },
       "goal": "Notre objectif : que chaque personne se sente écoutée, soutenue et accompagnée à chaque étape."
     }
+  },
+  "Client": {
+    "overview": {
+      "tagline": "Votre espace bien-être",
+      "welcome": "Bienvenue",
+      "welcomeMessage": "Je chemine est là pour vous accompagner, pas à pas. Nous mettons tout en place pour que votre démarche soit humaine, bienveillante et alignée sur vos besoins.",
+      "quote": "Vous avancez déjà. Continuez à votre rythme, nous sommes avec vous.",
+      "todayMission": "Votre mission aujourd'hui",
+      "todayMissionText": "Prenez un moment pour respirer profondément, notez votre état d'esprit et explorez un outil d'auto-soins ci-dessous.",
+      "requestStatus": {
+        "title": "Statut de ma demande",
+        "subtitle": "Nous analysons votre profil pour identifier le professionnel le mieux adapté.",
+        "analyzing": "En analyse",
+        "matched": "Jumelé",
+        "pending": "En attente",
+        "takenCareBy": "Jumelage pris en charge par l'équipe Je chemine",
+        "lastUpdate": "Dernière mise à jour :",
+        "nextStep": "Prochaine étape :",
+        "nextStepText": "Confirmation de votre professionnel et proposition de rendez-vous",
+        "editProfile": "Modifier mon profil",
+        "contactTeam": "Contacter l'équipe jumelage",
+        "changeHistory": "Historique des changements",
+        "by": "Par"
+      },
+      "upcomingAppointments": {
+        "title": "Rendez-vous à venir",
+        "noAppointments": "Aucun rendez-vous à venir",
+        "viewAll": "Voir tous les rendez-vous",
+        "with": "avec",
+        "requestAppointment": "Demander un rendez-vous"
+      },
+      "quickActions": {
+        "title": "Actions rapides",
+        "viewProfile": "Voir mon profil",
+        "viewProfileDesc": "Mettre à jour vos informations et préférences",
+        "manageAppointments": "Gérer les rendez-vous",
+        "manageAppointmentsDesc": "Voir et planifier vos séances",
+        "browseResources": "Parcourir les ressources",
+        "browseResourcesDesc": "Accéder aux outils et matériaux d'auto-soins"
+      },
+      "support": {
+        "title": "Soutien et aide",
+        "email": "Courriel",
+        "emailDesc": "Écrivez-nous pour toute question ou ajustement.",
+        "faq": "FAQ et aide",
+        "faqDesc": "Retrouvez les réponses aux questions fréquentes.",
+        "billing": "Facturation et paiements",
+        "billingDesc": "Suivi des factures, reçus et assurances.",
+        "openFaq": "Ouvrir la FAQ",
+        "billingCenter": "Centre de facturation"
+      }
+    },
+    "profile": {
+      "title": "Mon profil",
+      "subtitle": "Gérez vos informations personnelles et préférences",
+      "edit": "Modifier",
+      "save": "Enregistrer les modifications",
+      "cancel": "Annuler",
+      "personalInfo": {
+        "title": "Informations personnelles",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "Adresse courriel",
+        "phone": "Numéro de téléphone",
+        "language": "Langue préférée",
+        "gender": "Genre",
+        "age": "Âge",
+        "concernedPerson": "Qui est concerné ?",
+        "myself": "Moi-même",
+        "myChild": "Mon enfant",
+        "myPartner": "Mon partenaire",
+        "other": "Autre",
+        "years": "ans"
+      },
+      "issueDetails": {
+        "title": "Détails de la problématique",
+        "primaryIssue": "Problématique principale",
+        "secondaryIssues": "Préoccupations secondaires",
+        "description": "Description",
+        "descriptionPlaceholder": "Dites-nous en plus sur ce qui vous amène ici...",
+        "severity": "Niveau de sévérité",
+        "mild": "Léger",
+        "moderate": "Modéré",
+        "severe": "Sévère",
+        "duration": "Durée",
+        "lessThanMonth": "Moins d'un mois",
+        "oneToThree": "1-3 mois",
+        "threeToSix": "3-6 mois",
+        "moreThanSix": "Plus de 6 mois"
+      },
+      "preferences": {
+        "title": "Préférences de rendez-vous",
+        "availability": "Disponibilités",
+        "morning": "Matin",
+        "afternoon": "Après-midi",
+        "evening": "Soir",
+        "weekend": "Week-end",
+        "modality": "Modalité souhaitée",
+        "online": "En ligne",
+        "inPerson": "En personne",
+        "both": "Les deux",
+        "location": "Localisation",
+        "locationPlaceholder": "Ville, Province",
+        "notes": "Notes additionnelles",
+        "notesPlaceholder": "Préférences pour votre professionnel ou rendez-vous..."
+      },
+      "matching": {
+        "title": "Jumelage professionnel",
+        "preferredGender": "Genre préféré du professionnel",
+        "noPreference": "Aucune préférence",
+        "male": "Homme",
+        "female": "Femme",
+        "preferredAge": "Tranche d'âge préférée",
+        "any": "Aucune",
+        "younger": "Plus jeune (25-35)",
+        "middle": "Moyen (35-50)",
+        "older": "Plus âgé (50+)",
+        "preferredApproach": "Approche thérapeutique préférée",
+        "approachNote": "Nous vous jumelerons selon vos besoins et préférences"
+      },
+      "billing": {
+        "title": "Informations de facturation",
+        "description": "Ajoutez une carte pour confirmer votre premier rendez-vous (aucun paiement ne sera effectué tant que le rendez-vous n'est pas confirmé).",
+        "managePayment": "Gérer mes informations de paiement",
+        "insurance": "Informations d'assurance",
+        "insuranceProvider": "Fournisseur d'assurance",
+        "policyNumber": "Numéro de police",
+        "addInsurance": "Ajouter des informations d'assurance"
+      }
+    },
+    "appointments": {
+      "title": "Mes rendez-vous",
+      "subtitle": "Consultez et gérez vos séances de thérapie",
+      "upcoming": "Rendez-vous à venir",
+      "past": "Rendez-vous passés",
+      "cancelled": "Annulés",
+      "noUpcoming": "Aucun rendez-vous à venir",
+      "noPast": "Aucun rendez-vous passé",
+      "requestNew": "Demander un nouveau rendez-vous",
+      "status": {
+        "scheduled": "Planifié",
+        "completed": "Complété",
+        "cancelled": "Annulé",
+        "noShow": "Absence",
+        "pending": "En attente de confirmation"
+      },
+      "details": {
+        "professional": "Professionnel",
+        "date": "Date",
+        "time": "Heure",
+        "duration": "Durée",
+        "modality": "Modalité",
+        "location": "Lieu",
+        "notes": "Notes",
+        "amount": "Montant",
+        "paymentStatus": "Statut du paiement"
+      },
+      "actions": {
+        "viewDetails": "Voir les détails",
+        "reschedule": "Replanifier",
+        "cancel": "Annuler",
+        "joinSession": "Rejoindre la séance",
+        "addToCalendar": "Ajouter au calendrier",
+        "getDirections": "Obtenir l'itinéraire"
+      },
+      "modality": {
+        "video": "Appel vidéo",
+        "inPerson": "En personne",
+        "phone": "Appel téléphonique"
+      },
+      "payment": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "refunded": "Remboursé"
+      },
+      "minutes": "min",
+      "with": "avec"
+    },
+    "library": {
+      "badge": "Bibliothèque de ressources",
+      "title": "Ressources d'auto-soins et éducatives",
+      "description": "Accédez à des articles gratuits, méditations guidées, vidéos et programmes pour soutenir votre cheminement vers le bien-être mental. Apprenez à votre rythme.",
+      "searchPlaceholder": "Rechercher des ressources, sujets ou auteurs...",
+      "freeResources": "Ressources gratuites",
+      "freeOnly": "Gratuit seulement",
+      "categories": {
+        "all": "Tout",
+        "videos": "Vidéos",
+        "articles": "Articles",
+        "audio": "Audio",
+        "meditations": "Méditations",
+        "guides": "Guides"
+      },
+      "availableResources": "Ressources disponibles",
+      "resourceCount": "ressource disponible",
+      "resourceCountPlural": "ressources disponibles",
+      "format": "Format",
+      "free": "Gratuit",
+      "access": "Accéder",
+      "purchase": "Obtenir l'accès",
+      "noResults": "Aucune ressource ne correspond à votre recherche. Essayez d'ajuster vos filtres ou explorez différentes catégories."
+    }
   }
 }

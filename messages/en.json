@@ -1348,5 +1348,207 @@
       },
       "goal": "Our goal: that every person feels heard, supported, and accompanied at every stage."
     }
+  },
+  "Client": {
+    "overview": {
+      "tagline": "Your Wellness Journey",
+      "welcome": "Welcome",
+      "welcomeMessage": "Je Chemine is here to support you, step by step. Everything is designed to make your journey human, caring, and aligned with your needs.",
+      "quote": "You're already moving forward. Continue at your own pace, we're with you.",
+      "todayMission": "Your mission today",
+      "todayMissionText": "Take a moment to breathe deeply, note your state of mind, and explore a self-care tool below.",
+      "requestStatus": {
+        "title": "Request Status",
+        "subtitle": "We're analyzing your profile to identify the best suited professional.",
+        "analyzing": "Under Review",
+        "matched": "Matched",
+        "pending": "Pending",
+        "takenCareBy": "Matching handled by Je Chemine team",
+        "lastUpdate": "Last update:",
+        "nextStep": "Next step:",
+        "nextStepText": "Confirmation of your professional and appointment proposal",
+        "editProfile": "Edit My Profile",
+        "contactTeam": "Contact Matching Team",
+        "changeHistory": "Change History",
+        "by": "By"
+      },
+      "upcomingAppointments": {
+        "title": "Upcoming Appointments",
+        "noAppointments": "No upcoming appointments",
+        "viewAll": "View All Appointments",
+        "with": "with",
+        "requestAppointment": "Request Appointment"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "viewProfile": "View My Profile",
+        "viewProfileDesc": "Update your information and preferences",
+        "manageAppointments": "Manage Appointments",
+        "manageAppointmentsDesc": "View and schedule your sessions",
+        "browseResources": "Browse Resources",
+        "browseResourcesDesc": "Access self-care tools and materials"
+      },
+      "support": {
+        "title": "Support & Help",
+        "email": "Email",
+        "emailDesc": "Write to us for any question or adjustment.",
+        "faq": "FAQ & Help",
+        "faqDesc": "Find answers to frequently asked questions.",
+        "billing": "Billing & Payments",
+        "billingDesc": "Track invoices, receipts, and insurance.",
+        "openFaq": "Open FAQ",
+        "billingCenter": "Billing Center"
+      }
+    },
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your personal information and preferences",
+      "edit": "Edit",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "personalInfo": {
+        "title": "Personal Information",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address",
+        "phone": "Phone Number",
+        "language": "Preferred Language",
+        "gender": "Gender",
+        "age": "Age",
+        "concernedPerson": "Who is concerned?",
+        "myself": "Myself",
+        "myChild": "My child",
+        "myPartner": "My partner",
+        "other": "Other",
+        "years": "years"
+      },
+      "issueDetails": {
+        "title": "Issue & Concern Details",
+        "primaryIssue": "Primary Issue",
+        "secondaryIssues": "Secondary Concerns",
+        "description": "Description",
+        "descriptionPlaceholder": "Tell us more about what brings you here...",
+        "severity": "Severity Level",
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe",
+        "duration": "Duration",
+        "lessThanMonth": "Less than a month",
+        "oneToThree": "1-3 months",
+        "threeToSix": "3-6 months",
+        "moreThanSix": "More than 6 months"
+      },
+      "preferences": {
+        "title": "Appointment Preferences",
+        "availability": "Availability",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "weekend": "Weekend",
+        "modality": "Preferred Modality",
+        "online": "Online",
+        "inPerson": "In-Person",
+        "both": "Both",
+        "location": "Location",
+        "locationPlaceholder": "City, Province",
+        "notes": "Additional Notes",
+        "notesPlaceholder": "Any preferences for your professional or appointments..."
+      },
+      "matching": {
+        "title": "Professional Matching",
+        "preferredGender": "Preferred Professional Gender",
+        "noPreference": "No preference",
+        "male": "Male",
+        "female": "Female",
+        "preferredAge": "Preferred Age Range",
+        "any": "Any",
+        "younger": "Younger (25-35)",
+        "middle": "Middle (35-50)",
+        "older": "Older (50+)",
+        "preferredApproach": "Preferred Therapeutic Approach",
+        "approachNote": "We'll match you based on your needs and preferences"
+      },
+      "billing": {
+        "title": "Billing Information",
+        "description": "Add a payment method to confirm your first appointment (no payment will be made until the appointment is confirmed).",
+        "managePayment": "Manage Payment Information",
+        "insurance": "Insurance Information",
+        "insuranceProvider": "Insurance Provider",
+        "policyNumber": "Policy Number",
+        "addInsurance": "Add Insurance Information"
+      }
+    },
+    "appointments": {
+      "title": "My Appointments",
+      "subtitle": "View and manage your therapy sessions",
+      "upcoming": "Upcoming Appointments",
+      "past": "Past Appointments",
+      "cancelled": "Cancelled",
+      "noUpcoming": "No upcoming appointments",
+      "noPast": "No past appointments",
+      "requestNew": "Request New Appointment",
+      "status": {
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No Show",
+        "pending": "Pending Confirmation"
+      },
+      "details": {
+        "professional": "Professional",
+        "date": "Date",
+        "time": "Time",
+        "duration": "Duration",
+        "modality": "Modality",
+        "location": "Location",
+        "notes": "Notes",
+        "amount": "Amount",
+        "paymentStatus": "Payment Status"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "reschedule": "Reschedule",
+        "cancel": "Cancel",
+        "joinSession": "Join Session",
+        "addToCalendar": "Add to Calendar",
+        "getDirections": "Get Directions"
+      },
+      "modality": {
+        "video": "Video Call",
+        "inPerson": "In-Person",
+        "phone": "Phone Call"
+      },
+      "payment": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "refunded": "Refunded"
+      },
+      "minutes": "min",
+      "with": "with"
+    },
+    "library": {
+      "badge": "Resource Library",
+      "title": "Self-Care & Educational Resources",
+      "description": "Access free articles, guided meditations, videos, and programs to support your mental wellness journey. Learn at your own pace.",
+      "searchPlaceholder": "Search resources, topics, or authors...",
+      "freeResources": "Free Resources",
+      "freeOnly": "Free Only",
+      "categories": {
+        "all": "All",
+        "videos": "Videos",
+        "articles": "Articles",
+        "audio": "Audio",
+        "meditations": "Meditations",
+        "guides": "Guides"
+      },
+      "availableResources": "Available Resources",
+      "resourceCount": "resource available",
+      "resourceCountPlural": "resources available",
+      "format": "Format",
+      "free": "Free",
+      "access": "Access",
+      "purchase": "Get Access",
+      "noResults": "No resources match your search. Try adjusting your filters or explore different categories."
+    }
   }
 }
