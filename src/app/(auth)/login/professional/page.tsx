@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Briefcase, Mail, Lock, ArrowRight } from "lucide-react";
+import { Briefcase, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { signIn } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,10 +21,32 @@ export default function ProfessionalLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/professional/dashboard");
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+      } else {
+        // Redirect to professional dashboard
+        router.push("/dashboard/professional");
+      }
+    } catch (err) {
+      setError("An error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,6 +59,11 @@ export default function ProfessionalLoginPage() {
 
       <AuthCard>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
           {/* Email Field */}
           <div>
             <Label htmlFor="email" className="font-light mb-2">
@@ -109,10 +137,20 @@ export default function ProfessionalLoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            disabled={isLoading}
+            className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            <span>{t("signIn")}</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              <>
+                <span>{t("signIn")}</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
           </button>
         </form>
 
