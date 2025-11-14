@@ -429,6 +429,7 @@
       "overview": "Aperçu",
       "profile": "Profil",
       "schedule": "Horaire",
+      "billing": "Facturation et paiements",
       "clientManagement": "Gestion des clients",
       "myRequests": "Mes demandes",
       "myClients": "Mes clients",
@@ -1549,6 +1550,109 @@
       "access": "Accéder",
       "purchase": "Obtenir l'accès",
       "noResults": "Aucune ressource ne correspond à votre recherche. Essayez d'ajuster vos filtres ou explorez différentes catégories."
+    },
+    "billing": {
+      "title": "Facturation et paiements",
+      "subtitle": "Gérez vos paiements et consultez l'historique des transactions",
+      "totalOwed": "Total dû",
+      "totalPaid": "Total payé",
+      "paymentMethods": "Méthodes de paiement",
+      "paymentsOwed": "Paiements dus",
+      "paymentHistory": "Historique des paiements",
+      "noPaymentsOwed": "Aucun paiement dû",
+      "noPaymentHistory": "Aucun historique de paiement",
+      "session": "Séance",
+      "invoiceNumber": "Numéro de facture",
+      "amount": "Montant",
+      "paymentMethod": "Méthode de paiement",
+      "dueDate": "Date d'échéance",
+      "downloadReceipt": "Télécharger le reçu",
+      "payNow": "Payer maintenant",
+      "expires": "Expire",
+      "policy": "Police",
+      "default": "Par défaut",
+      "addPaymentMethod": "Ajouter une méthode de paiement",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "status": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "upcoming": "À venir",
+        "overdue": "En retard"
+      }
+    }
+  },
+  "Professional": {
+    "billing": {
+      "title": "Facturation et paiements",
+      "subtitle": "Suivez vos créances et l'historique des paiements",
+      "totalReceivables": "Total des créances",
+      "totalReceived": "Total reçu",
+      "monthlyRevenue": "Ce mois-ci",
+      "bankDetails": "Coordonnées bancaires",
+      "accountHolder": "Titulaire du compte",
+      "institution": "Institution",
+      "accountNumber": "Numéro de compte",
+      "transitNumber": "Numéro de transit",
+      "bankDetailsNote": "Les paiements sont déposés dans les 2-3 jours ouvrables suivant la fin de la séance.",
+      "updateBankDetails": "Mettre à jour les coordonnées bancaires",
+      "receivables": "Créances",
+      "paymentHistory": "Historique des paiements",
+      "noReceivables": "Aucune créance en attente",
+      "noPaymentHistory": "Aucun historique de paiement",
+      "session": "Séance",
+      "invoiceNumber": "Numéro de facture",
+      "grossAmount": "Montant brut",
+      "platformFee": "Frais de plateforme",
+      "netAmount": "Montant net",
+      "paidDate": "Date de paiement",
+      "downloadInvoice": "Télécharger la facture",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "status": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "upcoming": "À venir",
+        "processing": "En traitement"
+      }
+    }
+  },
+  "Admin": {
+    "billing": {
+      "title": "Facturation de la plateforme",
+      "subtitle": "Surveillance complète des paiements et suivi des revenus",
+      "platformRevenue": "Revenus de la plateforme",
+      "pendingRevenue": "Revenus en attente",
+      "professionalPayouts": "Paiements aux professionnels",
+      "overdue": "Paiements en retard",
+      "searchPlaceholder": "Rechercher par client, professionnel ou numéro de facture...",
+      "exportReport": "Exporter le rapport",
+      "filters": {
+        "all": "Tout",
+        "paid": "Payé",
+        "pending": "En attente",
+        "upcoming": "À venir",
+        "processing": "En traitement",
+        "overdue": "En retard"
+      },
+      "allTransactions": "Toutes les transactions",
+      "transactions": "transaction",
+      "transactionsPlural": "transactions",
+      "noTransactions": "Aucune transaction trouvée",
+      "invoiceNumber": "Numéro de facture",
+      "clientPayment": "Paiement client",
+      "platformFee": "Frais de plateforme",
+      "professionalPayout": "Paiement professionnel",
+      "paymentMethod": "Méthode de paiement",
+      "paidDate": "Date de paiement",
+      "downloadInvoice": "Télécharger la facture",
+      "status": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "upcoming": "À venir",
+        "processing": "En traitement",
+        "overdue": "En retard"
+      }
     }
   }
 }

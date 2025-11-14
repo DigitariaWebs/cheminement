@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronRight,
   ClipboardList,
+  Wallet,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -63,6 +64,11 @@ export function AdminSidebar() {
           title: t("reports"),
           url: "/admin/dashboard/reports",
           icon: ClipboardList,
+        },
+        {
+          title: t("billing"),
+          url: "/admin/dashboard/billing",
+          icon: Wallet,
         },
       ],
     },

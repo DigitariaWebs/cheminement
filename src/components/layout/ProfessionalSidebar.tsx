@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronRight,
   Inbox,
+  Wallet,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -57,6 +58,11 @@ export function ProfessionalSidebar() {
           title: t("schedule"),
           url: "/professional/dashboard/schedule",
           icon: Calendar,
+        },
+        {
+          title: t("billing"),
+          url: "/professional/dashboard/billing",
+          icon: Wallet,
         },
       ],
     },
