@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronRight,
   Calendar,
+  Wallet,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -53,6 +54,11 @@ export function ClientSidebar() {
           title: t("schedule"),
           url: "/client/dashboard/appointments",
           icon: Calendar,
+        },
+        {
+          title: t("billing"),
+          url: "/client/dashboard/billing",
+          icon: Wallet,
         },
       ],
     },

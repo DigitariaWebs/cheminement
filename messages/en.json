@@ -431,6 +431,7 @@
       "overview": "Overview",
       "profile": "Profile",
       "schedule": "Schedule",
+      "billing": "Billing & Payments",
       "clientManagement": "Client Management",
       "myRequests": "My Requests",
       "myClients": "My Clients",
@@ -1551,6 +1552,109 @@
       "access": "Access",
       "purchase": "Get Access",
       "noResults": "No resources match your search. Try adjusting your filters or explore different categories."
+    },
+    "billing": {
+      "title": "Billing & Payments",
+      "subtitle": "Manage your payments and view transaction history",
+      "totalOwed": "Total Owed",
+      "totalPaid": "Total Paid",
+      "paymentMethods": "Payment Methods",
+      "paymentsOwed": "Payments Owed",
+      "paymentHistory": "Payment History",
+      "noPaymentsOwed": "No payments owed",
+      "noPaymentHistory": "No payment history",
+      "session": "Session",
+      "invoiceNumber": "Invoice Number",
+      "amount": "Amount",
+      "paymentMethod": "Payment Method",
+      "dueDate": "Due Date",
+      "downloadReceipt": "Download Receipt",
+      "payNow": "Pay Now",
+      "expires": "Expires",
+      "policy": "Policy",
+      "default": "Default",
+      "addPaymentMethod": "Add Payment Method",
+      "show": "Show",
+      "hide": "Hide",
+      "status": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "overdue": "Overdue"
+      }
+    }
+  },
+  "Professional": {
+    "billing": {
+      "title": "Billing & Payments",
+      "subtitle": "Track your receivables and payment history",
+      "totalReceivables": "Total Receivables",
+      "totalReceived": "Total Received",
+      "monthlyRevenue": "This Month",
+      "bankDetails": "Bank Details",
+      "accountHolder": "Account Holder",
+      "institution": "Institution",
+      "accountNumber": "Account Number",
+      "transitNumber": "Transit Number",
+      "bankDetailsNote": "Payments are deposited within 2-3 business days after session completion.",
+      "updateBankDetails": "Update Bank Details",
+      "receivables": "Receivables",
+      "paymentHistory": "Payment History",
+      "noReceivables": "No pending receivables",
+      "noPaymentHistory": "No payment history",
+      "session": "Session",
+      "invoiceNumber": "Invoice Number",
+      "grossAmount": "Gross Amount",
+      "platformFee": "Platform Fee",
+      "netAmount": "Net Amount",
+      "paidDate": "Paid Date",
+      "downloadInvoice": "Download Invoice",
+      "show": "Show",
+      "hide": "Hide",
+      "status": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "processing": "Processing"
+      }
+    }
+  },
+  "Admin": {
+    "billing": {
+      "title": "Platform Billing",
+      "subtitle": "Complete payment oversight and revenue tracking",
+      "platformRevenue": "Platform Revenue",
+      "pendingRevenue": "Pending Revenue",
+      "professionalPayouts": "Professional Payouts",
+      "overdue": "Overdue Payments",
+      "searchPlaceholder": "Search by client, professional, or invoice number...",
+      "exportReport": "Export Report",
+      "filters": {
+        "all": "All",
+        "paid": "Paid",
+        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "processing": "Processing",
+        "overdue": "Overdue"
+      },
+      "allTransactions": "All Transactions",
+      "transactions": "transaction",
+      "transactionsPlural": "transactions",
+      "noTransactions": "No transactions found",
+      "invoiceNumber": "Invoice Number",
+      "clientPayment": "Client Payment",
+      "platformFee": "Platform Fee",
+      "professionalPayout": "Professional Payout",
+      "paymentMethod": "Payment Method",
+      "paidDate": "Paid Date",
+      "downloadInvoice": "Download Invoice",
+      "status": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "processing": "Processing",
+        "overdue": "Overdue"
+      }
     }
   }
 }
