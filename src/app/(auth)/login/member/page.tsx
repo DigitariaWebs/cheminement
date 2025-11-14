@@ -15,6 +15,7 @@ import {
   AuthFooter,
 } from "@/components/auth";
 import { SocialLogin } from "@/components/auth/SocialLogin";
+import { redirect } from "next/navigation";
 
 export default function MemberLoginPage() {
   const t = useTranslations("Auth.memberLogin");

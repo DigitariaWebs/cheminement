@@ -3,4 +3,3 @@ export { default as PersonalizedJourneySection } from "./PersonalizedJourneySect
 export { default as ExpertiseSection } from "./ExpertiseSection";
 export { default as AccessibilitySection } from "./AccessibilitySection";
 export { default as CommitmentSection } from "./CommitmentSection";
-

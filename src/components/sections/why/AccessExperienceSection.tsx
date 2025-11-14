@@ -1,46 +1,49 @@
 "use client";
 
-import { Video, Building2, LayoutDashboard, Compass, Headset } from "lucide-react";
-
-const modes = [
-  {
-    icon: Video,
-    title: "À distance",
-    description:
-      "Accédez à un soutien professionnel via des appels vidéo sécurisés, peu importe où vous vous trouvez — à la maison, au travail, en déplacement ou en région éloignée.",
-    highlight: "Souplesse totale et continuité des suivis.",
-  },
-  {
-    icon: Building2,
-    title: "En bureau",
-    description:
-      "Profitez d’un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
-    highlight: "Un espace accueillant, confidentiel et serein.",
-  },
-];
-
-const experienceHighlights = [
-  {
-    icon: LayoutDashboard,
-    title: "Navigation intuitive",
-    description:
-      "Une interface claire qui simplifie chaque action et vous guide sans effort.",
-  },
-  {
-    icon: Compass,
-    title: "Accès rapide",
-    description:
-      "Retrouvez immédiatement les services pertinents et adaptez votre parcours à vos besoins.",
-  },
-  {
-    icon: Headset,
-    title: "Accompagnement continu",
-    description:
-      "Notre équipe est disponible pour vous épauler, répondre à vos questions et vous rassurer.",
-  },
-];
+import {
+  Video,
+  Building2,
+  LayoutDashboard,
+  Compass,
+  Headset,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function AccessExperienceSection() {
+  const t = useTranslations("Why.access");
+
+  const modes = [
+    {
+      icon: Video,
+      title: t("modes.remote.title"),
+      description: t("modes.remote.description"),
+      highlight: t("modes.remote.highlight"),
+    },
+    {
+      icon: Building2,
+      title: t("modes.office.title"),
+      description: t("modes.office.description"),
+      highlight: t("modes.office.highlight"),
+    },
+  ];
+
+  const experienceHighlights = [
+    {
+      icon: LayoutDashboard,
+      title: t("platform.highlights.navigation.title"),
+      description: t("platform.highlights.navigation.description"),
+    },
+    {
+      icon: Compass,
+      title: t("platform.highlights.access.title"),
+      description: t("platform.highlights.access.description"),
+    },
+    {
+      icon: Headset,
+      title: t("platform.highlights.support.title"),
+      description: t("platform.highlights.support.description"),
+    },
+  ];
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-muted via-background to-muted py-24">
       <div className="absolute inset-0 opacity-[0.06]">
@@ -52,17 +55,13 @@ export default function AccessExperienceSection() {
         <div className="mx-auto max-w-6xl space-y-16">
           <header className="text-center">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-              Accessible où que vous soyez, quand vous en avez besoin
+              {t("badge")}
             </p>
             <h2 className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-              Vous choisissez la modalité qui vous convient, nous assurons la
-              qualité de l’expérience.
+              {t("title")}
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Nous éliminons les barrières qui empêchent de consulter et
-              simplifions votre cheminement grâce à une plateforme pensée pour
-              vous. Vous choisissez l’option qui vous convient le mieux, nous
-              vous accompagnons avec la même qualité de soins.
+              {t("description")}
             </p>
           </header>
 
@@ -95,28 +94,33 @@ export default function AccessExperienceSection() {
             <div className="flex h-full flex-col justify-between gap-6 rounded-4xl bg-card/80 p-8 shadow-xl backdrop-blur">
               <div>
                 <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground/70">
-                  Une plateforme simple, humaine et conçue pour vous
+                  {t("platform.badge")}
                 </p>
                 <h3 className="mt-4 font-serif text-2xl font-medium text-foreground">
-                  Votre démarche est fluide, rassurante et soutenue en continu.
+                  {t("platform.title")}
                 </h3>
               </div>
               <div className="space-y-6">
-                {experienceHighlights.map(({ icon: Icon, title, description }) => (
-                  <div key={title} className="flex gap-4 rounded-3xl bg-muted/30 p-5">
-                    <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-foreground/90 text-card">
-                      <Icon className="h-5 w-5" />
+                {experienceHighlights.map(
+                  ({ icon: Icon, title, description }) => (
+                    <div
+                      key={title}
+                      className="flex gap-4 rounded-3xl bg-muted/30 p-5"
+                    >
+                      <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-foreground/90 text-card">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-serif text-lg font-medium text-foreground">
+                          {title}
+                        </p>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {description}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-serif text-lg font-medium text-foreground">
-                        {title}
-                      </p>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -125,4 +129,3 @@ export default function AccessExperienceSection() {
     </section>
   );
 }
-

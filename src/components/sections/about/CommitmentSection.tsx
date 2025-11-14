@@ -1,8 +1,10 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function CommitmentSection() {
+  const t = useTranslations("About.commitment");
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-accent via-muted to-background py-24">
       <div className="absolute inset-0 opacity-[0.08]">
@@ -16,22 +18,16 @@ export default function CommitmentSection() {
             <Heart className="h-7 w-7" />
           </div>
           <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-            Notre engagement
+            {t("title")}
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Avec Je chemine, vous n’êtes plus seul. Nous sommes là pour vous
-            soutenir, vous guider et vous aider à cheminer vers une vie plus
-            sereine, équilibrée et épanouie.
+            {t("description1")}
           </p>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Notre plateforme offre une porte d’entrée simple, humaine et
-            sécurisée pour prendre soin de votre santé mentale – pour vous ou
-            votre famille – tout en vous donnant accès à des outils pertinents,
-            des informations claires et un accompagnement professionnel fiable.
+            {t("description2")}
           </p>
         </div>
       </div>
     </section>
   );
 }
-

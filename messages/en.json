@@ -441,7 +441,12 @@
       "support": "Support",
       "helpCenter": "Help Center",
       "settings": "Settings",
-      "logout": "Logout"
+      "logout": "Logout",
+      "platformManagement": "Platform Management",
+      "professionals": "Professionals",
+      "patients": "Patients",
+      "systemSettings": "System Settings",
+      "reports": "Reports"
     },
     "overview": {
       "title": "Welcome Back",
@@ -740,6 +745,812 @@
       "weekOf": "Week of",
       "noSessionsScheduled": "No sessions scheduled",
       "noRequestsPending": "No requests pending"
+    },
+    "analytics": {
+      "badge": "Analytics",
+      "title": "Analytics coming soon.",
+      "description": "We're finalizing an analytics space to track your key metrics: engagement rate, client retention, clinical progress, and marketplace resource performance. Our team is actively working on setting up dashboards and custom exports.",
+      "whatsComing": "What's coming:",
+      "features": {
+        "dashboards": "Interactive dashboards",
+        "reports": "Downloadable reports",
+        "stats": "Statistics by intervention type",
+        "satisfaction": "Client satisfaction analysis"
+      },
+      "currentPhase": "Current phase",
+      "phaseDescription": "Data collection is ready and we're finishing the visualization interfaces. You'll gradually see the first reports appear as we iterate on the product.",
+      "specificNeeds": "Have specific needs?",
+      "specificNeedsDesc": "Tell us which metrics you'd like us to prioritize and we'll integrate them into the roadmap.",
+      "contactTeam": "Write to the product team",
+      "thankYou": "Thank you for your patience — this feature will be activated when the full platform launches. We'll notify you via email and in the dashboard."
+    },
+    "library": {
+      "badge": "Resource marketplace",
+      "title": "Share and discover the best of your expertise.",
+      "description": "Upload your videos, books, guides or webinars to support the professional community. Get inspired by your colleagues' creations, collaborate and make your practice shine.",
+      "uploadResource": "Upload a resource",
+      "myDownloads": "My downloads",
+      "searchPlaceholder": "Search for a resource, author or topic...",
+      "categories": {
+        "all": "All",
+        "videos": "Videos",
+        "ebooks": "Books & eBooks",
+        "webinars": "Webinars",
+        "guides": "Practical guides"
+      },
+      "popularResources": "Popular resources",
+      "resourceCount": "resource available",
+      "resourceCountPlural": "resources available",
+      "format": "Format",
+      "sharedOn": "Shared on Cheminement marketplace",
+      "pages": "pages",
+      "noResults": "No resources match your search at the moment. Try broadening your filters or be the first to share content!"
+    }
+  },
+  "About": {
+    "hero": {
+      "badge": "Who We Are",
+      "headline": "At Je chemine, we believe that everyone deserves human, safe, and personalized support tailored to their reality.",
+      "description1": "Our mission is to support your emotional and psychological well-being through a personalized journey designed to meet your unique needs and pace. We offer simple and caring access to a team of experts whose practice is regulated, recognized, and compliant with their professional order requirements.",
+      "description2": "Whatever your situation, you are accompanied by a qualified professional, ready to walk with you towards a more serene, balanced, and fulfilling life."
+    },
+    "commitment": {
+      "title": "Our Commitment",
+      "description1": "With Je chemine, you are no longer alone. We are here to support you, guide you, and help you journey towards a more serene, balanced, and fulfilling life.",
+      "description2": "Our platform offers a simple, human, and secure gateway to take care of your mental health – for you or your family – while giving you access to relevant tools, clear information, and reliable professional support."
+    },
+    "expertise": {
+      "badge": "Regulated and Recognized Expertise",
+      "title": "Ethics, rigor, and confidentiality at the heart of every interaction.",
+      "description1": "We are committed to protecting your privacy and personal information in accordance with current regulations, including Bill 25. Every intervention is based on rigorous standards and deep respect for your dignity.",
+      "description2": "Whether you consult a psychologist, psychotherapist, or other professional, you have the certainty of being accompanied by a qualified expert, recognized by their professional order.",
+      "cards": {
+        "confidentiality": {
+          "title": "Respect for Confidentiality",
+          "description": "Strict protection of your sensitive information and respect for ethical standards."
+        },
+        "quality": {
+          "title": "Professional Quality",
+          "description": "Regulated practices, rigorous supervision, and continuous training for each practitioner."
+        }
+      }
+    },
+    "personalizedJourney": {
+      "badge": "A Fully Personalized Journey",
+      "title": "Your journey is unique, your support is too.",
+      "description": "Our matching process aims to connect you with the professional who best suits your reality. Each meeting is designed to facilitate lasting engagement and promote the success of your therapeutic journey.",
+      "matchingTitle": "We Take Into Account",
+      "matchingPoints": [
+        "Your issue",
+        "Your approach preferences",
+        "Your communication style"
+      ],
+      "goal": "The goal: build a strong therapeutic relationship adapted to your needs."
+    },
+    "accessibility": {
+      "badge": "Accessible, flexible, wherever you are",
+      "title": "A platform designed to adapt to your daily life.",
+      "description": "We know your reality is unique. Je chemine makes help accessible according to your preferences, so you can move forward at your own pace, wherever you are.",
+      "options": {
+        "remote": {
+          "title": "Remote Consultations",
+          "description": "Secure video calls to support you, whether you're at home, traveling, or in a remote area.",
+          "details": "No more geographical barriers, no more logistical obstacles."
+        },
+        "office": {
+          "title": "Office Consultations",
+          "description": "A warm and professional welcome for those who prefer direct human contact.",
+          "details": "Spaces designed for your comfort, confidentiality, and well-being."
+        },
+        "choice": {
+          "title": "Professional Choice",
+          "description": "You remain in control: find the specialist who suits you and build a solid therapeutic relationship.",
+          "details": "Our platform offers you transparent profiles and support to make the right choice."
+        }
+      }
+    }
+  },
+  "Services": {
+    "hero": {
+      "badge": "Our Services",
+      "headline": "A complete ecosystem of mental health services for adults, children, families, and schools.",
+      "description": "We bring together qualified professionals and specialized programs to support each person at every stage of their journey. Discover how we can support you and your family.",
+      "foundations": {
+        "title": "Our Foundations",
+        "items": [
+          "Qualified experts for every issue.",
+          "Intelligent matching for quick support.",
+          "A simple and reassuring platform to track your journey."
+        ]
+      }
+    },
+    "therapySpectrum": {
+      "badge": "1 · Complete Coverage of Therapeutic Needs",
+      "title": "Services dedicated to adults, children, couples, and families.",
+      "services": {
+        "adult": {
+          "title": "Adult Psychotherapy",
+          "description": "Support for depression, anxiety, post-traumatic stress, obsessive-compulsive disorders, panic disorder, ADHD (assessment & follow-up), emotional management, self-esteem, relationship challenges, and life transition adaptation."
+        },
+        "child": {
+          "title": "Child & Adolescent Psychotherapy",
+          "description": "Targeted interventions for learning difficulties, behavioral disorders, ADHD, anxiety, oppositional defiant disorder, emotional management, social relationships, and self-esteem."
+        },
+        "family": {
+          "title": "Family Therapy",
+          "description": "Understanding dynamics, restoring communication, and building a more harmonious climate to move forward together."
+        },
+        "couple": {
+          "title": "Couple Therapy",
+          "description": "Navigate conflicts, strengthen connection, communicate better, and build a respectful and stable relationship."
+        },
+        "parenting": {
+          "title": "Parental Coaching",
+          "description": "Support to better understand your child's development, manage behavioral challenges, emotions, positive guidance, and continuity between school and home."
+        }
+      }
+    },
+    "sentiersProgram": {
+      "badge": "2 · School Component — Sentiers Program",
+      "title": "A space dedicated to children, adolescents, families, and schools.",
+      "description": "The Sentiers program offers comprehensive support that combines clinical expertise, educational tools, and close collaboration with the school environment.",
+      "pillarsTitle": "The Program's Pillars",
+      "pillars": {
+        "assessment": {
+          "title": "Complete School Assessment",
+          "description": "Tests, observations, and analyses to understand the learning profile and specific needs."
+        },
+        "iep": {
+          "title": "Intervention Plans (IEP)",
+          "description": "Collaborative design of individualized plans with clear and measurable objectives."
+        },
+        "collaboration": {
+          "title": "Clinical Analysis & School-Family Collaboration",
+          "description": "An interdisciplinary team working with teachers, administrators, and parents."
+        },
+        "support": {
+          "title": "Individualized Support",
+          "description": "Psychosocial follow-up, parental coaching, ADHD/anxiety/learning guidance, classroom interventions."
+        }
+      },
+      "professionalsTitle": "We Work With",
+      "professionals": [
+        "School Psychologists",
+        "Psychoeducators",
+        "Special Education Technicians (SET)",
+        "Specialized Practitioners"
+      ],
+      "customSupport": "Tailored support to promote success, self-esteem, and well-being for young people, in partnership with their school and family environment.",
+      "networkTitle": "A Coordinated Network",
+      "networkDescription": "School teams, practitioners, family: we work together to implement the best strategies."
+    },
+    "complementaryServices": {
+      "badge": "3 · Complementary Services",
+      "title": "Resources to go further, at your own pace.",
+      "services": {
+        "adhd": {
+          "title": "ADHD Assessment (adult & child)",
+          "description": "Complete process with recommendations, follow-ups, interventions, and adaptation strategies for school, home, and work."
+        },
+        "selfLearning": {
+          "title": "Self-Learning & Educational Resources",
+          "description": "Free access to tools to start your journey: psychoeducation, breathing exercises, guided meditations, issue understanding sheets."
+        },
+        "paidContent": {
+          "title": "Specialized Paid Content",
+          "description": "Thematic programs, specialized videos, workshops, content created by our professionals, podcasts, articles, and capsules to deepen your learning."
+        }
+      },
+      "badge2": "Educational support to complement therapy"
+    },
+    "modelWorks": {
+      "title": "Why Our Model Works",
+      "description": "Whether you're taking the first step or continuing an already started follow-up, Je chemine offers you a reliable space to move forward.",
+      "reasons": [
+        "Qualified and supervised experts",
+        "A deeply human approach",
+        "Intelligent matching that saves time",
+        "Quick access to relevant services",
+        "Varied offerings for every need",
+        "Total flexibility (online and in-person)",
+        "Educational support to complement therapy",
+        "A simple, reassuring, and secure platform"
+      ]
+    }
+  },
+  "Approaches": {
+    "hero": {
+      "badge": "Our Approaches",
+      "headline": "An approach built around you, by experts who listen and adapt to your reality.",
+      "description": "Every support is unique. We combine a deeply human approach with recognized clinical practices to build a tailored journey, respectful of your story, goals, and pace.",
+      "values": {
+        "title": "What We Stand For",
+        "respect": {
+          "title": "Respect for the Person",
+          "description": "You are at the heart of the process, never in an imposed model."
+        },
+        "rigor": {
+          "title": "Clinical Rigor",
+          "description": "Validated approaches, regulated and continuously updated."
+        },
+        "trust": {
+          "title": "Trust and Safety",
+          "description": "An ethical, confidential, and reassuring framework to move forward."
+        }
+      }
+    },
+    "personCentered": {
+      "badge": "1 · A Person-Centered Approach",
+      "title": "We adapt our support to your needs, not the other way around.",
+      "description": "Every individual has a story, a pace, a sensitivity. Building a tailored therapeutic journey means allowing your voice to be heard, your preferences to be respected, and your pace to be followed, without a prefabricated model.",
+      "note": "Inspired by our personalized journey concept: a unique approach, continuous adjustments, evolving support.",
+      "focus": {
+        "objectives": {
+          "title": "Your Objectives",
+          "description": "Clarify what you want to transform, improve, or consolidate to guide each session."
+        },
+        "issue": {
+          "title": "Your Issue",
+          "description": "We finely analyze your challenges to propose interventions aligned with your reality."
+        },
+        "style": {
+          "title": "Your Relational Style",
+          "description": "We adapt our presence, pace, and language to your way of relating."
+        },
+        "preferences": {
+          "title": "Your Therapeutic Preferences",
+          "description": "We adjust methods, tools, and meeting structure so you feel recognized and respected at every stage."
+        }
+      }
+    },
+    "clinicalApproaches": {
+      "badge": "2 · Recognized and Regulated Approaches",
+      "title": "Validated clinical models, carried by recognized experts.",
+      "description": "Our professionals practice according to scientifically recognized approaches regulated by their professional orders. Each method is specifically chosen for your situation.",
+      "approaches": {
+        "cbt": {
+          "title": "Cognitive-Behavioral Therapies (CBT)",
+          "description": "Proven tools to act on thoughts, behaviors, and emotions that hold you back."
+        },
+        "psychodynamic": {
+          "title": "Psychodynamic Approaches",
+          "description": "Understand your deep dynamics and relational patterns for lasting transformation."
+        },
+        "systemic": {
+          "title": "Systemic Approaches",
+          "description": "Family, couple, groups: intervene on interactions to restore collective balance."
+        },
+        "humanistic": {
+          "title": "Humanistic Approaches",
+          "description": "An authentic, empathetic, and non-judgmental presence to promote your autonomy."
+        },
+        "mindfulness": {
+          "title": "Mindfulness / Mindful Awareness",
+          "description": "Strengthen attention, emotional regulation, and connection to self through guided practices."
+        },
+        "psychoeducation": {
+          "title": "Psychoeducation",
+          "description": "Structured support to understand, equip yourself, and implement adapted strategies."
+        },
+        "neuropsych": {
+          "title": "School and Neuropsychological Interventions",
+          "description": "Assessments, intervention plans, and specialized follow-ups to support educational success."
+        },
+        "coaching": {
+          "title": "Parental Coaching & Specialized Guidance",
+          "description": "Concrete support for ADHD, anxiety, emotional management, oppositional behaviors, etc."
+        }
+      }
+    },
+    "ethics": {
+      "badge": "3 · Ethics and Confidentiality",
+      "title": "We protect your trust, at every moment.",
+      "description": "Confidentiality is not an option, it's our foundation. We designed our platform and processes to ensure maximum protection of your privacy, from the first contact to the closure of your file.",
+      "note": "Each professional is a signatory to specific commitments regarding data protection and benefits from ongoing training on confidentiality.",
+      "commitments": {
+        "ethics": {
+          "title": "Respect for Ethical Rules",
+          "description": "Our practitioners respect the ethical codes of their professional orders and ensure the protection of your dignity."
+        },
+        "law25": {
+          "title": "Compliance with Bill 25",
+          "description": "We apply strict policies for the protection of your personal and sensitive data."
+        },
+        "security": {
+          "title": "Secure Information Management",
+          "description": "Robust technological systems and rigorous internal processes to guarantee confidentiality."
+        },
+        "confidentiality": {
+          "title": "Absolute Confidentiality",
+          "description": "Your journey is protected: exchanges, documents, and follow-ups are strictly confidential."
+        }
+      }
+    },
+    "flexibility": {
+      "badge": "4 · Flexibility: Where and When You Want",
+      "title": "Choose the support mode that fits your reality.",
+      "modalities": {
+        "online": {
+          "title": "Online Consultations",
+          "bullets": [
+            "Secure, encrypted video calls, simple to join",
+            "No travel required, ideal for busy schedules",
+            "Accessible everywhere, even in remote areas"
+          ]
+        },
+        "office": {
+          "title": "In-Office Consultations",
+          "bullets": [
+            "In-person meetings in a warm setting",
+            "For those who prefer direct contact",
+            "Spaces designed for confidentiality and comfort"
+          ]
+        }
+      },
+      "extras": {
+        "schedule": "Schedule flexibility",
+        "accessibility": "Accessibility everywhere",
+        "description": "We adjust planning and logistics according to your needs to offer you a smooth and reassuring experience."
+      }
+    },
+    "matching": {
+      "badge": "5 · Intelligent Matching",
+      "title": "The right professional, for the right person, at the right time.",
+      "description": "Our matching process saves time and provides high-quality support. You are connected to a professional who matches your clinical needs, relationship expectations, and daily reality.",
+      "highlight": "A major strength of Je chemine",
+      "criteriaTitle": "Criteria Analyzed",
+      "criteria": [
+        "Issue and clinical needs",
+        "Desired therapeutic approach",
+        "Age, life cycle and context",
+        "Desired clinical experience",
+        "Personal preferences and availability"
+      ],
+      "steps": [
+        {
+          "title": "In-depth Analysis of Your Request",
+          "description": "We gather key information about your issue, goals, and context."
+        },
+        {
+          "title": "Identification of Matching Criteria",
+          "description": "Desired approach, age, desired clinical experience, personal preferences: we specify each parameter."
+        },
+        {
+          "title": "Selection of the Ideal Professional",
+          "description": "Our platform identifies the person who has the expertise, style, and availability suited to your situation."
+        },
+        {
+          "title": "Continuous Monitoring and Adjustments",
+          "description": "We remain present to ensure the quality of support and adjust if necessary."
+        }
+      ],
+      "stepLabel": "Step"
+    }
+  },
+  "Contact": {
+    "hero": {
+      "badge": "Contact Page",
+      "headline": "We are here to support you.",
+      "description": "Whether you're starting a journey, seeking information, or want to be guided to the right professional, our team is available for you. Every request is handled with respect, confidentiality, and care.",
+      "expectations": {
+        "title": "What You Can Expect",
+        "items": [
+          "Attentive listening and a personalized response.",
+          "Support to clarify your needs.",
+          "Solutions adapted to your reality."
+        ]
+      }
+    },
+    "channels": {
+      "badge": "Contact Us",
+      "title": "An email is enough to start the conversation.",
+      "emailLabel": "Write to Us",
+      "email": "contact@monimpression.com",
+      "inquiries": {
+        "services": {
+          "title": "Services and Approaches",
+          "description": "Understand our services, clinical approaches, and available modalities."
+        },
+        "matching": {
+          "title": "Matching with a Professional",
+          "description": "Identify the person best suited to your issue and preferences."
+        },
+        "sentiers": {
+          "title": "Sentiers Program",
+          "description": "Get information about support dedicated to children, adolescents, and schools."
+        },
+        "support": {
+          "title": "Profile, Billing, and Support",
+          "description": "Create or update your profile, receive administrative help or clarification on billing."
+        }
+      },
+      "responseTime": "We respond to every message promptly and schedule, when needed, an exploratory call to clarify your expectations."
+    },
+    "form": {
+      "badge": "Contact Form",
+      "title": "Do you prefer to write to us differently? Fill out our form.",
+      "description": "Share your needs, questions, and availability. A manager will contact you as soon as possible to ensure personalized follow-up.",
+      "reasons": [
+        "Request an appointment or schedule a first meeting.",
+        "Get detailed information about our approaches and services.",
+        "Clarify your needs, objectives, and the context of your journey.",
+        "Receive help to prepare for your first appointment."
+      ],
+      "guidance": "We will guide you to the right professional and help you prepare well for your first meeting."
+    },
+    "emergency": {
+      "title": "In Case of Emergency",
+      "description": "If you are experiencing an emergency situation, go immediately to the nearest medical center or contact your region's emergency services.",
+      "callToAction": "Call 911 or your local emergency service"
+    },
+    "joinUs": {
+      "badge": "Join Our Team",
+      "title": "You are a professional in mental health? Join our mission.",
+      "description": "Become part of a collaborative platform dedicated to quality care, supported practice, and meaningful client relationships. Together, let's build a more human, accessible, and professional mental health ecosystem.",
+      "highlights": {
+        "matching": {
+          "title": "Intelligent Matching",
+          "description": "Meet clients who match your expertise and intervention style."
+        },
+        "support": {
+          "title": "Administrative Support",
+          "description": "Planning, billing, and follow-up: focus on clinical work, we handle the rest."
+        },
+        "tools": {
+          "title": "Practice Tools & Mentorship",
+          "description": "Access to management tools, mentorship, supervision, and the Je Diversifie program."
+        },
+        "flexibility": {
+          "title": "Flexible Model",
+          "description": "Work according to your availability, online or in office, with constant team support."
+        }
+      }
+    },
+    "support": {
+      "badge": "We're Here to Support You",
+      "title": "Have a question about a service, a consultation, or your profile?",
+      "description": "Our team provides personalized support to guide you through every step of your journey and resolve any doubts or questions.",
+      "areas": {
+        "services": {
+          "title": "Understanding Services",
+          "description": "We help you explore your issue, clarify your needs, and identify appropriate resources."
+        },
+        "consultations": {
+          "title": "How Consultations Work",
+          "description": "Detailed explanations about online or in-office meetings, planning, and follow-ups."
+        },
+        "billing": {
+          "title": "Billing and Payments",
+          "description": "Administrative support for receipts, insurance, payment plans, and reimbursements."
+        }
+      },
+      "contactPrompt": "Use our contact form or write to us directly. We respond quickly and guide you with clarity."
+    }
+  },
+  "Why": {
+    "hero": {
+      "badge": "Why Choose Us",
+      "headline": "Choosing Je chemine means choosing a human, professional, and structured approach to take care of your mental health.",
+      "description": "Our platform was designed to eliminate obstacles, simplify access to help, and support you at every stage of your journey. We move forward with you, at your pace, so that every interaction is smooth, reassuring, and deeply human.",
+      "subtitle": "An experience built on trust and care"
+    },
+    "reasons": {
+      "badge": "Why Choose Us",
+      "title": "A human, professional, and structured approach to take care of your mental health.",
+      "description": "We eliminate obstacles, simplify access, and support you at every stage. Discover what makes Je chemine unique.",
+      "timeline": {
+        "personalized": {
+          "id": "01",
+          "title": "A Truly Personalized Journey",
+          "description": "Your story, challenges, and goals are unique. Our intelligent matching identifies the professional best suited to your reality to build an authentic and motivating therapeutic relationship. You journey with someone who truly fits you.",
+          "chips": [
+            "Your issue",
+            "Your clinical needs",
+            "Your approach preferences"
+          ]
+        },
+        "qualified": {
+          "id": "02",
+          "title": "Qualified and Supervised Professionals",
+          "description": "Psychologists, psychotherapists, psychoeducators, and other specialists: you are supported by experts whose practice is recognized and rigorously regulated by their professional order.",
+          "chips": [
+            "Clinical competence",
+            "Continuous supervision",
+            "Proven practices"
+          ]
+        },
+        "ethics": {
+          "id": "03",
+          "title": "A Strong Commitment to Ethics and Confidentiality",
+          "description": "Your trust is essential. We apply high privacy protection standards, including Bill 25, to guarantee a safe and respectful space. Your information is protected. Your journey is respected. Your space is secure.",
+          "chips": [
+            "Data protection",
+            "Respect for the journey",
+            "Safe framework"
+          ]
+        }
+      }
+    },
+    "access": {
+      "badge": "Accessible wherever you are, when you need it",
+      "title": "You choose the modality that suits you, we ensure the quality of the experience.",
+      "description": "We eliminate barriers that prevent consultation and simplify your journey through a platform designed for you. You choose the option that suits you best, we support you with the same quality of care.",
+      "modes": {
+        "remote": {
+          "title": "Remote",
+          "description": "Access professional support via secure video calls, no matter where you are — at home, at work, traveling, or in a remote area.",
+          "highlight": "Total flexibility and continuity of follow-ups."
+        },
+        "office": {
+          "title": "In Office",
+          "description": "Enjoy a warm and professional environment for direct contact, if you prefer an in-person approach.",
+          "highlight": "A welcoming, confidential, and serene space."
+        }
+      },
+      "platform": {
+        "badge": "A simple, human platform designed for you",
+        "title": "Your journey is smooth, reassuring, and continuously supported.",
+        "highlights": {
+          "navigation": {
+            "title": "Intuitive Navigation",
+            "description": "A clear interface that simplifies every action and guides you effortlessly."
+          },
+          "access": {
+            "title": "Quick Access",
+            "description": "Immediately find relevant services and adapt your journey to your needs."
+          },
+          "support": {
+            "title": "Continuous Support",
+            "description": "Our team is available to support you, answer your questions, and reassure you."
+          }
+        }
+      }
+    },
+    "familySupport": {
+      "badge": "Support for the Whole Family",
+      "title": "Whatever your challenge, we have a professional to help you.",
+      "description": "Adult psychotherapy, family therapy, school assessment, ADHD support, parental support, or psychoeducation: every member of your family can find their place and receive the necessary help.",
+      "coordinated": "A coordinated approach for the whole family.",
+      "services": {
+        "adult": {
+          "title": "Adult Psychotherapy",
+          "description": "Individualized support to navigate your personal and emotional challenges."
+        },
+        "family": {
+          "title": "Family Therapy",
+          "description": "Dialogue spaces to strengthen bonds, ease tensions, and move forward together."
+        },
+        "assessment": {
+          "title": "School and ADHD Assessment",
+          "description": "Complete assessments and action plans adapted to each child's specific needs."
+        },
+        "parenting": {
+          "title": "Parental Support and Psychoeducation",
+          "description": "Concrete tools to support your child's development and your role as a parent."
+        }
+      }
+    },
+    "supportCommitment": {
+      "badge": "A Commitment to Support You Every Step of the Way",
+      "title": "We accompany you from the first contact to the completion of your journey.",
+      "description": "From the moment you write to us to your last session, we ensure your experience is smooth, human, and supported. You are never alone.",
+      "steps": {
+        "contact": {
+          "title": "Initial Contact",
+          "description": "Our team responds quickly and personally to understand your needs and guide you towards the best solution."
+        },
+        "matching": {
+          "title": "Professional Matching",
+          "description": "We connect you with a professional who matches your reality, your preferences, and your objectives."
+        },
+        "followUp": {
+          "title": "Follow-up and Adjustment",
+          "description": "Throughout your journey, we remain available to adjust, answer your questions, and ensure your well-being."
+        }
+      },
+      "goal": "Our goal: that every person feels heard, supported, and accompanied at every stage."
+    }
+  },
+  "Client": {
+    "overview": {
+      "tagline": "Your Wellness Journey",
+      "welcome": "Welcome",
+      "welcomeMessage": "Je Chemine is here to support you, step by step. Everything is designed to make your journey human, caring, and aligned with your needs.",
+      "quote": "You're already moving forward. Continue at your own pace, we're with you.",
+      "todayMission": "Your mission today",
+      "todayMissionText": "Take a moment to breathe deeply, note your state of mind, and explore a self-care tool below.",
+      "requestStatus": {
+        "title": "Request Status",
+        "subtitle": "We're analyzing your profile to identify the best suited professional.",
+        "analyzing": "Under Review",
+        "matched": "Matched",
+        "pending": "Pending",
+        "takenCareBy": "Matching handled by Je Chemine team",
+        "lastUpdate": "Last update:",
+        "nextStep": "Next step:",
+        "nextStepText": "Confirmation of your professional and appointment proposal",
+        "editProfile": "Edit My Profile",
+        "contactTeam": "Contact Matching Team",
+        "changeHistory": "Change History",
+        "by": "By"
+      },
+      "upcomingAppointments": {
+        "title": "Upcoming Appointments",
+        "noAppointments": "No upcoming appointments",
+        "viewAll": "View All Appointments",
+        "with": "with",
+        "requestAppointment": "Request Appointment"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "viewProfile": "View My Profile",
+        "viewProfileDesc": "Update your information and preferences",
+        "manageAppointments": "Manage Appointments",
+        "manageAppointmentsDesc": "View and schedule your sessions",
+        "browseResources": "Browse Resources",
+        "browseResourcesDesc": "Access self-care tools and materials"
+      },
+      "support": {
+        "title": "Support & Help",
+        "email": "Email",
+        "emailDesc": "Write to us for any question or adjustment.",
+        "faq": "FAQ & Help",
+        "faqDesc": "Find answers to frequently asked questions.",
+        "billing": "Billing & Payments",
+        "billingDesc": "Track invoices, receipts, and insurance.",
+        "openFaq": "Open FAQ",
+        "billingCenter": "Billing Center"
+      }
+    },
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your personal information and preferences",
+      "edit": "Edit",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "personalInfo": {
+        "title": "Personal Information",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address",
+        "phone": "Phone Number",
+        "language": "Preferred Language",
+        "gender": "Gender",
+        "age": "Age",
+        "concernedPerson": "Who is concerned?",
+        "myself": "Myself",
+        "myChild": "My child",
+        "myPartner": "My partner",
+        "other": "Other",
+        "years": "years"
+      },
+      "issueDetails": {
+        "title": "Issue & Concern Details",
+        "primaryIssue": "Primary Issue",
+        "secondaryIssues": "Secondary Concerns",
+        "description": "Description",
+        "descriptionPlaceholder": "Tell us more about what brings you here...",
+        "severity": "Severity Level",
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe",
+        "duration": "Duration",
+        "lessThanMonth": "Less than a month",
+        "oneToThree": "1-3 months",
+        "threeToSix": "3-6 months",
+        "moreThanSix": "More than 6 months"
+      },
+      "preferences": {
+        "title": "Appointment Preferences",
+        "availability": "Availability",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "weekend": "Weekend",
+        "modality": "Preferred Modality",
+        "online": "Online",
+        "inPerson": "In-Person",
+        "both": "Both",
+        "location": "Location",
+        "locationPlaceholder": "City, Province",
+        "notes": "Additional Notes",
+        "notesPlaceholder": "Any preferences for your professional or appointments..."
+      },
+      "matching": {
+        "title": "Professional Matching",
+        "preferredGender": "Preferred Professional Gender",
+        "noPreference": "No preference",
+        "male": "Male",
+        "female": "Female",
+        "preferredAge": "Preferred Age Range",
+        "any": "Any",
+        "younger": "Younger (25-35)",
+        "middle": "Middle (35-50)",
+        "older": "Older (50+)",
+        "preferredApproach": "Preferred Therapeutic Approach",
+        "approachNote": "We'll match you based on your needs and preferences"
+      },
+      "billing": {
+        "title": "Billing Information",
+        "description": "Add a payment method to confirm your first appointment (no payment will be made until the appointment is confirmed).",
+        "managePayment": "Manage Payment Information",
+        "insurance": "Insurance Information",
+        "insuranceProvider": "Insurance Provider",
+        "policyNumber": "Policy Number",
+        "addInsurance": "Add Insurance Information"
+      }
+    },
+    "appointments": {
+      "title": "My Appointments",
+      "subtitle": "View and manage your therapy sessions",
+      "upcoming": "Upcoming Appointments",
+      "past": "Past Appointments",
+      "cancelled": "Cancelled",
+      "noUpcoming": "No upcoming appointments",
+      "noPast": "No past appointments",
+      "requestNew": "Request New Appointment",
+      "status": {
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No Show",
+        "pending": "Pending Confirmation"
+      },
+      "details": {
+        "professional": "Professional",
+        "date": "Date",
+        "time": "Time",
+        "duration": "Duration",
+        "modality": "Modality",
+        "location": "Location",
+        "notes": "Notes",
+        "amount": "Amount",
+        "paymentStatus": "Payment Status"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "reschedule": "Reschedule",
+        "cancel": "Cancel",
+        "joinSession": "Join Session",
+        "addToCalendar": "Add to Calendar",
+        "getDirections": "Get Directions"
+      },
+      "modality": {
+        "video": "Video Call",
+        "inPerson": "In-Person",
+        "phone": "Phone Call"
+      },
+      "payment": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "refunded": "Refunded"
+      },
+      "minutes": "min",
+      "with": "with"
+    },
+    "library": {
+      "badge": "Resource Library",
+      "title": "Self-Care & Educational Resources",
+      "description": "Access free articles, guided meditations, videos, and programs to support your mental wellness journey. Learn at your own pace.",
+      "searchPlaceholder": "Search resources, topics, or authors...",
+      "freeResources": "Free Resources",
+      "freeOnly": "Free Only",
+      "categories": {
+        "all": "All",
+        "videos": "Videos",
+        "articles": "Articles",
+        "audio": "Audio",
+        "meditations": "Meditations",
+        "guides": "Guides"
+      },
+      "availableResources": "Available Resources",
+      "resourceCount": "resource available",
+      "resourceCountPlural": "resources available",
+      "format": "Format",
+      "free": "Free",
+      "access": "Access",
+      "purchase": "Get Access",
+      "noResults": "No resources match your search. Try adjusting your filters or explore different categories."
     }
   }
 }

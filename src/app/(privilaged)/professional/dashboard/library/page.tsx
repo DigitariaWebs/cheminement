@@ -12,6 +12,7 @@ import {
   Timer,
   Video,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 type ResourceType = "video" | "ebook" | "guide" | "webinar";
@@ -30,13 +31,28 @@ interface Resource {
   format: "PDF" | "Vidéo HD" | "Audio" | "Kit";
 }
 
-const categories: Array<{ id: ResourceType | "all"; label: string; icon: React.ElementType }> = [
-  { id: "all", label: "Tout", icon: Sparkles },
-  { id: "video", label: "Vidéos", icon: Video },
-  { id: "ebook", label: "Livres & eBooks", icon: BookOpen },
-  { id: "webinar", label: "Webinaires", icon: PlayCircle },
-  { id: "guide", label: "Guides pratiques", icon: Filter },
-];
+const getCategoryLabel = (
+  t: (key: string) => string,
+  id: ResourceType | "all",
+) => {
+  const labels: Record<string, string> = {
+    all: t("categories.all"),
+    video: t("categories.videos"),
+    ebook: t("categories.ebooks"),
+    webinar: t("categories.webinars"),
+    guide: t("categories.guides"),
+  };
+  return labels[id] || id;
+};
+
+const categories: Array<{ id: ResourceType | "all"; icon: React.ElementType }> =
+  [
+    { id: "all", icon: Sparkles },
+    { id: "video", icon: Video },
+    { id: "ebook", icon: BookOpen },
+    { id: "webinar", icon: PlayCircle },
+    { id: "guide", icon: Filter },
+  ];
 
 const resources: Resource[] = [
   {
@@ -120,16 +136,20 @@ const resources: Resource[] = [
 ];
 
 export default function LibraryPage() {
+  const t = useTranslations("Dashboard.library");
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ResourceType | "all">("all");
+  const [activeCategory, setActiveCategory] = useState<ResourceType | "all">(
+    "all",
+  );
 
   const filteredResources = useMemo(() => {
     return resources.filter((resource) => {
-      const matchesCategory = activeCategory === "all" || resource.type === activeCategory;
+      const matchesCategory =
+        activeCategory === "all" || resource.type === activeCategory;
       const matchesSearch =
         search.trim().length === 0 ||
-        [resource.title, resource.author, resource.tags.join(" ")].some((field) =>
-          field.toLowerCase().includes(search.toLowerCase()),
+        [resource.title, resource.author, resource.tags.join(" ")].some(
+          (field) => field.toLowerCase().includes(search.toLowerCase()),
         );
       return matchesCategory && matchesSearch;
     });
@@ -141,26 +161,27 @@ export default function LibraryPage() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-3">
             <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground/70">
-              Marketplace de ressources
+              {t("badge")}
             </p>
             <h1 className="font-serif text-3xl font-light text-foreground lg:text-4xl">
-              Partagez et découvrez le meilleur de votre expertise.
+              {t("title")}
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Déposez vos vidéos, livres, guides ou webinaires pour soutenir la communauté des
-              professionnels. Inspirez-vous des créations de vos collègues, collaborez et faites rayonner
-              votre pratique.
+              {t("description")}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <Button className="gap-2 rounded-full px-5 py-5 text-base font-medium">
               <Sparkles className="h-4 w-4" />
-              Déposer une ressource
+              {t("uploadResource")}
             </Button>
-            <Button variant="outline" className="gap-2 rounded-full px-5 py-5 text-base font-medium">
+            <Button
+              variant="outline"
+              className="gap-2 rounded-full px-5 py-5 text-base font-medium"
+            >
               <Download className="h-4 w-4" />
-              Mes téléchargements
+              {t("myDownloads")}
             </Button>
           </div>
         </div>
@@ -173,12 +194,12 @@ export default function LibraryPage() {
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Rechercher une ressource, un auteur ou une thématique…"
+            placeholder={t("searchPlaceholder")}
             className="w-full rounded-full border border-border/40 bg-card/80 py-3 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
           />
         </div>
         <div className="flex flex-wrap gap-2">
-          {categories.map(({ id, label, icon: Icon }) => {
+          {categories.map(({ id, icon: Icon }) => {
             const isActive = activeCategory === id;
             return (
               <button
@@ -191,7 +212,7 @@ export default function LibraryPage() {
                 }`}
               >
                 <Icon className="h-4 w-4" />
-                {label}
+                {getCategoryLabel(t, id)}
               </button>
             );
           })}
@@ -200,10 +221,14 @@ export default function LibraryPage() {
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-2xl font-light text-foreground">Ressources populaires</h2>
+          <h2 className="font-serif text-2xl font-light text-foreground">
+            {t("popularResources")}
+          </h2>
           <span className="text-sm text-muted-foreground">
-            {filteredResources.length} ressource{filteredResources.length > 1 ? "s" : ""} disponible
-            {filteredResources.length > 1 ? "s" : ""}
+            {filteredResources.length}{" "}
+            {filteredResources.length > 1
+              ? t("resourceCountPlural")
+              : t("resourceCount")}
           </span>
         </div>
 
@@ -219,9 +244,15 @@ export default function LibraryPage() {
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-muted/50 px-3 py-1 text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
                     {resource.type === "video" && <Video className="h-4 w-4" />}
-                    {resource.type === "ebook" && <BookOpen className="h-4 w-4" />}
-                    {resource.type === "guide" && <Filter className="h-4 w-4" />}
-                    {resource.type === "webinar" && <PlayCircle className="h-4 w-4" />}
+                    {resource.type === "ebook" && (
+                      <BookOpen className="h-4 w-4" />
+                    )}
+                    {resource.type === "guide" && (
+                      <Filter className="h-4 w-4" />
+                    )}
+                    {resource.type === "webinar" && (
+                      <PlayCircle className="h-4 w-4" />
+                    )}
                     {resource.type.toUpperCase()}
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -237,7 +268,7 @@ export default function LibraryPage() {
                   {resource.pages && (
                     <div className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
                       <BookOpen className="h-3.5 w-3.5" />
-                      {resource.pages} pages
+                      {resource.pages} {t("pages")}
                     </div>
                   )}
                 </div>
@@ -246,10 +277,14 @@ export default function LibraryPage() {
                   <h3 className="font-serif text-xl font-medium text-foreground">
                     {resource.title}
                   </h3>
-                  <p className="text-sm font-medium text-muted-foreground/80">{resource.author}</p>
+                  <p className="text-sm font-medium text-muted-foreground/80">
+                    {resource.author}
+                  </p>
                 </div>
 
-                <p className="text-sm leading-relaxed text-muted-foreground">{resource.description}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {resource.description}
+                </p>
 
                 <div className="flex flex-wrap gap-2">
                   {resource.tags.map((tag) => (
@@ -263,16 +298,20 @@ export default function LibraryPage() {
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
-                  <div className="text-sm font-semibold text-foreground">{resource.price}</div>
+                  <div className="text-sm font-semibold text-foreground">
+                    {resource.price}
+                  </div>
                   <Button className="gap-2 rounded-full px-4 py-4 text-sm font-medium">
                     <Download className="h-4 w-4" />
-                    Consulter
+                    {t("read")}
                   </Button>
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border border-dashed border-border/50 bg-card/60 px-4 py-3 text-xs text-muted-foreground">
-                  <span>Format : {resource.format}</span>
-                  <span>Partagé le marketplace Cheminement</span>
+                  <span>
+                    {t("format")} : {resource.format}
+                  </span>
+                  <span>{t("sharedOn")}</span>
                 </div>
               </div>
             </article>
@@ -281,12 +320,10 @@ export default function LibraryPage() {
 
         {filteredResources.length === 0 && (
           <div className="rounded-3xl border border-dashed border-border/40 bg-card/60 p-10 text-center text-sm text-muted-foreground">
-            Aucune ressource ne correspond à votre recherche pour le moment. Essayez d’élargir vos
-            filtres ou soyez le premier à partager un contenu !
+            {t("noResults")}
           </div>
         )}
       </section>
     </div>
   );
 }
-

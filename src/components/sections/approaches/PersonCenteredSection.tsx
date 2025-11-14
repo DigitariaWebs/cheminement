@@ -1,29 +1,28 @@
 "use client";
 
 import { Compass, Feather, HeartHandshake } from "lucide-react";
-
-const focusItems = [
-  {
-    icon: HeartHandshake,
-    title: "Vos objectifs",
-    description:
-      "Clarifiez ce que vous souhaitez transformer, améliorer ou consolider pour orienter chaque séance.",
-  },
-  {
-    icon: Compass,
-    title: "Votre problématique",
-    description:
-      "Nous analysons finement vos enjeux pour proposer des interventions alignées sur votre réalité.",
-  },
-  {
-    icon: Feather,
-    title: "Votre style relationnel",
-    description:
-      "Nous adaptons notre présence, notre rythme et notre langage à votre manière d’entrer en relation.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function PersonCenteredSection() {
+  const t = useTranslations("Approaches.personCentered");
+
+  const focusItems = [
+    {
+      icon: HeartHandshake,
+      title: t("focus.objectives.title"),
+      description: t("focus.objectives.description"),
+    },
+    {
+      icon: Compass,
+      title: t("focus.issue.title"),
+      description: t("focus.issue.description"),
+    },
+    {
+      icon: Feather,
+      title: t("focus.style.title"),
+      description: t("focus.style.description"),
+    },
+  ];
   return (
     <section className="relative overflow-hidden bg-background py-24">
       <div className="absolute inset-0 opacity-[0.05]">
@@ -35,20 +34,16 @@ export default function PersonCenteredSection() {
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
           <div className="space-y-6">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-              1 · Une approche centrée sur la personne
+              {t("badge")}
             </p>
             <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-              Nous adaptons notre soutien à vos besoins, pas l’inverse.
+              {t("title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Chaque individu a une histoire, un rythme, une sensibilité.
-              Construire un parcours thérapeutique sur mesure signifie permettre
-              à votre voix d’être entendue, vos préférences d’être respectées et
-              votre rythme d’être suivi, sans modèle préfabriqué.
+              {t("description")}
             </p>
             <div className="rounded-3xl bg-muted/40 p-6 text-sm leading-relaxed text-muted-foreground">
-              Inspiré de notre concept de parcours personnalisé : une démarche
-              unique, des ajustements continus, un accompagnement évolutif.
+              {t("note")}
             </div>
           </div>
 
@@ -75,12 +70,10 @@ export default function PersonCenteredSection() {
 
             <div className="rounded-4xl border border-dashed border-primary/40 bg-card/60 p-6 shadow-inner sm:col-span-2">
               <p className="text-sm font-medium uppercase tracking-[0.25em] text-muted-foreground">
-                Vos préférences thérapeutiques
+                {t("focus.preferences.title")}
               </p>
               <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                Nous ajustons les méthodes, les outils et la structure des
-                rencontres afin que vous vous sentiez reconnu et respecté à
-                chaque étape.
+                {t("focus.preferences.description")}
               </p>
             </div>
           </div>
@@ -89,4 +82,3 @@ export default function PersonCenteredSection() {
     </section>
   );
 }
-

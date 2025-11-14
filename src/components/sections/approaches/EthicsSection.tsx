@@ -1,61 +1,55 @@
 "use client";
 
 import { ShieldCheck, LockKeyhole, ClipboardCheck, Scale } from "lucide-react";
-
-const commitments = [
-  {
-    icon: ShieldCheck,
-    title: "Respect des règles déontologiques",
-    description:
-      "Nos intervenants respectent les codes éthiques de leurs ordres professionnels et s’assurent de protéger votre dignité.",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Conformité à la Loi 25",
-    description:
-      "Nous appliquons des politiques strictes pour la protection de vos données personnelles et sensibles.",
-  },
-  {
-    icon: LockKeyhole,
-    title: "Gestion sécurisée des informations",
-    description:
-      "Des systèmes technologiques robustes et des processus internes rigoureux pour garantir la confidentialité.",
-  },
-  {
-    icon: Scale,
-    title: "Confidentialité absolue",
-    description:
-      "Votre démarche est protégée : échanges, documents et suivis sont strictement confidentiels.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function EthicsSection() {
+  const t = useTranslations("Approaches.ethics");
+
+  const commitments = [
+    {
+      icon: ShieldCheck,
+      title: t("commitments.ethics.title"),
+      description: t("commitments.ethics.description"),
+    },
+    {
+      icon: ClipboardCheck,
+      title: t("commitments.law25.title"),
+      description: t("commitments.law25.description"),
+    },
+    {
+      icon: LockKeyhole,
+      title: t("commitments.security.title"),
+      description: t("commitments.security.description"),
+    },
+    {
+      icon: Scale,
+      title: t("commitments.confidentiality.title"),
+      description: t("commitments.confidentiality.description"),
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden bg-background py-24">
       <div className="absolute inset-0 opacity-[0.06]">
         <div className="absolute left-0 top-10 h-72 w-72 -translate-x-1/3 rounded-full bg-primary blur-3xl" />
-        <div className="absolute right-0 bottom-0 h-[28rem] w-[28rem] translate-x-1/4 translate-y-1/3 rounded-full bg-accent blur-3xl" />
+        <div className="absolute right-0 bottom-0 h-112 w-md translate-x-1/4 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
       <div className="container relative z-10 mx-auto px-6">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="space-y-6">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-              3 · Éthique et confidentialité
+              {t("badge")}
             </p>
             <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-              Nous protégeons votre confiance, à chaque instant.
+              {t("title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              La confidentialité n’est pas une option, c’est notre fondation.
-              Nous avons conçu notre plateforme et nos processus pour assurer
-              une protection maximale de votre vie privée, du premier contact à
-              la clôture de votre dossier.
+              {t("description")}
             </p>
             <div className="rounded-3xl bg-muted/40 p-6 text-sm leading-relaxed text-muted-foreground">
-              Chaque professionnel est signataire d’engagements précis en matière
-              de protection des données et bénéficie d’une formation continue sur
-              la confidentialité.
+              {t("note")}
             </div>
           </div>
 
@@ -82,4 +76,3 @@ export default function EthicsSection() {
     </section>
   );
 }
-

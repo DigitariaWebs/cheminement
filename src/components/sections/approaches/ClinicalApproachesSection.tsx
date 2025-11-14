@@ -10,59 +10,53 @@ import {
   Waves,
   Workflow,
 } from "lucide-react";
-
-const approaches = [
-  {
-    icon: Layers,
-    title: "Thérapies cognitivo-comportementales (TCC)",
-    description:
-      "Des outils éprouvés pour agir sur les pensées, comportements et émotions qui vous freinent.",
-  },
-  {
-    icon: Orbit,
-    title: "Approches psychodynamiques",
-    description:
-      "Comprendre vos dynamiques profondes et vos schémas relationnels pour transformer durablement.",
-  },
-  {
-    icon: UsersRound,
-    title: "Approches systémiques",
-    description:
-      "Famille, couple, groupes : intervenir sur les interactions pour rétablir un équilibre collectif.",
-  },
-  {
-    icon: Flower2,
-    title: "Approches humanistes",
-    description:
-      "Une présence authentique, empathique et non jugeante pour favoriser votre autonomie.",
-  },
-  {
-    icon: Waves,
-    title: "Mindfulness / Pleine conscience",
-    description:
-      "Renforcer l’attention, la régulation émotionnelle et la connexion à soi par des pratiques guidées.",
-  },
-  {
-    icon: Workflow,
-    title: "Psychoéducation",
-    description:
-      "Un accompagnement structuré pour comprendre, s’outiller et mettre en place des stratégies adaptées.",
-  },
-  {
-    icon: Brain,
-    title: "Interventions scolaires et neuropsychologiques",
-    description:
-      "Évaluations, plans d’intervention et suivis spécialisés pour soutenir la réussite éducative.",
-  },
-  {
-    icon: Sparkles,
-    title: "Coaching parental & Guidance spécialisée",
-    description:
-      "Un soutien concret pour le TDAH, l’anxiété, la gestion des émotions, les comportements opposants, etc.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function ClinicalApproachesSection() {
+  const t = useTranslations("Approaches.clinicalApproaches");
+
+  const approaches = [
+    {
+      icon: Layers,
+      title: t("approaches.cbt.title"),
+      description: t("approaches.cbt.description"),
+    },
+    {
+      icon: Orbit,
+      title: t("approaches.psychodynamic.title"),
+      description: t("approaches.psychodynamic.description"),
+    },
+    {
+      icon: UsersRound,
+      title: t("approaches.systemic.title"),
+      description: t("approaches.systemic.description"),
+    },
+    {
+      icon: Flower2,
+      title: t("approaches.humanistic.title"),
+      description: t("approaches.humanistic.description"),
+    },
+    {
+      icon: Waves,
+      title: t("approaches.mindfulness.title"),
+      description: t("approaches.mindfulness.description"),
+    },
+    {
+      icon: Workflow,
+      title: t("approaches.psychoeducation.title"),
+      description: t("approaches.psychoeducation.description"),
+    },
+    {
+      icon: Brain,
+      title: t("approaches.neuropsych.title"),
+      description: t("approaches.neuropsych.description"),
+    },
+    {
+      icon: Sparkles,
+      title: t("approaches.coaching.title"),
+      description: t("approaches.coaching.description"),
+    },
+  ];
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-muted via-background to-muted py-24">
       <div className="absolute inset-0 opacity-[0.08]">
@@ -73,15 +67,13 @@ export default function ClinicalApproachesSection() {
       <div className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-            2 · Approches reconnues et encadrées
+            {t("badge")}
           </p>
           <h2 className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-            Des modèles cliniques validés, portés par des experts reconnus.
+            {t("title")}
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Nos professionnels pratiquent selon des approches scientifiquement
-            reconnues et encadrées par leurs ordres professionnels. Chaque
-            méthode est choisie spécifiquement pour votre situation.
+            {t("description")}
           </p>
         </div>
 
@@ -110,4 +102,3 @@ export default function ClinicalApproachesSection() {
     </section>
   );
 }
-
