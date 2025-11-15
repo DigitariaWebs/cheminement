@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Stepper } from "@/components/ui/stepper";
 import { useTranslations } from "next-intl";
+import { IProfile } from "@/models/Profile";
+import { profileAPI } from "@/lib/api-client";
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onComplete: (data: ProfileData) => void;
+  setProfessionalProfile: (data: IProfile) => void;
 }
 
 export interface ProfileData {
@@ -25,7 +27,7 @@ export interface ProfileData {
 export default function ProfileCompletionModal({
   isOpen,
   onClose,
-  onComplete,
+  setProfessionalProfile,
 }: ProfileCompletionModalProps) {
   const t = useTranslations("Dashboard.profileModal");
   const [currentStep, setCurrentStep] = useState(0);
@@ -133,8 +135,13 @@ export default function ProfileCompletionModal({
     }
   };
 
-  const handleSubmit = () => {
-    onComplete(formData);
+  const handleSubmit = async (data: ProfileData) => {
+    try {
+      const newProfile = (await profileAPI.update(data)) as IProfile;
+      setProfessionalProfile(newProfile);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
     onClose();
   };
 
@@ -399,7 +406,7 @@ export default function ProfileCompletionModal({
             ) : (
               <button
                 type="button"
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(formData)}
                 disabled={!canProceed()}
                 className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >

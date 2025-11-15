@@ -8,7 +8,16 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const { email, password, firstName, lastName, role } = await req.json();
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      role,
+      phone,
+      location,
+      professionalProfile,
+    } = await req.json();
 
     // Validation
     if (!email || !password || !firstName || !lastName || !role) {
@@ -39,17 +48,22 @@ export async function POST(req: NextRequest) {
       lastName,
       role,
       status: "active",
+      phone,
+      location,
     });
 
     await user.save();
 
-    // Create empty profile for the user
-    const profile = new Profile({
-      userId: user._id,
-      profileCompleted: false,
-    });
+    if (user.role === "professional") {
+      // Create empty profile for the user
+      const profile = new Profile({
+        userId: user._id,
+        ...professionalProfile,
+        profileCompleted: false,
+      });
 
-    await profile.save();
+      await profile.save();
+    }
 
     return NextResponse.json(
       {

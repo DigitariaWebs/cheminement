@@ -10,7 +10,7 @@ export interface IUser extends Document {
   adminId?: mongoose.Types.ObjectId; // Reference to Admin document if user is admin
   profile?: mongoose.Types.ObjectId; // Reference to Profile document
   phone?: string;
-  language?: string;
+  language?: "fr" | "en";
   gender?: string;
   dateOfBirth?: Date;
   location?: string;
@@ -68,6 +68,8 @@ const UserSchema = new Schema<IUser>(
     },
     language: {
       type: String,
+      enum: ["fr", "en"],
+      default: "en",
       trim: true,
     },
     gender: {
@@ -75,7 +77,7 @@ const UserSchema = new Schema<IUser>(
       trim: true,
     },
     dateOfBirth: {
-      type: String,
+      type: Date,
       trim: true,
     },
     location: {

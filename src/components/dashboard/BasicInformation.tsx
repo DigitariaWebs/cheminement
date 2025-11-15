@@ -139,6 +139,18 @@ export default function BasicInformation({
     return dateObj.toLocaleDateString();
   };
 
+  const formatLanguage = (lang: string | undefined) => {
+    if (!lang) return "N/A";
+    switch (lang) {
+      case "en":
+        return "English";
+      case "fr":
+        return "Français";
+      default:
+        return lang;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="rounded-xl bg-card p-6">
@@ -233,7 +245,7 @@ export default function BasicInformation({
 
           <div className="space-y-2">
             <Label className="font-light">{t("language")}</Label>
-            <p className="text-foreground">{user.language || "N/A"}</p>
+            <p className="text-foreground">{formatLanguage(user.language)}</p>
           </div>
         </div>
       </div>
@@ -373,8 +385,8 @@ export default function BasicInformation({
                       <SelectValue placeholder={t("language")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="English">English</SelectItem>
-                      <SelectItem value="French">Français</SelectItem>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="fr">Français</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

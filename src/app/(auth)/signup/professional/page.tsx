@@ -206,6 +206,12 @@ export default function ProfessionalSignupPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: "professional",
+        location: formData.location,
+        phone: formData.phone,
+        professionalProfile: {
+          specialty: formData.specialty,
+          licence: formData.license,
+        },
       });
 
       // Sign in automatically

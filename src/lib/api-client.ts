@@ -100,6 +100,12 @@ export const authAPI = {
     firstName: string;
     lastName: string;
     role: string;
+    location?: string;
+    phone?: string;
+    professionalProfile?: {
+      specialty?: string;
+      licence?: string;
+    };
   }) => apiClient.post("/auth/signup", data),
 };
 
