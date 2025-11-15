@@ -225,7 +225,7 @@ export default function ProfessionalSignupPage() {
         setError("Account created but sign in failed. Please try logging in.");
         router.push("/login");
       } else {
-        router.push("/dashboard");
+        router.push("/professional/dashboard");
       }
     } catch {
       setError("Failed to create account. Please try again.");

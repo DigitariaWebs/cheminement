@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { usersAPI } from "@/lib/api-client";
 import { Label } from "@/components/ui/label";
@@ -18,10 +18,14 @@ import { IUser } from "@/models/User";
 
 interface BasicInformationProps {
   isEditable?: boolean;
+  userId?: string;
+  user?: IUser;
 }
 
 export default function BasicInformation({
   isEditable = true,
+  userId,
+  user: userProp,
 }: BasicInformationProps) {
   const t = useTranslations("BasicInformation");
   const [user, setUser] = useState<IUser | null>(null);
@@ -38,21 +42,29 @@ export default function BasicInformation({
     language: "",
   });
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       setIsLoading(true);
-      const userData = await usersAPI.get();
+      const userData = userId
+        ? await usersAPI.getById(userId)
+        : await usersAPI.get();
+      console.log(userData);
       setUser(userData as IUser);
     } catch (error) {
       console.error("Error fetching user:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (userProp) {
+      setUser(userProp);
+      setIsLoading(false);
+    } else {
+      fetchUser();
+    }
+  }, [fetchUser, userProp]);
 
   const handleOpenModal = () => {
     if (!user) return;

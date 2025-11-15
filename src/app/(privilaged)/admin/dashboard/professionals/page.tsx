@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search,
   Filter,
   UserPlus,
-  MoreVertical,
+  Eye,
   CheckCircle2,
   XCircle,
   Clock,
@@ -21,13 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Link from "next/link";
 type ProfessionalStatus = "active" | "pending" | "inactive";
 
 interface Professional {
@@ -296,42 +300,42 @@ export default function ProfessionalsPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/30">
-              <tr>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Name
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Specialty
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   License
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Status
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Clients
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Sessions
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Joined
-                </th>
-                <th className="text-right p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {professionals.map((professional) => (
-                <tr
+                <TableRow
                   key={professional.id}
-                  className="border-t border-border/40 hover:bg-muted/20 transition-colors"
+                  className="hover:bg-muted/20 transition-colors"
                 >
-                  <td className="p-4">
+                  <TableCell>
                     <div>
                       <p className="font-light text-foreground">
                         {professional.name}
@@ -340,49 +344,34 @@ export default function ProfessionalsPage() {
                         {professional.email}
                       </p>
                     </div>
-                  </td>
-                  <td className="p-4 text-sm font-light text-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-foreground">
                     {professional.specialty}
-                  </td>
-                  <td className="p-4 text-sm font-light text-muted-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-muted-foreground">
                     {professional.license}
-                  </td>
-                  <td className="p-4">{getStatusBadge(professional.status)}</td>
-                  <td className="p-4 text-sm font-light text-foreground">
+                  </TableCell>
+                  <TableCell>{getStatusBadge(professional.status)}</TableCell>
+                  <TableCell className="text-sm font-light text-foreground">
                     {professional.totalClients}
-                  </td>
-                  <td className="p-4 text-sm font-light text-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-foreground">
                     {professional.totalSessions}
-                  </td>
-                  <td className="p-4 text-sm font-light text-muted-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-muted-foreground">
                     {new Date(professional.joinedDate).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                        {professional.status === "pending" && (
-                          <DropdownMenuItem>Approve</DropdownMenuItem>
-                        )}
-                        {professional.status === "active" && (
-                          <DropdownMenuItem>Deactivate</DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem className="text-destructive">
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-muted-foreground">
+                    <Link
+                      href={`/admin/dashboard/professionals/${professional.id}`}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
 
           {professionals.length === 0 && (
             <div className="p-12 text-center">

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Label } from "@/components/ui/label";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import ProfileCompletionModal from "@/components/dashboard/ProfileCompletionModal";
 import BasicInformation from "@/components/dashboard/BasicInformation";
+import ProfessionalProfile from "@/components/dashboard/ProfessionalProfile";
 import AvailabilitySchedule from "./AvailabilitySchedule";
 import { IProfile } from "@/models/Profile";
 import { profileAPI } from "@/lib/api-client";
@@ -61,152 +61,9 @@ export default function ProfilePage() {
       {/* Basic Information */}
       <BasicInformation isEditable={true} />
 
-      {/* Professional Information */}
-      <div className="rounded-xl bg-card p-6">
-        <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          {t("professionalInfo")}
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <Label className="font-light mb-2">{t("license")}</Label>
-            <p className="text-foreground">
-              {professionalProfile?.license || "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <Label className="font-light mb-2">{t("specialty")}</Label>
-            <p className="text-foreground capitalize">
-              {professionalProfile?.specialty || "N/A"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Details - Only show after completion */}
+      {/* Professional Profile */}
       {professionalProfile && (
-        <div className="space-y-6">
-          <div className="rounded-xl bg-card p-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-serif font-light text-foreground">
-                {t("professionalSpec")}
-              </h2>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <Label className="font-light mb-3 text-base">
-                  {t("issueTypes")}
-                </Label>
-                {professionalProfile?.problematics &&
-                professionalProfile.problematics.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {professionalProfile.problematics.map((item) => (
-                      <span
-                        key={item}
-                        className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-light"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground">N/A</p>
-                )}
-              </div>
-
-              <div>
-                <Label className="font-light mb-3 text-base">
-                  {t("approaches")}
-                </Label>
-                {professionalProfile?.approaches &&
-                professionalProfile.approaches.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {professionalProfile.approaches.map((item) => (
-                      <span
-                        key={item}
-                        className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-light"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground">N/A</p>
-                )}
-              </div>
-
-              <div>
-                <Label className="font-light mb-3 text-base">
-                  {t("ageCategories")}
-                </Label>
-                {professionalProfile?.ageCategories &&
-                professionalProfile.ageCategories.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {professionalProfile.ageCategories.map((item) => (
-                      <span
-                        key={item}
-                        className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-light"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground">N/A</p>
-                )}
-              </div>
-
-              <div>
-                <Label className="font-light mb-3 text-base">
-                  {t("additionalSkills")}
-                </Label>
-                {professionalProfile?.skills &&
-                professionalProfile.skills.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {professionalProfile.skills.map((item) => (
-                      <span
-                        key={item}
-                        className="px-3 py-1.5 bg-muted text-foreground rounded-full text-sm font-light"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground">N/A</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-card p-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-serif font-light text-foreground">
-                {t("about")}
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label className="font-light mb-2 text-base">
-                  {t("yearsExp")}
-                </Label>
-                <p className="text-foreground">
-                  {professionalProfile.yearsOfExperience || "N/A"}{" "}
-                  {professionalProfile.yearsOfExperience ? t("years") : ""}
-                </p>
-              </div>
-
-              <div>
-                <Label className="font-light mb-2 text-base">{t("bio")}</Label>
-                <p className="text-foreground leading-relaxed">
-                  {professionalProfile?.bio || "N/A"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProfessionalProfile profile={professionalProfile} />
       )}
 
       {/* Platform Benefits Reminder */}

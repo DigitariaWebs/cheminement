@@ -74,7 +74,7 @@ export default function DashboardPage() {
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
           <a
-            href="/dashboard/profile"
+            href="/professional/dashboard/profile"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
             <h3 className="font-light text-foreground mb-2">
@@ -85,7 +85,7 @@ export default function DashboardPage() {
             </p>
           </a>
           <a
-            href="/dashboard/schedule"
+            href="/professional/dashboard/schedule"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
             <h3 className="font-light text-foreground mb-2">

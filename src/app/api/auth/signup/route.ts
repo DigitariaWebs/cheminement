@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       firstName,
       lastName,
       role,
-      status: "active",
+      status: role == "professional" ? "pending" : "active",
       phone,
       location,
     });

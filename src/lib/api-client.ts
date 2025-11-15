@@ -112,6 +112,7 @@ export const authAPI = {
 // Profile
 export const profileAPI = {
   get: () => apiClient.get("/profile"),
+  getById: (id: string) => apiClient.get(`/profile/${id}`),
   update: (data: any) => apiClient.put("/profile", data),
 };
 
@@ -161,7 +162,9 @@ export const blogsAPI = {
 // Users
 export const usersAPI = {
   get: () => apiClient.get("/users/me"),
+  getById: (id: string) => apiClient.get(`/users/${id}`),
   update: (data: any) => apiClient.patch("/users/me", data),
+  updateById: (id: string, data: any) => apiClient.patch(`/users/${id}`, data),
   list: (params?: { role?: string }) => {
     const query = new URLSearchParams(params as any).toString();
     return apiClient.get(`/users${query ? `?${query}` : ""}`);
