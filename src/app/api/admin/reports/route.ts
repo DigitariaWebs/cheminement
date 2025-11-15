@@ -26,10 +26,16 @@ export async function GET(req: NextRequest) {
     switch (period) {
       case "week":
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        previousStartDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        previousStartDate = new Date(
+          startDate.getTime() - 7 * 24 * 60 * 60 * 1000,
+        );
         break;
       case "quarter":
-        startDate = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+        startDate = new Date(
+          now.getFullYear(),
+          Math.floor(now.getMonth() / 3) * 3,
+          1,
+        );
         previousStartDate = new Date(startDate);
         previousStartDate.setMonth(previousStartDate.getMonth() - 3);
         break;
@@ -52,63 +58,63 @@ export async function GET(req: NextRequest) {
         User.countDocuments({
           role: "professional",
           status: { $ne: "inactive" },
-          createdAt: { $gte: startDate }
+          createdAt: { $gte: startDate },
         }),
         User.countDocuments({
           role: "client",
           status: { $ne: "inactive" },
-          createdAt: { $gte: startDate }
+          createdAt: { $gte: startDate },
         }),
         Appointment.countDocuments({
           status: "completed",
-          createdAt: { $gte: startDate }
+          createdAt: { $gte: startDate },
         }),
         Appointment.aggregate([
           {
             $match: {
               status: "completed",
-              createdAt: { $gte: startDate }
-            }
+              createdAt: { $gte: startDate },
+            },
           },
           {
             $group: {
               _id: null,
-              totalRevenue: { $sum: 80 } // Assuming $80 per session
-            }
-          }
-        ])
+              totalRevenue: { $sum: 80 }, // Assuming $80 per session
+            },
+          },
+        ]),
       ]),
       // Previous period
       Promise.all([
         User.countDocuments({
           role: "professional",
           status: { $ne: "inactive" },
-          createdAt: { $gte: previousStartDate, $lt: startDate }
+          createdAt: { $gte: previousStartDate, $lt: startDate },
         }),
         User.countDocuments({
           role: "client",
           status: { $ne: "inactive" },
-          createdAt: { $gte: previousStartDate, $lt: startDate }
+          createdAt: { $gte: previousStartDate, $lt: startDate },
         }),
         Appointment.countDocuments({
           status: "completed",
-          createdAt: { $gte: previousStartDate, $lt: startDate }
+          createdAt: { $gte: previousStartDate, $lt: startDate },
         }),
         Appointment.aggregate([
           {
             $match: {
               status: "completed",
-              createdAt: { $gte: previousStartDate, $lt: startDate }
-            }
+              createdAt: { $gte: previousStartDate, $lt: startDate },
+            },
           },
           {
             $group: {
               _id: null,
-              totalRevenue: { $sum: 80 }
-            }
-          }
-        ])
-      ])
+              totalRevenue: { $sum: 80 },
+            },
+          },
+        ]),
+      ]),
     ]);
 
     const calculateChange = (current: number, previous: number) => {
@@ -125,7 +131,10 @@ export async function GET(req: NextRequest) {
       totalSessions: currentMetrics[2],
       sessionsChange: calculateChange(currentMetrics[2], previousMetrics[2]),
       activeProfessionals: currentMetrics[0],
-      professionalsChange: calculateChange(currentMetrics[0], previousMetrics[0]),
+      professionalsChange: calculateChange(
+        currentMetrics[0],
+        previousMetrics[0],
+      ),
       activePatients: currentMetrics[1],
       patientsChange: calculateChange(currentMetrics[1], previousMetrics[1]),
     };
@@ -135,8 +144,8 @@ export async function GET(req: NextRequest) {
       {
         $match: {
           status: "completed",
-          createdAt: { $gte: startDate }
-        }
+          createdAt: { $gte: startDate },
+        },
       },
       {
         $group: {
@@ -144,12 +153,19 @@ export async function GET(req: NextRequest) {
           sessionFees: { $sum: 80 },
           subscriptionPlans: { $sum: 0 }, // Not implemented yet
           resourceSales: { $sum: 0 }, // Not implemented yet
-        }
-      }
+        },
+      },
     ]);
 
-    const breakdown = revenueBreakdown[0] || { sessionFees: 0, subscriptionPlans: 0, resourceSales: 0 };
-    const totalRevenue = breakdown.sessionFees + breakdown.subscriptionPlans + breakdown.resourceSales;
+    const breakdown = revenueBreakdown[0] || {
+      sessionFees: 0,
+      subscriptionPlans: 0,
+      resourceSales: 0,
+    };
+    const totalRevenue =
+      breakdown.sessionFees +
+      breakdown.subscriptionPlans +
+      breakdown.resourceSales;
 
     // Get top issue types
     const issueTypes = await Appointment.aggregate([
@@ -157,21 +173,21 @@ export async function GET(req: NextRequest) {
         $match: {
           status: "completed",
           createdAt: { $gte: startDate },
-          issueType: { $exists: true, $ne: null }
-        }
+          issueType: { $exists: true, $ne: null },
+        },
       },
       {
         $group: {
           _id: "$issueType",
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
       {
-        $sort: { count: -1 }
+        $sort: { count: -1 },
       },
       {
-        $limit: 5
-      }
+        $limit: 5,
+      },
     ]);
 
     // Get professional performance data
@@ -179,42 +195,44 @@ export async function GET(req: NextRequest) {
       {
         $match: {
           status: "completed",
-          createdAt: { $gte: startDate }
-        }
+          createdAt: { $gte: startDate },
+        },
       },
       {
         $group: {
           _id: "$professionalId",
           sessionsCount: { $sum: 1 },
-          totalRevenue: { $sum: 80 }
-        }
+          totalRevenue: { $sum: 80 },
+        },
       },
       {
         $lookup: {
           from: "users",
           localField: "_id",
           foreignField: "_id",
-          as: "professional"
-        }
+          as: "professional",
+        },
       },
       {
-        $unwind: "$professional"
+        $unwind: "$professional",
       },
       {
         $project: {
-          name: { $concat: ["$professional.firstName", " ", "$professional.lastName"] },
+          name: {
+            $concat: ["$professional.firstName", " ", "$professional.lastName"],
+          },
           totalSessions: "$sessionsCount",
           activeClients: { $literal: 0 }, // This would need more complex aggregation
           revenueGenerated: "$totalRevenue",
-          avgRating: { $literal: 4.5 } // Mock rating
-        }
+          avgRating: { $literal: 4.5 }, // Mock rating
+        },
       },
       {
-        $sort: { totalSessions: -1 }
+        $sort: { totalSessions: -1 },
       },
       {
-        $limit: 5
-      }
+        $limit: 5,
+      },
     ]);
 
     return NextResponse.json({
@@ -223,19 +241,19 @@ export async function GET(req: NextRequest) {
         sessionFees: breakdown.sessionFees,
         subscriptionPlans: breakdown.subscriptionPlans,
         resourceSales: breakdown.resourceSales,
-        total: totalRevenue
+        total: totalRevenue,
       },
-      topIssueTypes: issueTypes.map(item => ({
+      topIssueTypes: issueTypes.map((item) => ({
         type: item._id,
-        sessions: item.count
+        sessions: item.count,
       })),
-      professionalPerformance
+      professionalPerformance,
     });
   } catch (error: any) {
     console.error("Admin reports API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch reports data", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

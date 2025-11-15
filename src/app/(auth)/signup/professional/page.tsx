@@ -217,7 +217,7 @@ export default function ProfessionalSignupPage() {
 
       if (result?.error) {
         setError("Account created but sign in failed. Please try logging in.");
-        router.push("/login/professional");
+        router.push("/login");
       } else {
         router.push("/dashboard");
       }
@@ -625,7 +625,7 @@ export default function ProfessionalSignupPage() {
         <p className="text-sm text-muted-foreground font-light">
           {t("hasAccount")}{" "}
           <Link
-            href="/login/professional"
+            href="/login"
             className="text-primary hover:text-primary/80 transition-colors"
           >
             {t("signIn")}

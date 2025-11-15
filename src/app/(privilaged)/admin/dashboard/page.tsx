@@ -43,7 +43,9 @@ interface DashboardData {
 }
 
 export default function AdminDashboardPage() {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,7 +98,10 @@ export default function AdminDashboardPage() {
         {/* Loading skeleton */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+            <div
+              key={i}
+              className="rounded-xl bg-card p-6 border border-border/40"
+            >
               <div className="animate-pulse">
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
@@ -191,7 +196,7 @@ export default function AdminDashboardPage() {
           disabled={loading}
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Refresh
         </button>
       </div>

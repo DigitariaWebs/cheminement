@@ -179,7 +179,7 @@ export default function MemberSignupPage() {
 
       if (result?.error) {
         setError("Account created but sign in failed. Please try logging in.");
-        router.push("/login/member");
+        router.push("/login");
       } else {
         router.push("/dashboard");
       }
@@ -449,7 +449,7 @@ export default function MemberSignupPage() {
         <p className="text-sm text-muted-foreground font-light">
           {t("hasAccount")}{" "}
           <Link
-            href="/login/member"
+            href="/login"
             className="text-primary hover:text-primary/80 transition-colors"
           >
             {t("signIn")}

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     console.error("Get roles error:", error);
     return NextResponse.json(
       { error: "Failed to fetch roles", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -41,10 +41,14 @@ function getRoleDisplayName(role: AdminRole): string {
 
 function getRoleDescription(role: AdminRole): string {
   const descriptions = {
-    super_admin: "Full access to all platform features including admin management. Can create and manage other administrators.",
-    platform_admin: "Complete platform management access. Can manage users, content, analytics, and billing but cannot manage other admins.",
-    content_admin: "Limited to content management. Can create and edit blog posts, manage platform content, and view analytics.",
-    support_admin: "User support focused. Can manage user accounts, approve professionals, and handle support requests.",
+    super_admin:
+      "Full access to all platform features including admin management. Can create and manage other administrators.",
+    platform_admin:
+      "Complete platform management access. Can manage users, content, analytics, and billing but cannot manage other admins.",
+    content_admin:
+      "Limited to content management. Can create and edit blog posts, manage platform content, and view analytics.",
+    support_admin:
+      "User support focused. Can manage user accounts, approve professionals, and handle support requests.",
   };
   return descriptions[role];
 }

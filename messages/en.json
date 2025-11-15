@@ -256,21 +256,19 @@
     "layout": {
       "logoAlt": "Logo"
     },
-    "loginSelection": {
+    "login": {
       "title": "Welcome Back",
-      "subtitle": "Select the option that best describes you",
-      "member": {
-        "title": "Member",
-        "description": "Access your personal account to manage appointments, view your mental health journey, and connect with professionals.",
-        "cta": "Sign in as Member →"
-      },
-      "professional": {
-        "title": "Professional",
-        "description": "Log in to manage your practice, schedule appointments, and provide quality mental health services to your clients.",
-        "cta": "Sign in as Professional →"
-      },
+      "description": "Sign in to your account to continue",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
       "noAccount": "Don't have an account?",
-      "createOne": "Create one"
+      "createAccount": "Create one here",
+      "backToHome": "Back to home"
     },
     "signupSelection": {
       "title": "Create Your Account",
@@ -287,34 +285,6 @@
       },
       "hasAccount": "Already have an account?",
       "signIn": "Sign in"
-    },
-    "memberLogin": {
-      "title": "Member Login",
-      "description": "Welcome back to your wellness journey",
-      "email": "Email Address",
-      "emailPlaceholder": "you@example.com",
-      "password": "Password",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Remember me",
-      "forgotPassword": "Forgot password?",
-      "signIn": "Sign In",
-      "noAccount": "Don't have an account?",
-      "createAccount": "Create an account",
-      "backToHome": "← Back to Home"
-    },
-    "professionalLogin": {
-      "title": "Professional Login",
-      "description": "Access your professional dashboard",
-      "email": "Email Address",
-      "emailPlaceholder": "you@example.com",
-      "password": "Password",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Remember me",
-      "forgotPassword": "Forgot password?",
-      "signIn": "Sign In",
-      "noAccount": "Don't have an account?",
-      "joinProfessional": "Join as a Professional",
-      "backToHome": "← Back to Home"
     },
     "memberSignup": {
       "title": "Join as a Member",
@@ -1380,6 +1350,7 @@
       "goal": "Our goal: that every person feels heard, supported, and accompanied at every stage."
     }
   },
+
   "Client": {
     "overview": {
       "tagline": "Your Wellness Journey",

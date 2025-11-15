@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ChevronDown, UserCircle, Briefcase, LogOut, Settings, User } from "lucide-react";
+import {
+  Menu,
+  ChevronDown,
+  UserCircle,
+  Briefcase,
+  LogOut,
+  Settings,
+  User,
+} from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -144,44 +152,12 @@ export function Header() {
             ) : (
               // Unauthenticated user
               <>
-                <DropdownMenu modal={false}>
-                  <DropdownMenuTrigger className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-base font-semibold text-primary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    {t("login")}
-                    <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/login/member"
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <UserCircle className="w-5 h-5 text-primary" />
-                        <div>
-                          <div className="font-medium">{t("memberLogin")}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {t("memberLoginDesc")}
-                          </div>
-                        </div>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/login/professional"
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <Briefcase className="w-5 h-5 text-primary" />
-                        <div>
-                          <div className="font-medium">
-                            {t("professionalLogin")}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {t("professionalLoginDesc")}
-                          </div>
-                        </div>
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Link
+                  href="/login"
+                  className="hidden sm:inline-flex items-center justify-center rounded-md px-5 py-2.5 text-base font-semibold text-primary transition-all duration-300 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {t("login")}
+                </Link>
                 <Link
                   href="/signup"
                   className="hidden sm:inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-base font-semibold text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
-import Admin, { ADMIN_ROLE_PERMISSIONS, type AdminRole, type IAdminPermissions } from "@/models/Admin";
+import Admin, {
+  ADMIN_ROLE_PERMISSIONS,
+  type AdminRole,
+  type IAdminPermissions,
+} from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
 
 // GET - Get specific admin details
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -22,11 +26,14 @@ export async function GET(
 
     const currentAdmin = await Admin.findOne({
       userId: session.user.id,
-      isActive: true
+      isActive: true,
     });
 
     if (!currentAdmin?.permissions.manageAdmins) {
-      return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Insufficient permissions" },
+        { status: 403 },
+      );
     }
 
     await connectToDatabase();
@@ -51,10 +58,12 @@ export async function GET(
         email: (admin.userId as any).email,
         createdAt: (admin.userId as any).createdAt,
       },
-      createdBy: admin.createdBy ? {
-        firstName: (admin.createdBy as any).firstName,
-        lastName: (admin.createdBy as any).lastName,
-      } : null,
+      createdBy: admin.createdBy
+        ? {
+            firstName: (admin.createdBy as any).firstName,
+            lastName: (admin.createdBy as any).lastName,
+          }
+        : null,
       createdAt: admin.createdAt,
       lastLogin: admin.lastLogin,
       isActive: admin.isActive,
@@ -65,7 +74,7 @@ export async function GET(
     console.error("Get admin error:", error);
     return NextResponse.json(
       { error: "Failed to fetch admin", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -73,7 +82,7 @@ export async function GET(
 // PUT - Update admin
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -86,11 +95,14 @@ export async function PUT(
 
     const currentAdmin = await Admin.findOne({
       userId: session.user.id,
-      isActive: true
+      isActive: true,
     });
 
     if (!currentAdmin?.permissions.manageAdmins) {
-      return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Insufficient permissions" },
+        { status: 403 },
+      );
     }
 
     await connectToDatabase();
@@ -105,10 +117,13 @@ export async function PUT(
     }
 
     // Prevent super admin from modifying themselves
-    if (id === (currentAdmin._id as any).toString() && currentAdmin.role === "super_admin") {
+    if (
+      id === (currentAdmin._id as any).toString() &&
+      currentAdmin.role === "super_admin"
+    ) {
       return NextResponse.json(
         { error: "Super admin cannot modify their own permissions" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -132,15 +147,13 @@ export async function PUT(
 
       // Update user's admin status
       await User.findByIdAndUpdate(adminToUpdate.userId, {
-        isAdmin: isActive
+        isAdmin: isActive,
       });
     }
 
-    const updatedAdmin = await Admin.findByIdAndUpdate(
-      id,
-      updates,
-      { new: true }
-    ).populate("userId", "firstName lastName email");
+    const updatedAdmin = await Admin.findByIdAndUpdate(id, updates, {
+      new: true,
+    }).populate("userId", "firstName lastName email");
 
     return NextResponse.json({
       message: "Admin updated successfully",
@@ -149,13 +162,13 @@ export async function PUT(
         role: (updatedAdmin as any).role,
         permissions: (updatedAdmin as any).permissions,
         isActive: (updatedAdmin as any).isActive,
-      }
+      },
     });
   } catch (error: any) {
     console.error("Update admin error:", error);
     return NextResponse.json(
       { error: "Failed to update admin", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -163,7 +176,7 @@ export async function PUT(
 // DELETE - Deactivate admin (soft delete)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -176,12 +189,15 @@ export async function DELETE(
 
     const currentAdmin = await Admin.findOne({
       userId: session.user.id,
-      isActive: true
+      isActive: true,
     });
 
     // Additional check for delete permissions
     if (!currentAdmin?.permissions.deleteAdmins) {
-      return NextResponse.json({ error: "Insufficient permissions to delete admins" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Insufficient permissions to delete admins" },
+        { status: 403 },
+      );
     }
 
     await connectToDatabase();
@@ -195,7 +211,7 @@ export async function DELETE(
     if (id === (currentAdmin._id as any).toString()) {
       return NextResponse.json(
         { error: "Cannot delete your own admin account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -203,7 +219,7 @@ export async function DELETE(
     await Admin.findByIdAndUpdate(id, { isActive: false });
     await User.findByIdAndUpdate(adminToDelete.userId, {
       isAdmin: false,
-      adminId: null
+      adminId: null,
     });
 
     return NextResponse.json({ message: "Admin deactivated successfully" });
@@ -211,7 +227,7 @@ export async function DELETE(
     console.error("Delete admin error:", error);
     return NextResponse.json(
       { error: "Failed to delete admin", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

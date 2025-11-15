@@ -1,6 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export type AdminRole = "super_admin" | "platform_admin" | "content_admin" | "support_admin";
+export type AdminRole =
+  | "super_admin"
+  | "platform_admin"
+  | "content_admin"
+  | "support_admin";
 
 export interface IAdminPermissions {
   // User Management
@@ -39,31 +43,34 @@ export interface IAdmin extends Document {
   updatedAt: Date;
 }
 
-const AdminPermissionsSchema = new Schema({
-  // User Management
-  manageUsers: { type: Boolean, default: false },
-  manageProfessionals: { type: Boolean, default: false },
-  managePatients: { type: Boolean, default: false },
-  approveProfessionals: { type: Boolean, default: false },
+const AdminPermissionsSchema = new Schema(
+  {
+    // User Management
+    manageUsers: { type: Boolean, default: false },
+    manageProfessionals: { type: Boolean, default: false },
+    managePatients: { type: Boolean, default: false },
+    approveProfessionals: { type: Boolean, default: false },
 
-  // Content Management
-  manageBlogs: { type: Boolean, default: false },
-  manageContent: { type: Boolean, default: false },
+    // Content Management
+    manageBlogs: { type: Boolean, default: false },
+    manageContent: { type: Boolean, default: false },
 
-  // System Management
-  viewAnalytics: { type: Boolean, default: false },
-  manageReports: { type: Boolean, default: false },
-  manageBilling: { type: Boolean, default: false },
+    // System Management
+    viewAnalytics: { type: Boolean, default: false },
+    manageReports: { type: Boolean, default: false },
+    manageBilling: { type: Boolean, default: false },
 
-  // Admin Management (only for super admins)
-  manageAdmins: { type: Boolean, default: false },
-  createAdmins: { type: Boolean, default: false },
-  deleteAdmins: { type: Boolean, default: false },
+    // Admin Management (only for super admins)
+    manageAdmins: { type: Boolean, default: false },
+    createAdmins: { type: Boolean, default: false },
+    deleteAdmins: { type: Boolean, default: false },
 
-  // Platform Settings
-  manageSettings: { type: Boolean, default: false },
-  managePlatform: { type: Boolean, default: false },
-}, { _id: false });
+    // Platform Settings
+    manageSettings: { type: Boolean, default: false },
+    managePlatform: { type: Boolean, default: false },
+  },
+  { _id: false },
+);
 
 const AdminSchema = new Schema<IAdmin>(
   {
@@ -95,7 +102,7 @@ const AdminSchema = new Schema<IAdmin>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Pre-defined permission sets for each role

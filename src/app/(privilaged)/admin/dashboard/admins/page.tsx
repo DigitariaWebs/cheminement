@@ -41,7 +41,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type AdminRole = "super_admin" | "platform_admin" | "content_admin" | "support_admin";
+type AdminRole =
+  | "super_admin"
+  | "platform_admin"
+  | "content_admin"
+  | "support_admin";
 
 interface AdminPermissions {
   manageUsers: boolean;
@@ -190,7 +194,10 @@ export default function AdminsPage() {
         {/* Loading skeleton */}
         <div className="grid gap-6 md:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+            <div
+              key={i}
+              className="rounded-xl bg-card p-6 border border-border/40"
+            >
               <div className="animate-pulse">
                 <div className="h-4 bg-muted rounded w-24 mb-2"></div>
                 <div className="h-8 bg-muted rounded w-16"></div>
@@ -268,7 +275,7 @@ export default function AdminsPage() {
             disabled={loading}
             className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -307,26 +314,34 @@ export default function AdminsPage() {
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
-          <p className="text-sm font-light text-muted-foreground">Super Admins</p>
+          <p className="text-sm font-light text-muted-foreground">
+            Super Admins
+          </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {admins.filter(a => a.role === "super_admin").length}
+            {admins.filter((a) => a.role === "super_admin").length}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
-          <p className="text-sm font-light text-muted-foreground">Platform Admins</p>
+          <p className="text-sm font-light text-muted-foreground">
+            Platform Admins
+          </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {admins.filter(a => a.role === "platform_admin").length}
+            {admins.filter((a) => a.role === "platform_admin").length}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
-          <p className="text-sm font-light text-muted-foreground">Active Today</p>
+          <p className="text-sm font-light text-muted-foreground">
+            Active Today
+          </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {admins.filter(a => {
-              if (!a.lastLogin) return false;
-              const today = new Date();
-              const lastLogin = new Date(a.lastLogin);
-              return lastLogin.toDateString() === today.toDateString();
-            }).length}
+            {
+              admins.filter((a) => {
+                if (!a.lastLogin) return false;
+                const today = new Date();
+                const lastLogin = new Date(a.lastLogin);
+                return lastLogin.toDateString() === today.toDateString();
+              }).length
+            }
           </p>
         </div>
       </div>
@@ -402,7 +417,9 @@ export default function AdminsPage() {
                     </div>
                   </td>
                   <td className="p-4">
-                    <Badge className={`inline-flex items-center gap-1 ${getRoleBadgeColor(admin.role)}`}>
+                    <Badge
+                      className={`inline-flex items-center gap-1 ${getRoleBadgeColor(admin.role)}`}
+                    >
                       {getRoleIcon(admin.role)}
                       {admin.role.replace("_", " ").toUpperCase()}
                     </Badge>
@@ -410,14 +427,12 @@ export default function AdminsPage() {
                   <td className="p-4 text-sm font-light text-muted-foreground">
                     {admin.createdBy
                       ? `${admin.createdBy.firstName} ${admin.createdBy.lastName}`
-                      : "System"
-                    }
+                      : "System"}
                   </td>
                   <td className="p-4 text-sm font-light text-muted-foreground">
                     {admin.lastLogin
                       ? new Date(admin.lastLogin).toLocaleDateString()
-                      : "Never"
-                    }
+                      : "Never"}
                   </td>
                   <td className="p-4 text-sm font-light text-muted-foreground">
                     {new Date(admin.createdAt).toLocaleDateString()}
@@ -460,7 +475,7 @@ export default function AdminsPage() {
 
 function CreateAdminForm({
   roles,
-  onSuccess
+  onSuccess,
 }: {
   roles: RoleInfo[];
   onSuccess: () => void;
@@ -473,7 +488,8 @@ function CreateAdminForm({
     role: "support_admin" as AdminRole,
     useCustomPermissions: false,
   });
-  const [customPermissions, setCustomPermissions] = useState<AdminPermissions | null>(null);
+  const [customPermissions, setCustomPermissions] =
+    useState<AdminPermissions | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -485,9 +501,10 @@ function CreateAdminForm({
     try {
       const payload = {
         ...formData,
-        ...(formData.useCustomPermissions && customPermissions && {
-          customPermissions
-        }),
+        ...(formData.useCustomPermissions &&
+          customPermissions && {
+            customPermissions,
+          }),
       };
 
       const response = await fetch("/api/admin/admins", {
@@ -509,7 +526,7 @@ function CreateAdminForm({
     }
   };
 
-  const selectedRole = roles.find(r => r.role === formData.role);
+  const selectedRole = roles.find((r) => r.role === formData.role);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -518,7 +535,9 @@ function CreateAdminForm({
           <label className="text-sm font-medium">First Name</label>
           <Input
             value={formData.firstName}
-            onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, firstName: e.target.value }))
+            }
             required
           />
         </div>
@@ -526,7 +545,9 @@ function CreateAdminForm({
           <label className="text-sm font-medium">Last Name</label>
           <Input
             value={formData.lastName}
-            onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, lastName: e.target.value }))
+            }
             required
           />
         </div>
@@ -537,7 +558,9 @@ function CreateAdminForm({
         <Input
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, email: e.target.value }))
+          }
           required
         />
       </div>
@@ -547,7 +570,9 @@ function CreateAdminForm({
         <Input
           type="password"
           value={formData.password}
-          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, password: e.target.value }))
+          }
           required
         />
       </div>
@@ -556,7 +581,9 @@ function CreateAdminForm({
         <label className="text-sm font-medium">Admin Role</label>
         <Select
           value={formData.role}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, role: value as AdminRole }))}
+          onValueChange={(value) =>
+            setFormData((prev) => ({ ...prev, role: value as AdminRole }))
+          }
         >
           <SelectTrigger>
             <SelectValue />

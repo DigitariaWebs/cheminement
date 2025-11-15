@@ -143,7 +143,10 @@ export default function PatientsPage() {
         {/* Loading skeleton */}
         <div className="grid gap-6 md:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+            <div
+              key={i}
+              className="rounded-xl bg-card p-6 border border-border/40"
+            >
               <div className="animate-pulse">
                 <div className="h-4 bg-muted rounded w-24 mb-2"></div>
                 <div className="h-8 bg-muted rounded w-16"></div>
@@ -221,7 +224,7 @@ export default function PatientsPage() {
             disabled={loading}
             className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
           <Button className="gap-2">

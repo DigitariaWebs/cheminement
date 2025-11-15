@@ -14,7 +14,7 @@ export default async function AdminLayout({
   const session = await getServerSession(authOptions);
 
   if (!session || session.user?.role !== "admin") {
-    redirect("/login/member");
+    redirect("/login");
   }
 
   const locale = await getLocale();

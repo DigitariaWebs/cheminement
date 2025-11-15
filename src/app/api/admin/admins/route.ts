@@ -3,7 +3,11 @@ import { getServerSession } from "next-auth";
 import bcrypt from "bcryptjs";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
-import Admin, { ADMIN_ROLE_PERMISSIONS, type AdminRole, type IAdminPermissions } from "@/models/Admin";
+import Admin, {
+  ADMIN_ROLE_PERMISSIONS,
+  type AdminRole,
+  type IAdminPermissions,
+} from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
 
 interface CreateAdminRequest {
@@ -27,11 +31,14 @@ export async function GET(req: NextRequest) {
 
     const admin = await Admin.findOne({
       userId: session.user.id,
-      isActive: true
+      isActive: true,
     });
 
     if (!admin?.permissions.manageAdmins) {
-      return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Insufficient permissions" },
+        { status: 403 },
+      );
     }
 
     await connectToDatabase();
@@ -53,7 +60,7 @@ export async function GET(req: NextRequest) {
 
     const total = await Admin.countDocuments({ isActive: true });
 
-    const adminData = admins.map(admin => ({
+    const adminData = admins.map((admin) => ({
       id: admin._id.toString(),
       userId: admin.userId._id.toString(),
       role: admin.role,
@@ -64,10 +71,12 @@ export async function GET(req: NextRequest) {
         email: (admin.userId as any).email,
         createdAt: (admin.userId as any).createdAt,
       },
-      createdBy: admin.createdBy ? {
-        firstName: (admin.createdBy as any).firstName,
-        lastName: (admin.createdBy as any).lastName,
-      } : null,
+      createdBy: admin.createdBy
+        ? {
+            firstName: (admin.createdBy as any).firstName,
+            lastName: (admin.createdBy as any).lastName,
+          }
+        : null,
       createdAt: admin.createdAt,
       lastLogin: admin.lastLogin,
     }));
@@ -85,7 +94,7 @@ export async function GET(req: NextRequest) {
     console.error("Get admins error:", error);
     return NextResponse.json(
       { error: "Failed to fetch admins", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -102,23 +111,27 @@ export async function POST(req: NextRequest) {
 
     const admin = await Admin.findOne({
       userId: session.user.id,
-      isActive: true
+      isActive: true,
     });
 
     if (!admin?.permissions.createAdmins) {
-      return NextResponse.json({ error: "Insufficient permissions to create admins" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Insufficient permissions to create admins" },
+        { status: 403 },
+      );
     }
 
     await connectToDatabase();
 
     const body: CreateAdminRequest = await req.json();
-    const { email, password, firstName, lastName, role, customPermissions } = body;
+    const { email, password, firstName, lastName, role, customPermissions } =
+      body;
 
     // Validate required fields
     if (!email || !password || !firstName || !lastName || !role) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -127,19 +140,19 @@ export async function POST(req: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User with this email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if user is already an admin
     const existingAdminUser = await User.findOne({
       email: email.toLowerCase(),
-      isAdmin: true
+      isAdmin: true,
     });
     if (existingAdminUser) {
       return NextResponse.json(
         { error: "User is already an admin" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -179,29 +192,32 @@ export async function POST(req: NextRequest) {
 
     // Update user with admin reference
     await User.findByIdAndUpdate(savedUser._id, {
-      adminId: (savedAdmin as any)._id
+      adminId: (savedAdmin as any)._id,
     });
 
-    return NextResponse.json({
-      message: "Admin created successfully",
-      admin: {
-        id: (savedAdmin as any)._id.toString(),
-        userId: (savedUser as any)._id.toString(),
-        role: savedAdmin.role,
-        permissions: savedAdmin.permissions,
-        user: {
-          firstName: savedUser.firstName,
-          lastName: savedUser.lastName,
-          email: savedUser.email,
+    return NextResponse.json(
+      {
+        message: "Admin created successfully",
+        admin: {
+          id: (savedAdmin as any)._id.toString(),
+          userId: (savedUser as any)._id.toString(),
+          role: savedAdmin.role,
+          permissions: savedAdmin.permissions,
+          user: {
+            firstName: savedUser.firstName,
+            lastName: savedUser.lastName,
+            email: savedUser.email,
+          },
+          createdAt: savedAdmin.createdAt,
         },
-        createdAt: savedAdmin.createdAt,
-      }
-    }, { status: 201 });
+      },
+      { status: 201 },
+    );
   } catch (error: any) {
     console.error("Create admin error:", error);
     return NextResponse.json(
       { error: "Failed to create admin", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

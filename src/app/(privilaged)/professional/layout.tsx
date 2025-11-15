@@ -14,7 +14,7 @@ export default async function ProfessionalLayout({
   const session = await getServerSession(authOptions);
 
   if (!session || session.user?.role !== "professional") {
-    redirect("/login/professional");
+    redirect("/login");
   }
 
   const locale = await getLocale();

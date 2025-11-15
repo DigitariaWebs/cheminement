@@ -1,122 +1,251 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Users, Briefcase } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  UserCircle,
+  Mail,
+  Lock,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-  exit: {
-    opacity: 0,
-    transition: {
-      staggerChildren: 0.05,
-      staggerDirection: -1,
-    },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
-};
+import { signIn } from "next-auth/react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  AuthContainer,
+  AuthHeader,
+  AuthCard,
+  AuthFooter,
+} from "@/components/auth";
+import { SocialLogin } from "@/components/auth/SocialLogin";
 
 export default function LoginPage() {
-  const t = useTranslations("Auth.loginSelection");
+  const t = useTranslations("Auth.login");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    // Client-side validation
+    if (!email.trim()) {
+      setError("Email is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("Password must be at least 8 characters long");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+      } else {
+        // Get the session to determine user role
+        const response = await fetch("/api/auth/session");
+        const session = await response.json();
+
+        if (session?.user?.role) {
+          const role = session.user.role;
+          const dashboardMap: Record<string, string> = {
+            client: "/client/dashboard",
+            professional: "/professional/dashboard",
+            admin: "/admin/dashboard",
+          };
+          const dashboardUrl = dashboardMap[role] || "/client/dashboard";
+          router.push(dashboardUrl);
+        } else {
+          router.push("/client/dashboard");
+        }
+      }
+    } catch {
+      setError("An error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4 }}
-        className="text-center mb-12"
-      >
-        <h1 className="text-4xl font-serif font-light text-foreground mb-3">
-          {t("title")}
-        </h1>
-        <p className="text-muted-foreground text-lg font-light">
-          {t("subtitle")}
-        </p>
-      </motion.div>
+    <AuthContainer>
+      <AuthHeader
+        icon={<UserCircle className="w-8 h-8 text-primary" />}
+        title={t("title")}
+        description={t("description")}
+      />
 
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        exit="exit"
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto"
-      >
-        {/* Member Card */}
-        <motion.div variants={item}>
-          <Link href="/login/member" className="block group h-full">
-            <div className="h-full rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary hover:-translate-y-1 hover:bg-card">
-              <div className="flex flex-col items-center text-center h-full">
-                <div className="mb-6 rounded-full bg-primary/10 p-4 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Users className="h-8 w-8" />
-                </div>
-                <h2 className="text-2xl font-serif font-light text-foreground mb-4 group-hover:text-primary transition-colors">
-                  {t("member.title")}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed grow font-light">
-                  {t("member.description")}
-                </p>
-                <div className="mt-6 text-primary font-light group-hover:underline">
-                  {t("member.cta")}
-                </div>
-              </div>
+      <AuthCard>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{error}</p>
             </div>
-          </Link>
-        </motion.div>
+          )}
 
-        {/* Professional Card */}
-        <motion.div variants={item}>
-          <Link href="/login/professional" className="block group h-full">
-            <div className="h-full rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary hover:-translate-y-1 hover:bg-card">
-              <div className="flex flex-col items-center text-center h-full">
-                <div className="mb-6 rounded-full bg-primary/10 p-4 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Briefcase className="h-8 w-8" />
-                </div>
-                <h2 className="text-2xl font-serif font-light text-foreground mb-4 group-hover:text-primary transition-colors">
-                  {t("professional.title")}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed grow font-light">
-                  {t("professional.description")}
-                </p>
-                <div className="mt-6 text-primary font-light group-hover:underline">
-                  {t("professional.cta")}
-                </div>
+          {/* Email Field */}
+          <div>
+            <Label htmlFor="email" className="font-light mb-2">
+              {t("email")}
+            </Label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-4 w-4 text-muted-foreground" />
               </div>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-9 h-10"
+                placeholder={t("emailPlaceholder")}
+              />
             </div>
-          </Link>
-        </motion.div>
-      </motion.div>
+          </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="mt-8 text-center"
-      >
+          {/* Password Field */}
+          <div>
+            <Label htmlFor="password" className="font-light mb-2">
+              {t("password")}
+            </Label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-9 pr-9 h-10"
+                placeholder={t("passwordPlaceholder")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Remember Me & Forgot Password */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
+              />
+              <Label htmlFor="remember-me" className="ml-2 font-light">
+                {t("rememberMe")}
+              </Label>
+            </div>
+
+            <div className="text-sm">
+              <Link
+                href={`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`}
+                className="font-light text-primary hover:text-primary/80 transition-colors"
+              >
+                {t("forgotPassword")}
+              </Link>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="group w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              <>
+                <span>{t("signIn")}</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
+          </button>
+        </form>
+
+        <SocialLogin mode="login" />
+      </AuthCard>
+
+      <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
           {t("noAccount")}{" "}
           <Link
             href="/signup"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            {t("createOne")}
+            {t("createAccount")}
           </Link>
         </p>
-      </motion.div>
-    </div>
+      </AuthFooter>
+
+      <AuthFooter>
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
+        >
+          {t("backToHome")}
+        </Link>
+      </AuthFooter>
+    </AuthContainer>
   );
 }

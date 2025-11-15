@@ -56,12 +56,12 @@ export async function GET(req: NextRequest) {
         const prof = professional as any; // Cast to any to access optional fields that may not be in the type
         const totalSessions = await Appointment.countDocuments({
           professionalId: professional._id,
-          status: "completed"
+          status: "completed",
         });
 
         const activeClients = await Appointment.distinct("clientId", {
           professionalId: professional._id,
-          status: { $in: ["scheduled", "completed"] }
+          status: { $in: ["scheduled", "completed"] },
         });
 
         return {
@@ -71,24 +71,28 @@ export async function GET(req: NextRequest) {
           specialty: prof.specialty || "General Practice",
           license: prof.license || "Pending",
           status: professional.status,
-          joinedDate: professional.createdAt.toISOString().split('T')[0],
+          joinedDate: professional.createdAt.toISOString().split("T")[0],
           totalClients: activeClients.length,
           totalSessions,
         };
-      })
+      }),
     );
 
     // Get summary stats
-    const totalProfessionals = await User.countDocuments({ role: "professional" });
+    const totalProfessionals = await User.countDocuments({
+      role: "professional",
+    });
     const activeProfessionals = await User.countDocuments({
       role: "professional",
-      status: "active"
+      status: "active",
     });
     const pendingProfessionals = await User.countDocuments({
       role: "professional",
-      status: "pending"
+      status: "pending",
     });
-    const totalSessions = await Appointment.countDocuments({ status: "completed" });
+    const totalSessions = await Appointment.countDocuments({
+      status: "completed",
+    });
 
     return NextResponse.json({
       professionals: professionalsWithStats,
@@ -109,7 +113,7 @@ export async function GET(req: NextRequest) {
     console.error("Admin professionals API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch professionals data", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

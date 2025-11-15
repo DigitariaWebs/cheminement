@@ -92,7 +92,7 @@ export async function withAdminPermission(
 
       const admin = await Admin.findOne({
         userId: session.user.id,
-        isActive: true
+        isActive: true,
       });
 
       if (!admin) {

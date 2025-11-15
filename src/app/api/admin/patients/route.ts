@@ -55,13 +55,13 @@ export async function GET(req: NextRequest) {
       patients.map(async (patient) => {
         const totalSessions = await Appointment.countDocuments({
           clientId: patient._id,
-          status: "completed"
+          status: "completed",
         });
 
         // Find the most recent matched professional
         const latestAppointment = await Appointment.findOne({
           clientId: patient._id,
-          status: { $in: ["scheduled", "completed"] }
+          status: { $in: ["scheduled", "completed"] },
         })
           .populate("professionalId", "firstName lastName")
           .sort({ createdAt: -1 })
@@ -79,25 +79,25 @@ export async function GET(req: NextRequest) {
           phone: patient.phone || "",
           status: patient.status,
           matchedWith,
-          joinedDate: patient.createdAt.toISOString().split('T')[0],
+          joinedDate: patient.createdAt.toISOString().split("T")[0],
           totalSessions,
           issueType: "General", // This would come from appointment data or profile
         };
-      })
+      }),
     );
 
     // Get summary stats
     const totalPatients = await User.countDocuments({ role: "client" });
     const activePatients = await User.countDocuments({
       role: "client",
-      status: "active"
+      status: "active",
     });
     const pendingPatients = await User.countDocuments({
       role: "client",
-      status: "pending"
+      status: "pending",
     });
     const totalSessions = await Appointment.countDocuments({
-      status: "completed"
+      status: "completed",
     });
 
     return NextResponse.json({
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
     console.error("Admin patients API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch patients data", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

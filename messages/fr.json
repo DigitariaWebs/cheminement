@@ -256,21 +256,19 @@
     "layout": {
       "logoAlt": "Logo"
     },
-    "loginSelection": {
+    "login": {
       "title": "Bienvenue",
-      "subtitle": "Sélectionnez l'option qui vous décrit le mieux",
-      "member": {
-        "title": "Membre",
-        "description": "Accédez à votre compte personnel pour gérer vos rendez-vous, visualiser votre parcours de santé mentale et vous connecter avec des professionnels.",
-        "cta": "Se connecter en tant que membre →"
-      },
-      "professional": {
-        "title": "Professionnel",
-        "description": "Connectez-vous pour gérer votre pratique, planifier des rendez-vous et fournir des services de santé mentale de qualité à vos clients.",
-        "cta": "Se connecter en tant que professionnel →"
-      },
+      "description": "Connectez-vous à votre compte pour continuer",
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "Entrez votre e-mail",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "signIn": "Se connecter",
       "noAccount": "Vous n'avez pas de compte ?",
-      "createOne": "Créer un compte"
+      "createAccount": "Créez-en un ici",
+      "backToHome": "Retour à l'accueil"
     },
     "signupSelection": {
       "title": "Créez votre compte",
@@ -287,34 +285,6 @@
       },
       "hasAccount": "Vous avez déjà un compte ?",
       "signIn": "Se connecter"
-    },
-    "memberLogin": {
-      "title": "Connexion membre",
-      "description": "Bienvenue à votre parcours de bien-être",
-      "email": "Adresse e-mail",
-      "emailPlaceholder": "vous@exemple.com",
-      "password": "Mot de passe",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Se souvenir de moi",
-      "forgotPassword": "Mot de passe oublié ?",
-      "signIn": "Se connecter",
-      "noAccount": "Vous n'avez pas de compte ?",
-      "createAccount": "Créer un compte",
-      "backToHome": "← Retour à l'accueil"
-    },
-    "professionalLogin": {
-      "title": "Connexion professionnel",
-      "description": "Accédez à votre tableau de bord professionnel",
-      "email": "Adresse e-mail",
-      "emailPlaceholder": "vous@exemple.com",
-      "password": "Mot de passe",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Se souvenir de moi",
-      "forgotPassword": "Mot de passe oublié ?",
-      "signIn": "Se connecter",
-      "noAccount": "Vous n'avez pas de compte ?",
-      "joinProfessional": "Rejoindre en tant que professionnel",
-      "backToHome": "← Retour à l'accueil"
     },
     "memberSignup": {
       "title": "Rejoindre en tant que membre",

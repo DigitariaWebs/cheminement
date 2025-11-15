@@ -64,7 +64,9 @@ export default function ReportsPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`/api/admin/reports?period=${selectedPeriod}`);
+      const response = await fetch(
+        `/api/admin/reports?period=${selectedPeriod}`,
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch reports data");
       }
@@ -102,7 +104,10 @@ export default function ReportsPage() {
         {/* Loading skeleton */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+            <div
+              key={i}
+              className="rounded-xl bg-card p-6 border border-border/40"
+            >
               <div className="animate-pulse">
                 <div className="h-4 bg-muted rounded w-24 mb-2"></div>
                 <div className="h-8 bg-muted rounded w-16 mb-2"></div>
@@ -176,7 +181,8 @@ export default function ReportsPage() {
 
   if (!data) return null;
 
-  const { metrics, revenueBreakdown, topIssueTypes, professionalPerformance } = data;
+  const { metrics, revenueBreakdown, topIssueTypes, professionalPerformance } =
+    data;
 
   return (
     <div className="space-y-6">
@@ -190,10 +196,7 @@ export default function ReportsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Select
-            value={period}
-            onValueChange={handlePeriodChange}
-          >
+          <Select value={period} onValueChange={handlePeriodChange}>
             <SelectTrigger className="w-[180px]">
               <Calendar className="h-4 w-4 mr-2" />
               <SelectValue />
@@ -223,9 +226,14 @@ export default function ReportsPage() {
                 ${metrics.totalRevenue.toLocaleString()}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className={`h-3 w-3 ${metrics.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`} />
-                <span className={`text-xs font-medium ${metrics.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {metrics.revenueChange >= 0 ? '+' : ''}{metrics.revenueChange}%
+                <TrendingUp
+                  className={`h-3 w-3 ${metrics.revenueChange >= 0 ? "text-green-600" : "text-red-600"}`}
+                />
+                <span
+                  className={`text-xs font-medium ${metrics.revenueChange >= 0 ? "text-green-600" : "text-red-600"}`}
+                >
+                  {metrics.revenueChange >= 0 ? "+" : ""}
+                  {metrics.revenueChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -248,9 +256,14 @@ export default function ReportsPage() {
                 {metrics.totalSessions.toLocaleString()}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className={`h-3 w-3 ${metrics.sessionsChange >= 0 ? 'text-blue-600' : 'text-red-600'}`} />
-                <span className={`text-xs font-medium ${metrics.sessionsChange >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                  {metrics.sessionsChange >= 0 ? '+' : ''}{metrics.sessionsChange}%
+                <TrendingUp
+                  className={`h-3 w-3 ${metrics.sessionsChange >= 0 ? "text-blue-600" : "text-red-600"}`}
+                />
+                <span
+                  className={`text-xs font-medium ${metrics.sessionsChange >= 0 ? "text-blue-600" : "text-red-600"}`}
+                >
+                  {metrics.sessionsChange >= 0 ? "+" : ""}
+                  {metrics.sessionsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -273,9 +286,14 @@ export default function ReportsPage() {
                 {metrics.activeProfessionals}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className={`h-3 w-3 ${metrics.professionalsChange >= 0 ? 'text-purple-600' : 'text-red-600'}`} />
-                <span className={`text-xs font-medium ${metrics.professionalsChange >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
-                  {metrics.professionalsChange >= 0 ? '+' : ''}{metrics.professionalsChange}%
+                <TrendingUp
+                  className={`h-3 w-3 ${metrics.professionalsChange >= 0 ? "text-purple-600" : "text-red-600"}`}
+                />
+                <span
+                  className={`text-xs font-medium ${metrics.professionalsChange >= 0 ? "text-purple-600" : "text-red-600"}`}
+                >
+                  {metrics.professionalsChange >= 0 ? "+" : ""}
+                  {metrics.professionalsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -298,9 +316,14 @@ export default function ReportsPage() {
                 {metrics.activePatients}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className={`h-3 w-3 ${metrics.patientsChange >= 0 ? 'text-orange-600' : 'text-red-600'}`} />
-                <span className={`text-xs font-medium ${metrics.patientsChange >= 0 ? 'text-orange-600' : 'text-red-600'}`}>
-                  {metrics.patientsChange >= 0 ? '+' : ''}{metrics.patientsChange}%
+                <TrendingUp
+                  className={`h-3 w-3 ${metrics.patientsChange >= 0 ? "text-orange-600" : "text-red-600"}`}
+                />
+                <span
+                  className={`text-xs font-medium ${metrics.patientsChange >= 0 ? "text-orange-600" : "text-red-600"}`}
+                >
+                  {metrics.patientsChange >= 0 ? "+" : ""}
+                  {metrics.patientsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -333,9 +356,10 @@ export default function ReportsPage() {
                 <div
                   className="h-full bg-primary"
                   style={{
-                    width: revenueBreakdown.total > 0
-                      ? `${(revenueBreakdown.sessionFees / revenueBreakdown.total) * 100}%`
-                      : "0%"
+                    width:
+                      revenueBreakdown.total > 0
+                        ? `${(revenueBreakdown.sessionFees / revenueBreakdown.total) * 100}%`
+                        : "0%",
                   }}
                 />
               </div>
@@ -354,9 +378,10 @@ export default function ReportsPage() {
                   <div
                     className="h-full bg-blue-500"
                     style={{
-                      width: revenueBreakdown.total > 0
-                        ? `${(revenueBreakdown.subscriptionPlans / revenueBreakdown.total) * 100}%`
-                        : "0%"
+                      width:
+                        revenueBreakdown.total > 0
+                          ? `${(revenueBreakdown.subscriptionPlans / revenueBreakdown.total) * 100}%`
+                          : "0%",
                     }}
                   />
                 </div>
@@ -376,9 +401,10 @@ export default function ReportsPage() {
                   <div
                     className="h-full bg-green-500"
                     style={{
-                      width: revenueBreakdown.total > 0
-                        ? `${(revenueBreakdown.resourceSales / revenueBreakdown.total) * 100}%`
-                        : "0%"
+                      width:
+                        revenueBreakdown.total > 0
+                          ? `${(revenueBreakdown.resourceSales / revenueBreakdown.total) * 100}%`
+                          : "0%",
                     }}
                   />
                 </div>
@@ -394,7 +420,10 @@ export default function ReportsPage() {
           <div className="space-y-3">
             {topIssueTypes.length > 0 ? (
               topIssueTypes.slice(0, 5).map((issue, index) => (
-                <div key={issue.type} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div
+                  key={issue.type}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+                >
                   <span className="text-sm font-light text-foreground">
                     {issue.type}
                   </span>
@@ -441,7 +470,10 @@ export default function ReportsPage() {
             <tbody>
               {professionalPerformance.length > 0 ? (
                 professionalPerformance.map((prof, index) => (
-                  <tr key={prof.name} className="border-t border-border/40 hover:bg-muted/20 transition-colors">
+                  <tr
+                    key={prof.name}
+                    className="border-t border-border/40 hover:bg-muted/20 transition-colors"
+                  >
                     <td className="p-4 text-sm font-light text-foreground">
                       {prof.name}
                     </td>
@@ -465,7 +497,9 @@ export default function ReportsPage() {
                 <tr>
                   <td colSpan={5} className="p-12 text-center">
                     <Users className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-                    <p className="text-muted-foreground">No professional performance data available</p>
+                    <p className="text-muted-foreground">
+                      No professional performance data available
+                    </p>
                   </td>
                 </tr>
               )}

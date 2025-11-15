@@ -55,7 +55,9 @@ export default function AdminBillingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "all">(
+    "all",
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const t = useTranslations("Admin.billing");
 
@@ -155,7 +157,10 @@ export default function AdminBillingPage() {
         {/* Loading skeleton for stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg">
+            <div
+              key={i}
+              className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg"
+            >
               <div className="animate-pulse">
                 <div className="h-4 bg-muted rounded w-24 mb-2"></div>
                 <div className="h-8 bg-muted rounded w-16"></div>
@@ -228,7 +233,7 @@ export default function AdminBillingPage() {
             disabled={loading}
             className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
           <Button className="gap-2 rounded-full">
@@ -356,9 +361,7 @@ export default function AdminBillingPage() {
           </h2>
           <span className="text-sm text-muted-foreground">
             {payments.length}{" "}
-            {payments.length > 1
-              ? t("transactionsPlural")
-              : t("transactions")}
+            {payments.length > 1 ? t("transactionsPlural") : t("transactions")}
           </span>
         </div>
 

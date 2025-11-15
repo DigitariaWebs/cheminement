@@ -17,7 +17,11 @@ export async function GET(req: NextRequest) {
 
     // Get current date for calculations
     const now = new Date();
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    const lastMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate(),
+    );
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     // Fetch all required data in parallel
@@ -32,7 +36,10 @@ export async function GET(req: NextRequest) {
       topProfessionalsData,
     ] = await Promise.all([
       // Total professionals
-      User.countDocuments({ role: "professional", status: { $ne: "inactive" } }),
+      User.countDocuments({
+        role: "professional",
+        status: { $ne: "inactive" },
+      }),
 
       // Total patients
       User.countDocuments({ role: "client", status: { $ne: "inactive" } }),
@@ -43,15 +50,17 @@ export async function GET(req: NextRequest) {
       // Completed sessions this month
       Appointment.countDocuments({
         status: "completed",
-        createdAt: { $gte: lastMonth }
+        createdAt: { $gte: lastMonth },
       }),
 
       // Calculate revenue (assuming $80 per session)
-      Appointment.countDocuments({ status: "completed" }).then(count => count * 80),
+      Appointment.countDocuments({ status: "completed" }).then(
+        (count) => count * 80,
+      ),
 
       // Recent users (last 7 days)
       User.find({
-        createdAt: { $gte: lastWeek }
+        createdAt: { $gte: lastWeek },
       })
         .select("firstName lastName role createdAt")
         .sort({ createdAt: -1 })
@@ -59,7 +68,7 @@ export async function GET(req: NextRequest) {
 
       // Recent appointments (last 7 days)
       Appointment.find({
-        createdAt: { $gte: lastWeek }
+        createdAt: { $gte: lastWeek },
       })
         .populate("professionalId", "firstName lastName")
         .populate("clientId", "firstName lastName")
@@ -69,77 +78,91 @@ export async function GET(req: NextRequest) {
       // Top professionals by completed sessions
       Appointment.aggregate([
         {
-          $match: { status: "completed" }
+          $match: { status: "completed" },
         },
         {
           $group: {
             _id: "$professionalId",
             sessionsCount: { $sum: 1 },
-            totalRevenue: { $sum: 80 } // Assuming $80 per session
-          }
+            totalRevenue: { $sum: 80 }, // Assuming $80 per session
+          },
         },
         {
           $lookup: {
             from: "users",
             localField: "_id",
             foreignField: "_id",
-            as: "professional"
-          }
+            as: "professional",
+          },
         },
         {
-          $unwind: "$professional"
+          $unwind: "$professional",
         },
         {
           $project: {
-            name: { $concat: ["$professional.firstName", " ", "$professional.lastName"] },
+            name: {
+              $concat: [
+                "$professional.firstName",
+                " ",
+                "$professional.lastName",
+              ],
+            },
             sessions: "$sessionsCount",
             revenue: "$totalRevenue",
             // Mock rating for now - in real app, this would come from reviews
-            rating: { $add: [4.5, { $divide: [{ $mod: ["$sessionsCount", 5] }, 10] }] }
-          }
+            rating: {
+              $add: [4.5, { $divide: [{ $mod: ["$sessionsCount", 5] }, 10] }],
+            },
+          },
         },
         {
-          $sort: { sessions: -1 }
+          $sort: { sessions: -1 },
         },
         {
-          $limit: 5
-        }
-      ])
+          $limit: 5,
+        },
+      ]),
     ]);
 
     // Calculate growth percentages (comparing to last month)
     const lastMonthProfessionals = await User.countDocuments({
       role: "professional",
       status: { $ne: "inactive" },
-      createdAt: { $lt: lastMonth }
+      createdAt: { $lt: lastMonth },
     });
     const lastMonthPatients = await User.countDocuments({
       role: "client",
       status: { $ne: "inactive" },
-      createdAt: { $lt: lastMonth }
+      createdAt: { $lt: lastMonth },
     });
     const lastMonthSessions = await Appointment.countDocuments({
-      createdAt: { $lt: lastMonth }
+      createdAt: { $lt: lastMonth },
     });
 
-    const professionalsChange = lastMonthProfessionals > 0
-      ? ((totalProfessionals - lastMonthProfessionals) / lastMonthProfessionals * 100)
-      : 0;
-    const patientsChange = lastMonthPatients > 0
-      ? ((totalPatients - lastMonthPatients) / lastMonthPatients * 100)
-      : 0;
-    const sessionsChange = lastMonthSessions > 0
-      ? ((totalSessions - lastMonthSessions) / lastMonthSessions * 100)
-      : 0;
+    const professionalsChange =
+      lastMonthProfessionals > 0
+        ? ((totalProfessionals - lastMonthProfessionals) /
+            lastMonthProfessionals) *
+          100
+        : 0;
+    const patientsChange =
+      lastMonthPatients > 0
+        ? ((totalPatients - lastMonthPatients) / lastMonthPatients) * 100
+        : 0;
+    const sessionsChange =
+      lastMonthSessions > 0
+        ? ((totalSessions - lastMonthSessions) / lastMonthSessions) * 100
+        : 0;
 
     // Calculate revenue change
     const lastMonthRevenue = await Appointment.countDocuments({
       status: "completed",
-      createdAt: { $lt: lastMonth }
-    }).then(count => count * 80);
-    const revenueChange = lastMonthRevenue > 0
-      ? ((totalRevenue - lastMonthRevenue) / lastMonthRevenue * 100)
-      : 0;
+      createdAt: { $lt: lastMonth },
+    }).then((count) => count * 80);
+    const revenueChange =
+      lastMonthRevenue > 0
+        ? ((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+        : 0;
 
     // Format recent activity
     const recentActivity = [
@@ -149,7 +172,7 @@ export async function GET(req: NextRequest) {
         message: `${user.firstName} ${user.lastName} joined as ${user.role}`,
         time: `${Math.floor((now.getTime() - user.createdAt.getTime()) / (1000 * 60 * 60))} hours ago`,
         icon: "CheckCircle2",
-        color: "text-green-600"
+        color: "text-green-600",
       })),
       ...recentAppointments.slice(0, 3).map((appointment, index) => {
         const professional = appointment.professionalId as any;
@@ -159,30 +182,32 @@ export async function GET(req: NextRequest) {
           message: `Session completed with ${professional?.firstName} ${professional?.lastName}`,
           time: `${Math.floor((now.getTime() - appointment.createdAt.getTime()) / (1000 * 60 * 60))} hours ago`,
           icon: "Activity",
-          color: "text-blue-600"
+          color: "text-blue-600",
         };
+      }),
+    ]
+      .sort((a, b) => {
+        // Sort by time (most recent first)
+        const aHours = parseInt(a.time.split(" ")[0]);
+        const bHours = parseInt(b.time.split(" ")[0]);
+        return aHours - bHours;
       })
-    ].sort((a, b) => {
-      // Sort by time (most recent first)
-      const aHours = parseInt(a.time.split(' ')[0]);
-      const bHours = parseInt(b.time.split(' ')[0]);
-      return aHours - bHours;
-    }).slice(0, 5);
+      .slice(0, 5);
 
     // Add pending professionals count
     const pendingProfessionals = await User.countDocuments({
       role: "professional",
-      status: "pending"
+      status: "pending",
     });
 
     if (pendingProfessionals > 0) {
       recentActivity.unshift({
         id: "pending_professionals",
         type: "pending_approval",
-        message: `${pendingProfessionals} professional${pendingProfessionals > 1 ? 's' : ''} pending approval`,
+        message: `${pendingProfessionals} professional${pendingProfessionals > 1 ? "s" : ""} pending approval`,
         time: "Recently",
         icon: "Clock",
-        color: "text-yellow-600"
+        color: "text-yellow-600",
       });
     }
 
@@ -199,7 +224,7 @@ export async function GET(req: NextRequest) {
       },
       recentActivity,
       topProfessionals: topProfessionalsData,
-      pendingApprovals: pendingProfessionals
+      pendingApprovals: pendingProfessionals,
     };
 
     return NextResponse.json(dashboardData);
@@ -207,7 +232,7 @@ export async function GET(req: NextRequest) {
     console.error("Admin dashboard API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch dashboard data", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

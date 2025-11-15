@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
     // Build query for appointments (which represent billable sessions)
     const query: any = {
-      status: { $in: ["completed", "scheduled", "cancelled", "no-show"] }
+      status: { $in: ["completed", "scheduled", "cancelled", "no-show"] },
     };
 
     if (status !== "all") {
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     // Filter by search if provided
     let filteredAppointments = appointments;
     if (search.trim()) {
-      filteredAppointments = appointments.filter(appointment => {
+      filteredAppointments = appointments.filter((appointment) => {
         const client = appointment.clientId as any;
         const professional = appointment.professionalId as any;
         const searchTerm = search.toLowerCase();
@@ -79,7 +79,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Get total count (approximate for search)
-    const total = search.trim() ? filteredAppointments.length * 2 : await Appointment.countDocuments(query);
+    const total = search.trim()
+      ? filteredAppointments.length * 2
+      : await Appointment.countDocuments(query);
 
     // Transform to payment format
     const payments = filteredAppointments.map((appointment, index) => {
@@ -87,11 +89,17 @@ export async function GET(req: NextRequest) {
       const professional = appointment.professionalId as any;
 
       // Determine payment status based on appointment status and date
-      let paymentStatus: "paid" | "pending" | "upcoming" | "processing" | "overdue" = "pending";
+      let paymentStatus:
+        | "paid"
+        | "pending"
+        | "upcoming"
+        | "processing"
+        | "overdue" = "pending";
 
       if (appointment.status === "completed") {
         const appointmentDate = new Date(appointment.date);
-        const daysSinceAppointment = (Date.now() - appointmentDate.getTime()) / (1000 * 60 * 60 * 24);
+        const daysSinceAppointment =
+          (Date.now() - appointmentDate.getTime()) / (1000 * 60 * 60 * 24);
 
         if (daysSinceAppointment > 30) {
           paymentStatus = "overdue";
@@ -112,33 +120,47 @@ export async function GET(req: NextRequest) {
       return {
         id: appointment._id.toString(),
         sessionId: `SES-${appointment._id.toString().slice(-6).toUpperCase()}`,
-        client: client ? `${client.firstName} ${client.lastName}` : "Unknown Client",
-        professional: professional ? `${professional.firstName} ${professional.lastName}` : "Unknown Professional",
-        date: appointment.date.toISOString().split('T')[0],
-        sessionDate: `${appointment.date.toISOString().split('T')[0]} ${appointment.time}`,
+        client: client
+          ? `${client.firstName} ${client.lastName}`
+          : "Unknown Client",
+        professional: professional
+          ? `${professional.firstName} ${professional.lastName}`
+          : "Unknown Professional",
+        date: appointment.date.toISOString().split("T")[0],
+        sessionDate: `${appointment.date.toISOString().split("T")[0]} ${appointment.time}`,
         amount: 120, // Standard session price
         platformFee: 12, // 10% platform fee
         professionalPayout: 108, // Amount after platform fee
         status: paymentStatus,
         paymentMethod: paymentStatus === "paid" ? "Various" : undefined,
         invoiceUrl: paymentStatus === "paid" ? "#" : undefined,
-        paidDate: paymentStatus === "paid" ? appointment.date.toISOString().split('T')[0] : undefined,
+        paidDate:
+          paymentStatus === "paid"
+            ? appointment.date.toISOString().split("T")[0]
+            : undefined,
       };
     });
 
     // Calculate summary stats
     const allPayments = await Appointment.find({
-      status: { $in: ["completed", "scheduled", "cancelled", "no-show"] }
+      status: { $in: ["completed", "scheduled", "cancelled", "no-show"] },
     }).lean();
 
     const stats = {
-      totalRevenue: allPayments.filter(p => p.status === "completed").length * 12, // Platform fees
-      pendingRevenue: allPayments.filter(p => p.status === "scheduled" || p.status === "completed").length * 12,
-      professionalPayouts: allPayments.filter(p => p.status === "completed").length * 108,
-      totalTransactions: allPayments.filter(p => p.status === "completed").length,
-      overdueCount: allPayments.filter(p => {
+      totalRevenue:
+        allPayments.filter((p) => p.status === "completed").length * 12, // Platform fees
+      pendingRevenue:
+        allPayments.filter(
+          (p) => p.status === "scheduled" || p.status === "completed",
+        ).length * 12,
+      professionalPayouts:
+        allPayments.filter((p) => p.status === "completed").length * 108,
+      totalTransactions: allPayments.filter((p) => p.status === "completed")
+        .length,
+      overdueCount: allPayments.filter((p) => {
         if (p.status !== "completed") return false;
-        const daysSince = (Date.now() - new Date(p.date).getTime()) / (1000 * 60 * 60 * 24);
+        const daysSince =
+          (Date.now() - new Date(p.date).getTime()) / (1000 * 60 * 60 * 24);
         return daysSince > 30;
       }).length,
     };
@@ -157,7 +179,7 @@ export async function GET(req: NextRequest) {
     console.error("Admin billing API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch billing data", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

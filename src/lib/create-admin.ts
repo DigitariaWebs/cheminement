@@ -11,7 +11,7 @@ async function createAdminUser() {
 
     // Check if admin user already exists
     const existingUser = await User.findOne({
-      email: "admin@admin.com"
+      email: "admin@admin.com",
     });
 
     if (existingUser?.isAdmin) {
@@ -28,13 +28,17 @@ async function createAdminUser() {
       const hashedPassword = await bcrypt.hash("admin123", saltRounds);
 
       // Update user
-      const updatedUser = await User.findByIdAndUpdate(existingUser._id, {
-        password: hashedPassword,
-        role: "admin",
-        isAdmin: true,
-        status: "active",
-        language: "en",
-      }, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(
+        existingUser._id,
+        {
+          password: hashedPassword,
+          role: "admin",
+          isAdmin: true,
+          status: "active",
+          language: "en",
+        },
+        { new: true },
+      );
 
       // Create admin record
       const adminRecord = new Admin({
@@ -64,7 +68,7 @@ async function createAdminUser() {
 
       // Update user with admin reference
       await User.findByIdAndUpdate(updatedUser!._id, {
-        adminId: adminRecord._id
+        adminId: adminRecord._id,
       });
 
       console.log("Super admin user updated successfully!");
@@ -118,7 +122,7 @@ async function createAdminUser() {
 
       // Update user with admin reference
       await User.findByIdAndUpdate(savedUser._id, {
-        adminId: adminRecord._id
+        adminId: adminRecord._id,
       });
 
       console.log("Super admin user created successfully!");
@@ -127,7 +131,6 @@ async function createAdminUser() {
     console.log("Email: admin@admin.com");
     console.log("Password: admin123");
     console.log("Role: Super Administrator (Full Access)");
-
   } catch (error) {
     console.error("Error creating admin user:", error);
     process.exit(1);
