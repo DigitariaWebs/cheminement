@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 import { config } from "dotenv";
 
 // Load environment variables
-config({ path: ".env" });
+config({
+  path: ".env",
+  override: false
+});
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 

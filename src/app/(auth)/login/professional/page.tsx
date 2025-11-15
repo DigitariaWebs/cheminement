@@ -39,8 +39,22 @@ export default function ProfessionalLoginPage() {
       if (result?.error) {
         setError("Invalid email or password");
       } else {
-        // Redirect to professional dashboard
-        router.push("/dashboard/professional");
+        // Get the session to determine user role
+        const response = await fetch("/api/auth/session");
+        const session = await response.json();
+
+        if (session?.user?.role) {
+          const role = session.user.role;
+          const dashboardMap: Record<string, string> = {
+            client: "/client/dashboard",
+            professional: "/professional/dashboard",
+            admin: "/admin/dashboard",
+          };
+          const dashboardUrl = dashboardMap[role] || "/professional/dashboard";
+          router.push(dashboardUrl);
+        } else {
+          router.push("/professional/dashboard");
+        }
       }
     } catch (err) {
       setError("An error occurred during login");

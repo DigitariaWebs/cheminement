@@ -39,8 +39,22 @@ export default function MemberLoginPage() {
       if (result?.error) {
         setError("Invalid email or password");
       } else {
-        // Redirect based on user role - for now assume member dashboard
-        router.push("/client/dashboard");
+        // Get the session to determine user role
+        const response = await fetch("/api/auth/session");
+        const session = await response.json();
+
+        if (session?.user?.role) {
+          const role = session.user.role;
+          const dashboardMap: Record<string, string> = {
+            client: "/client/dashboard",
+            professional: "/professional/dashboard",
+            admin: "/admin/dashboard",
+          };
+          const dashboardUrl = dashboardMap[role] || "/client/dashboard";
+          router.push(dashboardUrl);
+        } else {
+          router.push("/client/dashboard");
+        }
       }
     } catch {
       setError("An error occurred during login");
