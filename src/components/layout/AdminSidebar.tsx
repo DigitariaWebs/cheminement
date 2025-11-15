@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   Home,
   Users,
@@ -139,11 +140,12 @@ export function AdminSidebar() {
       <SidebarFooter className="border-t border-border/40 p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="font-light">
-              <Link href="/logout">
-                <LogOut className="h-4 w-4" />
-                <span>{t("logout")}</span>
-              </Link>
+            <SidebarMenuButton
+              onClick={() => signOut()}
+              className="font-light cursor-pointer"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>{t("logout")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

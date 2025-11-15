@@ -4,7 +4,7 @@ import { config } from "dotenv";
 // Load environment variables
 config({
   path: ".env",
-  override: false
+  override: false,
 });
 
 const MONGODB_URI = process.env.MONGODB_URI!;

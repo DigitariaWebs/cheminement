@@ -2,12 +2,21 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProfessionalSidebar } from "@/components/layout/ProfessionalSidebar";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { getLocale } from "next-intl/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function ProfessionalLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user?.role !== "professional") {
+    redirect("/login/professional");
+  }
+
   const locale = await getLocale();
 
   return (

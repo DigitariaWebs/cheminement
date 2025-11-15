@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function HeroSection() {
   const t = useTranslations("HeroSection");
@@ -72,9 +73,11 @@ export default function HeroSection() {
           {/* Right Side: Image */}
           <div className="flex-1 max-w-md lg:max-w-lg">
             <div className="relative w-full h-[600px] flex items-center justify-center">
-              <img
+              <Image
                 src="/HeroSection.png"
                 alt="Mental Health Professional"
+                width={600}
+                height={600}
                 className="max-w-full max-h-full object-contain animate-fade-in-up animation-delay-600"
               />
               {/* Fading effect at bottom */}
