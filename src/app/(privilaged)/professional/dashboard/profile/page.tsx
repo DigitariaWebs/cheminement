@@ -3,21 +3,11 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Briefcase,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  Plus,
-  X,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, Plus, X } from "lucide-react";
 import ProfileCompletionModal, {
   ProfileData,
 } from "@/components/dashboard/ProfileCompletionModal";
+import BasicInformation from "@/components/dashboard/BasicInformation";
 
 interface TimeSlot {
   start: string;
@@ -245,58 +235,21 @@ export default function ProfilePage() {
       )}
 
       {/* Basic Information */}
+      <BasicInformation isEditable={false} />
+
+      {/* Professional Information */}
       <div className="rounded-xl bg-card p-6">
         <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          {t("basicInfo")}
+          {t("professionalInfo")}
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <Label className="font-light mb-2 flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              {t("fullName")}
-            </Label>
-            <p className="text-foreground">
-              {mockUserData.firstName} {mockUserData.lastName}
-            </p>
-          </div>
-
-          <div>
-            <Label className="font-light mb-2 flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              {t("email")}
-            </Label>
-            <p className="text-foreground">{mockUserData.email}</p>
-          </div>
-
-          <div>
-            <Label className="font-light mb-2 flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              {t("phone")}
-            </Label>
-            <p className="text-foreground">{mockUserData.phone}</p>
-          </div>
-
-          <div>
-            <Label className="font-light mb-2 flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              {t("location")}
-            </Label>
-            <p className="text-foreground">{mockUserData.location}</p>
-          </div>
-
-          <div>
-            <Label className="font-light mb-2 flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              {t("license")}
-            </Label>
+            <Label className="font-light mb-2">{t("license")}</Label>
             <p className="text-foreground">{mockUserData.license}</p>
           </div>
 
           <div>
-            <Label className="font-light mb-2 flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              {t("specialty")}
-            </Label>
+            <Label className="font-light mb-2">{t("specialty")}</Label>
             <p className="text-foreground capitalize">
               {mockUserData.specialty.replace("-", " ")}
             </p>
