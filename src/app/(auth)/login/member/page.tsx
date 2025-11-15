@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { UserCircle, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import {
+  UserCircle,
+  Mail,
+  Lock,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
@@ -23,11 +31,46 @@ export default function MemberLoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    // Client-side validation
+    if (!email.trim()) {
+      setError("Email is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("Password must be at least 8 characters long");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await signIn("credentials", {
@@ -113,14 +156,25 @@ export default function MemberLoginPage() {
               <Input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-9 h-10"
+                className="pl-9 pr-9 h-10"
                 placeholder={t("passwordPlaceholder")}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
             </div>
           </div>
 
