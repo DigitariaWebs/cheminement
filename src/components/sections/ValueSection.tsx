@@ -2,6 +2,7 @@
 
 import { Route, Award, Clock, Lock } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
 
 export default function ValueSection() {
   const t = useTranslations("ValueSection");
@@ -96,9 +97,11 @@ export default function ValueSection() {
           <div className="lg:mt-0">
             <ValueCard value={values[0]} index={0} locale={locale} />
             <div className="-mt-1 relative ">
-              <img
+              <Image
                 src="/ValueSection.png"
                 alt="Inner Child Healing"
+                width={500}
+                height={500}
                 className="w-full h-auto transform scale-x-[-1] scale-110"
               />
               {/* Fading effect at bottom */}

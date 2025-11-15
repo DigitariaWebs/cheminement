@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
+import { Error } from "mongoose";
 
 export async function GET(
   req: NextRequest,

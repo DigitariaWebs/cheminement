@@ -183,8 +183,8 @@ export default function MemberSignupPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to create account. Please try again.");
+    } catch {
+      setError("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }

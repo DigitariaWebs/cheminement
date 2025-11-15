@@ -3,8 +3,6 @@
  * Provides helper functions for making API calls with proper error handling
  */
 
-import { IUser } from "@/models/User";
-
 interface FetchOptions extends RequestInit {
   data?: any;
 }

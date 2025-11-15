@@ -12,6 +12,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -33,6 +35,7 @@ export default function ProfessionalSignupPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const STEPS = [
     {
@@ -59,6 +62,15 @@ export default function ProfessionalSignupPage() {
     agreeToTerms: false,
   });
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -70,8 +82,99 @@ export default function ProfessionalSignupPage() {
     }));
   };
 
+  const isCurrentStepValid = () => {
+    if (currentStep === 0) {
+      // Step 1: Personal Information validation
+      return (
+        formData.firstName.trim() &&
+        formData.lastName.trim() &&
+        formData.email.trim() &&
+        validateEmail(formData.email) &&
+        formData.phone.trim()
+      );
+    } else if (currentStep === 1) {
+      // Step 2: Professional Details validation
+      return (
+        formData.license.trim() &&
+        formData.specialty &&
+        formData.location.trim()
+      );
+    } else if (currentStep === 2) {
+      // Step 3: Security validation
+      return (
+        formData.password &&
+        validatePassword(formData.password) &&
+        formData.confirmPassword &&
+        formData.password === formData.confirmPassword
+      );
+    } else if (currentStep === 3) {
+      // Step 4: Terms validation
+      return formData.agreeToTerms;
+    }
+    return true;
+  };
+
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    // Validate current step before proceeding
+    if (currentStep === 0) {
+      // Step 1: Personal Information validation
+      if (!formData.firstName.trim()) {
+        setError("First name is required");
+        return;
+      }
+      if (!formData.lastName.trim()) {
+        setError("Last name is required");
+        return;
+      }
+      if (!formData.email.trim()) {
+        setError("Email is required");
+        return;
+      }
+      if (!validateEmail(formData.email)) {
+        setError("Please enter a valid email address");
+        return;
+      }
+      if (!formData.phone.trim()) {
+        setError("Phone number is required");
+        return;
+      }
+    } else if (currentStep === 1) {
+      // Step 2: Professional Details validation
+      if (!formData.license.trim()) {
+        setError("License number is required");
+        return;
+      }
+      if (!formData.specialty) {
+        setError("Please select a specialty");
+        return;
+      }
+      if (!formData.location.trim()) {
+        setError("Location is required");
+        return;
+      }
+    } else if (currentStep === 2) {
+      // Step 3: Security validation
+      if (!formData.password) {
+        setError("Password is required");
+        return;
+      }
+      if (!validatePassword(formData.password)) {
+        setError("Password must be at least 8 characters long");
+        return;
+      }
+      if (!formData.confirmPassword) {
+        setError("Please confirm your password");
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+    }
+
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -87,9 +190,9 @@ export default function ProfessionalSignupPage() {
     e.preventDefault();
     setError("");
 
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+    // Final validation before submission
+    if (!formData.agreeToTerms) {
+      setError("You must agree to the terms and conditions");
       return;
     }
 
@@ -118,8 +221,8 @@ export default function ProfessionalSignupPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to create account. Please try again.");
+    } catch {
+      setError("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -326,14 +429,25 @@ export default function ProfessionalSignupPage() {
                   <Input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="pl-9 h-10"
+                    className="pl-9 pr-9 h-10"
                     placeholder={t("passwordPlaceholder")}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   {t("passwordHint")}
@@ -351,14 +465,25 @@ export default function ProfessionalSignupPage() {
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="pl-9 h-10"
+                    className="pl-9 pr-9 h-10"
                     placeholder={t("passwordPlaceholder")}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
@@ -473,7 +598,7 @@ export default function ProfessionalSignupPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !isCurrentStepValid()}
               className="group flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? (
