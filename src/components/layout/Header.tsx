@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ChevronDown, UserCircle, Briefcase } from "lucide-react";
+import { Menu, ChevronDown, UserCircle, Briefcase, LogOut, Settings, User } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import { useSession, signOut } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
@@ -17,6 +19,7 @@ export function Header() {
   const pathname = usePathname();
   const t = useTranslations("Header");
   const locale = useLocale();
+  const { data: session, status } = useSession();
 
   const navLinks = [
     { href: "/", label: t("nav.home") },
@@ -69,50 +72,124 @@ export function Header() {
           {/* CTA Buttons */}
           <div className="flex items-center gap-4">
             <LocaleSwitcher currentLocale={locale} />
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-base font-semibold text-primary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                {t("login")}
-                <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/login/member"
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
-                    <UserCircle className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-medium">{t("memberLogin")}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {t("memberLoginDesc")}
-                      </div>
+
+            {status === "loading" ? (
+              // Loading state
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
+              </div>
+            ) : session?.user ? (
+              // Authenticated user
+              <>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-base font-semibold text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <User className="w-4 h-4" />
+                    {session.user.name || session.user.email}
+                    <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+                      Signed in as {session.user.email}
                     </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/login/professional"
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
-                    <Briefcase className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-medium">
-                        {t("professionalLogin")}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {t("professionalLoginDesc")}
-                      </div>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href="/signup"
-              className="hidden sm:inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-base font-semibold text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {t("getStarted")}
-            </Link>
+                    <DropdownMenuSeparator />
+
+                    {/* Role-based dashboard links */}
+                    {session.user.role === "admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/dashboard"
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
+                    {session.user.role === "professional" && (
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/professional/dashboard"
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Briefcase className="w-4 h-4" />
+                          Professional Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
+                    {session.user.role === "client" && (
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/client/dashboard"
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <UserCircle className="w-4 h-4" />
+                          Client Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="flex items-center gap-3 cursor-pointer text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              // Unauthenticated user
+              <>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-base font-semibold text-primary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    {t("login")}
+                    <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/login/member"
+                        className="flex items-center gap-3 cursor-pointer"
+                      >
+                        <UserCircle className="w-5 h-5 text-primary" />
+                        <div>
+                          <div className="font-medium">{t("memberLogin")}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {t("memberLoginDesc")}
+                          </div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/login/professional"
+                        className="flex items-center gap-3 cursor-pointer"
+                      >
+                        <Briefcase className="w-5 h-5 text-primary" />
+                        <div>
+                          <div className="font-medium">
+                            {t("professionalLogin")}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {t("professionalLoginDesc")}
+                          </div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Link
+                  href="/signup"
+                  className="hidden sm:inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-base font-semibold text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {t("getStarted")}
+                </Link>
+              </>
+            )}
 
             {/* Mobile menu button */}
             <button

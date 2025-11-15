@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Users,
   User,
@@ -9,62 +10,190 @@ import {
   Activity,
   CheckCircle2,
   Clock,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 
+interface DashboardData {
+  stats: {
+    totalProfessionals: number;
+    professionalsChange: number;
+    totalPatients: number;
+    patientsChange: number;
+    totalSessions: number;
+    sessionsChange: number;
+    totalRevenue: number;
+    revenueChange: number;
+  };
+  recentActivity: Array<{
+    id: string;
+    type: string;
+    message: string;
+    time: string;
+    icon: string;
+    color: string;
+  }>;
+  topProfessionals: Array<{
+    name: string;
+    sessions: number;
+    rating: number;
+    revenue: number;
+  }>;
+  pendingApprovals: number;
+}
+
 export default function AdminDashboardPage() {
-  const stats = {
-    totalProfessionals: 45,
-    professionalsChange: 5.2,
-    totalPatients: 312,
-    patientsChange: 15.7,
-    totalSessions: 1247,
-    sessionsChange: 8.3,
-    totalRevenue: 125430,
-    revenueChange: 12.5,
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch("/api/admin/dashboard");
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard data");
+      }
+      const data = await response.json();
+      setDashboardData(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: "professional_joined",
-      message: "Dr. Marie Leblanc joined the platform",
-      time: "2 hours ago",
-      icon: CheckCircle2,
-      color: "text-green-600",
-    },
-    {
-      id: 2,
-      type: "session_completed",
-      message: "48 sessions completed today",
-      time: "5 hours ago",
-      icon: Activity,
-      color: "text-blue-600",
-    },
-    {
-      id: 3,
-      type: "pending_approval",
-      message: "3 professionals pending approval",
-      time: "1 day ago",
-      icon: Clock,
-      color: "text-yellow-600",
-    },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const topProfessionals = [
-    { name: "Dr. Sarah Martin", sessions: 48, rating: 4.9, revenue: 7200 },
-    { name: "Dr. Jean Dupont", sessions: 32, rating: 4.8, revenue: 4800 },
-    { name: "Marie Leblanc", sessions: 28, rating: 4.7, revenue: 4200 },
-  ];
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case "CheckCircle2":
+        return CheckCircle2;
+      case "Activity":
+        return Activity;
+      case "Clock":
+        return Clock;
+      default:
+        return CheckCircle2;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-serif font-light text-foreground">
+            Admin Dashboard
+          </h1>
+          <p className="text-muted-foreground font-light mt-2">
+            Platform overview and key metrics
+          </p>
+        </div>
+
+        {/* Loading skeleton */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+              <div className="animate-pulse">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded w-24"></div>
+                    <div className="h-8 bg-muted rounded w-16"></div>
+                    <div className="h-3 bg-muted rounded w-12"></div>
+                  </div>
+                  <div className="h-12 w-12 bg-muted rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-xl bg-card p-6 border border-border/40">
+            <div className="animate-pulse">
+              <div className="h-6 bg-muted rounded w-32 mb-4"></div>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-muted rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="rounded-xl bg-card p-6 border border-border/40">
+            <div className="animate-pulse">
+              <div className="h-6 bg-muted rounded w-32 mb-4"></div>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-muted rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-serif font-light text-foreground">
+            Admin Dashboard
+          </h1>
+          <p className="text-muted-foreground font-light mt-2">
+            Platform overview and key metrics
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-card p-6 border border-border/40">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-light text-foreground mb-2">
+                Failed to load dashboard data
+              </h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <button
+                onClick={fetchDashboardData}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) return null;
+
+  const { stats, recentActivity, topProfessionals } = dashboardData;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-serif font-light text-foreground">
-          Admin Dashboard
-        </h1>
-        <p className="text-muted-foreground font-light mt-2">
-          Platform overview and key metrics
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-serif font-light text-foreground">
+            Admin Dashboard
+          </h1>
+          <p className="text-muted-foreground font-light mt-2">
+            Platform overview and key metrics
+          </p>
+        </div>
+        <button
+          onClick={fetchDashboardData}
+          disabled={loading}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -163,29 +292,36 @@ export default function AdminDashboardPage() {
             Recent Activity
           </h2>
           <div className="space-y-4">
-            {recentActivity.map((activity) => {
-              const Icon = activity.icon;
-              return (
-                <div
-                  key={activity.id}
-                  className="flex items-start gap-4 p-3 rounded-lg bg-muted/30"
-                >
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => {
+                const Icon = getIconComponent(activity.icon);
+                return (
                   <div
-                    className={`rounded-full bg-background p-2 ${activity.color}`}
+                    key={activity.id}
+                    className="flex items-start gap-4 p-3 rounded-lg bg-muted/30"
                   >
-                    <Icon className="h-4 w-4" />
+                    <div
+                      className={`rounded-full bg-background p-2 ${activity.color}`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-light text-foreground">
+                        {activity.message}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {activity.time}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-light text-foreground">
-                      {activity.message}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No recent activity</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -194,29 +330,36 @@ export default function AdminDashboardPage() {
             Top Professionals
           </h2>
           <div className="space-y-3">
-            {topProfessionals.map((prof, index) => (
-              <div
-                key={prof.name}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-                    {index + 1}
+            {topProfessionals.length > 0 ? (
+              topProfessionals.map((prof, index) => (
+                <div
+                  key={prof.name}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <p className="text-sm font-light text-foreground">
+                        {prof.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {prof.sessions} sessions • ⭐ {prof.rating.toFixed(1)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-light text-foreground">
-                      {prof.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {prof.sessions} sessions • ⭐ {prof.rating}
-                    </p>
+                  <div className="text-sm font-medium text-foreground">
+                    ${prof.revenue.toLocaleString()}
                   </div>
                 </div>
-                <div className="text-sm font-medium text-foreground">
-                  ${prof.revenue.toLocaleString()}
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No professionals data available</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

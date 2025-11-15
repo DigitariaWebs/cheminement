@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -9,6 +9,8 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,55 +42,65 @@ interface Professional {
   totalSessions: number;
 }
 
-const mockProfessionals: Professional[] = [
-  {
-    id: "1",
-    name: "Dr. Sarah Martin",
-    email: "sarah.martin@email.com",
-    specialty: "Psychologist",
-    license: "PSY-12345",
-    status: "active",
-    joinedDate: "2024-01-15",
-    totalClients: 12,
-    totalSessions: 48,
-  },
-  {
-    id: "2",
-    name: "Dr. Jean Dupont",
-    email: "jean.dupont@email.com",
-    specialty: "Psychiatrist",
-    license: "PSY-67890",
-    status: "active",
-    joinedDate: "2024-02-20",
-    totalClients: 8,
-    totalSessions: 32,
-  },
-  {
-    id: "3",
-    name: "Marie Leblanc",
-    email: "marie.leblanc@email.com",
-    specialty: "Therapist",
-    license: "THR-54321",
-    status: "pending",
-    joinedDate: "2024-12-01",
-    totalClients: 0,
-    totalSessions: 0,
-  },
-];
+interface ProfessionalsData {
+  professionals: Professional[];
+  summary: {
+    totalProfessionals: number;
+    activeProfessionals: number;
+    pendingProfessionals: number;
+    totalSessions: number;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
 
 export default function ProfessionalsPage() {
+  const [data, setData] = useState<ProfessionalsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredProfessionals = mockProfessionals.filter((prof) => {
-    const matchesSearch =
-      prof.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prof.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prof.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || prof.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const fetchProfessionals = async (page = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "20",
+        search: searchQuery,
+        status: statusFilter,
+      });
+      const response = await fetch(`/api/admin/professionals?${params}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch professionals");
+      }
+      const result = await response.json();
+      setData(result);
+      setCurrentPage(page);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfessionals(1);
+  }, [searchQuery, statusFilter]);
+
+  const professionals = data?.professionals || [];
+  const summary = data?.summary || {
+    totalProfessionals: 0,
+    activeProfessionals: 0,
+    pendingProfessionals: 0,
+    totalSessions: 0,
+  };
 
   const getStatusBadge = (status: ProfessionalStatus) => {
     const styles = {
@@ -115,6 +127,84 @@ export default function ProfessionalsPage() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              Professionals
+            </h1>
+            <p className="text-muted-foreground font-light mt-2">
+              Manage all professionals on the platform
+            </p>
+          </div>
+        </div>
+
+        {/* Loading skeleton */}
+        <div className="grid gap-6 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+              <div className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-16"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-xl bg-card border border-border/40">
+          <div className="p-6 border-b border-border/40">
+            <div className="animate-pulse">
+              <div className="h-10 bg-muted rounded w-full max-w-md"></div>
+            </div>
+          </div>
+          <div className="animate-pulse">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-16 bg-muted rounded m-6"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              Professionals
+            </h1>
+            <p className="text-muted-foreground font-light mt-2">
+              Manage all professionals on the platform
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-card p-6 border border-border/40">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-light text-foreground mb-2">
+                Failed to load professionals data
+              </h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <button
+                onClick={() => fetchProfessionals(1)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -126,10 +216,20 @@ export default function ProfessionalsPage() {
             Manage all professionals on the platform
           </p>
         </div>
-        <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          Add Professional
-        </Button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchProfessionals(currentPage)}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+          <Button className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Add Professional
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
@@ -138,19 +238,19 @@ export default function ProfessionalsPage() {
             Total Professionals
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockProfessionals.length}
+            {summary.totalProfessionals}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">Active</p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockProfessionals.filter((p) => p.status === "active").length}
+            {summary.activeProfessionals}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">Pending</p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockProfessionals.filter((p) => p.status === "pending").length}
+            {summary.pendingProfessionals}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
@@ -158,7 +258,7 @@ export default function ProfessionalsPage() {
             Total Sessions
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockProfessionals.reduce((sum, p) => sum + p.totalSessions, 0)}
+            {summary.totalSessions.toLocaleString()}
           </p>
         </div>
       </div>
@@ -223,7 +323,7 @@ export default function ProfessionalsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredProfessionals.map((professional) => (
+              {professionals.map((professional) => (
                 <tr
                   key={professional.id}
                   className="border-t border-border/40 hover:bg-muted/20 transition-colors"
@@ -281,7 +381,7 @@ export default function ProfessionalsPage() {
             </tbody>
           </table>
 
-          {filteredProfessionals.length === 0 && (
+          {professionals.length === 0 && (
             <div className="p-12 text-center">
               <p className="text-muted-foreground">No professionals found</p>
               <p className="text-sm text-muted-foreground/70 mt-1">

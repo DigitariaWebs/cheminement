@@ -7,12 +7,11 @@ import {
   Home,
   Users,
   User,
-  Settings,
-  HelpCircle,
   LogOut,
   ChevronRight,
   ClipboardList,
   Wallet,
+  Shield,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -74,17 +73,12 @@ export function AdminSidebar() {
       ],
     },
     {
-      title: t("support"),
+      title: "Administration",
       items: [
         {
-          title: t("systemSettings"),
-          url: "/admin/dashboard/settings",
-          icon: Settings,
-        },
-        {
-          title: t("helpCenter"),
-          url: "/admin/dashboard/help",
-          icon: HelpCircle,
+          title: "Admins",
+          url: "/admin/dashboard/admins",
+          icon: Shield,
         },
       ],
     },

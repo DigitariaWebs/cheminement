@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart3,
   TrendingUp,
@@ -8,6 +8,8 @@ import {
   DollarSign,
   Calendar,
   Download,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,19 +33,150 @@ interface ReportMetrics {
   patientsChange: number;
 }
 
-const mockMetrics: ReportMetrics = {
-  totalRevenue: 125430,
-  revenueChange: 12.5,
-  totalSessions: 1247,
-  sessionsChange: 8.3,
-  activeProfessionals: 45,
-  professionalsChange: 5.2,
-  activePatients: 312,
-  patientsChange: 15.7,
-};
+interface ReportData {
+  metrics: ReportMetrics;
+  revenueBreakdown: {
+    sessionFees: number;
+    subscriptionPlans: number;
+    resourceSales: number;
+    total: number;
+  };
+  topIssueTypes: Array<{
+    type: string;
+    sessions: number;
+  }>;
+  professionalPerformance: Array<{
+    name: string;
+    totalSessions: number;
+    activeClients: number;
+    revenueGenerated: number;
+    avgRating: number;
+  }>;
+}
 
 export default function ReportsPage() {
   const [period, setPeriod] = useState<ReportPeriod>("month");
+  const [data, setData] = useState<ReportData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchReports = async (selectedPeriod: ReportPeriod) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`/api/admin/reports?period=${selectedPeriod}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch reports data");
+      }
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports(period);
+  }, [period]);
+
+  const handlePeriodChange = (newPeriod: ReportPeriod) => {
+    setPeriod(newPeriod);
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              Reports & Analytics
+            </h1>
+            <p className="text-muted-foreground font-light mt-2">
+              Platform-wide metrics and performance insights
+            </p>
+          </div>
+        </div>
+
+        {/* Loading skeleton */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+              <div className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-16 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-20"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-xl bg-card p-6 border border-border/40">
+            <div className="animate-pulse">
+              <div className="h-6 bg-muted rounded w-32 mb-4"></div>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-4 bg-muted rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="rounded-xl bg-card p-6 border border-border/40">
+            <div className="animate-pulse">
+              <div className="h-6 bg-muted rounded w-32 mb-4"></div>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-muted rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              Reports & Analytics
+            </h1>
+            <p className="text-muted-foreground font-light mt-2">
+              Platform-wide metrics and performance insights
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-card p-6 border border-border/40">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-light text-foreground mb-2">
+                Failed to load reports data
+              </h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <button
+                onClick={() => fetchReports(period)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  const { metrics, revenueBreakdown, topIssueTypes, professionalPerformance } = data;
 
   return (
     <div className="space-y-6">
@@ -59,7 +192,7 @@ export default function ReportsPage() {
         <div className="flex items-center gap-3">
           <Select
             value={period}
-            onValueChange={(val) => setPeriod(val as ReportPeriod)}
+            onValueChange={handlePeriodChange}
           >
             <SelectTrigger className="w-[180px]">
               <Calendar className="h-4 w-4 mr-2" />
@@ -87,12 +220,12 @@ export default function ReportsPage() {
                 Total Revenue
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
-                ${mockMetrics.totalRevenue.toLocaleString()}
+                ${metrics.totalRevenue.toLocaleString()}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className="h-3 w-3 text-green-600" />
-                <span className="text-xs text-green-600 font-medium">
-                  +{mockMetrics.revenueChange}%
+                <TrendingUp className={`h-3 w-3 ${metrics.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`} />
+                <span className={`text-xs font-medium ${metrics.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {metrics.revenueChange >= 0 ? '+' : ''}{metrics.revenueChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -112,12 +245,12 @@ export default function ReportsPage() {
                 Total Sessions
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
-                {mockMetrics.totalSessions.toLocaleString()}
+                {metrics.totalSessions.toLocaleString()}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className="h-3 w-3 text-blue-600" />
-                <span className="text-xs text-blue-600 font-medium">
-                  +{mockMetrics.sessionsChange}%
+                <TrendingUp className={`h-3 w-3 ${metrics.sessionsChange >= 0 ? 'text-blue-600' : 'text-red-600'}`} />
+                <span className={`text-xs font-medium ${metrics.sessionsChange >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                  {metrics.sessionsChange >= 0 ? '+' : ''}{metrics.sessionsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -137,12 +270,12 @@ export default function ReportsPage() {
                 Active Professionals
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
-                {mockMetrics.activeProfessionals}
+                {metrics.activeProfessionals}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className="h-3 w-3 text-purple-600" />
-                <span className="text-xs text-purple-600 font-medium">
-                  +{mockMetrics.professionalsChange}%
+                <TrendingUp className={`h-3 w-3 ${metrics.professionalsChange >= 0 ? 'text-purple-600' : 'text-red-600'}`} />
+                <span className={`text-xs font-medium ${metrics.professionalsChange >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
+                  {metrics.professionalsChange >= 0 ? '+' : ''}{metrics.professionalsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -162,12 +295,12 @@ export default function ReportsPage() {
                 Active Patients
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
-                {mockMetrics.activePatients}
+                {metrics.activePatients}
               </p>
               <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className="h-3 w-3 text-orange-600" />
-                <span className="text-xs text-orange-600 font-medium">
-                  +{mockMetrics.patientsChange}%
+                <TrendingUp className={`h-3 w-3 ${metrics.patientsChange >= 0 ? 'text-orange-600' : 'text-red-600'}`} />
+                <span className={`text-xs font-medium ${metrics.patientsChange >= 0 ? 'text-orange-600' : 'text-red-600'}`}>
+                  {metrics.patientsChange >= 0 ? '+' : ''}{metrics.patientsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
                   vs last period
@@ -193,39 +326,64 @@ export default function ReportsPage() {
                   Session Fees
                 </span>
                 <span className="text-sm font-medium text-foreground">
-                  $98,450
+                  ${revenueBreakdown.sessionFees.toLocaleString()}
                 </span>
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-primary" style={{ width: "78%" }} />
+                <div
+                  className="h-full bg-primary"
+                  style={{
+                    width: revenueBreakdown.total > 0
+                      ? `${(revenueBreakdown.sessionFees / revenueBreakdown.total) * 100}%`
+                      : "0%"
+                  }}
+                />
               </div>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-light text-muted-foreground">
-                  Subscription Plans
-                </span>
-                <span className="text-sm font-medium text-foreground">
-                  $18,900
-                </span>
+            {revenueBreakdown.subscriptionPlans > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-light text-muted-foreground">
+                    Subscription Plans
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    ${revenueBreakdown.subscriptionPlans.toLocaleString()}
+                  </span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500"
+                    style={{
+                      width: revenueBreakdown.total > 0
+                        ? `${(revenueBreakdown.subscriptionPlans / revenueBreakdown.total) * 100}%`
+                        : "0%"
+                    }}
+                  />
+                </div>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500" style={{ width: "15%" }} />
+            )}
+            {revenueBreakdown.resourceSales > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-light text-muted-foreground">
+                    Resource Sales
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    ${revenueBreakdown.resourceSales.toLocaleString()}
+                  </span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500"
+                    style={{
+                      width: revenueBreakdown.total > 0
+                        ? `${(revenueBreakdown.resourceSales / revenueBreakdown.total) * 100}%`
+                        : "0%"
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-light text-muted-foreground">
-                  Resource Sales
-                </span>
-                <span className="text-sm font-medium text-foreground">
-                  $8,080
-                </span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-green-500" style={{ width: "7%" }} />
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -234,38 +392,23 @@ export default function ReportsPage() {
             Top Issue Types
           </h2>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-              <span className="text-sm font-light text-foreground">
-                Anxiety
-              </span>
-              <span className="text-sm font-medium text-foreground">
-                432 sessions
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-              <span className="text-sm font-light text-foreground">
-                Depression
-              </span>
-              <span className="text-sm font-medium text-foreground">
-                387 sessions
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-              <span className="text-sm font-light text-foreground">
-                Stress Management
-              </span>
-              <span className="text-sm font-medium text-foreground">
-                265 sessions
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-              <span className="text-sm font-light text-foreground">
-                Relationship Issues
-              </span>
-              <span className="text-sm font-medium text-foreground">
-                163 sessions
-              </span>
-            </div>
+            {topIssueTypes.length > 0 ? (
+              topIssueTypes.slice(0, 5).map((issue, index) => (
+                <div key={issue.type} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <span className="text-sm font-light text-foreground">
+                    {issue.type}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {issue.sessions} sessions
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No issue type data available</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -296,51 +439,36 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-t border-border/40 hover:bg-muted/20 transition-colors">
-                <td className="p-4 text-sm font-light text-foreground">
-                  Dr. Sarah Martin
-                </td>
-                <td className="p-4 text-sm font-light text-foreground">48</td>
-                <td className="p-4 text-sm font-light text-foreground">12</td>
-                <td className="p-4 text-sm font-light text-foreground">
-                  $7,200
-                </td>
-                <td className="p-4">
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
-                    ⭐ 4.9
-                  </span>
-                </td>
-              </tr>
-              <tr className="border-t border-border/40 hover:bg-muted/20 transition-colors">
-                <td className="p-4 text-sm font-light text-foreground">
-                  Dr. Jean Dupont
-                </td>
-                <td className="p-4 text-sm font-light text-foreground">32</td>
-                <td className="p-4 text-sm font-light text-foreground">8</td>
-                <td className="p-4 text-sm font-light text-foreground">
-                  $4,800
-                </td>
-                <td className="p-4">
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
-                    ⭐ 4.8
-                  </span>
-                </td>
-              </tr>
-              <tr className="border-t border-border/40 hover:bg-muted/20 transition-colors">
-                <td className="p-4 text-sm font-light text-foreground">
-                  Marie Leblanc
-                </td>
-                <td className="p-4 text-sm font-light text-foreground">28</td>
-                <td className="p-4 text-sm font-light text-foreground">7</td>
-                <td className="p-4 text-sm font-light text-foreground">
-                  $4,200
-                </td>
-                <td className="p-4">
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
-                    ⭐ 4.7
-                  </span>
-                </td>
-              </tr>
+              {professionalPerformance.length > 0 ? (
+                professionalPerformance.map((prof, index) => (
+                  <tr key={prof.name} className="border-t border-border/40 hover:bg-muted/20 transition-colors">
+                    <td className="p-4 text-sm font-light text-foreground">
+                      {prof.name}
+                    </td>
+                    <td className="p-4 text-sm font-light text-foreground">
+                      {prof.totalSessions}
+                    </td>
+                    <td className="p-4 text-sm font-light text-foreground">
+                      {prof.activeClients}
+                    </td>
+                    <td className="p-4 text-sm font-light text-foreground">
+                      ${prof.revenueGenerated.toLocaleString()}
+                    </td>
+                    <td className="p-4">
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
+                        ⭐ {prof.avgRating.toFixed(1)}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="p-12 text-center">
+                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
+                    <p className="text-muted-foreground">No professional performance data available</p>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

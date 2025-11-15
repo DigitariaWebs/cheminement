@@ -68,3 +68,75 @@ export function clientOnly(
 ) {
   return withAuth(handler, ["client", "admin"]);
 }
+
+/**
+ * Middleware to check specific admin permissions
+ */
+export async function withAdminPermission(
+  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  requiredPermission: keyof import("@/models/Admin").IAdminPermissions,
+) {
+  return async (req: Request, context?: any) => {
+    try {
+      const session = await getServerSession(authOptions);
+
+      if (!session?.user?.id || !session.user.isAdmin) {
+        return NextResponse.json(
+          { error: "Unauthorized - Admin access required" },
+          { status: 401 },
+        );
+      }
+
+      // Import Admin model here to avoid circular dependencies
+      const Admin = (await import("@/models/Admin")).default;
+
+      const admin = await Admin.findOne({
+        userId: session.user.id,
+        isActive: true
+      });
+
+      if (!admin) {
+        return NextResponse.json(
+          { error: "Admin account not found" },
+          { status: 404 },
+        );
+      }
+
+      if (!admin.permissions[requiredPermission]) {
+        return NextResponse.json(
+          { error: "Insufficient permissions" },
+          { status: 403 },
+        );
+      }
+
+      // Add admin info to request for convenience
+      (req as any).admin = admin;
+
+      return handler(req, context);
+    } catch (error) {
+      console.error("Admin permission middleware error:", error);
+      return NextResponse.json(
+        { error: "Authentication failed" },
+        { status: 500 },
+      );
+    }
+  };
+}
+
+/**
+ * Middleware for admin management permissions
+ */
+export function adminManagementOnly(
+  handler: (req: Request, context?: any) => Promise<NextResponse>,
+) {
+  return withAdminPermission(handler, "manageAdmins");
+}
+
+/**
+ * Middleware for creating admins
+ */
+export function adminCreationOnly(
+  handler: (req: Request, context?: any) => Promise<NextResponse>,
+) {
+  return withAdminPermission(handler, "createAdmins");
+}
