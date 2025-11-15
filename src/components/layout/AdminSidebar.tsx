@@ -6,8 +6,6 @@ import {
   Home,
   Users,
   User,
-  Settings,
-  HelpCircle,
   LogOut,
   ChevronRight,
   ClipboardList,
@@ -69,21 +67,6 @@ export function AdminSidebar() {
           title: t("billing"),
           url: "/admin/dashboard/billing",
           icon: Wallet,
-        },
-      ],
-    },
-    {
-      title: t("support"),
-      items: [
-        {
-          title: t("systemSettings"),
-          url: "/admin/dashboard/settings",
-          icon: Settings,
-        },
-        {
-          title: t("helpCenter"),
-          url: "/admin/dashboard/help",
-          icon: HelpCircle,
         },
       ],
     },

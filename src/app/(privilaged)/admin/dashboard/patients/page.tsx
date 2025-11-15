@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,54 +41,65 @@ interface Patient {
   issueType: string;
 }
 
-const mockPatients: Patient[] = [
-  {
-    id: "1",
-    name: "Jean Pierre",
-    email: "jean.pierre@email.com",
-    phone: "+1 (514) 555-0123",
-    status: "active",
-    matchedWith: "Dr. Sarah Martin",
-    joinedDate: "2024-01-15",
-    totalSessions: 12,
-    issueType: "Anxiety",
-  },
-  {
-    id: "2",
-    name: "Marie Tremblay",
-    email: "marie.tremblay@email.com",
-    phone: "+1 (514) 555-0456",
-    status: "active",
-    matchedWith: "Dr. Jean Dupont",
-    joinedDate: "2024-02-10",
-    totalSessions: 8,
-    issueType: "Depression",
-  },
-  {
-    id: "3",
-    name: "Louis Gagnon",
-    email: "louis.gagnon@email.com",
-    phone: "+1 (514) 555-0789",
-    status: "pending",
-    joinedDate: "2024-12-05",
-    totalSessions: 0,
-    issueType: "Stress",
-  },
-];
+interface PatientsData {
+  patients: Patient[];
+  summary: {
+    totalPatients: number;
+    activePatients: number;
+    pendingPatients: number;
+    totalSessions: number;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
 
 export default function PatientsPage() {
+  const [data, setData] = useState<PatientsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredPatients = mockPatients.filter((patient) => {
-    const matchesSearch =
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.issueType.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || patient.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const fetchPatients = async (page = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "20",
+        search: searchQuery,
+        status: statusFilter,
+      });
+      const response = await fetch(`/api/admin/patients?${params}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch patients");
+      }
+      const result = await response.json();
+      setData(result);
+      setCurrentPage(page);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients(1);
+  }, [searchQuery, statusFilter]);
+
+  const patients = data?.patients || [];
+  const summary = data?.summary || {
+    totalPatients: 0,
+    activePatients: 0,
+    pendingPatients: 0,
+    totalSessions: 0,
+  };
 
   const getStatusBadge = (status: PatientStatus) => {
     const styles = {
@@ -114,6 +126,84 @@ export default function PatientsPage() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              Patients
+            </h1>
+            <p className="text-muted-foreground font-light mt-2">
+              Manage all patients on the platform
+            </p>
+          </div>
+        </div>
+
+        {/* Loading skeleton */}
+        <div className="grid gap-6 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl bg-card p-6 border border-border/40">
+              <div className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-16"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-xl bg-card border border-border/40">
+          <div className="p-6 border-b border-border/40">
+            <div className="animate-pulse">
+              <div className="h-10 bg-muted rounded w-full max-w-md"></div>
+            </div>
+          </div>
+          <div className="animate-pulse">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-16 bg-muted rounded m-6"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-light text-foreground">
+              Patients
+            </h1>
+            <p className="text-muted-foreground font-light mt-2">
+              Manage all patients on the platform
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-card p-6 border border-border/40">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-light text-foreground mb-2">
+                Failed to load patients data
+              </h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <button
+                onClick={() => fetchPatients(1)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -125,10 +215,20 @@ export default function PatientsPage() {
             Manage all patients on the platform
           </p>
         </div>
-        <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          Add Patient
-        </Button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchPatients(currentPage)}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+          <Button className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Add Patient
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
@@ -137,13 +237,13 @@ export default function PatientsPage() {
             Total Patients
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockPatients.length}
+            {summary.totalPatients}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">Active</p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockPatients.filter((p) => p.status === "active").length}
+            {summary.activePatients}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
@@ -151,7 +251,7 @@ export default function PatientsPage() {
             Pending Match
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockPatients.filter((p) => p.status === "pending").length}
+            {summary.pendingPatients}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
@@ -159,7 +259,7 @@ export default function PatientsPage() {
             Total Sessions
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {mockPatients.reduce((sum, p) => sum + p.totalSessions, 0)}
+            {summary.totalSessions.toLocaleString()}
           </p>
         </div>
       </div>
@@ -224,7 +324,7 @@ export default function PatientsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredPatients.map((patient) => (
+              {patients.map((patient) => (
                 <tr
                   key={patient.id}
                   className="border-t border-border/40 hover:bg-muted/20 transition-colors"
@@ -286,7 +386,7 @@ export default function PatientsPage() {
             </tbody>
           </table>
 
-          {filteredPatients.length === 0 && (
+          {patients.length === 0 && (
             <div className="p-12 text-center">
               <p className="text-muted-foreground">No patients found</p>
               <p className="text-sm text-muted-foreground/70 mt-1">

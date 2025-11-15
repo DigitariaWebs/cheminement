@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Download,
   Wallet,
@@ -10,6 +10,7 @@ import {
   Search,
   Users,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import { Button } from "@/components/ui/button";
 type PaymentStatus = "paid" | "pending" | "upcoming" | "processing" | "overdue";
 
 interface Payment {
-  id: number;
+  id: string;
   sessionId: string;
   client: string;
   professional: string;
@@ -32,175 +33,68 @@ interface Payment {
   paidDate?: string;
 }
 
-// Mock data - comprehensive admin view
-const mockPayments: Payment[] = [
-  {
-    id: 1,
-    sessionId: "SES-2025-001",
-    client: "Jean Pierre",
-    professional: "Dr. Marie Dubois",
-    date: "2025-02-27",
-    sessionDate: "2025-02-27 14:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    sessionId: "SES-2025-002",
-    client: "Marie Claire",
-    professional: "Dr. Sophie Martin",
-    date: "2025-02-20",
-    sessionDate: "2025-02-20 14:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "processing",
-  },
-  {
-    id: 3,
-    sessionId: "SES-2025-003",
-    client: "Jean Pierre",
-    professional: "Dr. Marie Dubois",
-    date: "2025-02-13",
-    sessionDate: "2025-02-13 14:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "paid",
-    paymentMethod: "Visa ••••4242",
-    paidDate: "2025-02-14",
-    invoiceUrl: "#",
-  },
-  {
-    id: 4,
-    sessionId: "SES-2025-004",
-    client: "Sophie Martin",
-    professional: "Alexandre Piché",
-    date: "2025-02-06",
-    sessionDate: "2025-02-06 14:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "paid",
-    paymentMethod: "Mastercard ••••5555",
-    paidDate: "2025-02-07",
-    invoiceUrl: "#",
-  },
-  {
-    id: 5,
-    sessionId: "SES-2025-005",
-    client: "Jean Pierre",
-    professional: "Dr. Marie Dubois",
-    date: "2025-01-30",
-    sessionDate: "2025-01-30 14:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "paid",
-    paymentMethod: "Assurance - Manulife",
-    paidDate: "2025-01-31",
-    invoiceUrl: "#",
-  },
-  {
-    id: 6,
-    sessionId: "SES-2025-006",
-    client: "Marie Claire",
-    professional: "Dr. Sophie Martin",
-    date: "2025-01-23",
-    sessionDate: "2025-01-23 14:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "paid",
-    paymentMethod: "Visa ••••4242",
-    paidDate: "2025-01-24",
-    invoiceUrl: "#",
-  },
-  {
-    id: 7,
-    sessionId: "SES-2025-007",
-    client: "Thomas Leblanc",
-    professional: "Alexandre Piché",
-    date: "2025-01-15",
-    sessionDate: "2025-01-15 10:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "overdue",
-  },
-  {
-    id: 8,
-    sessionId: "SES-2025-008",
-    client: "Isabelle Roy",
-    professional: "Dr. Marie Dubois",
-    date: "2025-01-10",
-    sessionDate: "2025-01-10 15:00",
-    amount: 120,
-    platformFee: 12,
-    professionalPayout: 108,
-    status: "paid",
-    paymentMethod: "Visa ••••3333",
-    paidDate: "2025-01-11",
-    invoiceUrl: "#",
-  },
-];
+interface BillingData {
+  payments: Payment[];
+  summary: {
+    totalRevenue: number;
+    pendingRevenue: number;
+    professionalPayouts: number;
+    totalTransactions: number;
+    overdueCount: number;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
 
 export default function AdminBillingPage() {
+  const [data, setData] = useState<BillingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "all">(
-    "all",
-  );
+  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "all">("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const t = useTranslations("Admin.billing");
 
-  const filteredPayments = useMemo(() => {
-    return mockPayments.filter((payment) => {
-      const matchesSearch =
-        search.trim().length === 0 ||
-        [payment.client, payment.professional, payment.sessionId].some(
-          (field) => field.toLowerCase().includes(search.toLowerCase()),
-        );
-      const matchesStatus =
-        statusFilter === "all" || payment.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
+  const fetchBillingData = async (page = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "20",
+        search: search,
+        status: statusFilter,
+      });
+      const response = await fetch(`/api/admin/billing?${params}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch billing data");
+      }
+      const result = await response.json();
+      setData(result);
+      setCurrentPage(page);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBillingData(1);
   }, [search, statusFilter]);
 
-  const stats = useMemo(() => {
-    const totalRevenue = mockPayments
-      .filter((p) => p.status === "paid")
-      .reduce((sum, p) => sum + p.platformFee, 0);
-
-    const pendingRevenue = mockPayments
-      .filter(
-        (p) =>
-          p.status === "pending" ||
-          p.status === "upcoming" ||
-          p.status === "processing",
-      )
-      .reduce((sum, p) => sum + p.platformFee, 0);
-
-    const professionalPayouts = mockPayments
-      .filter((p) => p.status === "paid")
-      .reduce((sum, p) => sum + p.professionalPayout, 0);
-
-    const totalTransactions = mockPayments.filter(
-      (p) => p.status === "paid",
-    ).length;
-
-    const overdueCount = mockPayments.filter(
-      (p) => p.status === "overdue",
-    ).length;
-
-    return {
-      totalRevenue,
-      pendingRevenue,
-      professionalPayouts,
-      totalTransactions,
-      overdueCount,
-    };
-  }, []);
+  const payments = data?.payments || [];
+  const stats = data?.summary || {
+    totalRevenue: 0,
+    pendingRevenue: 0,
+    professionalPayouts: 0,
+    totalTransactions: 0,
+    overdueCount: 0,
+  };
 
   const getStatusColor = (status: PaymentStatus) => {
     switch (status) {
@@ -245,6 +139,79 @@ export default function AdminBillingPage() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="font-serif text-3xl font-light text-foreground">
+              {t("title")}
+            </h1>
+            <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
+          </div>
+        </div>
+
+        {/* Loading skeleton for stats */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg">
+              <div className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-16"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Loading skeleton for content */}
+        <div className="rounded-3xl border border-border/20 bg-card/60 p-6 shadow-inner">
+          <div className="animate-pulse">
+            <div className="h-10 bg-muted rounded w-full max-w-md mb-4"></div>
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-24 bg-muted rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="font-serif text-3xl font-light text-foreground">
+              {t("title")}
+            </h1>
+            <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-border/20 bg-card/80 p-12 shadow-lg">
+          <div className="text-center">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-light text-foreground mb-2">
+              Failed to load billing data
+            </h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <button
+              onClick={() => fetchBillingData(1)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -255,10 +222,20 @@ export default function AdminBillingPage() {
           </h1>
           <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Button className="gap-2 rounded-full">
-          <Download className="h-4 w-4" />
-          {t("exportReport")}
-        </Button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchBillingData(currentPage)}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+          <Button className="gap-2 rounded-full">
+            <Download className="h-4 w-4" />
+            {t("exportReport")}
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -378,14 +355,14 @@ export default function AdminBillingPage() {
             {t("allTransactions")}
           </h2>
           <span className="text-sm text-muted-foreground">
-            {filteredPayments.length}{" "}
-            {filteredPayments.length > 1
+            {payments.length}{" "}
+            {payments.length > 1
               ? t("transactionsPlural")
               : t("transactions")}
           </span>
         </div>
 
-        {filteredPayments.length === 0 ? (
+        {payments.length === 0 ? (
           <div className="rounded-3xl border border-border/20 bg-card/80 p-12 text-center shadow-lg">
             <Wallet className="mx-auto h-16 w-16 text-muted-foreground/50" />
             <h3 className="mt-4 font-serif text-xl text-foreground">
@@ -394,7 +371,7 @@ export default function AdminBillingPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredPayments.map((payment) => (
+            {payments.map((payment) => (
               <div
                 key={payment.id}
                 className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg transition hover:shadow-xl"
