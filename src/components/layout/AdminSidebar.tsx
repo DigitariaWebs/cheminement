@@ -10,6 +10,7 @@ import {
   ChevronRight,
   ClipboardList,
   Wallet,
+  Shield,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -67,6 +68,16 @@ export function AdminSidebar() {
           title: t("billing"),
           url: "/admin/dashboard/billing",
           icon: Wallet,
+        },
+      ],
+    },
+    {
+      title: "Administration",
+      items: [
+        {
+          title: "Admins",
+          url: "/admin/dashboard/admins",
+          icon: Shield,
         },
       ],
     },

@@ -67,8 +67,9 @@ export async function GET(req: NextRequest) {
           .sort({ createdAt: -1 })
           .lean();
 
-        const matchedWith = latestAppointment?.professionalId
-          ? `${latestAppointment.professionalId.firstName} ${latestAppointment.professionalId.lastName}`
+        const professional = latestAppointment?.professionalId as any;
+        const matchedWith = professional
+          ? `${professional.firstName} ${professional.lastName}`
           : undefined;
 
         return {

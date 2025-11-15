@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
     // Get session and client counts for each professional
     const professionalsWithStats = await Promise.all(
       professionals.map(async (professional) => {
+        const prof = professional as any; // Cast to any to access optional fields that may not be in the type
         const totalSessions = await Appointment.countDocuments({
           professionalId: professional._id,
           status: "completed"
@@ -67,8 +68,8 @@ export async function GET(req: NextRequest) {
           id: professional._id.toString(),
           name: `${professional.firstName} ${professional.lastName}`,
           email: professional.email,
-          specialty: professional.specialty || "General Practice",
-          license: professional.license || "Pending",
+          specialty: prof.specialty || "General Practice",
+          license: prof.license || "Pending",
           status: professional.status,
           joinedDate: professional.createdAt.toISOString().split('T')[0],
           totalClients: activeClients.length,

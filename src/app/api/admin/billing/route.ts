@@ -65,6 +65,7 @@ export async function GET(req: NextRequest) {
         const client = appointment.clientId as any;
         const professional = appointment.professionalId as any;
         const searchTerm = search.toLowerCase();
+        const generatedSessionId = `SES-${appointment._id.toString().slice(-6).toUpperCase()}`;
 
         return (
           client?.firstName?.toLowerCase().includes(searchTerm) ||
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
           client?.email?.toLowerCase().includes(searchTerm) ||
           professional?.firstName?.toLowerCase().includes(searchTerm) ||
           professional?.lastName?.toLowerCase().includes(searchTerm) ||
-          appointment.sessionId?.toLowerCase().includes(searchTerm)
+          generatedSessionId.toLowerCase().includes(searchTerm)
         );
       });
     }

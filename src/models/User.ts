@@ -6,6 +6,9 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   role: "client" | "professional" | "admin";
+  isAdmin: boolean;
+  adminId?: mongoose.Types.ObjectId; // Reference to Admin document if user is admin
+  profile?: mongoose.Types.ObjectId; // Reference to Profile document
   phone?: string;
   language?: string;
   gender?: string;
@@ -47,6 +50,18 @@ const UserSchema = new Schema<IUser>(
       required: [true, "Role is required"],
       default: "client",
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: "Admin",
+    },
+    profile: {
+      type: Schema.Types.ObjectId,
+      ref: "Profile",
+    },
     phone: {
       type: String,
       trim: true,
@@ -77,11 +92,13 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Indexes for better query performance
 UserSchema.index({ role: 1, status: 1 });
+UserSchema.index({ isAdmin: 1 });
+UserSchema.index({ adminId: 1 });
 
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

@@ -151,14 +151,17 @@ export async function GET(req: NextRequest) {
         icon: "CheckCircle2",
         color: "text-green-600"
       })),
-      ...recentAppointments.slice(0, 3).map((appointment, index) => ({
-        id: `appointment_${index}`,
-        type: "session_completed",
-        message: `Session completed with ${appointment.professionalId?.firstName} ${appointment.professionalId?.lastName}`,
-        time: `${Math.floor((now.getTime() - appointment.createdAt.getTime()) / (1000 * 60 * 60))} hours ago`,
-        icon: "Activity",
-        color: "text-blue-600"
-      }))
+      ...recentAppointments.slice(0, 3).map((appointment, index) => {
+        const professional = appointment.professionalId as any;
+        return {
+          id: `appointment_${index}`,
+          type: "session_completed",
+          message: `Session completed with ${professional?.firstName} ${professional?.lastName}`,
+          time: `${Math.floor((now.getTime() - appointment.createdAt.getTime()) / (1000 * 60 * 60))} hours ago`,
+          icon: "Activity",
+          color: "text-blue-600"
+        };
+      })
     ].sort((a, b) => {
       // Sort by time (most recent first)
       const aHours = parseInt(a.time.split(' ')[0]);
