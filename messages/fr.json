@@ -423,6 +423,26 @@
       "resendEmail": "Renvoyer l'e-mail"
     }
   },
+  "BasicInformation": {
+    "title": "Informations de base",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "email": "Adresse courriel",
+    "phone": "Numéro de téléphone",
+    "location": "Localisation",
+    "dateOfBirth": "Date de naissance",
+    "gender": "Genre",
+    "language": "Langue préférée",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "completeProfile": "Compléter le profil",
+    "completeProfileTitle": "Complétez votre profil",
+    "edit": "Modifier",
+    "subtitle": "Mettre à jour vos informations personnelles",
+    "loading": "Chargement du profil...",
+    "noData": "Aucune donnée de profil trouvée"
+  },
   "Dashboard": {
     "sidebar": {
       "logo": "Logo",
@@ -501,7 +521,15 @@
       "benefit4": "Supervision gratuite et développement professionnel",
       "benefit5": "Communauté de soutien et discussions cliniques",
       "benefit6": "Aide au développement de contenu (podcasts, vidéos)",
-      "save": "Enregistrer"
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "saving": "Enregistrement...",
+      "professionalInfo": "Informations professionnelles",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "dateOfBirth": "Date de naissance",
+      "gender": "Genre",
+      "language": "Langue préférée"
     },
     "schedule": {
       "title": "Horaire de disponibilité",
@@ -1410,6 +1438,17 @@
       "save": "Enregistrer les modifications",
       "saving": "Enregistrement...",
       "cancel": "Annuler",
+      "incomplete": "Incomplet",
+      "complete": "Complet",
+      "incompleteDesc": "Veuillez compléter votre profil pour nous aider à vous jumeler avec le bon professionnel.",
+      "completeDesc": "Votre profil est complet et prêt pour le jumelage professionnel.",
+      "completeSetupTitle": "Complétez votre profil",
+      "completeSetupDesc": "Remplissez vos informations pour nous aider à trouver le meilleur professionnel pour vos besoins.",
+      "completeNow": "Compléter le profil maintenant",
+      "yes": "Oui",
+      "no": "Non",
+      "completeProfile": "Compléter le profil",
+      "completeProfileTitle": "Complétez votre profil",
       "personalInfo": {
         "title": "Informations personnelles",
         "firstName": "Prénom",
@@ -1472,6 +1511,22 @@
         "preferredGender": "Genre du professionnel préféré",
         "preferredAge": "Tranche d'âge préférée",
         "preferredApproach": "Approche thérapeutique préférée"
+      },
+      "benefits": {
+        "title": "Ce à quoi vous aurez accès",
+        "benefit1": "Jumelage professionnel personnalisé selon vos besoins",
+        "benefit2": "Séances en ligne sécurisées et confidentielles",
+        "benefit3": "Accès aux ressources de bien-être et outils d'auto-soins",
+        "benefit4": "Planification flexible adaptée à votre vie"
+      },
+      "accountInfo": {
+        "title": "Informations du compte",
+        "userId": "ID utilisateur",
+        "role": "Rôle",
+        "status": "Statut",
+        "profileCompleted": "Profil complété",
+        "memberSince": "Membre depuis",
+        "lastUpdated": "Dernière mise à jour"
       },
       "matching": {
         "title": "Jumelage professionnel",

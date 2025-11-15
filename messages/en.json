@@ -423,6 +423,26 @@
       "resendEmail": "Resend Email"
     }
   },
+  "BasicInformation": {
+    "title": "Basic Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "location": "Location",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "language": "Preferred Language",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "completeProfile": "Complete Profile",
+    "completeProfileTitle": "Complete Your Profile",
+    "edit": "Edit",
+    "subtitle": "Update your personal information",
+    "loading": "Loading profile...",
+    "noData": "No profile data found"
+  },
   "Dashboard": {
     "sidebar": {
       "logo": "Logo",
@@ -501,7 +521,15 @@
       "benefit4": "Free supervision and professional development",
       "benefit5": "Support community and clinical discussions",
       "benefit6": "Content development assistance (podcasts, videos)",
-      "save": "Save"
+      "save": "Save",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "professionalInfo": "Professional Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "language": "Preferred Language"
     },
     "schedule": {
       "title": "Availability Schedule",
@@ -1410,6 +1438,17 @@
       "save": "Save Changes",
       "saving": "Saving...",
       "cancel": "Cancel",
+      "incomplete": "Incomplete",
+      "complete": "Complete",
+      "incompleteDesc": "Please complete your profile to help us match you with the right professional.",
+      "completeDesc": "Your profile is complete and ready for professional matching.",
+      "completeSetupTitle": "Complete Your Profile",
+      "completeSetupDesc": "Fill in your information to help us find the best professional for your needs.",
+      "completeNow": "Complete Profile Now",
+      "yes": "Yes",
+      "no": "No",
+      "completeProfile": "Complete Profile",
+      "completeProfileTitle": "Complete Your Profile",
       "personalInfo": {
         "title": "Personal Information",
         "firstName": "First Name",
@@ -1472,6 +1511,22 @@
         "preferredGender": "Preferred Professional Gender",
         "preferredAge": "Preferred Age Range",
         "preferredApproach": "Preferred Therapeutic Approach"
+      },
+      "benefits": {
+        "title": "What You'll Get Access To",
+        "benefit1": "Personalized professional matching based on your needs",
+        "benefit2": "Secure and confidential online sessions",
+        "benefit3": "Access to wellness resources and self-care tools",
+        "benefit4": "Flexible scheduling that fits your life"
+      },
+      "accountInfo": {
+        "title": "Account Information",
+        "userId": "User ID",
+        "role": "Role",
+        "status": "Status",
+        "profileCompleted": "Profile Completed",
+        "memberSince": "Member Since",
+        "lastUpdated": "Last Updated"
       },
       "matching": {
         "title": "Professional Matching",

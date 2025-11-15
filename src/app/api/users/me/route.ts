@@ -20,15 +20,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    console.log("Current user fetched:", {
-      id: user._id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      status: user.status,
-    });
-
     return NextResponse.json(user);
   } catch (error: any) {
     console.error("Get current user error:", error);
@@ -68,12 +59,6 @@ export async function PATCH(req: NextRequest) {
     if (!updatedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    console.log("Current user updated:", {
-      id: updatedUser._id,
-      email: updatedUser.email,
-      updatedFields: Object.keys(body),
-    });
 
     return NextResponse.json(updatedUser);
   } catch (error: any) {
