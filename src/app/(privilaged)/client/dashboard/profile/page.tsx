@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { profileAPI } from "@/lib/api-client";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import BasicInformation from "@/components/dashboard/BasicInformation";
 
 interface Profile {
@@ -15,7 +15,6 @@ export default function ClientProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const t = useTranslations("Client.profile");
-  const tBasic = useTranslations("Dashboard.profile");
 
   const fetchProfile = async () => {
     try {
@@ -31,26 +30,6 @@ export default function ClientProfilePage() {
   useEffect(() => {
     fetchProfile();
   }, []);
-
-  const getStatusInfo = () => {
-    if (!profile?.profileCompleted) {
-      return {
-        icon: AlertCircle,
-        text: t("incomplete"),
-        color: "text-yellow-600",
-        bgColor: "bg-yellow-50",
-      };
-    }
-    return {
-      icon: CheckCircle2,
-      text: t("complete"),
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-    };
-  };
-
-  const status = getStatusInfo();
-  const StatusIcon = status.icon;
 
   return (
     <div className="space-y-6">

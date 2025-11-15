@@ -62,11 +62,7 @@ export default function BasicInformation({
       lastName: user.lastName || "",
       phone: user.phone || "",
       location: user.location || "",
-      dateOfBirth: user.dateOfBirth
-        ? typeof user.dateOfBirth === "string"
-          ? user.dateOfBirth.split("T")[0]
-          : new Date(user.dateOfBirth).toISOString().split("T")[0]
-        : "",
+      dateOfBirth: user.dateOfBirth?.toString() || "",
       gender: user.gender || "",
       language: user.language || "",
     });
