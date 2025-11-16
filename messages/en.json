@@ -512,6 +512,7 @@
       "weeklySchedule": "Weekly Schedule",
       "setHours": "Set your available hours for each day",
       "unavailable": "Unavailable",
+      "firstDayOfWeek": "First Day of Week",
       "copyToAll": "Copy to all days",
       "addTimeSlot": "Add time slot",
       "to": "to",

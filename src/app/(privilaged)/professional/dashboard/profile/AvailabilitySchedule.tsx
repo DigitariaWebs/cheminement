@@ -1,22 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Clock, Plus, X } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { IProfile } from "@/models/Profile";
+import { profileAPI } from "@/lib/api-client";
 
-export interface TimeSlot {
-  start: string;
-  end: string;
-}
-
-export interface DaySchedule {
-  enabled: boolean;
-  slots: TimeSlot[];
-}
-
-export interface WeekSchedule {
-  [key: string]: DaySchedule;
+export interface DayAvailability {
+  day: string;
+  isWorkDay: boolean;
+  startTime: string;
+  endTime: string;
 }
 
 const TIME_OPTIONS: string[] = [];
@@ -26,97 +29,146 @@ for (let hour = 0; hour < 24; hour++) {
     TIME_OPTIONS.push(time);
   }
 }
+interface AvailabilityScheduleProps {
+  profile: IProfile | null;
+  setProfile: (profile: IProfile) => void;
+  isEditable?: boolean;
+}
 
-const AvailabilitySchedule = () => {
+const DEFAULT_DAYS: DayAvailability[] = [
+  { day: "Monday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Tuesday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Wednesday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Thursday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Friday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Saturday", isWorkDay: false, startTime: "09:00", endTime: "17:00" },
+  { day: "Sunday", isWorkDay: false, startTime: "09:00", endTime: "17:00" },
+];
+
+const AvailabilitySchedule = ({
+  profile,
+  setProfile,
+  isEditable = false,
+}: AvailabilityScheduleProps) => {
   const t = useTranslations("Dashboard.profile");
   const tSchedule = useTranslations("Dashboard.schedule");
-
-  const [schedule, setSchedule] = useState<WeekSchedule>({
-    monday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    tuesday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    wednesday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    thursday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    friday: { enabled: true, slots: [{ start: "09:00", end: "17:00" }] },
-    saturday: { enabled: false, slots: [] },
-    sunday: { enabled: false, slots: [] },
-  });
 
   const [sessionDuration, setSessionDuration] = useState("60");
   const [breakBetweenSessions, setBreakBetweenSessions] = useState("15");
   const [isScheduleEditable, setIsScheduleEditable] = useState(false);
-  const DAYS_OF_WEEK = [
-    { key: "monday", label: tSchedule("days.monday") },
-    { key: "tuesday", label: tSchedule("days.tuesday") },
-    { key: "wednesday", label: tSchedule("days.wednesday") },
-    { key: "thursday", label: tSchedule("days.thursday") },
-    { key: "friday", label: tSchedule("days.friday") },
-    { key: "saturday", label: tSchedule("days.saturday") },
-    { key: "sunday", label: tSchedule("days.sunday") },
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (profile?.availability) {
+      setSessionDuration(
+        profile.availability.sessionDurationMinutes?.toString() || "60",
+      );
+      setBreakBetweenSessions(
+        profile.availability.breakDurationMinutes?.toString() || "15",
+      );
+    }
+  }, [profile]);
+
+  const currentSchedule =
+    profile?.availability?.days && profile.availability.days.length > 0
+      ? profile.availability.days
+      : DEFAULT_DAYS.map((d) => ({ ...d, isWorkDay: false }));
+
+  const DAYS_ORDER = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  const firstDayIndex = DAYS_ORDER.indexOf(
+    profile?.availability?.firstDayOfWeek || "Monday",
+  );
+  const orderedDays = [
+    ...DAYS_ORDER.slice(firstDayIndex),
+    ...DAYS_ORDER.slice(0, firstDayIndex),
   ];
 
-  const toggleDay = (day: string) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        enabled: !prev[day].enabled,
-        slots:
-          !prev[day].enabled && prev[day].slots.length === 0
-            ? [{ start: "09:00", end: "17:00" }]
-            : prev[day].slots,
+  const toggleDay = (dayIndex: number) => {
+    if (!profile) return;
+    const newDays = [...currentSchedule];
+    newDays[dayIndex] = {
+      ...newDays[dayIndex],
+      isWorkDay: !newDays[dayIndex].isWorkDay,
+    };
+    const updatedProfile = {
+      ...profile,
+      availability: {
+        ...profile.availability,
+        days: newDays,
       },
-    }));
+    } as IProfile;
+    setProfile(updatedProfile);
   };
 
-  const addTimeSlot = (day: string) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        slots: [...prev[day].slots, { start: "09:00", end: "17:00" }],
-      },
-    }));
-  };
-
-  const removeTimeSlot = (day: string, index: number) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        slots: prev[day].slots.filter((_, i) => i !== index),
-      },
-    }));
-  };
-
-  const updateTimeSlot = (
-    day: string,
-    index: number,
-    field: "start" | "end",
+  const updateTime = (
+    dayIndex: number,
+    field: "startTime" | "endTime",
     value: string,
   ) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        slots: prev[day].slots.map((slot, i) =>
-          i === index ? { ...slot, [field]: value } : slot,
-        ),
+    if (!profile) return;
+    const newDays = [...currentSchedule];
+    newDays[dayIndex] = {
+      ...newDays[dayIndex],
+      [field]: value,
+    };
+    const updatedProfile = {
+      ...profile,
+      availability: {
+        ...profile.availability,
+        days: newDays,
       },
-    }));
+    } as IProfile;
+    setProfile(updatedProfile);
   };
 
-  const copyToAllDays = (sourceDay: string) => {
-    const sourceSchedule = schedule[sourceDay];
-    const updatedSchedule: WeekSchedule = { ...schedule };
+  const copyToAllDays = (sourceIndex: number) => {
+    if (!profile) return;
+    const sourceDay = currentSchedule[sourceIndex];
+    const newDays = currentSchedule.map((day) => ({
+      ...day,
+      isWorkDay: sourceDay.isWorkDay,
+      startTime: sourceDay.startTime,
+      endTime: sourceDay.endTime,
+    }));
+    const updatedProfile = {
+      ...profile,
+      availability: {
+        ...profile.availability,
+        days: newDays,
+      },
+    } as IProfile;
+    setProfile(updatedProfile);
+  };
 
-    DAYS_OF_WEEK.forEach((day) => {
-      updatedSchedule[day.key] = {
-        enabled: sourceSchedule.enabled,
-        slots: sourceSchedule.slots.map((slot) => ({ ...slot })),
+  const handleSave = async () => {
+    if (!profile) return;
+    setIsSaving(true);
+    try {
+      const availability = {
+        days: currentSchedule,
+        sessionDurationMinutes: parseInt(sessionDuration),
+        breakDurationMinutes: parseInt(breakBetweenSessions),
+        firstDayOfWeek: profile.availability?.firstDayOfWeek || "Monday",
       };
-    });
-
-    setSchedule(updatedSchedule);
+      await profileAPI.update({ availability });
+      const updatedProfile = {
+        ...profile,
+        availability,
+      } as IProfile;
+      setProfile(updatedProfile);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -125,14 +177,26 @@ const AvailabilitySchedule = () => {
         <h2 className="text-xl font-serif font-light text-foreground">
           {tSchedule("title")}
         </h2>
-        <button
-          onClick={() => {
-            setIsScheduleEditable(!isScheduleEditable);
-          }}
-          className="text-sm text-primary hover:text-primary/80 font-light"
-        >
-          {isScheduleEditable ? t("save") : t("edit")}
-        </button>
+        {isEditable && (
+          <Button
+            onClick={() => {
+              if (isScheduleEditable) {
+                handleSave();
+              }
+              setIsScheduleEditable(!isScheduleEditable);
+            }}
+            disabled={isSaving}
+            variant="outline"
+            size="sm"
+            className="text-sm"
+          >
+            {isSaving
+              ? t("saving")
+              : isScheduleEditable
+                ? t("save")
+                : t("edit")}
+          </Button>
+        )}
       </div>
 
       {/* Session Settings */}
@@ -140,43 +204,97 @@ const AvailabilitySchedule = () => {
         <h3 className="text-base font-serif font-light text-foreground mb-4">
           {tSchedule("sessionSettings")}
         </h3>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           <div>
             <Label htmlFor="sessionDuration" className="font-light mb-2">
               {tSchedule("defaultDuration")}
             </Label>
-            <select
-              id="sessionDuration"
+            <Select
               value={sessionDuration}
-              onChange={(e) => setSessionDuration(e.target.value)}
+              onValueChange={setSessionDuration}
               disabled={!isScheduleEditable}
-              className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             >
-              <option value="30">30 {tSchedule("minutes")}</option>
-              <option value="45">45 {tSchedule("minutes")}</option>
-              <option value="60">60 {tSchedule("minutes")}</option>
-              <option value="90">90 {tSchedule("minutes")}</option>
-              <option value="120">120 {tSchedule("minutes")}</option>
-            </select>
+              <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="30">30 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="45">45 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="60">60 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="90">90 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="120">120 {tSchedule("minutes")}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
             <Label htmlFor="breakBetweenSessions" className="font-light mb-2">
               {tSchedule("breakBetween")}
             </Label>
-            <select
-              id="breakBetweenSessions"
+            <Select
               value={breakBetweenSessions}
-              onChange={(e) => setBreakBetweenSessions(e.target.value)}
+              onValueChange={setBreakBetweenSessions}
               disabled={!isScheduleEditable}
-              className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             >
-              <option value="0">{tSchedule("noBreak")}</option>
-              <option value="5">5 {tSchedule("minutes")}</option>
-              <option value="10">10 {tSchedule("minutes")}</option>
-              <option value="15">15 {tSchedule("minutes")}</option>
-              <option value="30">30 {tSchedule("minutes")}</option>
-            </select>
+              <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">{tSchedule("noBreak")}</SelectItem>
+                <SelectItem value="5">5 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="10">10 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="15">15 {tSchedule("minutes")}</SelectItem>
+                <SelectItem value="30">30 {tSchedule("minutes")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="firstDayOfWeek" className="font-light mb-2">
+              {tSchedule("firstDayOfWeek")}
+            </Label>
+            <Select
+              value={profile?.availability?.firstDayOfWeek || "Monday"}
+              onValueChange={(value) => {
+                if (!profile) return;
+                const updatedProfile = {
+                  ...profile,
+                  availability: {
+                    ...profile.availability,
+                    firstDayOfWeek: value,
+                  },
+                } as IProfile;
+                setProfile(updatedProfile);
+              }}
+              disabled={!isScheduleEditable}
+            >
+              <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Monday">
+                  {tSchedule("days.monday")}
+                </SelectItem>
+                <SelectItem value="Tuesday">
+                  {tSchedule("days.tuesday")}
+                </SelectItem>
+                <SelectItem value="Wednesday">
+                  {tSchedule("days.wednesday")}
+                </SelectItem>
+                <SelectItem value="Thursday">
+                  {tSchedule("days.thursday")}
+                </SelectItem>
+                <SelectItem value="Friday">
+                  {tSchedule("days.friday")}
+                </SelectItem>
+                <SelectItem value="Saturday">
+                  {tSchedule("days.saturday")}
+                </SelectItem>
+                <SelectItem value="Sunday">
+                  {tSchedule("days.sunday")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -193,133 +311,107 @@ const AvailabilitySchedule = () => {
         </div>
 
         <div className="space-y-3">
-          {DAYS_OF_WEEK.map((day) => (
-            <div
-              key={day.key}
-              className={`rounded-lg p-3 transition-colors ${
-                schedule[day.key].enabled
-                  ? "bg-muted/30"
-                  : "bg-muted/10 opacity-60"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex items-center pt-2">
-                  <input
-                    type="checkbox"
-                    id={day.key}
-                    checked={schedule[day.key].enabled}
-                    onChange={() => toggleDay(day.key)}
-                    disabled={!isScheduleEditable}
-                    className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
-                  />
-                </div>
+          {orderedDays.map((dayName) => {
+            const day = currentSchedule.find((d) => d.day === dayName);
+            if (!day) return null;
+            const dayIndex = currentSchedule.indexOf(day);
+            return (
+              <div
+                key={day.day}
+                className={`rounded-lg p-3 transition-colors ${
+                  day.isWorkDay ? "bg-muted/30" : "bg-muted/10 opacity-60"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center pt-2">
+                    <input
+                      type="checkbox"
+                      id={day.day}
+                      checked={day.isWorkDay}
+                      onChange={() => toggleDay(dayIndex)}
+                      disabled={!isScheduleEditable}
+                      className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
+                    />
+                  </div>
 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <Label
-                      htmlFor={day.key}
-                      className="font-light text-sm text-foreground cursor-pointer"
-                    >
-                      {day.label}
-                    </Label>
-                    {schedule[day.key].enabled && isScheduleEditable && (
-                      <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label
+                        htmlFor={day.day}
+                        className="font-light text-sm text-foreground cursor-pointer"
+                      >
+                        {tSchedule(`days.${day.day.toLowerCase()}`)}
+                      </Label>
+                      {day.isWorkDay && isScheduleEditable && (
                         <button
-                          onClick={() => copyToAllDays(day.key)}
+                          onClick={() => copyToAllDays(dayIndex)}
                           className="text-xs text-primary hover:text-primary/80 font-light"
                         >
                           {tSchedule("copyToAll")}
                         </button>
-                        <button
-                          onClick={() => addTimeSlot(day.key)}
-                          className="p-1 rounded-full hover:bg-muted transition-colors"
-                          title={tSchedule("addTimeSlot")}
-                        >
-                          <Plus className="h-3 w-3 text-primary" />
-                        </button>
+                      )}
+                    </div>
+
+                    {day.isWorkDay && (
+                      <div className="flex items-center gap-2 bg-background/50 rounded-lg p-2">
+                        <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
+
+                        <div className="flex items-center gap-2 flex-1">
+                          <Select
+                            value={day.startTime}
+                            onValueChange={(value) =>
+                              updateTime(dayIndex, "startTime", value)
+                            }
+                            disabled={!isScheduleEditable}
+                          >
+                            <SelectTrigger className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map((time) => (
+                                <SelectItem key={time} value={time}>
+                                  {time}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          <span className="text-muted-foreground text-xs">
+                            {tSchedule("to")}
+                          </span>
+
+                          <Select
+                            value={day.endTime}
+                            onValueChange={(value) =>
+                              updateTime(dayIndex, "endTime", value)
+                            }
+                            disabled={!isScheduleEditable}
+                          >
+                            <SelectTrigger className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map((time) => (
+                                <SelectItem key={time} value={time}>
+                                  {time}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     )}
+
+                    {!day.isWorkDay && (
+                      <p className="text-xs text-muted-foreground font-light">
+                        {tSchedule("unavailable")}
+                      </p>
+                    )}
                   </div>
-
-                  {schedule[day.key].enabled && (
-                    <div className="space-y-2">
-                      {schedule[day.key].slots.map((slot, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-2 bg-background/50 rounded-lg p-2"
-                        >
-                          <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
-
-                          <div className="flex items-center gap-2 flex-1">
-                            <select
-                              value={slot.start}
-                              onChange={(e) =>
-                                updateTimeSlot(
-                                  day.key,
-                                  index,
-                                  "start",
-                                  e.target.value,
-                                )
-                              }
-                              disabled={!isScheduleEditable}
-                              className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                            >
-                              {TIME_OPTIONS.map((time) => (
-                                <option key={time} value={time}>
-                                  {time}
-                                </option>
-                              ))}
-                            </select>
-
-                            <span className="text-muted-foreground text-xs">
-                              {tSchedule("to")}
-                            </span>
-
-                            <select
-                              value={slot.end}
-                              onChange={(e) =>
-                                updateTimeSlot(
-                                  day.key,
-                                  index,
-                                  "end",
-                                  e.target.value,
-                                )
-                              }
-                              disabled={!isScheduleEditable}
-                              className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                            >
-                              {TIME_OPTIONS.map((time) => (
-                                <option key={time} value={time}>
-                                  {time}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {schedule[day.key].slots.length > 1 &&
-                            isScheduleEditable && (
-                              <button
-                                onClick={() => removeTimeSlot(day.key, index)}
-                                className="p-1 rounded-full hover:bg-muted transition-colors"
-                                title={tSchedule("removeTimeSlot")}
-                              >
-                                <X className="h-3 w-3 text-muted-foreground" />
-                              </button>
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {!schedule[day.key].enabled && (
-                    <p className="text-xs text-muted-foreground font-light">
-                      {tSchedule("unavailable")}
-                    </p>
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

@@ -512,6 +512,7 @@
       "weeklySchedule": "Horaire hebdomadaire",
       "setHours": "Définissez vos heures disponibles pour chaque jour",
       "unavailable": "Non disponible",
+      "firstDayOfWeek": "Premier jour de la semaine",
       "copyToAll": "Copier à tous les jours",
       "addTimeSlot": "Ajouter une plage horaire",
       "to": "à",

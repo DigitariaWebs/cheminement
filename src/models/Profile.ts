@@ -12,8 +12,15 @@ export interface IProfile extends Document {
   license?: string;
   certifications?: string[];
   availability?: {
-    days: string[];
-    timeSlots: string[];
+    days: {
+      day: string;
+      isWorkDay: boolean;
+      startTime: string;
+      endTime: string;
+    }[];
+    sessionDurationMinutes: number;
+    breakDurationMinutes: number;
+    firstDayOfWeek: string;
   };
   languages?: string[];
   sessionTypes?: string[];
@@ -56,8 +63,39 @@ const ProfileSchema = new Schema<IProfile>(
     license: String,
     certifications: [String],
     availability: {
-      days: [String],
-      timeSlots: [String],
+      days: [
+        {
+          day: {
+            type: String,
+            enum: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ],
+          },
+          isWorkDay: Boolean,
+          startTime: String,
+          endTime: String,
+        },
+      ],
+      sessionDurationMinutes: Number,
+      breakDurationMinutes: Number,
+      firstDayOfWeek: {
+        type: String,
+        enum: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+      },
     },
     languages: [String],
     sessionTypes: [String],

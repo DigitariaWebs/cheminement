@@ -1,11 +1,55 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { CheckCircle2 } from "lucide-react";
+import { IProfile } from "@/models/Profile";
+import { profileAPI } from "@/lib/api-client";
 import BasicInformation from "@/components/dashboard/BasicInformation";
 import ProfessionalProfile from "@/components/dashboard/ProfessionalProfile";
 import AvailabilitySchedule from "./AvailabilitySchedule";
 
+interface DayAvailability {
+  day: string;
+  isWorkDay: boolean;
+  startTime: string;
+  endTime: string;
+}
+
+const DEFAULT_DAYS: DayAvailability[] = [
+  { day: "Monday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Tuesday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Wednesday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Thursday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Friday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+  { day: "Saturday", isWorkDay: false, startTime: "09:00", endTime: "17:00" },
+  { day: "Sunday", isWorkDay: false, startTime: "09:00", endTime: "17:00" },
+];
+
 export default function ProfilePage() {
   const t = useTranslations("Dashboard.profile");
+
+  const [profile, setProfile] = useState<IProfile | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = (await profileAPI.get()) as IProfile;
+        if (!response.availability) {
+          response.availability = {
+            days: DEFAULT_DAYS,
+            sessionDurationMinutes: 60,
+            breakDurationMinutes: 15,
+            firstDayOfWeek: "Monday",
+          };
+        }
+        setProfile(response);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -20,7 +64,11 @@ export default function ProfilePage() {
       <BasicInformation isEditable={true} />
 
       {/* Professional Profile */}
-      <ProfessionalProfile isEditable />
+      <ProfessionalProfile
+        profile={profile ?? undefined}
+        setProfile={setProfile}
+        isEditable
+      />
 
       {/* Platform Benefits Reminder */}
       <div className="rounded-xl bg-muted/30 p-6">
@@ -55,7 +103,11 @@ export default function ProfilePage() {
         </ul>
       </div>
 
-      <AvailabilitySchedule />
+      <AvailabilitySchedule
+        profile={profile}
+        setProfile={setProfile}
+        isEditable={true}
+      />
     </div>
   );
 }
