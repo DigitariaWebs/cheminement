@@ -1712,7 +1712,12 @@
         "refunded": "Remboursé"
       },
       "minutes": "min",
-      "with": "avec"
+      "with": "avec",
+      "confirmCancelTitle": "Annuler le rendez-vous",
+      "confirmCancelMessage": "Êtes-vous sûr de vouloir annuler ce rendez-vous ? Cette action ne peut pas être annulée.",
+      "cancelling": "Annulation...",
+      "confirmCancel": "Oui, annuler le rendez-vous",
+      "cancel": "Annuler"
     },
     "library": {
       "badge": "Bibliothèque de ressources",

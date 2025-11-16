@@ -4,10 +4,11 @@ import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
 import { Error } from "mongoose";
+import { sendCancellationNotification } from "@/lib/notifications";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -27,7 +28,7 @@ export async function GET(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -45,14 +46,14 @@ export async function GET(
     console.error("Get appointment error:", error);
     return NextResponse.json(
       { error: "Failed to fetch appointment", details: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -66,6 +67,9 @@ export async function PATCH(
     const { id } = await params;
     const data = await req.json();
 
+    // Get the appointment before update to check for status changes
+    const oldAppointment = await Appointment.findById(id);
+
     const appointment = await Appointment.findByIdAndUpdate(id, data, {
       new: true,
     })
@@ -75,8 +79,38 @@ export async function PATCH(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 },
+        { status: 404 }
       );
+    }
+
+    // Send cancellation notification if status changed to cancelled
+    if (
+      oldAppointment &&
+      data.status === "cancelled" &&
+      oldAppointment.status !== "cancelled"
+    ) {
+      const cancelledBy =
+        session.user.role === "client" ? "client" : "professional";
+
+      const emailData = {
+        clientName: `${(appointment.clientId as any).firstName} ${(appointment.clientId as any).lastName}`,
+        clientEmail: (appointment.clientId as any).email,
+        professionalName: `${(appointment.professionalId as any).firstName} ${(appointment.professionalId as any).lastName}`,
+        professionalEmail: (appointment.professionalId as any).email,
+        date: appointment.date.toISOString(),
+        time: appointment.time,
+        duration: appointment.duration,
+        type: appointment.type,
+        cancelledBy,
+      };
+
+      // Send notification without blocking the response
+      // Temporarily disabled for development/testing
+      /*
+      sendCancellationNotification(emailData).catch((err) =>
+        console.error("Error sending cancellation notification:", err),
+      );
+      */
     }
 
     return NextResponse.json(appointment);
@@ -84,7 +118,7 @@ export async function PATCH(
     console.error("Update appointment error:", error);
     return NextResponse.json(
       { error: "Failed to update appointment", details: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

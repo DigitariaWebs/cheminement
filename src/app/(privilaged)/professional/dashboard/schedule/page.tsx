@@ -1,76 +1,113 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, ChevronRight, User, Filter, Eye } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  User,
+  Filter,
+  Eye,
+  Loader2,
+  Video,
+  MapPin,
+  Phone,
+} from "lucide-react";
+import { apiClient } from "@/lib/api-client";
 
-interface Session {
-  id: string;
-  clientName: string;
+interface Client {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+}
+
+interface Appointment {
+  _id: string;
+  clientId: Client;
+  date: string;
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled";
-  issueType: string;
+  status: "scheduled" | "completed" | "cancelled" | "no-show";
+  issueType?: string;
+  notes?: string;
+  meetingLink?: string;
+  location?: string;
 }
 
 interface Request {
-  id: string;
+  _id: string;
+  patientId?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
   patientName: string;
-  requestedDate: string;
-  requestedTime: string;
+  email: string;
+  phone: string;
+  preferredDate?: string;
+  preferredTime?: string;
   issueType: string;
   urgency: "low" | "medium" | "high";
   isNewClient: boolean;
+  status: "pending" | "approved" | "rejected" | "contacted";
+  message?: string;
 }
-
-const MOCK_SESSIONS: Session[] = [
-  {
-    id: "1",
-    clientName: "Sarah Johnson",
-    time: "09:00",
-    duration: 60,
-    type: "video",
-    status: "scheduled",
-    issueType: "Anxiety",
-  },
-  {
-    id: "2",
-    clientName: "Michael Chen",
-    time: "14:00",
-    duration: 60,
-    type: "in-person",
-    status: "scheduled",
-    issueType: "Depression",
-  },
-];
-
-const MOCK_REQUESTS: Request[] = [
-  {
-    id: "1",
-    patientName: "Emma Wilson",
-    requestedDate: "2024-01-20",
-    requestedTime: "10:00",
-    issueType: "Anxiety",
-    urgency: "high",
-    isNewClient: true,
-  },
-  {
-    id: "2",
-    patientName: "James Anderson",
-    requestedDate: "2024-01-22",
-    requestedTime: "14:00",
-    issueType: "Depression",
-    urgency: "medium",
-    isNewClient: false,
-  },
-];
 
 export default function SchedulePage() {
   const t = useTranslations("Dashboard.scheduleCalendar");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"day" | "week" | "month">("week");
   const [showRequests, setShowRequests] = useState(false);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [requests, setRequests] = useState<Request[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchData();
+  }, [currentDate]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      // Get appointments for current view
+      const startDate = new Date(currentDate);
+      if (view === "week") {
+        startDate.setDate(currentDate.getDate() - currentDate.getDay());
+      } else if (view === "month") {
+        startDate.setDate(1);
+      }
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(startDate);
+      if (view === "day") {
+        endDate.setDate(startDate.getDate() + 1);
+      } else if (view === "week") {
+        endDate.setDate(startDate.getDate() + 7);
+      } else {
+        endDate.setMonth(startDate.getMonth() + 1);
+      }
+
+      const [appointmentsData, requestsData] = await Promise.all([
+        apiClient.get<Appointment[]>(
+          `/appointments?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        ),
+        apiClient.get<Request[]>("/requests?status=pending"),
+      ]);
+
+      setAppointments(appointmentsData);
+      setRequests(requestsData);
+    } catch (err: any) {
+      console.error("Error fetching schedule data:", err);
+      setError(err.message || "Failed to load schedule");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const monthNames = [
     "January",
@@ -151,13 +188,13 @@ export default function SchedulePage() {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "video":
-        return "📹";
+        return <Video className="h-4 w-4" />;
       case "in-person":
-        return "👤";
+        return <MapPin className="h-4 w-4" />;
       case "phone":
-        return "📞";
+        return <Phone className="h-4 w-4" />;
       default:
-        return "📅";
+        return <User className="h-4 w-4" />;
     }
   };
 
@@ -172,6 +209,25 @@ export default function SchedulePage() {
       default:
         return "bg-gray-100 text-gray-700";
     }
+  };
+
+  // Get appointments for a specific date and hour
+  const getAppointmentsForSlot = (date: Date, hour: number) => {
+    const dateStr = date.toISOString().split("T")[0];
+    return appointments.filter((apt) => {
+      const aptDate = new Date(apt.date).toISOString().split("T")[0];
+      const aptHour = parseInt(apt.time.split(":")[0]);
+      return aptDate === dateStr && aptHour === hour;
+    });
+  };
+
+  // Get today's appointments
+  const getTodayAppointments = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return appointments.filter((apt) => {
+      const aptDate = new Date(apt.date).toISOString().split("T")[0];
+      return aptDate === today && apt.status === "scheduled";
+    });
   };
 
   return (
@@ -268,7 +324,11 @@ export default function SchedulePage() {
             </div>
           </div>
 
-          {view === "week" && (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : view === "week" ? (
             <div className="overflow-x-auto">
               <div className="min-w-[800px]">
                 <div className="grid grid-cols-8 gap-px bg-border/40 border border-border/40 rounded-lg overflow-hidden">
@@ -300,63 +360,71 @@ export default function SchedulePage() {
                       <div className="bg-muted/30 p-2 text-xs font-light text-muted-foreground text-right">
                         {hour}:00
                       </div>
-                      {getWeekDays().map((day, idx) => (
-                        <div
-                          key={`day-${day}-${hour}-${idx}`}
-                          className="bg-card p-2 min-h-[60px] relative"
-                        >
-                          {!showRequests &&
-                            MOCK_SESSIONS.filter(
-                              (s) => parseInt(s.time.split(":")[0]) === hour,
-                            ).map((session) => (
-                              <div
-                                key={session.id}
-                                className="bg-primary/10 border border-primary/20 rounded p-2 mb-1 hover:bg-primary/20 transition-colors cursor-pointer"
-                              >
-                                <div className="flex items-center gap-1 text-xs font-light">
-                                  <span>{getTypeIcon(session.type)}</span>
-                                  <span className="text-foreground">
-                                    {session.clientName}
-                                  </span>
+                      {getWeekDays().map((day, idx) => {
+                        const dayAppointments = getAppointmentsForSlot(
+                          day,
+                          hour,
+                        );
+                        return (
+                          <div
+                            key={`day-${day}-${hour}-${idx}`}
+                            className="bg-card p-2 min-h-[60px] relative"
+                          >
+                            {!showRequests &&
+                              dayAppointments.map((appointment) => (
+                                <div
+                                  key={appointment._id}
+                                  className="bg-primary/10 border border-primary/20 rounded p-2 mb-1 hover:bg-primary/20 transition-colors cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-1 text-xs font-light">
+                                    {getTypeIcon(appointment.type)}
+                                    <span className="text-foreground ml-1">
+                                      {appointment.clientId.firstName}{" "}
+                                      {appointment.clientId.lastName}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground font-light mt-1">
+                                    {appointment.time} ({appointment.duration}m)
+                                  </div>
                                 </div>
-                                <div className="text-xs text-muted-foreground font-light mt-1">
-                                  {session.time} ({session.duration}m)
-                                </div>
-                              </div>
-                            ))}
-                          {showRequests &&
-                            MOCK_REQUESTS.filter(
-                              (r) =>
-                                parseInt(r.requestedTime.split(":")[0]) ===
-                                hour,
-                            ).map((request) => (
-                              <div
-                                key={request.id}
-                                className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-1 hover:bg-yellow-100 transition-colors cursor-pointer"
-                              >
-                                <div className="flex items-center gap-1 text-xs font-light">
-                                  <User className="h-3 w-3" />
-                                  <span className="text-foreground">
-                                    {request.patientName}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-1 mt-1">
-                                  <span
-                                    className={`text-xs px-2 py-0.5 rounded-full font-light ${getUrgencyColor(request.urgency)}`}
+                              ))}
+                            {showRequests &&
+                              requests
+                                .filter(
+                                  (r) =>
+                                    r.preferredTime &&
+                                    parseInt(r.preferredTime.split(":")[0]) ===
+                                      hour,
+                                )
+                                .map((request) => (
+                                  <div
+                                    key={request._id}
+                                    className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-1 hover:bg-yellow-100 transition-colors cursor-pointer"
                                   >
-                                    {request.urgency}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      ))}
+                                    <div className="flex items-center gap-1 text-xs font-light">
+                                      <User className="h-3 w-3" />
+                                      <span className="text-foreground">
+                                        {request.patientName}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1 mt-1">
+                                      <span
+                                        className={`text-xs px-2 py-0.5 rounded-full font-light ${getUrgencyColor(request.urgency)}`}
+                                      >
+                                        {request.urgency}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                          </div>
+                        );
+                      })}
                     </React.Fragment>
                   ))}
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
 
           {view === "month" && (
             <div className="grid grid-cols-7 gap-px bg-border/40 border border-border/40 rounded-lg overflow-hidden">
@@ -382,30 +450,55 @@ export default function SchedulePage() {
                   </div>
                   <div className="space-y-1">
                     {!showRequests &&
-                      MOCK_SESSIONS.slice(0, 2).map((session) => (
-                        <div
-                          key={session.id}
-                          className="bg-primary/10 rounded px-2 py-1 text-xs font-light truncate"
-                        >
-                          {session.time} {session.clientName}
-                        </div>
-                      ))}
+                      appointments
+                        .filter((apt) => {
+                          const aptDate = new Date(apt.date);
+                          return (
+                            aptDate.getDate() === day.getDate() &&
+                            aptDate.getMonth() === day.getMonth() &&
+                            aptDate.getFullYear() === day.getFullYear()
+                          );
+                        })
+                        .slice(0, 2)
+                        .map((appointment) => (
+                          <div
+                            key={appointment._id}
+                            className="bg-primary/10 rounded px-2 py-1 text-xs font-light truncate"
+                          >
+                            {appointment.time} {appointment.clientId.firstName} {appointment.clientId.lastName}
+                          </div>
+                        ))}
                     {showRequests &&
-                      MOCK_REQUESTS.slice(0, 2).map((request) => (
-                        <div
-                          key={request.id}
-                          className="bg-yellow-50 rounded px-2 py-1 text-xs font-light truncate"
-                        >
-                          {request.requestedTime} {request.patientName}
-                        </div>
-                      ))}
+                      requests
+                        .filter((req) => {
+                          if (!req.preferredDate) return false;
+                          const reqDate = new Date(req.preferredDate);
+                          return (
+                            reqDate.getDate() === day.getDate() &&
+                            reqDate.getMonth() === day.getMonth() &&
+                            reqDate.getFullYear() === day.getFullYear()
+                          );
+                        })
+                        .slice(0, 2)
+                        .map((request) => (
+                          <div
+                            key={request._id}
+                            className="bg-yellow-50 rounded px-2 py-1 text-xs font-light truncate"
+                          >
+                            {request.preferredTime} {request.patientName}
+                          </div>
+                        ))}
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {view === "day" && (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : view === "day" ? (
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="rounded-lg bg-muted/30 p-4">
@@ -413,7 +506,7 @@ export default function SchedulePage() {
                     {t("totalSessions")}
                   </div>
                   <div className="text-2xl font-serif font-light text-foreground">
-                    {MOCK_SESSIONS.length}
+                    {getTodayAppointments().length}
                   </div>
                 </div>
                 <div className="rounded-lg bg-muted/30 p-4">
@@ -421,92 +514,115 @@ export default function SchedulePage() {
                     {t("pendingRequests")}
                   </div>
                   <div className="text-2xl font-serif font-light text-foreground">
-                    {MOCK_REQUESTS.length}
+                    {requests.filter((r) => r.status === "pending").length}
                   </div>
                 </div>
               </div>
 
-              {hours.map((hour) => (
-                <div key={hour} className="flex gap-4">
-                  <div className="w-20 text-sm font-light text-muted-foreground pt-2">
-                    {hour}:00
-                  </div>
-                  <div className="flex-1 min-h-[60px] border-l border-border/40 pl-4 space-y-2">
-                    {!showRequests &&
-                      MOCK_SESSIONS.filter(
-                        (s) => parseInt(s.time.split(":")[0]) === hour,
-                      ).map((session) => (
-                        <div
-                          key={session.id}
-                          className="bg-primary/10 border border-primary/20 rounded-lg p-3 hover:bg-primary/20 transition-colors cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <span className="text-xl">
-                                {getTypeIcon(session.type)}
-                              </span>
-                              <div>
-                                <div className="font-light text-foreground">
-                                  {session.clientName}
-                                </div>
-                                <div className="text-sm text-muted-foreground font-light">
-                                  {session.time} - {session.duration} minutes •{" "}
-                                  {session.issueType}
+              {hours.map((hour) => {
+                const hourAppointments = getAppointmentsForSlot(
+                  currentDate,
+                  hour,
+                );
+                return (
+                  <div key={hour} className="flex gap-4">
+                    <div className="w-20 text-sm font-light text-muted-foreground pt-2">
+                      {hour}:00
+                    </div>
+                    <div className="flex-1 min-h-[60px] border-l border-border/40 pl-4 space-y-2">
+                      {!showRequests &&
+                        hourAppointments.map((appointment) => (
+                          <div
+                            key={appointment._id}
+                            className="bg-primary/10 border border-primary/20 rounded-lg p-3 hover:bg-primary/20 transition-colors cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className="text-xl">
+                                  {getTypeIcon(appointment.type)}
+                                </span>
+                                <div>
+                                  <div className="font-light text-foreground">
+                                    {appointment.clientId.firstName}{" "}
+                                    {appointment.clientId.lastName}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground font-light">
+                                    {appointment.time} - {appointment.duration}{" "}
+                                    minutes
+                                    {appointment.issueType &&
+                                      ` • ${appointment.issueType}`}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform">
-                              {t("startSession")}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    {showRequests &&
-                      MOCK_REQUESTS.filter(
-                        (r) => parseInt(r.requestedTime.split(":")[0]) === hour,
-                      ).map((request) => (
-                        <div
-                          key={request.id}
-                          className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 hover:bg-yellow-100 transition-colors cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <User className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-light text-foreground">
-                                  {request.patientName}
-                                </div>
-                                <div className="text-sm text-muted-foreground font-light flex items-center gap-2">
-                                  {request.requestedTime} • {request.issueType}
-                                  <span
-                                    className={`px-2 py-0.5 rounded-full text-xs font-light ${getUrgencyColor(request.urgency)}`}
+                              {appointment.type === "video" &&
+                                appointment.meetingLink && (
+                                  <button
+                                    onClick={() =>
+                                      window.open(
+                                        appointment.meetingLink,
+                                        "_blank",
+                                      )
+                                    }
+                                    className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform"
                                   >
-                                    {request.urgency}
-                                  </span>
-                                  {request.isNewClient && (
-                                    <span className="px-2 py-0.5 rounded-full text-xs font-light bg-purple-100 text-purple-700">
-                                      {t("new")}
-                                    </span>
-                                  )}
+                                    {t("startSession")}
+                                  </button>
+                                )}
+                            </div>
+                          </div>
+                        ))}
+                      {showRequests &&
+                        requests
+                          .filter(
+                            (r) =>
+                              r.preferredTime &&
+                              parseInt(r.preferredTime.split(":")[0]) === hour,
+                          )
+                          .map((request) => (
+                            <div
+                              key={request._id}
+                              className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 hover:bg-yellow-100 transition-colors cursor-pointer"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <User className="h-5 w-5 text-muted-foreground" />
+                                  <div>
+                                    <div className="font-light text-foreground">
+                                      {request.patientName}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground font-light flex items-center gap-2">
+                                      {request.preferredTime} •{" "}
+                                      {request.issueType}
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full text-xs font-light ${getUrgencyColor(request.urgency)}`}
+                                      >
+                                        {request.urgency}
+                                      </span>
+                                      {request.isNewClient && (
+                                        <span className="px-2 py-0.5 rounded-full text-xs font-light bg-purple-100 text-purple-700">
+                                          {t("new")}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button className="p-2 rounded-full hover:bg-muted transition-colors">
+                                    <Eye className="h-4 w-4" />
+                                  </button>
+                                  <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform">
+                                    {t("accept")}
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <button className="p-2 rounded-full hover:bg-muted transition-colors">
-                                <Eye className="h-4 w-4" />
-                              </button>
-                              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform">
-                                {t("accept")}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                          ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

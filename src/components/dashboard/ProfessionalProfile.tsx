@@ -56,8 +56,10 @@ export default function ProfessionalProfile({
       const response = userId
         ? await profileAPI.getById(userId)
         : await profileAPI.get();
-      setProfessionalProfile(response as IProfile);
-      if (setProfile) setProfile(response as IProfile);
+      if (response) {
+        setProfessionalProfile(response as IProfile);
+        if (setProfile) setProfile(response as IProfile);
+      }
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {

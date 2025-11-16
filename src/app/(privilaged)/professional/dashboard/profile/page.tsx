@@ -34,16 +34,19 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = (await profileAPI.get()) as IProfile;
-        if (!response.availability) {
-          response.availability = {
-            days: DEFAULT_DAYS,
-            sessionDurationMinutes: 60,
-            breakDurationMinutes: 15,
-            firstDayOfWeek: "Monday",
-          };
+        const response = await profileAPI.get();
+        if (response) {
+          const profileData = response as IProfile;
+          if (!profileData.availability) {
+            profileData.availability = {
+              days: DEFAULT_DAYS,
+              sessionDurationMinutes: 60,
+              breakDurationMinutes: 15,
+              firstDayOfWeek: "Monday",
+            };
+          }
+          setProfile(profileData);
         }
-        setProfile(response);
       } catch (error) {
         console.error("Error fetching profile:", error);
       }

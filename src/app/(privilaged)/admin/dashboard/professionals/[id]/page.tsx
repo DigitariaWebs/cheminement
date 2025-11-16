@@ -21,12 +21,16 @@ export default function ProfessionalDetailPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [userData, profileData] = await Promise.all([
-        usersAPI.getById(params.id as string),
-        profileAPI.getById(params.id as string),
-      ]);
+      const userData = await usersAPI.getById(params.id as string);
       setUser(userData as IUser);
-      setProfile(profileData as IProfile);
+
+      try {
+        const profileData = await profileAPI.getById(params.id as string);
+        setProfile(profileData as IProfile);
+      } catch (error) {
+        console.log("Profile not found for professional:", params.id);
+        setProfile(null);
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }

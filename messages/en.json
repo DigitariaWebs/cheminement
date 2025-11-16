@@ -1677,6 +1677,13 @@
       "noUpcoming": "No upcoming appointments",
       "noPast": "No past appointments",
       "requestNew": "Request New Appointment",
+      "error": "Failed to load appointments",
+      "retry": "Try Again",
+      "confirmCancelTitle": "Cancel Appointment",
+      "confirmCancelMessage": "Are you sure you want to cancel this appointment? This action cannot be undone.",
+      "cancelling": "Cancelling...",
+      "confirmCancel": "Yes, Cancel Appointment",
+      "cancel": "Cancel",
       "status": {
         "scheduled": "Scheduled",
         "completed": "Completed",

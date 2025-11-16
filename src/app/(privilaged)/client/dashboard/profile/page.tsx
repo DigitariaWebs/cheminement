@@ -41,8 +41,10 @@ export default function ClientProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const profileData = (await medicalProfileAPI.get()) as IMedicalProfile;
-      setProfile(profileData);
+      const profileData = await profileAPI.get();
+      if (profileData) {
+        setProfile(profileData as Profile);
+      }
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {
