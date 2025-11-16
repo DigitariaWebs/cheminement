@@ -125,6 +125,12 @@ export const profileAPI = {
   update: (data: any) => apiClient.put("/profile", data),
 };
 
+// Medical Profile
+export const medicalProfileAPI = {
+  get: () => apiClient.get("/medical-profile"),
+  update: (data: any) => apiClient.put("/medical-profile", data),
+};
+
 // Appointments
 export const appointmentsAPI = {
   list: (params?: {

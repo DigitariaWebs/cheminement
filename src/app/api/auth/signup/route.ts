@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Profile from "@/models/Profile";
+import MedicalProfile from "@/models/MedicalProfile";
 
 export async function POST(req: NextRequest) {
   try {
@@ -63,6 +64,14 @@ export async function POST(req: NextRequest) {
       });
 
       await profile.save();
+    } else if (user.role === "client") {
+      // Create empty medical profile for the client
+      const medicalProfile = new MedicalProfile({
+        userId: user._id,
+        profileCompleted: false,
+      });
+
+      await medicalProfile.save();
     }
 
     return NextResponse.json(
