@@ -5,30 +5,35 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BasicInformation from "@/components/dashboard/BasicInformation";
+import MedicalProfile from "@/components/dashboard/MedicalProfile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { usersAPI, profileAPI } from "@/lib/api-client";
+import { usersAPI, medicalProfileAPI } from "@/lib/api-client";
 import { IUser } from "@/models/User";
-import { IProfile } from "@/models/Profile";
+import { IMedicalProfile } from "@/models/MedicalProfile";
 
 export default function PatientDetailPage() {
   const params = useParams();
   const [user, setUser] = useState<IUser | null>(null);
-  const [profile, setProfile] = useState<IProfile | null>(null);
+  const [medicalProfile, setMedicalProfile] = useState<IMedicalProfile | null>(
+    null,
+  );
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       const userData = await usersAPI.getById(params.id as string);
       setUser(userData as IUser);
-      
+
       try {
-        const profileData = await profileAPI.getById(params.id as string);
-        setProfile(profileData as IProfile);
-      } catch (error) {
-        // Profile might not exist for patients
-        console.log("Profile not found for patient:", params.id);
-        setProfile(null);
+        const medicalProfileData = await medicalProfileAPI.getByUserId(
+          params.id as string,
+        );
+        setMedicalProfile(medicalProfileData as IMedicalProfile);
+      } catch {
+        // Medical profile might not exist
+        console.log("Medical profile not found for patient:", params.id);
+        setMedicalProfile(null);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -81,9 +86,7 @@ export default function PatientDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button asChild variant="outline" className="font-light">
-          <Link href="/admin/dashboard/patients">
-            ← Back to Patients
-          </Link>
+          <Link href="/admin/dashboard/patients">← Back to Patients</Link>
         </Button>
         <div className="flex gap-3">
           {user.status === "pending" && (
@@ -125,11 +128,6 @@ export default function PatientDetailPage() {
                 ? `${user.firstName} ${user.lastName}`
                 : user.email}
             </h1>
-            {profile?.bio && (
-              <p className="text-lg text-muted-foreground font-light">
-                {profile.bio}
-              </p>
-            )}
           </div>
           <Badge
             variant={
@@ -150,8 +148,8 @@ export default function PatientDetailPage() {
           <TabsTrigger value="basic" className="font-light">
             Basic Information
           </TabsTrigger>
-          <TabsTrigger value="profile" className="font-light">
-            Profile Details
+          <TabsTrigger value="medical" className="font-light">
+            Medical Profile
           </TabsTrigger>
         </TabsList>
 
@@ -159,48 +157,13 @@ export default function PatientDetailPage() {
           <BasicInformation user={user} isEditable={false} />
         </TabsContent>
 
-        <TabsContent value="profile" className="space-y-6 mt-6">
-          <div className="rounded-xl bg-card p-6">
-            <h2 className="text-xl font-serif font-light text-foreground mb-6">
-              Patient Profile
-            </h2>
-            {profile ? (
-              <div className="space-y-4">
-                {profile.problematics && profile.problematics.length > 0 && (
-                  <div>
-                    <p className="text-sm text-muted-foreground font-light mb-2">
-                      Issues
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.problematics.map((item) => (
-                        <span
-                          key={item}
-                          className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-light"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {profile.bio && (
-                  <div>
-                    <p className="text-sm text-muted-foreground font-light mb-2">
-                      Bio
-                    </p>
-                    <p className="text-foreground leading-relaxed">
-                      {profile.bio}
-                    </p>
-                  </div>
-                )}
-                {(!profile.problematics || profile.problematics.length === 0) && !profile.bio && (
-                  <p className="text-muted-foreground">No additional profile information available</p>
-                )}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No profile information available for this patient</p>
-            )}
-          </div>
+        <TabsContent value="medical" className="space-y-6 mt-6">
+          <MedicalProfile
+            profile={medicalProfile || undefined}
+            userId={params.id as string}
+            setProfile={setMedicalProfile}
+            isEditable={false}
+          />
         </TabsContent>
       </Tabs>
     </div>

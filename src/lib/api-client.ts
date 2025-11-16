@@ -119,6 +119,7 @@ export const profileAPI = {
 // Medical Profile
 export const medicalProfileAPI = {
   get: () => apiClient.get("/medical-profile"),
+  getByUserId: (userId: string) => apiClient.get(`/medical-profile/${userId}`),
   update: (data: any) => apiClient.put("/medical-profile", data),
 };
 
