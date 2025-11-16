@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BasicInformation from "@/components/dashboard/BasicInformation";
 import ProfessionalProfile from "@/components/dashboard/ProfessionalProfile";
+import AvailabilitySchedule from "@/app/(privilaged)/professional/dashboard/profile/AvailabilitySchedule";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usersAPI, profileAPI } from "@/lib/api-client";
@@ -16,10 +17,9 @@ export default function ProfessionalDetailPage() {
   const params = useParams();
   const [user, setUser] = useState<IUser | null>(null);
   const [profile, setProfile] = useState<IProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [userData, profileData] = await Promise.all([
         usersAPI.getById(params.id as string),
@@ -30,13 +30,13 @@ export default function ProfessionalDetailPage() {
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-  };
+  }, [params.id]);
 
   useEffect(() => {
     if (params.id) {
       fetchData();
     }
-  }, [params.id]);
+  }, [params.id, fetchData]);
 
   const handleSetActive = async () => {
     if (!user) return;
@@ -66,18 +66,10 @@ export default function ProfessionalDetailPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground">User not found</p>
+        <p className="text-muted-foreground font-light">User not found</p>
       </div>
     );
   }
@@ -85,19 +77,19 @@ export default function ProfessionalDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="font-light">
           <Link href="/admin/dashboard/professionals">
             ← Back to Professionals
           </Link>
         </Button>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {user.status === "pending" && (
             <Button
               onClick={handleSetActive}
               disabled={isUpdatingStatus}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 font-light tracking-wide transition-all duration-300 hover:scale-105"
             >
-              {isUpdatingStatus ? "Updating..." : "Set Status to Active"}
+              {isUpdatingStatus ? "Updating..." : "Activate Professional"}
             </Button>
           )}
           {user.status === "active" && (
@@ -105,33 +97,39 @@ export default function ProfessionalDetailPage() {
               onClick={handleSetInactive}
               disabled={isUpdatingStatus}
               variant="destructive"
+              className="font-light tracking-wide transition-all duration-300 hover:scale-105"
             >
-              {isUpdatingStatus ? "Updating..." : "Set Status to Inactive"}
+              {isUpdatingStatus ? "Updating..." : "Deactivate"}
             </Button>
           )}
           {user.status === "inactive" && (
             <Button
               onClick={handleSetActive}
               disabled={isUpdatingStatus}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 font-light tracking-wide transition-all duration-300 hover:scale-105"
             >
-              {isUpdatingStatus ? "Updating..." : "Set Status to Active"}
+              {isUpdatingStatus ? "Updating..." : "Reactivate Professional"}
             </Button>
           )}
         </div>
       </div>
 
-      <div className="rounded-xl bg-card p-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-serif font-light text-foreground">
+      <div className="rounded-xl bg-card p-8 border border-border/50">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2 flex-1">
+            <h1 className="text-4xl font-serif font-light text-foreground tracking-tight">
               {user.firstName && user.lastName
                 ? `${user.firstName} ${user.lastName}`
                 : user.email}
             </h1>
             {profile?.specialty && (
-              <p className="text-lg text-muted-foreground capitalize">
+              <p className="text-lg text-muted-foreground font-light capitalize">
                 {profile.specialty}
+              </p>
+            )}
+            {profile?.license && (
+              <p className="text-sm text-muted-foreground font-light">
+                License: {profile.license}
               </p>
             )}
           </div>
@@ -143,36 +141,39 @@ export default function ProfessionalDetailPage() {
                   ? "secondary"
                   : "destructive"
             }
-            className="text-sm px-3 py-1"
+            className="text-sm px-4 py-1.5 font-light tracking-wide capitalize"
           >
             {user.status || "Unknown"}
           </Badge>
         </div>
       </div>
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="basic">Basic Information</TabsTrigger>
-          <TabsTrigger value="profile">Profile Details</TabsTrigger>
-          <TabsTrigger value="stats">Statistics</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-muted/30">
+          <TabsTrigger value="basic" className="font-light">
+            Basic Information
+          </TabsTrigger>
+          <TabsTrigger value="profile" className="font-light">
+            Profile Details
+          </TabsTrigger>
+          <TabsTrigger value="schedule" className="font-light">
+            Schedule
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="basic" className="space-y-6">
+        <TabsContent value="basic" className="space-y-6 mt-6">
           <BasicInformation user={user} isEditable={false} />
         </TabsContent>
 
-        <TabsContent value="profile" className="space-y-6">
+        <TabsContent value="profile" className="space-y-6 mt-6">
           <ProfessionalProfile profile={profile || undefined} />
         </TabsContent>
 
-        <TabsContent value="stats" className="space-y-6">
-          <div className="rounded-xl bg-card p-6">
-            <h2 className="text-xl font-serif font-light text-foreground mb-6">
-              Statistics
-            </h2>
-            <p className="text-muted-foreground">
-              Statistics content coming soon...
-            </p>
-          </div>
+        <TabsContent value="schedule" className="space-y-6 mt-6">
+          <AvailabilitySchedule
+            profile={profile}
+            setProfile={setProfile}
+            isEditable={false}
+          />
         </TabsContent>
       </Tabs>
     </div>

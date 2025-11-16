@@ -204,99 +204,136 @@ const AvailabilitySchedule = ({
         <h3 className="text-base font-serif font-light text-foreground mb-4">
           {tSchedule("sessionSettings")}
         </h3>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <Label htmlFor="sessionDuration" className="font-light mb-2">
-              {tSchedule("defaultDuration")}
-            </Label>
-            <Select
-              value={sessionDuration}
-              onValueChange={setSessionDuration}
-              disabled={!isScheduleEditable}
-            >
-              <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="30">30 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="45">45 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="60">60 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="90">90 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="120">120 {tSchedule("minutes")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {isScheduleEditable ? (
+          <div className="grid gap-4 md:grid-cols-3">
+            <div>
+              <Label htmlFor="sessionDuration" className="font-light mb-2">
+                {tSchedule("defaultDuration")}
+              </Label>
+              <Select
+                value={sessionDuration}
+                onValueChange={setSessionDuration}
+                disabled={!isScheduleEditable}
+              >
+                <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="30">30 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="45">45 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="60">60 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="90">90 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="120">
+                    120 {tSchedule("minutes")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <Label htmlFor="breakBetweenSessions" className="font-light mb-2">
-              {tSchedule("breakBetween")}
-            </Label>
-            <Select
-              value={breakBetweenSessions}
-              onValueChange={setBreakBetweenSessions}
-              disabled={!isScheduleEditable}
-            >
-              <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">{tSchedule("noBreak")}</SelectItem>
-                <SelectItem value="5">5 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="10">10 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="15">15 {tSchedule("minutes")}</SelectItem>
-                <SelectItem value="30">30 {tSchedule("minutes")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <Label htmlFor="breakBetweenSessions" className="font-light mb-2">
+                {tSchedule("breakBetween")}
+              </Label>
+              <Select
+                value={breakBetweenSessions}
+                onValueChange={setBreakBetweenSessions}
+                disabled={!isScheduleEditable}
+              >
+                <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">{tSchedule("noBreak")}</SelectItem>
+                  <SelectItem value="5">5 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="10">10 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="15">15 {tSchedule("minutes")}</SelectItem>
+                  <SelectItem value="30">30 {tSchedule("minutes")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <Label htmlFor="firstDayOfWeek" className="font-light mb-2">
-              {tSchedule("firstDayOfWeek")}
-            </Label>
-            <Select
-              value={profile?.availability?.firstDayOfWeek || "Monday"}
-              onValueChange={(value) => {
-                if (!profile) return;
-                const updatedProfile = {
-                  ...profile,
-                  availability: {
-                    ...profile.availability,
-                    firstDayOfWeek: value,
-                  },
-                } as IProfile;
-                setProfile(updatedProfile);
-              }}
-              disabled={!isScheduleEditable}
-            >
-              <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Monday">
-                  {tSchedule("days.monday")}
-                </SelectItem>
-                <SelectItem value="Tuesday">
-                  {tSchedule("days.tuesday")}
-                </SelectItem>
-                <SelectItem value="Wednesday">
-                  {tSchedule("days.wednesday")}
-                </SelectItem>
-                <SelectItem value="Thursday">
-                  {tSchedule("days.thursday")}
-                </SelectItem>
-                <SelectItem value="Friday">
-                  {tSchedule("days.friday")}
-                </SelectItem>
-                <SelectItem value="Saturday">
-                  {tSchedule("days.saturday")}
-                </SelectItem>
-                <SelectItem value="Sunday">
-                  {tSchedule("days.sunday")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div>
+              <Label htmlFor="firstDayOfWeek" className="font-light mb-2">
+                {tSchedule("firstDayOfWeek")}
+              </Label>
+              <Select
+                value={profile?.availability?.firstDayOfWeek || "Monday"}
+                onValueChange={(value) => {
+                  if (!profile) return;
+                  const updatedProfile = {
+                    ...profile,
+                    availability: {
+                      ...profile.availability,
+                      firstDayOfWeek: value,
+                    },
+                  } as IProfile;
+                  setProfile(updatedProfile);
+                }}
+                disabled={!isScheduleEditable}
+              >
+                <SelectTrigger className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Monday">
+                    {tSchedule("days.monday")}
+                  </SelectItem>
+                  <SelectItem value="Tuesday">
+                    {tSchedule("days.tuesday")}
+                  </SelectItem>
+                  <SelectItem value="Wednesday">
+                    {tSchedule("days.wednesday")}
+                  </SelectItem>
+                  <SelectItem value="Thursday">
+                    {tSchedule("days.thursday")}
+                  </SelectItem>
+                  <SelectItem value="Friday">
+                    {tSchedule("days.friday")}
+                  </SelectItem>
+                  <SelectItem value="Saturday">
+                    {tSchedule("days.saturday")}
+                  </SelectItem>
+                  <SelectItem value="Sunday">
+                    {tSchedule("days.sunday")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            <div>
+              <Label className="font-light mb-2 block">
+                {tSchedule("defaultDuration")}
+              </Label>
+              <p className="text-foreground text-sm">
+                {sessionDuration} {tSchedule("minutes")}
+              </p>
+            </div>
+
+            <div>
+              <Label className="font-light mb-2 block">
+                {tSchedule("breakBetween")}
+              </Label>
+              <p className="text-foreground text-sm">
+                {breakBetweenSessions === "0"
+                  ? tSchedule("noBreak")
+                  : `${breakBetweenSessions} ${tSchedule("minutes")}`}
+              </p>
+            </div>
+
+            <div>
+              <Label className="font-light mb-2 block">
+                {tSchedule("firstDayOfWeek")}
+              </Label>
+              <p className="text-foreground text-sm capitalize">
+                {tSchedule(
+                  `days.${(profile?.availability?.firstDayOfWeek || "Monday").toLowerCase()}`,
+                )}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Weekly Schedule */}
@@ -305,114 +342,153 @@ const AvailabilitySchedule = ({
           <h3 className="text-base font-serif font-light text-foreground">
             {tSchedule("weeklySchedule")}
           </h3>
-          <p className="text-sm text-muted-foreground font-light">
-            {tSchedule("setHours")}
-          </p>
+          {isScheduleEditable && (
+            <p className="text-sm text-muted-foreground font-light">
+              {tSchedule("setHours")}
+            </p>
+          )}
         </div>
 
-        <div className="space-y-3">
-          {orderedDays.map((dayName) => {
-            const day = currentSchedule.find((d) => d.day === dayName);
-            if (!day) return null;
-            const dayIndex = currentSchedule.indexOf(day);
-            return (
-              <div
-                key={day.day}
-                className={`rounded-lg p-3 transition-colors ${
-                  day.isWorkDay ? "bg-muted/30" : "bg-muted/10 opacity-60"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center pt-2">
-                    <input
-                      type="checkbox"
-                      id={day.day}
-                      checked={day.isWorkDay}
-                      onChange={() => toggleDay(dayIndex)}
-                      disabled={!isScheduleEditable}
-                      className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
-                    />
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <Label
-                        htmlFor={day.day}
-                        className="font-light text-sm text-foreground cursor-pointer"
-                      >
-                        {tSchedule(`days.${day.day.toLowerCase()}`)}
-                      </Label>
-                      {day.isWorkDay && isScheduleEditable && (
-                        <button
-                          onClick={() => copyToAllDays(dayIndex)}
-                          className="text-xs text-primary hover:text-primary/80 font-light"
-                        >
-                          {tSchedule("copyToAll")}
-                        </button>
-                      )}
+        {isScheduleEditable ? (
+          <div className="space-y-3">
+            {orderedDays.map((dayName) => {
+              const day = currentSchedule.find((d) => d.day === dayName);
+              if (!day) return null;
+              const dayIndex = currentSchedule.indexOf(day);
+              return (
+                <div
+                  key={day.day}
+                  className={`rounded-lg p-3 transition-colors ${
+                    day.isWorkDay ? "bg-muted/30" : "bg-muted/10 opacity-60"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex items-center pt-2">
+                      <input
+                        type="checkbox"
+                        id={day.day}
+                        checked={day.isWorkDay}
+                        onChange={() => toggleDay(dayIndex)}
+                        disabled={!isScheduleEditable}
+                        className="h-4 w-4 text-primary focus:ring-primary border-border/20 rounded"
+                      />
                     </div>
 
-                    {day.isWorkDay && (
-                      <div className="flex items-center gap-2 bg-background/50 rounded-lg p-2">
-                        <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
-
-                        <div className="flex items-center gap-2 flex-1">
-                          <Select
-                            value={day.startTime}
-                            onValueChange={(value) =>
-                              updateTime(dayIndex, "startTime", value)
-                            }
-                            disabled={!isScheduleEditable}
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label
+                          htmlFor={day.day}
+                          className="font-light text-sm text-foreground cursor-pointer"
+                        >
+                          {tSchedule(`days.${day.day.toLowerCase()}`)}
+                        </Label>
+                        {day.isWorkDay && isScheduleEditable && (
+                          <button
+                            onClick={() => copyToAllDays(dayIndex)}
+                            className="text-xs text-primary hover:text-primary/80 font-light"
                           >
-                            <SelectTrigger className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIME_OPTIONS.map((time) => (
-                                <SelectItem key={time} value={time}>
-                                  {time}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          <span className="text-muted-foreground text-xs">
-                            {tSchedule("to")}
-                          </span>
-
-                          <Select
-                            value={day.endTime}
-                            onValueChange={(value) =>
-                              updateTime(dayIndex, "endTime", value)
-                            }
-                            disabled={!isScheduleEditable}
-                          >
-                            <SelectTrigger className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIME_OPTIONS.map((time) => (
-                                <SelectItem key={time} value={time}>
-                                  {time}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                            {tSchedule("copyToAll")}
+                          </button>
+                        )}
                       </div>
-                    )}
 
-                    {!day.isWorkDay && (
-                      <p className="text-xs text-muted-foreground font-light">
+                      {day.isWorkDay && (
+                        <div className="flex items-center gap-2 bg-background/50 rounded-lg p-2">
+                          <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
+
+                          <div className="flex items-center gap-2 flex-1">
+                            <Select
+                              value={day.startTime}
+                              onValueChange={(value) =>
+                                updateTime(dayIndex, "startTime", value)
+                              }
+                              disabled={!isScheduleEditable}
+                            >
+                              <SelectTrigger className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {TIME_OPTIONS.map((time) => (
+                                  <SelectItem key={time} value={time}>
+                                    {time}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+
+                            <span className="text-muted-foreground text-xs">
+                              {tSchedule("to")}
+                            </span>
+
+                            <Select
+                              value={day.endTime}
+                              onValueChange={(value) =>
+                                updateTime(dayIndex, "endTime", value)
+                              }
+                              disabled={!isScheduleEditable}
+                            >
+                              <SelectTrigger className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {TIME_OPTIONS.map((time) => (
+                                  <SelectItem key={time} value={time}>
+                                    {time}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      )}
+
+                      {!day.isWorkDay && (
+                        <p className="text-xs text-muted-foreground font-light">
+                          {tSchedule("unavailable")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {orderedDays.map((dayName) => {
+              const day = currentSchedule.find((d) => d.day === dayName);
+              if (!day) return null;
+              return (
+                <div
+                  key={day.day}
+                  className={`rounded-lg p-4 transition-colors ${
+                    day.isWorkDay
+                      ? "bg-primary/5 border border-primary/10"
+                      : "bg-muted/20"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-foreground">
+                      {tSchedule(`days.${day.day.toLowerCase()}`)}
+                    </span>
+                    {day.isWorkDay ? (
+                      <div className="flex items-center gap-2 text-sm text-foreground">
+                        <Clock className="h-4 w-4 text-primary" />
+                        <span>
+                          {day.startTime} {tSchedule("to")} {day.endTime}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground font-light italic">
                         {tSchedule("unavailable")}
-                      </p>
+                      </span>
                     )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
