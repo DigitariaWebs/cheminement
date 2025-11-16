@@ -5,7 +5,7 @@ import {
   Search,
   Filter,
   UserPlus,
-  MoreVertical,
+  Eye,
   CheckCircle2,
   XCircle,
   AlertCircle,
@@ -20,12 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Link from "next/link";
 
 type PatientStatus = "active" | "pending" | "inactive";
 
@@ -297,45 +301,49 @@ export default function PatientsPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/30">
-              <tr>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Name
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Contact
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Issue Type
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Status
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Matched With
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Sessions
-                </th>
-                <th className="text-left p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Joined
-                </th>
-                <th className="text-right p-4 text-sm font-light text-muted-foreground">
+                </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {patients.map((patient) => (
-                <tr
+                <TableRow
                   key={patient.id}
-                  className="border-t border-border/40 hover:bg-muted/20 transition-colors"
+                  className="hover:bg-muted/20 transition-colors"
                 >
-                  <td className="p-4">
-                    <p className="font-light text-foreground">{patient.name}</p>
-                  </td>
-                  <td className="p-4">
+                  <TableCell>
+                    <div>
+                      <p className="font-light text-foreground">
+                        {patient.name}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <div>
                       <p className="text-sm font-light text-foreground">
                         {patient.email}
@@ -344,50 +352,29 @@ export default function PatientsPage() {
                         {patient.phone}
                       </p>
                     </div>
-                  </td>
-                  <td className="p-4 text-sm font-light text-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-foreground">
                     {patient.issueType}
-                  </td>
-                  <td className="p-4">{getStatusBadge(patient.status)}</td>
-                  <td className="p-4 text-sm font-light text-muted-foreground">
+                  </TableCell>
+                  <TableCell>{getStatusBadge(patient.status)}</TableCell>
+                  <TableCell className="text-sm font-light text-muted-foreground">
                     {patient.matchedWith || "-"}
-                  </td>
-                  <td className="p-4 text-sm font-light text-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-foreground">
                     {patient.totalSessions}
-                  </td>
-                  <td className="p-4 text-sm font-light text-muted-foreground">
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-muted-foreground">
                     {new Date(patient.joinedDate).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                        {patient.status === "pending" && (
-                          <DropdownMenuItem>
-                            Assign Professional
-                          </DropdownMenuItem>
-                        )}
-                        {patient.status === "active" && (
-                          <DropdownMenuItem>
-                            Change Professional
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem className="text-destructive">
-                          Deactivate
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="text-sm font-light text-muted-foreground">
+                    <Link href={`/admin/dashboard/patients/${patient.id}`}>
+                      <Eye className="h-4 w-4 mr-2" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
 
           {patients.length === 0 && (
             <div className="p-12 text-center">
