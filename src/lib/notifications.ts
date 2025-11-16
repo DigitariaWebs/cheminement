@@ -348,17 +348,11 @@ export async function sendCancellationNotification(
 ): Promise<boolean> {
   const formattedDate = formatEmailDate(data.date);
   const recipientEmail =
-    data.cancelledBy === "client"
-      ? data.professionalEmail
-      : data.clientEmail;
+    data.cancelledBy === "client" ? data.professionalEmail : data.clientEmail;
   const recipientName =
-    data.cancelledBy === "client"
-      ? data.professionalName
-      : data.clientName;
+    data.cancelledBy === "client" ? data.professionalName : data.clientName;
   const cancellerName =
-    data.cancelledBy === "client"
-      ? data.clientName
-      : data.professionalName;
+    data.cancelledBy === "client" ? data.clientName : data.professionalName;
 
   const html = `
     <!DOCTYPE html>

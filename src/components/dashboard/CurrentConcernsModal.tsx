@@ -84,7 +84,9 @@ export default function CurrentConcernsModal({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -96,7 +98,9 @@ export default function CurrentConcernsModal({
   const handleSubmit = async (data: CurrentConcernsData) => {
     try {
       const updatedProfile = { ...profile, ...data };
-      const newProfile = (await medicalProfileAPI.update(updatedProfile)) as IMedicalProfile;
+      const newProfile = (await medicalProfileAPI.update(
+        updatedProfile,
+      )) as IMedicalProfile;
       setMedicalProfile(newProfile);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -131,7 +135,10 @@ export default function CurrentConcernsModal({
         <div className="px-6 py-8">
           <div className="space-y-6">
             <div>
-              <Label htmlFor="primaryIssue" className="font-light mb-3 text-base">
+              <Label
+                htmlFor="primaryIssue"
+                className="font-light mb-3 text-base"
+              >
                 {t("step3.primaryIssue")}
                 <span className="text-primary ml-1">*</span>
               </Label>
@@ -170,7 +177,10 @@ export default function CurrentConcernsModal({
             </div>
 
             <div>
-              <Label htmlFor="issueDescription" className="font-light mb-3 text-base">
+              <Label
+                htmlFor="issueDescription"
+                className="font-light mb-3 text-base"
+              >
                 {t("step3.issueDescription")}
               </Label>
               <textarea
@@ -224,7 +234,10 @@ export default function CurrentConcernsModal({
               </div>
 
               <div>
-                <Label htmlFor="triggeringSituation" className="font-light mb-3 text-base">
+                <Label
+                  htmlFor="triggeringSituation"
+                  className="font-light mb-3 text-base"
+                >
                   {t("step3.triggeringSituation")}
                 </Label>
                 <Input

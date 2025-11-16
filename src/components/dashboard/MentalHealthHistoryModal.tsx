@@ -92,7 +92,9 @@ export default function MentalHealthHistoryModal({
   const handleSubmit = async (data: MentalHealthHistoryData) => {
     try {
       const updatedProfile = { ...profile, ...data };
-      const newProfile = (await medicalProfileAPI.update(updatedProfile)) as IMedicalProfile;
+      const newProfile = (await medicalProfileAPI.update(
+        updatedProfile,
+      )) as IMedicalProfile;
       setMedicalProfile(newProfile);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -206,7 +208,10 @@ export default function MentalHealthHistoryModal({
 
             {formData.previousTherapy && (
               <div>
-                <Label htmlFor="previousTherapyDetails" className="font-light mb-3 text-base">
+                <Label
+                  htmlFor="previousTherapyDetails"
+                  className="font-light mb-3 text-base"
+                >
                   {t("step2.previousTherapyDetails")}
                 </Label>
                 <textarea
@@ -222,7 +227,10 @@ export default function MentalHealthHistoryModal({
             )}
 
             <div>
-              <Label htmlFor="currentTreatment" className="font-light mb-3 text-base">
+              <Label
+                htmlFor="currentTreatment"
+                className="font-light mb-3 text-base"
+              >
                 {t("step2.currentTreatment")}
               </Label>
               <Input

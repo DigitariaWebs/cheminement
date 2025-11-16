@@ -109,7 +109,9 @@ export default function BookAppointmentModal({
     setLoadingSlots(true);
     setError("");
     try {
-      const response = await apiClient.get<AvailabilityData & { message?: string }>(
+      const response = await apiClient.get<
+        AvailabilityData & { message?: string }
+      >(
         `/appointments/available-slots?professionalId=${professionalId}&date=${selectedDate}`,
       );
 

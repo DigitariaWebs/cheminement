@@ -65,7 +65,9 @@ export async function GET(req: NextRequest) {
 
     // Log warning if there are invalid admin records
     if (validAdmins.length !== admins.length) {
-      console.warn(`Found ${admins.length - validAdmins.length} admin records with null userId references`);
+      console.warn(
+        `Found ${admins.length - validAdmins.length} admin records with null userId references`,
+      );
     }
 
     const adminData = validAdmins.map((admin) => ({

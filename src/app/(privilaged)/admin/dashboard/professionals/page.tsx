@@ -127,19 +127,23 @@ export default function ProfessionalsPage() {
 
     // Professionals data
     csvContent += "Professional Details\n";
-    csvContent += "ID,Name,Email,Specialty,License,Status,Clients,Sessions,Joined Date\n";
+    csvContent +=
+      "ID,Name,Email,Specialty,License,Status,Clients,Sessions,Joined Date\n";
 
-    professionals.forEach(professional => {
+    professionals.forEach((professional) => {
       csvContent += `${professional.id},"${professional.name}","${professional.email}","${professional.specialty}","${professional.license}","${professional.status}",${professional.totalClients},${professional.totalSessions},"${new Date(professional.joinedDate).toLocaleDateString()}"\n`;
     });
 
     // Create and download the file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `professionals-data-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `professionals-data-${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -41,8 +41,7 @@ export async function POST(
     if (!date || !time || !type || !professionalId) {
       return NextResponse.json(
         {
-          error:
-            "Missing required fields: date, time, type, professionalId",
+          error: "Missing required fields: date, time, type, professionalId",
         },
         { status: 400 },
       );
@@ -52,10 +51,7 @@ export async function POST(
     const request = await Request.findById(id);
 
     if (!request) {
-      return NextResponse.json(
-        { error: "Request not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Request not found" }, { status: 404 });
     }
 
     // Verify the professional
@@ -122,10 +118,7 @@ export async function POST(
       }
 
       // Validate time is within working hours
-      if (
-        time < dayAvailability.startTime ||
-        time >= dayAvailability.endTime
-      ) {
+      if (time < dayAvailability.startTime || time >= dayAvailability.endTime) {
         return NextResponse.json(
           {
             error: `Time slot outside of working hours (${dayAvailability.startTime} - ${dayAvailability.endTime})`,

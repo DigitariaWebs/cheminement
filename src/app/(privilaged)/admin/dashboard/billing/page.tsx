@@ -161,19 +161,23 @@ export default function AdminBillingPage() {
 
     // Payments section
     csvContent += "Payment Transactions\n";
-    csvContent += "Invoice ID,Client,Professional,Session Date,Amount,Platform Fee,Professional Payout,Status,Payment Method,Paid Date\n";
+    csvContent +=
+      "Invoice ID,Client,Professional,Session Date,Amount,Platform Fee,Professional Payout,Status,Payment Method,Paid Date\n";
 
-    payments.forEach(payment => {
-      csvContent += `${payment.sessionId},"${payment.client}","${payment.professional}",${payment.sessionDate},${payment.amount.toFixed(2)},${payment.platformFee.toFixed(2)},${payment.professionalPayout.toFixed(2)},${payment.status},${payment.paymentMethod || ''},${payment.paidDate || ''}\n`;
+    payments.forEach((payment) => {
+      csvContent += `${payment.sessionId},"${payment.client}","${payment.professional}",${payment.sessionDate},${payment.amount.toFixed(2)},${payment.platformFee.toFixed(2)},${payment.professionalPayout.toFixed(2)},${payment.status},${payment.paymentMethod || ""},${payment.paidDate || ""}\n`;
     });
 
     // Create and download the file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `billing-report-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `billing-report-${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

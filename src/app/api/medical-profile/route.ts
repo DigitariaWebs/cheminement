@@ -14,10 +14,15 @@ export async function GET() {
 
     await connectToDatabase();
 
-    const medicalProfile = await MedicalProfile.findOne({ userId: session.user.id });
+    const medicalProfile = await MedicalProfile.findOne({
+      userId: session.user.id,
+    });
 
     if (!medicalProfile) {
-      return NextResponse.json({ error: "Medical profile not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Medical profile not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(medicalProfile);

@@ -127,7 +127,9 @@ export default function AddPatientModal({
                   id="firstName"
                   type="text"
                   value={formData.firstName}
-                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
                   required
                   disabled={isLoading}
                   className="font-light"
@@ -141,7 +143,9 @@ export default function AddPatientModal({
                   id="lastName"
                   type="text"
                   value={formData.lastName}
-                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
                   required
                   disabled={isLoading}
                   className="font-light"
@@ -178,7 +182,9 @@ export default function AddPatientModal({
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   required
                   disabled={isLoading}
                   className="pl-10 font-light"
@@ -216,7 +222,9 @@ export default function AddPatientModal({
                   id="location"
                   type="text"
                   value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
                   disabled={isLoading}
                   className="pl-10 font-light"
                   placeholder="City, State/Country"

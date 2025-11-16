@@ -141,7 +141,7 @@ export default function PatientsPage() {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `patients-data-${new Date().toISOString().split("T")[0]}.csv`
+      `patients-data-${new Date().toISOString().split("T")[0]}.csv`,
     );
     link.style.visibility = "hidden";
     document.body.appendChild(link);

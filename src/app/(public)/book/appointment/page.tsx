@@ -70,7 +70,9 @@ export default function BookAppointmentPage() {
   const [selectedProfessional, setSelectedProfessional] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [selectedType, setSelectedType] = useState<"video" | "in-person" | "phone">("video");
+  const [selectedType, setSelectedType] = useState<
+    "video" | "in-person" | "phone"
+  >("video");
   const [issueType, setIssueType] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
 
@@ -78,7 +80,8 @@ export default function BookAppointmentPage() {
   const [loading, setLoading] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
-  const [availabilityData, setAvailabilityData] = useState<AvailabilityData | null>(null);
+  const [availabilityData, setAvailabilityData] =
+    useState<AvailabilityData | null>(null);
   const [error, setError] = useState<string>("");
 
   // Load professionals on mount
@@ -89,7 +92,9 @@ export default function BookAppointmentPage() {
   const loadProfessionals = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get<Professional[]>("/users?role=professional");
+      const data = await apiClient.get<Professional[]>(
+        "/users?role=professional",
+      );
       setProfessionals(data);
     } catch (err: any) {
       console.error("Error loading professionals:", err);
@@ -111,12 +116,12 @@ export default function BookAppointmentPage() {
       if (date.getDay() === 0 || date.getDay() === 6) continue;
 
       dates.push({
-        value: date.toISOString().split('T')[0],
-        label: date.toLocaleDateString('en-US', {
-          weekday: 'long',
-          month: 'short',
-          day: 'numeric'
-        })
+        value: date.toISOString().split("T")[0],
+        label: date.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+        }),
       });
     }
 
@@ -130,7 +135,9 @@ export default function BookAppointmentPage() {
       setLoadingSlots(true);
       setError("");
 
-      const response = await apiClient.get<AvailabilityData & { message?: string }>(
+      const response = await apiClient.get<
+        AvailabilityData & { message?: string }
+      >(
         `/appointments/available-slots?professionalId=${selectedProfessional}&date=${selectedDate}`,
       );
 
@@ -179,7 +186,13 @@ export default function BookAppointmentPage() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedProfessional || !selectedDate || !selectedTime || !selectedType || !issueType) {
+    if (
+      !selectedProfessional ||
+      !selectedDate ||
+      !selectedTime ||
+      !selectedType ||
+      !issueType
+    ) {
       setError("Please fill in all required fields");
       return;
     }
@@ -234,7 +247,9 @@ export default function BookAppointmentPage() {
     }
   };
 
-  const selectedProfessionalData = professionals.find(p => p._id === selectedProfessional);
+  const selectedProfessionalData = professionals.find(
+    (p) => p._id === selectedProfessional,
+  );
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted/20">
@@ -267,15 +282,11 @@ export default function BookAppointmentPage() {
                     completedSteps.includes(step) || currentStep > step
                       ? "bg-primary text-primary-foreground"
                       : currentStep === step
-                      ? "bg-primary/20 text-primary border-2 border-primary"
-                      : "bg-muted text-muted-foreground"
+                        ? "bg-primary/20 text-primary border-2 border-primary"
+                        : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {step === 4 ? (
-                    <CheckCircle2 className="h-5 w-5" />
-                  ) : (
-                    step
-                  )}
+                  {step === 4 ? <CheckCircle2 className="h-5 w-5" /> : step}
                 </div>
                 {step < 4 && (
                   <div
@@ -288,16 +299,24 @@ export default function BookAppointmentPage() {
             ))}
           </div>
           <div className="flex justify-center mt-4 space-x-16 text-sm text-muted-foreground">
-            <span className={currentStep >= 1 ? "text-foreground font-medium" : ""}>
+            <span
+              className={currentStep >= 1 ? "text-foreground font-medium" : ""}
+            >
               Choose Professional
             </span>
-            <span className={currentStep >= 2 ? "text-foreground font-medium" : ""}>
+            <span
+              className={currentStep >= 2 ? "text-foreground font-medium" : ""}
+            >
               Select Date & Time
             </span>
-            <span className={currentStep >= 3 ? "text-foreground font-medium" : ""}>
+            <span
+              className={currentStep >= 3 ? "text-foreground font-medium" : ""}
+            >
               Appointment Details
             </span>
-            <span className={currentStep >= 4 ? "text-foreground font-medium" : ""}>
+            <span
+              className={currentStep >= 4 ? "text-foreground font-medium" : ""}
+            >
               Confirmation
             </span>
           </div>
@@ -338,7 +357,8 @@ export default function BookAppointmentPage() {
                             {professional.firstName} {professional.lastName}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {professional.specialty || "Mental Health Professional"}
+                            {professional.specialty ||
+                              "Mental Health Professional"}
                           </p>
                         </div>
                       </div>
@@ -370,7 +390,8 @@ export default function BookAppointmentPage() {
               </h2>
               {selectedProfessionalData && (
                 <p className="text-muted-foreground mt-2">
-                  Booking with {selectedProfessionalData.firstName} {selectedProfessionalData.lastName}
+                  Booking with {selectedProfessionalData.firstName}{" "}
+                  {selectedProfessionalData.lastName}
                 </p>
               )}
             </div>
@@ -426,7 +447,8 @@ export default function BookAppointmentPage() {
 
                   {availabilityData && (
                     <p className="text-xs text-muted-foreground">
-                      Working hours: {availabilityData.workingHours.start} - {availabilityData.workingHours.end}
+                      Working hours: {availabilityData.workingHours.start} -{" "}
+                      {availabilityData.workingHours.end}
                     </p>
                   )}
                 </div>
@@ -439,7 +461,9 @@ export default function BookAppointmentPage() {
         {currentStep === 3 && (
           <div className="max-w-2xl mx-auto rounded-xl bg-card border border-border/40">
             <div className="p-6 border-b border-border/40">
-              <h2 className="text-xl font-serif font-light text-foreground">Appointment Details</h2>
+              <h2 className="text-xl font-serif font-light text-foreground">
+                Appointment Details
+              </h2>
             </div>
             <div className="p-6 space-y-6">
               {/* Session Type */}
@@ -486,7 +510,9 @@ export default function BookAppointmentPage() {
                     <SelectItem value="Anxiety">Anxiety</SelectItem>
                     <SelectItem value="Depression">Depression</SelectItem>
                     <SelectItem value="Stress">Stress Management</SelectItem>
-                    <SelectItem value="Relationships">Relationship Issues</SelectItem>
+                    <SelectItem value="Relationships">
+                      Relationship Issues
+                    </SelectItem>
                     <SelectItem value="Trauma">Trauma</SelectItem>
                     <SelectItem value="Self-Esteem">Self-Esteem</SelectItem>
                     <SelectItem value="Career">Career Counseling</SelectItem>
@@ -513,7 +539,12 @@ export default function BookAppointmentPage() {
                   <div className="flex items-center justify-between">
                     <span className="font-medium">Session Price</span>
                     <span className="text-lg font-semibold">
-                      ${availabilityData.professionalInfo.pricing.individualSession} CAD
+                      $
+                      {
+                        availabilityData.professionalInfo.pricing
+                          .individualSession
+                      }{" "}
+                      CAD
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
@@ -550,10 +581,14 @@ export default function BookAppointmentPage() {
                 Appointment Booked Successfully!
               </h2>
               <p className="text-muted-foreground mb-6">
-                Your appointment has been scheduled. You'll receive a confirmation email shortly.
+                Your appointment has been scheduled. You'll receive a
+                confirmation email shortly.
               </p>
               <div className="space-y-4">
-                <Button onClick={() => router.push("/client/dashboard")} className="gap-2">
+                <Button
+                  onClick={() => router.push("/client/dashboard")}
+                  className="gap-2"
+                >
                   <User className="h-4 w-4" />
                   View My Appointments
                 </Button>

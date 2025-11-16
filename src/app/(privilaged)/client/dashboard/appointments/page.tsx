@@ -63,7 +63,7 @@ export default function ClientAppointmentsPage() {
   const [cancelingId, setCancelingId] = useState<string | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(
-    null
+    null,
   );
   const t = useTranslations("Client.appointments");
   const router = useRouter();
@@ -290,7 +290,7 @@ export default function ClientAppointmentsPage() {
                         </span>
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${getStatusColor(
-                            appointment.status
+                            appointment.status,
                           )}`}
                         >
                           {appointment.status}

@@ -465,7 +465,8 @@ export default function SchedulePage() {
                             key={appointment._id}
                             className="bg-primary/10 rounded px-2 py-1 text-xs font-light truncate"
                           >
-                            {appointment.time} {appointment.clientId.firstName} {appointment.clientId.lastName}
+                            {appointment.time} {appointment.clientId.firstName}{" "}
+                            {appointment.clientId.lastName}
                           </div>
                         ))}
                     {showRequests &&

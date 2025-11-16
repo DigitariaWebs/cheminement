@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     if (!data.professionalId || !data.date || !data.time || !data.type) {
       return NextResponse.json(
         { error: "Missing required fields: professionalId, date, time, type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     if (!professional) {
       return NextResponse.json(
         { error: "Professional not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     if (!profile) {
       return NextResponse.json(
         { error: "Professional profile not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     if (appointmentDate < today) {
       return NextResponse.json(
         { error: "Cannot book appointments in the past" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -127,13 +127,13 @@ export async function POST(req: NextRequest) {
         weekday: "long",
       });
       const dayAvailability = profile.availability.days.find(
-        (d) => d.day === dayOfWeek
+        (d) => d.day === dayOfWeek,
       );
 
       if (!dayAvailability || !dayAvailability.isWorkDay) {
         return NextResponse.json(
           { error: `Professional is not available on ${dayOfWeek}s` },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
           {
             error: `Time slot outside of working hours (${dayAvailability.startTime} - ${dayAvailability.endTime})`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
     if (existingAppointment) {
       return NextResponse.json(
         { error: "This time slot is already booked" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
     if (!populatedAppointment) {
       return NextResponse.json(
         { error: "Appointment created but not found" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 

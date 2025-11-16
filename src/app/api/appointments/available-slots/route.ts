@@ -98,8 +98,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate all possible time slots
-    const sessionDuration =
-      profile.availability.sessionDurationMinutes || 60;
+    const sessionDuration = profile.availability.sessionDurationMinutes || 60;
     const breakDuration = profile.availability.breakDurationMinutes || 15;
 
     const allSlots = generateTimeSlots(
@@ -117,9 +116,7 @@ export async function GET(req: NextRequest) {
     }).select("time duration");
 
     // Filter out booked slots
-    const bookedTimes = new Set(
-      existingAppointments.map((apt) => apt.time),
-    );
+    const bookedTimes = new Set(existingAppointments.map((apt) => apt.time));
 
     const availableSlots = allSlots
       .filter((slot) => !bookedTimes.has(slot))

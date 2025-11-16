@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { X, UserPlus, Mail, Phone, MapPin, Lock, Briefcase } from "lucide-react";
+import {
+  X,
+  UserPlus,
+  Mail,
+  Phone,
+  MapPin,
+  Lock,
+  Briefcase,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -142,7 +150,9 @@ export default function AddProfessionalModal({
                   id="firstName"
                   type="text"
                   value={formData.firstName}
-                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
                   required
                   disabled={isLoading}
                   className="font-light"
@@ -156,7 +166,9 @@ export default function AddProfessionalModal({
                   id="lastName"
                   type="text"
                   value={formData.lastName}
-                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
                   required
                   disabled={isLoading}
                   className="font-light"
@@ -193,7 +205,9 @@ export default function AddProfessionalModal({
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   required
                   disabled={isLoading}
                   className="pl-10 font-light"
@@ -231,7 +245,9 @@ export default function AddProfessionalModal({
                   id="location"
                   type="text"
                   value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
                   disabled={isLoading}
                   className="pl-10 font-light"
                   placeholder="City, State/Country"
@@ -252,7 +268,9 @@ export default function AddProfessionalModal({
                   id="specialty"
                   type="text"
                   value={formData.specialty}
-                  onChange={(e) => handleInputChange("specialty", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("specialty", e.target.value)
+                  }
                   disabled={isLoading}
                   className="pl-10 font-light"
                   placeholder="e.g., Clinical Psychologist"
