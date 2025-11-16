@@ -13,6 +13,7 @@ interface ProfileCompletionModalProps {
   isOpen: boolean;
   onClose: () => void;
   setProfessionalProfile: (data: IProfile) => void;
+  profile?: IProfile;
 }
 
 export interface ProfileData {
@@ -28,6 +29,7 @@ export default function ProfileCompletionModal({
   isOpen,
   onClose,
   setProfessionalProfile,
+  profile,
 }: ProfileCompletionModalProps) {
   const t = useTranslations("Dashboard.profileModal");
   const [currentStep, setCurrentStep] = useState(0);
@@ -43,12 +45,12 @@ export default function ProfileCompletionModal({
   ];
 
   const [formData, setFormData] = useState<ProfileData>({
-    problematics: [],
-    approaches: [],
-    ageCategories: [],
-    skills: [],
-    bio: "",
-    yearsOfExperience: "",
+    problematics: profile?.problematics || [],
+    approaches: profile?.approaches || [],
+    ageCategories: profile?.ageCategories || [],
+    skills: profile?.skills || [],
+    bio: profile?.bio || "",
+    yearsOfExperience: profile?.yearsOfExperience?.toString() || "",
   });
 
   const problematics = [
