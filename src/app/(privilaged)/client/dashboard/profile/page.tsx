@@ -19,7 +19,9 @@ export default function ClientProfilePage() {
   const fetchProfile = async () => {
     try {
       const profileData = await profileAPI.get();
-      setProfile(profileData as Profile);
+      if (profileData) {
+        setProfile(profileData as Profile);
+      }
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {

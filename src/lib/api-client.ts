@@ -111,7 +111,16 @@ export const authAPI = {
 
 // Profile
 export const profileAPI = {
-  get: () => apiClient.get("/profile"),
+  get: async () => {
+    try {
+      return await apiClient.get("/profile");
+    } catch (error: any) {
+      if (error.message === "Profile not found") {
+        return null;
+      }
+      throw error;
+    }
+  },
   getById: (id: string) => apiClient.get(`/profile/${id}`),
   update: (data: any) => apiClient.put("/profile", data),
 };

@@ -174,7 +174,6 @@ export const ADMIN_ROLE_PERMISSIONS: Record<AdminRole, IAdminPermissions> = {
 };
 
 // Indexes for better query performance
-AdminSchema.index({ userId: 1 });
 AdminSchema.index({ role: 1 });
 AdminSchema.index({ isActive: 1 });
 

@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
+import Profile from "@/models/Profile";
+import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
+import {
+  sendAppointmentConfirmation,
+  sendProfessionalNotification,
+} from "@/lib/notifications";
 
 export async function GET(req: NextRequest) {
   try {
@@ -71,12 +77,143 @@ export async function POST(req: NextRequest) {
       data.clientId = session.user.id;
     }
 
+    // Validate required fields
+    if (!data.professionalId || !data.date || !data.time || !data.type) {
+      return NextResponse.json(
+        { error: "Missing required fields: professionalId, date, time, type" },
+        { status: 400 }
+      );
+    }
+
+    // Verify professional exists and is active
+    const professional = await User.findOne({
+      _id: data.professionalId,
+      role: "professional",
+      status: { $in: ["active", "pending"] },
+    });
+
+    if (!professional) {
+      return NextResponse.json(
+        { error: "Professional not found" },
+        { status: 404 }
+      );
+    }
+
+    // Get professional's profile for availability and pricing
+    const profile = await Profile.findOne({ userId: data.professionalId });
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: "Professional profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Validate date is not in the past
+    const appointmentDate = new Date(data.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (appointmentDate < today) {
+      return NextResponse.json(
+        { error: "Cannot book appointments in the past" },
+        { status: 400 }
+      );
+    }
+
+    // Check if professional is available on the requested day
+    if (profile.availability?.days) {
+      const dayOfWeek = appointmentDate.toLocaleDateString("en-US", {
+        weekday: "long",
+      });
+      const dayAvailability = profile.availability.days.find(
+        (d) => d.day === dayOfWeek
+      );
+
+      if (!dayAvailability || !dayAvailability.isWorkDay) {
+        return NextResponse.json(
+          { error: `Professional is not available on ${dayOfWeek}s` },
+          { status: 400 }
+        );
+      }
+
+      // Validate time is within working hours
+      const requestedTime = data.time;
+      if (
+        requestedTime < dayAvailability.startTime ||
+        requestedTime >= dayAvailability.endTime
+      ) {
+        return NextResponse.json(
+          {
+            error: `Time slot outside of working hours (${dayAvailability.startTime} - ${dayAvailability.endTime})`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Check for double-booking
+    const existingAppointment = await Appointment.findOne({
+      professionalId: data.professionalId,
+      date: appointmentDate,
+      time: data.time,
+      status: { $in: ["scheduled"] },
+    });
+
+    if (existingAppointment) {
+      return NextResponse.json(
+        { error: "This time slot is already booked" },
+        { status: 409 }
+      );
+    }
+
+    // Set default duration from profile or default to 60 minutes
+    if (!data.duration) {
+      data.duration = profile.availability?.sessionDurationMinutes || 60;
+    }
+
+    // Generate meeting link for video appointments
+    if (data.type === "video" && !data.meetingLink) {
+      // In a real app, integrate with Zoom/Teams/etc API
+      data.meetingLink = `https://meet.jecheminement.com/${Date.now()}`;
+    }
+
     const appointment = new Appointment(data);
     await appointment.save();
 
     const populatedAppointment = await Appointment.findById(appointment._id)
       .populate("clientId", "firstName lastName email phone")
       .populate("professionalId", "firstName lastName email phone");
+
+    if (!populatedAppointment) {
+      return NextResponse.json(
+        { error: "Appointment created but not found" },
+        { status: 500 }
+      );
+    }
+
+    // Send email notifications (non-blocking)
+    const emailData = {
+      clientName: `${(populatedAppointment.clientId as any).firstName} ${(populatedAppointment.clientId as any).lastName}`,
+      clientEmail: (populatedAppointment.clientId as any).email,
+      professionalName: `${(populatedAppointment.professionalId as any).firstName} ${(populatedAppointment.professionalId as any).lastName}`,
+      professionalEmail: (populatedAppointment.professionalId as any).email,
+      date: data.date,
+      time: data.time,
+      duration: data.duration,
+      type: data.type,
+      meetingLink: data.meetingLink,
+      location: data.location,
+    };
+
+    // Send notifications without blocking the response
+    // Temporarily disabled for development/testing
+    /*
+    Promise.all([
+      sendAppointmentConfirmation(emailData),
+      sendProfessionalNotification(emailData),
+    ]).catch((err) => console.error("Error sending notifications:", err));
+    */
 
     return NextResponse.json(populatedAppointment, { status: 201 });
   } catch (error: any) {
