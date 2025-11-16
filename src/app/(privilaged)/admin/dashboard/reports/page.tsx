@@ -87,6 +87,63 @@ export default function ReportsPage() {
     setPeriod(newPeriod);
   };
 
+  const exportReport = () => {
+    if (!data) return;
+
+    const { metrics, revenueBreakdown, topIssueTypes, professionalPerformance } = data;
+
+    // Create CSV content
+    let csvContent = "Reports & Analytics Export\n";
+    csvContent += `Period: ${period.charAt(0).toUpperCase() + period.slice(1)}\n`;
+    csvContent += `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}\n\n`;
+
+    // Metrics section
+    csvContent += "Key Metrics\n";
+    csvContent += "Metric,Value,Change\n";
+    csvContent += `Total Revenue,$${metrics.totalRevenue.toLocaleString()},${metrics.revenueChange}%\n`;
+    csvContent += `Total Sessions,${metrics.totalSessions.toLocaleString()},${metrics.sessionsChange}%\n`;
+    csvContent += `Active Professionals,${metrics.activeProfessionals},${metrics.professionalsChange}%\n`;
+    csvContent += `Active Patients,${metrics.activePatients},${metrics.patientsChange}%\n\n`;
+
+    // Revenue breakdown
+    csvContent += "Revenue Breakdown\n";
+    csvContent += "Category,Amount,Percentage\n";
+    csvContent += `Session Fees,$${revenueBreakdown.sessionFees.toLocaleString()},${revenueBreakdown.total > 0 ? ((revenueBreakdown.sessionFees / revenueBreakdown.total) * 100).toFixed(1) : 0}%\n`;
+    if (revenueBreakdown.subscriptionPlans > 0) {
+      csvContent += `Subscription Plans,$${revenueBreakdown.subscriptionPlans.toLocaleString()},${revenueBreakdown.total > 0 ? ((revenueBreakdown.subscriptionPlans / revenueBreakdown.total) * 100).toFixed(1) : 0}%\n`;
+    }
+    if (revenueBreakdown.resourceSales > 0) {
+      csvContent += `Resource Sales,$${revenueBreakdown.resourceSales.toLocaleString()},${revenueBreakdown.total > 0 ? ((revenueBreakdown.resourceSales / revenueBreakdown.total) * 100).toFixed(1) : 0}%\n`;
+    }
+    csvContent += `Total,$${revenueBreakdown.total.toLocaleString()},100%\n\n`;
+
+    // Top issue types
+    csvContent += "Top Issue Types\n";
+    csvContent += "Issue Type,Sessions\n";
+    topIssueTypes.forEach(issue => {
+      csvContent += `${issue.type},${issue.sessions}\n`;
+    });
+    csvContent += "\n";
+
+    // Professional performance
+    csvContent += "Professional Performance\n";
+    csvContent += "Professional Name,Total Sessions,Active Clients,Revenue Generated,Avg Rating\n";
+    professionalPerformance.forEach(prof => {
+      csvContent += `${prof.name},${prof.totalSessions},${prof.activeClients},$${prof.revenueGenerated.toLocaleString()},${prof.avgRating.toFixed(1)}\n`;
+    });
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `reports-analytics-${period}-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -208,7 +265,7 @@ export default function ReportsPage() {
               <SelectItem value="year">This Year</SelectItem>
             </SelectContent>
           </Select>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={exportReport}>
             <Download className="h-4 w-4" />
             Export Report
           </Button>

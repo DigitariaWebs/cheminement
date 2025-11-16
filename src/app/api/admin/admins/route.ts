@@ -60,7 +60,15 @@ export async function GET(req: NextRequest) {
 
     const total = await Admin.countDocuments({ isActive: true });
 
-    const adminData = admins.map((admin) => ({
+    // Filter out admins with null userId to prevent errors
+    const validAdmins = admins.filter((admin) => admin.userId);
+
+    // Log warning if there are invalid admin records
+    if (validAdmins.length !== admins.length) {
+      console.warn(`Found ${admins.length - validAdmins.length} admin records with null userId references`);
+    }
+
+    const adminData = validAdmins.map((admin) => ({
       id: admin._id.toString(),
       userId: admin.userId._id.toString(),
       role: admin.role,
@@ -86,8 +94,8 @@ export async function GET(req: NextRequest) {
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit),
+        total: validAdmins.length, // Use actual valid count for pagination
+        pages: Math.ceil(validAdmins.length / limit),
       },
     });
   } catch (error: any) {

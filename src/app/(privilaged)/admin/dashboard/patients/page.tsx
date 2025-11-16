@@ -10,6 +10,7 @@ import {
   XCircle,
   AlertCircle,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,6 +106,47 @@ export default function PatientsPage() {
     activePatients: 0,
     pendingPatients: 0,
     totalSessions: 0,
+  };
+
+  const exportPatientsData = () => {
+    if (!data) return;
+
+    const { patients, summary } = data;
+
+    // Create CSV content
+    let csvContent = "Patients Data Export\n";
+    csvContent += `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}\n\n`;
+
+    // Summary section
+    csvContent += "Summary\n";
+    csvContent += "Metric,Value\n";
+    csvContent += `Total Patients,${summary.totalPatients}\n`;
+    csvContent += `Active Patients,${summary.activePatients}\n`;
+    csvContent += `Pending Patients,${summary.pendingPatients}\n`;
+    csvContent += `Total Sessions,${summary.totalSessions}\n\n`;
+
+    // Patients data
+    csvContent += "Patient Details\n";
+    csvContent +=
+      "ID,Name,Email,Phone,Issue Type,Status,Matched With,Sessions,Joined Date\n";
+
+    patients.forEach((patient) => {
+      csvContent += `${patient.id},"${patient.name}","${patient.email}","${patient.phone}","${patient.issueType}","${patient.status}","${patient.matchedWith || ""}",${patient.totalSessions},"${new Date(patient.joinedDate).toLocaleDateString()}"\n`;
+    });
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `patients-data-${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const getStatusBadge = (status: PatientStatus) => {
@@ -233,6 +275,10 @@ export default function PatientsPage() {
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
+          <Button className="gap-2" onClick={exportPatientsData}>
+            <Download className="h-4 w-4" />
+            Export Data
+          </Button>
           <Button className="gap-2" onClick={() => setIsAddModalOpen(true)}>
             <UserPlus className="h-4 w-4" />
             Add Patient

@@ -141,6 +141,44 @@ export default function AdminBillingPage() {
     });
   };
 
+  const exportBillingReport = () => {
+    if (!data) return;
+
+    const { payments, summary } = data;
+
+    // Create CSV content
+    let csvContent = "Billing Report Export\n";
+    csvContent += `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}\n\n`;
+
+    // Summary section
+    csvContent += "Summary\n";
+    csvContent += "Metric,Value\n";
+    csvContent += `Total Revenue,$${summary.totalRevenue.toFixed(2)}\n`;
+    csvContent += `Pending Revenue,$${summary.pendingRevenue.toFixed(2)}\n`;
+    csvContent += `Professional Payouts,$${summary.professionalPayouts.toFixed(2)}\n`;
+    csvContent += `Total Transactions,${summary.totalTransactions}\n`;
+    csvContent += `Overdue Count,${summary.overdueCount}\n\n`;
+
+    // Payments section
+    csvContent += "Payment Transactions\n";
+    csvContent += "Invoice ID,Client,Professional,Session Date,Amount,Platform Fee,Professional Payout,Status,Payment Method,Paid Date\n";
+
+    payments.forEach(payment => {
+      csvContent += `${payment.sessionId},"${payment.client}","${payment.professional}",${payment.sessionDate},${payment.amount.toFixed(2)},${payment.platformFee.toFixed(2)},${payment.professionalPayout.toFixed(2)},${payment.status},${payment.paymentMethod || ''},${payment.paidDate || ''}\n`;
+    });
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `billing-report-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return (
       <div className="space-y-8">
@@ -236,7 +274,7 @@ export default function AdminBillingPage() {
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
-          <Button className="gap-2 rounded-full">
+          <Button className="gap-2 rounded-full" onClick={exportBillingReport}>
             <Download className="h-4 w-4" />
             {t("exportReport")}
           </Button>

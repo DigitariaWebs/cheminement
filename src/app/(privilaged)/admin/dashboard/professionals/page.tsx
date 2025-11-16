@@ -11,6 +11,7 @@ import {
   Clock,
   AlertCircle,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,6 +106,43 @@ export default function ProfessionalsPage() {
     activeProfessionals: 0,
     pendingProfessionals: 0,
     totalSessions: 0,
+  };
+
+  const exportProfessionalsData = () => {
+    if (!data) return;
+
+    const { professionals, summary } = data;
+
+    // Create CSV content
+    let csvContent = "Professionals Data Export\n";
+    csvContent += `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}\n\n`;
+
+    // Summary section
+    csvContent += "Summary\n";
+    csvContent += "Metric,Value\n";
+    csvContent += `Total Professionals,${summary.totalProfessionals}\n`;
+    csvContent += `Active Professionals,${summary.activeProfessionals}\n`;
+    csvContent += `Pending Professionals,${summary.pendingProfessionals}\n`;
+    csvContent += `Total Sessions,${summary.totalSessions}\n\n`;
+
+    // Professionals data
+    csvContent += "Professional Details\n";
+    csvContent += "ID,Name,Email,Specialty,License,Status,Clients,Sessions,Joined Date\n";
+
+    professionals.forEach(professional => {
+      csvContent += `${professional.id},"${professional.name}","${professional.email}","${professional.specialty}","${professional.license}","${professional.status}",${professional.totalClients},${professional.totalSessions},"${new Date(professional.joinedDate).toLocaleDateString()}"\n`;
+    });
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `professionals-data-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const getStatusBadge = (status: ProfessionalStatus) => {
@@ -233,6 +271,10 @@ export default function ProfessionalsPage() {
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
+          <Button className="gap-2" onClick={exportProfessionalsData}>
+            <Download className="h-4 w-4" />
+            Export Data
+          </Button>
           <Button className="gap-2" onClick={() => setIsAddModalOpen(true)}>
             <UserPlus className="h-4 w-4" />
             Add Professional
