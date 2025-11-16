@@ -146,7 +146,9 @@ export default function ProfessionalProfile({
               size="sm"
               className="text-sm"
             >
-              {isProfileCompleted(professionalProfile) ? t("edit") : "complete"}
+              {isProfileCompleted(professionalProfile)
+                ? t("edit")
+                : t("complete")}
             </Button>
           )}
         </div>
