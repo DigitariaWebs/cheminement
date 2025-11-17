@@ -104,7 +104,7 @@ export const authAPI = {
     phone?: string;
     professionalProfile?: {
       specialty?: string;
-      licence?: string;
+      license?: string;
     };
   }) => apiClient.post("/auth/signup", data),
 };

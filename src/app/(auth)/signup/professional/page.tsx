@@ -210,7 +210,7 @@ export default function ProfessionalSignupPage() {
         phone: formData.phone,
         professionalProfile: {
           specialty: formData.specialty,
-          licence: formData.license,
+          license: formData.license,
         },
       });
 

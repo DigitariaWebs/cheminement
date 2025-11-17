@@ -17,6 +17,7 @@ export interface IUser extends Document {
   status: "active" | "pending" | "inactive";
   emailVerified?: Date;
   image?: string;
+  stripeConnectAccountId?: string; // For professionals to receive payouts
   createdAt: Date;
   updatedAt: Date;
 }
@@ -91,6 +92,7 @@ const UserSchema = new Schema<IUser>(
     },
     emailVerified: Date,
     image: String,
+    stripeConnectAccountId: String, // For professionals to receive payouts
   },
   {
     timestamps: true,

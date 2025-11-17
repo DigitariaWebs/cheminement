@@ -62,7 +62,7 @@ export default function AddProfessionalModal({
         location: formData.location,
         professionalProfile: {
           specialty: formData.specialty,
-          licence: formData.license,
+          license: formData.license,
         },
       });
 

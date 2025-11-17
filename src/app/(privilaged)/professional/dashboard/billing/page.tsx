@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Download,
   Eye,
@@ -11,14 +11,17 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { apiClient } from "@/lib/api-client";
 
 type PaymentStatus = "paid" | "pending" | "upcoming" | "processing";
 
 interface Payment {
-  id: number;
+  _id: string;
   sessionId: string;
   client: string;
   date: string;
@@ -29,100 +32,81 @@ interface Payment {
   status: PaymentStatus;
   invoiceUrl?: string;
   paidDate?: string;
+  paymentStatus?: string;
 }
-
-// Mock data
-const mockPayments: Payment[] = [
-  {
-    id: 1,
-    sessionId: "SES-2025-001",
-    client: "Jean Pierre",
-    date: "2025-02-27",
-    sessionDate: "2025-02-27 14:00",
-    amount: 120,
-    platformFee: 12,
-    netAmount: 108,
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    sessionId: "SES-2025-002",
-    client: "Marie Claire",
-    date: "2025-02-20",
-    sessionDate: "2025-02-20 14:00",
-    amount: 120,
-    platformFee: 12,
-    netAmount: 108,
-    status: "processing",
-  },
-  {
-    id: 3,
-    sessionId: "SES-2025-003",
-    client: "Jean Pierre",
-    date: "2025-02-13",
-    sessionDate: "2025-02-13 14:00",
-    amount: 120,
-    platformFee: 12,
-    netAmount: 108,
-    status: "paid",
-    paidDate: "2025-02-14",
-    invoiceUrl: "#",
-  },
-  {
-    id: 4,
-    sessionId: "SES-2025-004",
-    client: "Sophie Martin",
-    date: "2025-02-06",
-    sessionDate: "2025-02-06 14:00",
-    amount: 120,
-    platformFee: 12,
-    netAmount: 108,
-    status: "paid",
-    paidDate: "2025-02-07",
-    invoiceUrl: "#",
-  },
-  {
-    id: 5,
-    sessionId: "SES-2025-005",
-    client: "Jean Pierre",
-    date: "2025-01-30",
-    sessionDate: "2025-01-30 14:00",
-    amount: 120,
-    platformFee: 12,
-    netAmount: 108,
-    status: "paid",
-    paidDate: "2025-01-31",
-    invoiceUrl: "#",
-  },
-  {
-    id: 6,
-    sessionId: "SES-2025-006",
-    client: "Marie Claire",
-    date: "2025-01-23",
-    sessionDate: "2025-01-23 14:00",
-    amount: 120,
-    platformFee: 12,
-    netAmount: 108,
-    status: "paid",
-    paidDate: "2025-01-24",
-    invoiceUrl: "#",
-  },
-];
 
 export default function ProfessionalBillingPage() {
   const [activeTab, setActiveTab] = useState<"receivables" | "history">(
     "receivables",
   );
   const [showBankDetails, setShowBankDetails] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const t = useTranslations("Professional.billing");
 
-  const receivablePayments = mockPayments.filter(
+  // Fetch real appointments from API
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await apiClient.get<any[]>("/appointments");
+      
+      // Transform appointments to payment format
+      const transformedPayments: Payment[] = data.map((apt) => {
+        const client = apt.clientId;
+        const clientName = client
+          ? `${client.firstName} ${client.lastName}`
+          : "Unknown Client";
+
+        // Map payment status
+        let status: PaymentStatus = "pending";
+        if (apt.paymentStatus === "paid") {
+          status = "paid";
+        } else if (apt.paymentStatus === "processing") {
+          status = "processing";
+        } else if (new Date(apt.date) > new Date()) {
+          status = "upcoming";
+        } else if (apt.paymentStatus === "pending") {
+          status = "pending";
+        }
+
+        return {
+          _id: apt._id,
+          sessionId: `SES-${apt._id.slice(-6).toUpperCase()}`,
+          client: clientName,
+          date: apt.date,
+          sessionDate: `${new Date(apt.date).toLocaleDateString()} ${apt.time}`,
+          amount: apt.price || 120,
+          platformFee: apt.platformFee || 12,
+          netAmount: apt.professionalPayout || 108,
+          status,
+          paymentStatus: apt.paymentStatus,
+          paidDate: apt.paidAt ? new Date(apt.paidAt).toISOString() : undefined,
+          invoiceUrl: apt.paymentStatus === "paid" ? "#" : undefined,
+        };
+      });
+
+      setPayments(transformedPayments);
+    } catch (err: any) {
+      console.error("Error fetching appointments:", err);
+      setError(err.message || "Failed to load appointments");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const receivablePayments = payments.filter(
     (p) =>
       p.status === "pending" ||
       p.status === "upcoming" ||
       p.status === "processing",
   );
-  const paidPayments = mockPayments.filter((p) => p.status === "paid");
+  const paidPayments = payments.filter((p) => p.status === "paid");
 
   const totalReceivables = receivablePayments.reduce(
     (sum, p) => sum + p.netAmount,
@@ -179,8 +163,32 @@ export default function ProfessionalBillingPage() {
     });
   };
 
-  const payments =
+  const displayPayments =
     activeTab === "receivables" ? receivablePayments : paidPayments;
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600">{error}</p>
+          <Button onClick={fetchAppointments} className="mt-4">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -335,7 +343,7 @@ export default function ProfessionalBillingPage() {
       </div>
 
       {/* Payments List */}
-      {payments.length === 0 ? (
+      {displayPayments.length === 0 ? (
         <div className="rounded-3xl border border-border/20 bg-card/80 p-12 text-center shadow-lg">
           <DollarSign className="mx-auto h-16 w-16 text-muted-foreground/50" />
           <h3 className="mt-4 font-serif text-xl text-foreground">
@@ -346,9 +354,9 @@ export default function ProfessionalBillingPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {payments.map((payment) => (
+          {displayPayments.map((payment) => (
             <div
-              key={payment.id}
+              key={payment._id}
               className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg transition hover:shadow-xl"
             >
               <div className="flex items-start justify-between gap-4">

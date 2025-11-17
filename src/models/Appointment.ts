@@ -14,6 +14,23 @@ export interface IAppointment extends Document {
   meetingLink?: string;
   location?: string;
   reminderSent: boolean;
+  // Payment fields
+  price: number; // Session price in dollars
+  platformFee: number; // Platform fee amount
+  professionalPayout: number; // Amount professional receives
+  paymentStatus:
+    | "pending"
+    | "processing"
+    | "paid"
+    | "failed"
+    | "refunded"
+    | "cancelled";
+  stripePaymentIntentId?: string;
+  stripePaymentMethodId?: string;
+  paidAt?: Date;
+  refundedAt?: Date;
+  payoutTransferId?: string; // Stripe transfer ID for professional payout
+  payoutDate?: Date; // When professional was paid out
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,6 +80,33 @@ const AppointmentSchema = new Schema<IAppointment>(
       type: Boolean,
       default: false,
     },
+    // Payment fields
+    price: {
+      type: Number,
+      required: true,
+      default: 120, // Default session price in CAD
+    },
+    platformFee: {
+      type: Number,
+      required: true,
+      default: 12, // 10% of default price
+    },
+    professionalPayout: {
+      type: Number,
+      required: true,
+      default: 108, // 90% of default price
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "processing", "paid", "failed", "refunded", "cancelled"],
+      default: "pending",
+    },
+    stripePaymentIntentId: String,
+    stripePaymentMethodId: String,
+    paidAt: Date,
+    refundedAt: Date,
+    payoutTransferId: String, // Stripe transfer ID for professional payout
+    payoutDate: Date, // When professional was paid out
   },
   {
     timestamps: true,

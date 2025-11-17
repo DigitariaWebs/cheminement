@@ -13,6 +13,8 @@ import {
   ArrowLeft,
   Loader2,
   CheckCircle2,
+  AlertCircle,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -75,6 +77,7 @@ export default function BookAppointmentPage() {
   >("video");
   const [issueType, setIssueType] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [createdAppointmentId, setCreatedAppointmentId] = useState<string>("");
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -201,15 +204,19 @@ export default function BookAppointmentPage() {
       setLoading(true);
       setError("");
 
-      await apiClient.post("/appointments", {
-        professionalId: selectedProfessional,
-        date: selectedDate,
-        time: selectedTime,
-        type: selectedType,
-        issueType,
-        notes,
-      });
+      const response = await apiClient.post<{ appointmentId: string }>(
+        "/appointments",
+        {
+          professionalId: selectedProfessional,
+          date: selectedDate,
+          time: selectedTime,
+          type: selectedType,
+          issueType,
+          notes,
+        },
+      );
 
+      setCreatedAppointmentId(response.appointmentId);
       setCompletedSteps([1, 2, 3]);
       setCurrentStep(4); // Success step
     } catch (err: any) {
@@ -574,28 +581,152 @@ export default function BookAppointmentPage() {
 
         {/* Step 4: Success */}
         {currentStep === 4 && (
-          <div className="max-w-2xl mx-auto rounded-xl bg-card border border-border/40">
-            <div className="text-center py-12">
-              <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-6" />
+          <div className="max-w-3xl mx-auto space-y-6">
+            {/* Success Header */}
+            <div className="rounded-xl bg-card border border-border/40 text-center py-8">
+              <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-2xl font-serif font-light text-foreground mb-2">
                 Appointment Booked Successfully!
               </h2>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground">
                 Your appointment has been scheduled. You'll receive a
                 confirmation email shortly.
               </p>
+            </div>
+
+            {/* Appointment Details Card */}
+            <div className="rounded-xl bg-card border border-border/40 p-6">
+              <h3 className="text-lg font-serif font-light text-foreground mb-4">
+                Appointment Details
+              </h3>
+              
               <div className="space-y-4">
+                {/* Professional */}
+                <div className="flex items-start gap-3">
+                  <User className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Professional</p>
+                    <p className="font-medium text-foreground">
+                      {selectedProfessionalData?.firstName}{" "}
+                      {selectedProfessionalData?.lastName}
+                    </p>
+                    {selectedProfessionalData?.specialty && (
+                      <p className="text-sm text-muted-foreground capitalize">
+                        {selectedProfessionalData.specialty}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Date & Time */}
+                <div className="flex items-start gap-3">
+                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Date & Time</p>
+                    <p className="font-medium text-foreground">
+                      {new Date(selectedDate).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedTime}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Session Type */}
+                <div className="flex items-start gap-3">
+                  {getTypeIcon(selectedType)}
+                  <div>
+                    <p className="text-sm text-muted-foreground">Session Type</p>
+                    <p className="font-medium text-foreground capitalize">
+                      {selectedType.replace("-", " ")}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Primary Concern */}
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Primary Concern</p>
+                    <p className="font-medium text-foreground">{issueType}</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Pricing */}
+                <div className="rounded-lg bg-muted/30 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      Session Price
+                    </span>
+                    <span className="text-lg font-semibold text-foreground">
+                      $
+                      {availabilityData?.professionalInfo.pricing
+                        ?.individualSession || 120}{" "}
+                      CAD
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Payment Status
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-yellow-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
+                      <Clock className="h-3 w-3 mr-1" />
+                      Pending
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="rounded-xl bg-card border border-border/40 p-6">
+              <h3 className="text-lg font-serif font-light text-foreground mb-4">
+                Next Steps
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Complete your payment now to confirm your appointment, or pay later from your billing page.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
+                  onClick={() =>
+                    router.push("/client/dashboard/billing")
+                  }
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  <Wallet className="h-4 w-4" />
+                  Pay Now
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => router.push("/client/dashboard")}
-                  className="gap-2"
+                  className="flex-1 gap-2"
+                  size="lg"
                 >
                   <User className="h-4 w-4" />
-                  View My Appointments
-                </Button>
-                <Button variant="outline" onClick={resetBooking}>
-                  Book Another Appointment
+                  View Dashboard
                 </Button>
               </div>
+              <Button
+                variant="ghost"
+                onClick={resetBooking}
+                className="w-full mt-2"
+              >
+                Book Another Appointment
+              </Button>
             </div>
           </div>
         )}
