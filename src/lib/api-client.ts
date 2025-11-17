@@ -138,6 +138,7 @@ export const appointmentsAPI = {
     status?: string;
     startDate?: string;
     endDate?: string;
+    clientId?: string;
   }) => {
     const query = new URLSearchParams(params as any).toString();
     return apiClient.get(`/appointments${query ? `?${query}` : ""}`);
@@ -184,5 +185,13 @@ export const usersAPI = {
   list: (params?: { role?: string }) => {
     const query = new URLSearchParams(params as any).toString();
     return apiClient.get(`/users${query ? `?${query}` : ""}`);
+  },
+};
+
+// Clients
+export const clientsAPI = {
+  list: (params?: { status?: string; issueType?: string; search?: string }) => {
+    const query = new URLSearchParams(params as any).toString();
+    return apiClient.get(`/clients${query ? `?${query}` : ""}`);
   },
 };

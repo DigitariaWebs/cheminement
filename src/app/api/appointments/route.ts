@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status");
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
+    const clientId = searchParams.get("clientId");
 
     const query: any = {};
 
@@ -33,6 +34,10 @@ export async function GET(req: NextRequest) {
     // Additional filters
     if (status) {
       query.status = status;
+    }
+
+    if (clientId) {
+      query.clientId = clientId;
     }
 
     if (startDate || endDate) {

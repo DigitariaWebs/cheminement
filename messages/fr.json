@@ -687,7 +687,11 @@
         "noNotes": "Aucune note",
         "paid": "Payé",
         "pending": "En attente",
-        "overdue": "En retard"
+        "overdue": "En retard",
+        "scheduled": "Planifié",
+        "completed": "Complété",
+        "cancelled": "Annulé",
+        "no-show": "Absence"
       },
       "actions": {
         "schedule": "Planifier une séance",

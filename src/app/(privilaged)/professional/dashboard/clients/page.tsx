@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +28,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { clientsAPI } from "@/lib/api-client";
 import ClientDetailsModal from "@/components/dashboard/ClientDetailsModal";
 
 interface Client {
@@ -42,78 +43,11 @@ interface Client {
   joinedDate: string;
 }
 
-// Mock data
-const MOCK_CLIENTS: Client[] = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
-    phone: "+1 (555) 123-4567",
-    status: "active",
-    lastSession: "2024-01-15",
-    totalSessions: 12,
-    issueType: "Anxiety Disorders",
-    joinedDate: "2023-10-01",
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    email: "m.chen@example.com",
-    phone: "+1 (555) 234-5678",
-    status: "active",
-    lastSession: "2024-01-14",
-    totalSessions: 8,
-    issueType: "Depression",
-    joinedDate: "2023-11-15",
-  },
-  {
-    id: "3",
-    name: "Emily Rodriguez",
-    email: "emily.r@example.com",
-    phone: "+1 (555) 345-6789",
-    status: "pending",
-    lastSession: "-",
-    totalSessions: 0,
-    issueType: "Stress Management",
-    joinedDate: "2024-01-10",
-  },
-  {
-    id: "4",
-    name: "David Thompson",
-    email: "d.thompson@example.com",
-    phone: "+1 (555) 456-7890",
-    status: "active",
-    lastSession: "2024-01-12",
-    totalSessions: 15,
-    issueType: "Trauma & PTSD",
-    joinedDate: "2023-09-20",
-  },
-  {
-    id: "5",
-    name: "Jessica Martinez",
-    email: "j.martinez@example.com",
-    phone: "+1 (555) 567-8901",
-    status: "inactive",
-    lastSession: "2023-12-01",
-    totalSessions: 6,
-    issueType: "Relationship Issues",
-    joinedDate: "2023-08-15",
-  },
-  {
-    id: "6",
-    name: "Robert Kim",
-    email: "robert.k@example.com",
-    phone: "+1 (555) 678-9012",
-    status: "active",
-    lastSession: "2024-01-16",
-    totalSessions: 20,
-    issueType: "Anxiety Disorders",
-    joinedDate: "2023-07-01",
-  },
-];
-
 export default function ClientsPage() {
   const t = useTranslations("Dashboard.clients");
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [issueTypeFilter, setIssueTypeFilter] = useState<string>("all");
@@ -121,15 +55,36 @@ export default function ClientsPage() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const data = await clientsAPI.list();
+        setClients(data as Client[]);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch clients",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClients();
+  }, []);
+
   // Extract unique issue types for filter
   const issueTypes = useMemo(() => {
-    const types = new Set(MOCK_CLIENTS.map((client) => client.issueType));
+    const types = new Set(clients.map((client) => client.issueType));
     return Array.from(types);
-  }, []);
+  }, [clients]);
+
+  const baseClients = useMemo(
+    () => clients.filter((client) => client.totalSessions > 0),
+    [clients],
+  );
 
   // Filter and search clients
   const filteredClients = useMemo(() => {
-    return MOCK_CLIENTS.filter((client) => {
+    return baseClients.filter((client) => {
       const matchesSearch =
         client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         client.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -142,7 +97,7 @@ export default function ClientsPage() {
 
       return matchesSearch && matchesStatus && matchesIssueType;
     });
-  }, [searchQuery, statusFilter, issueTypeFilter]);
+  }, [baseClients, searchQuery, statusFilter, issueTypeFilter]);
 
   const getStatusBadge = (status: Client["status"]) => {
     const styles = {
@@ -191,7 +146,7 @@ export default function ClientsPage() {
             {t("totalClients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {MOCK_CLIENTS.length}
+            {baseClients.length}
           </p>
         </div>
         <div className="rounded-xl bg-card p-4">
@@ -199,7 +154,7 @@ export default function ClientsPage() {
             {t("activeClients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {MOCK_CLIENTS.filter((c) => c.status === "active").length}
+            {baseClients.filter((c) => c.status === "active").length}
           </p>
         </div>
         <div className="rounded-xl bg-card p-4">
@@ -207,7 +162,7 @@ export default function ClientsPage() {
             {t("pendingClients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {MOCK_CLIENTS.filter((c) => c.status === "pending").length}
+            {baseClients.filter((c) => c.status === "pending").length}
           </p>
         </div>
         <div className="rounded-xl bg-card p-4">
@@ -215,7 +170,7 @@ export default function ClientsPage() {
             {t("totalSessions")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            {MOCK_CLIENTS.reduce((sum, c) => sum + c.totalSessions, 0)}
+            {baseClients.reduce((sum, c) => sum + c.totalSessions, 0)}
           </p>
         </div>
       </div>
@@ -370,10 +325,10 @@ export default function ClientsPage() {
                     {filteredClients.length}
                   </span>
                   <span>
-                    {MOCK_CLIENTS.length} {t("totalClients")}
+                    {baseClients.length} {t("totalClients")}
                   </span>
                 </div>
-                {filteredClients.length !== MOCK_CLIENTS.length && (
+                {filteredClients.length !== baseClients.length && (
                   <span className="text-xs text-primary font-light">
                     {t("showFilters")}
                   </span>
@@ -399,7 +354,25 @@ export default function ClientsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredClients.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-8 text-muted-foreground font-light"
+                >
+                  Loading clients...
+                </TableCell>
+              </TableRow>
+            ) : error ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-8 text-red-500 font-light"
+                >
+                  {error}
+                </TableCell>
+              </TableRow>
+            ) : filteredClients.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={7}

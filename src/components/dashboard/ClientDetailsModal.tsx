@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   X,
   Mail,
@@ -10,16 +11,26 @@ import {
   FileText,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { appointmentsAPI } from "@/lib/api-client";
 
 interface Session {
   id: string;
   date: string;
   duration: number;
   type: string;
-  notes: string;
-  status: "completed" | "cancelled" | "no-show";
+  notes?: string;
+  status: "completed" | "cancelled" | "scheduled" | "no-show";
   paymentStatus: "paid" | "pending" | "overdue";
   amount?: number;
+}
+
+interface AppointmentData {
+  _id: string;
+  date: string;
+  duration?: number;
+  type: string;
+  notes?: string;
+  status: string;
 }
 
 interface Client {
@@ -44,66 +55,49 @@ interface ClientDetailsModalProps {
   client: Client | null;
 }
 
-// Mock sessions data
-const MOCK_SESSIONS: Session[] = [
-  {
-    id: "1",
-    date: "2024-01-15",
-    duration: 60,
-    type: "Individual Therapy",
-    notes: "Made significant progress on anxiety management techniques",
-    status: "completed",
-    paymentStatus: "paid",
-    amount: 150,
-  },
-  {
-    id: "2",
-    date: "2024-01-08",
-    duration: 60,
-    type: "Individual Therapy",
-    notes: "Discussed coping strategies for work-related stress",
-    status: "completed",
-    paymentStatus: "paid",
-    amount: 150,
-  },
-  {
-    id: "3",
-    date: "2024-01-01",
-    duration: 60,
-    type: "Individual Therapy",
-    notes: "Follow-up on previous session's homework",
-    status: "completed",
-    paymentStatus: "pending",
-    amount: 150,
-  },
-  {
-    id: "4",
-    date: "2023-12-25",
-    duration: 60,
-    type: "Individual Therapy",
-    notes: "Holiday session - discussed family dynamics",
-    status: "cancelled",
-    paymentStatus: "paid",
-    amount: 0,
-  },
-  {
-    id: "5",
-    date: "2023-12-18",
-    duration: 60,
-    type: "Individual Therapy",
-    notes: "Explored childhood experiences and their impact",
-    status: "completed",
-    paymentStatus: "overdue",
-    amount: 150,
-  },
-];
-
 export default function ClientDetailsModal({
   isOpen,
   onClose,
   client,
 }: ClientDetailsModalProps) {
   const t = useTranslations("Dashboard.clientModal");
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+
+  useEffect(() => {
+    if (client) {
+      const fetchSessions = async () => {
+        setSessionsLoading(true);
+        try {
+          const data = (await appointmentsAPI.list({
+            clientId: client.id,
+          })) as AppointmentData[];
+          const mappedSessions: Session[] = data.map((appt) => ({
+            id: appt._id,
+            date: appt.date,
+            duration: appt.duration || 60,
+            type: appt.type,
+            notes: appt.notes || "",
+            status:
+              appt.status === "completed"
+                ? "completed"
+                : appt.status === "cancelled"
+                  ? "cancelled"
+                  : "scheduled",
+            paymentStatus: "paid", // Default, adjust as needed
+            amount: 150, // Default, adjust as needed
+          }));
+          setSessions(mappedSessions);
+        } catch (error) {
+          console.error("Failed to fetch sessions:", error);
+          setSessions([]);
+        } finally {
+          setSessionsLoading(false);
+        }
+      };
+      fetchSessions();
+    }
+  }, [client]);
 
   if (!isOpen || !client) return null;
 
@@ -127,6 +121,7 @@ export default function ClientDetailsModal({
     const styles = {
       completed: "bg-green-100 text-green-700",
       cancelled: "bg-red-100 text-red-700",
+      scheduled: "bg-blue-100 text-blue-700",
       "no-show": "bg-orange-100 text-orange-700",
     };
 
@@ -134,9 +129,7 @@ export default function ClientDetailsModal({
       <span
         className={`px-2 py-1 rounded-full text-xs font-light ${styles[status]}`}
       >
-        {status === "completed" && t("sessions.status")}
-        {status === "cancelled" && t("sessions.status")}
-        {status === "no-show" && t("sessions.status")}
+        {t(`sessions.${status}`)}
       </span>
     );
   };
@@ -321,48 +314,59 @@ export default function ClientDetailsModal({
             </div>
 
             <div className="space-y-3">
-              {MOCK_SESSIONS.map((session) => (
-                <div
-                  key={session.id}
-                  className="rounded-lg bg-muted/30 p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <p className="text-sm font-medium text-foreground">
-                          {session.type}
-                        </p>
-                        {getSessionStatusBadge(session.status)}
-                        {getPaymentStatusBadge(session.paymentStatus)}
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground font-light mb-2">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatShortDate(session.date)}</span>
+              {sessionsLoading ? (
+                <p className="text-center text-muted-foreground">
+                  Loading sessions...
+                </p>
+              ) : sessions.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  No sessions found
+                </p>
+              ) : (
+                sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    className="rounded-lg bg-muted/30 p-4 hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <p className="text-sm font-medium text-foreground">
+                            {session.type}
+                          </p>
+                          {getSessionStatusBadge(session.status)}
+                          {getPaymentStatusBadge(session.paymentStatus)}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>
-                            {session.duration} {t("sessions.duration")}
-                          </span>
-                        </div>
-                        {session.amount !== undefined && session.amount > 0 && (
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground font-light mb-2">
                           <div className="flex items-center gap-1">
-                            <span className="font-medium">
-                              ${session.amount}
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatShortDate(session.date)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>
+                              {session.duration} {t("sessions.duration")}
                             </span>
                           </div>
+                          {session.amount !== undefined &&
+                            session.amount > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  ${session.amount}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                        {session.notes && (
+                          <p className="text-sm text-muted-foreground font-light">
+                            {session.notes}
+                          </p>
                         )}
                       </div>
-                      {session.notes && (
-                        <p className="text-sm text-muted-foreground font-light">
-                          {session.notes}
-                        </p>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -373,12 +377,6 @@ export default function ClientDetailsModal({
               className="px-6 py-2.5 text-foreground font-light transition-colors hover:text-muted-foreground rounded-full"
             >
               {t("actions.close")}
-            </button>
-            <button className="px-6 py-2.5 bg-muted text-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:bg-muted/80">
-              {t("actions.message")}
-            </button>
-            <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              {t("actions.schedule")}
             </button>
           </div>
         </div>
