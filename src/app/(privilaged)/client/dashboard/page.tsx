@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
   Calendar,
@@ -11,12 +11,39 @@ import {
   Mail,
   Pencil,
   User,
+  Video,
+  Phone,
+  MapPin,
+  Clock,
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import { appointmentsAPI } from "@/lib/api-client";
+
+interface Professional {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+}
+
+interface Appointment {
+  _id: string;
+  professionalId: Professional;
+  date: string;
+  time: string;
+  duration: number;
+  type: "video" | "in-person" | "phone";
+  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
+  issueType?: string;
+  notes?: string;
+  meetingLink?: string;
+  location?: string;
+}
 
 // Mock data - replace with real data from API
 const mockData = {
@@ -43,13 +70,58 @@ const mockData = {
       by: "Équipe Je chemine",
     },
   ],
-  upcomingAppointments: [],
 };
 
 export default function ClientDashboardPage() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<
+    Appointment[]
+  >([]);
   const { data: session, status } = useSession();
   const t = useTranslations("Client.overview");
+
+  useEffect(() => {
+    const fetchUpcomingAppointments = async () => {
+      try {
+        const data = (await appointmentsAPI.list()) as Appointment[];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const upcoming = data.filter((apt: Appointment) => {
+          const aptDate = new Date(apt.date);
+          return (
+            aptDate >= today && ["scheduled", "pending"].includes(apt.status)
+          );
+        });
+        setUpcomingAppointments(upcoming.slice(0, 3)); // Limit to next 3 upcoming
+      } catch (err) {
+        console.error("Error fetching upcoming appointments:", err);
+      }
+    };
+    fetchUpcomingAppointments();
+  }, []);
+
+  const getModalityIcon = (type: string) => {
+    switch (type) {
+      case "video":
+        return <Video className="h-4 w-4" />;
+      case "in-person":
+        return <MapPin className="h-4 w-4" />;
+      case "phone":
+        return <Phone className="h-4 w-4" />;
+      default:
+        return <Calendar className="h-4 w-4" />;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="space-y-10">
@@ -188,37 +260,56 @@ export default function ClientDashboardPage() {
               </Button>
             </div>
 
-            {mockData.upcomingAppointments.length === 0 ? (
+            {upcomingAppointments.length === 0 ? (
               <div className="mt-6 rounded-3xl bg-muted/30 p-8 text-center">
                 <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50" />
                 <p className="mt-4 text-sm text-muted-foreground">
                   {t("upcomingAppointments.noAppointments")}
                 </p>
                 <Button className="mt-4 gap-2 rounded-full">
-                  <Calendar className="h-4 w-4" />
-                  {t("upcomingAppointments.requestAppointment")}
+                  <Link href="/appointment" className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {t("upcomingAppointments.requestAppointment")}
+                  </Link>
                 </Button>
               </div>
             ) : (
               <div className="mt-6 space-y-4">
-                {mockData.upcomingAppointments.map(
-                  (
-                    appointment: {
-                      id: number;
-                      professional: { name: string };
-                      date: string;
-                      time: string;
-                    },
-                    index: number,
-                  ) => (
-                    <div
-                      key={index}
-                      className="rounded-2xl border border-border/20 bg-card/70 p-5"
-                    >
-                      {/* Appointment card content */}
+                {upcomingAppointments.map((appointment) => (
+                  <div
+                    key={appointment._id}
+                    className="rounded-2xl border border-border/20 bg-card/70 p-5"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-2xl bg-primary/10 p-3">
+                        <Calendar className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <h3 className="font-medium text-foreground">
+                          {formatDate(appointment.date)}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            {appointment.time}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            {getModalityIcon(appointment.type)}
+                            {appointment.type === "in-person"
+                              ? "In Person"
+                              : appointment.type.charAt(0).toUpperCase() +
+                                appointment.type.slice(1)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {t("upcomingAppointments.with")}{" "}
+                          {appointment.professionalId.firstName}{" "}
+                          {appointment.professionalId.lastName}
+                        </p>
+                      </div>
                     </div>
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             )}
           </section>

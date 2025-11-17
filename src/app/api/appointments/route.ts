@@ -5,10 +5,6 @@ import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
-import {
-  sendAppointmentConfirmation,
-  sendProfessionalNotification,
-} from "@/lib/notifications";
 
 export async function GET(req: NextRequest) {
   try {
@@ -193,18 +189,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Send email notifications (non-blocking)
-    const emailData = {
-      clientName: `${(populatedAppointment.clientId as any).firstName} ${(populatedAppointment.clientId as any).lastName}`,
-      clientEmail: (populatedAppointment.clientId as any).email,
-      professionalName: `${(populatedAppointment.professionalId as any).firstName} ${(populatedAppointment.professionalId as any).lastName}`,
-      professionalEmail: (populatedAppointment.professionalId as any).email,
-      date: data.date,
-      time: data.time,
-      duration: data.duration,
-      type: data.type,
-      meetingLink: data.meetingLink,
-      location: data.location,
-    };
 
     // Send notifications without blocking the response
     // Temporarily disabled for development/testing

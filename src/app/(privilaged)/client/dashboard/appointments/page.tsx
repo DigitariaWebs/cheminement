@@ -10,7 +10,6 @@ import {
   Phone,
   User,
   MoreVertical,
-  Download,
   Loader2,
   AlertCircle,
 } from "lucide-react";
@@ -30,7 +29,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, appointmentsAPI } from "@/lib/api-client";
+import Link from "next/link";
 
 interface Professional {
   _id: string;
@@ -47,7 +47,7 @@ interface Appointment {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show";
+  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -76,7 +76,7 @@ export default function ClientAppointmentsPage() {
     setLoading(true);
     setError("");
     try {
-      const data = await apiClient.get<Appointment[]>("/appointments");
+      const data = (await appointmentsAPI.list()) as Appointment[];
       setAppointments(data);
     } catch (err: any) {
       console.error("Error fetching appointments:", err);
@@ -128,19 +128,14 @@ export default function ClientAppointmentsPage() {
 
   const upcomingAppointments = appointments.filter((apt) => {
     const aptDate = new Date(apt.date);
-    return (
-      aptDate >= today &&
-      (apt.status === "scheduled" || apt.status === "completed")
-    );
+    return aptDate >= today && ["scheduled", "pending"].includes(apt.status);
   });
 
   const pastAppointments = appointments.filter((apt) => {
     const aptDate = new Date(apt.date);
     return (
       aptDate < today ||
-      apt.status === "completed" ||
-      apt.status === "cancelled" ||
-      apt.status === "no-show"
+      ["completed", "cancelled", "no-show"].includes(apt.status)
     );
   });
 
@@ -195,12 +190,11 @@ export default function ClientAppointmentsPage() {
           </h1>
           <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Button
-          onClick={() => router.push("/appointment")}
-          className="gap-2 rounded-full"
-        >
-          <Calendar className="h-4 w-4" />
-          {t("requestNew")}
+        <Button asChild className="gap-2 rounded-full">
+          <Link href="/appointment">
+            <Calendar className="h-4 w-4" />
+            {t("requestNew")}
+          </Link>
         </Button>
       </div>
 
