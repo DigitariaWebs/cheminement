@@ -18,7 +18,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 
-type PaymentStatus = "paid" | "pending" | "upcoming" | "processing";
+type PaymentStatus = "paid" | "pending" | "upcoming" | "processing" | "refunded" | "cancelled";
 
 interface Payment {
   _id: string;
@@ -67,6 +67,10 @@ export default function ProfessionalBillingPage() {
         let status: PaymentStatus = "pending";
         if (apt.paymentStatus === "paid") {
           status = "paid";
+        } else if (apt.paymentStatus === "refunded") {
+          status = "refunded";
+        } else if (apt.paymentStatus === "cancelled") {
+          status = "cancelled";
         } else if (apt.paymentStatus === "processing") {
           status = "processing";
         } else if (new Date(apt.date) > new Date()) {
@@ -106,7 +110,7 @@ export default function ProfessionalBillingPage() {
       p.status === "upcoming" ||
       p.status === "processing",
   );
-  const paidPayments = payments.filter((p) => p.status === "paid");
+  const paidPayments = payments.filter((p) => p.status === "paid" || p.status === "refunded" || p.status === "cancelled");
 
   const totalReceivables = receivablePayments.reduce(
     (sum, p) => sum + p.netAmount,
@@ -134,6 +138,10 @@ export default function ProfessionalBillingPage() {
         return "bg-blue-500/15 text-blue-700 dark:text-blue-400";
       case "processing":
         return "bg-purple-500/15 text-purple-700 dark:text-purple-400";
+      case "refunded":
+        return "bg-red-500/15 text-red-700 dark:text-red-400";
+      case "cancelled":
+        return "bg-gray-500/15 text-gray-700 dark:text-gray-400";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -144,11 +152,14 @@ export default function ProfessionalBillingPage() {
       case "paid":
         return <CheckCircle2 className="h-4 w-4" />;
       case "pending":
+      case "processing":
         return <Clock className="h-4 w-4" />;
       case "upcoming":
         return <Calendar className="h-4 w-4" />;
-      case "processing":
-        return <Clock className="h-4 w-4" />;
+      case "refunded":
+        return <AlertCircle className="h-4 w-4" />;
+      case "cancelled":
+        return <AlertCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }

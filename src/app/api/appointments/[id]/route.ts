@@ -5,6 +5,7 @@ import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
 import { Error } from "mongoose";
 import { sendCancellationNotification } from "@/lib/notifications";
+import { stripe } from "@/lib/stripe";
 
 export async function GET(
   req: NextRequest,
@@ -111,6 +112,47 @@ export async function PATCH(
         console.error("Error sending cancellation notification:", err),
       );
       */
+
+      // Process automatic refund if appointment was paid
+      if (
+        appointment.stripePaymentIntentId &&
+        appointment.paymentStatus === "paid"
+      ) {
+        try {
+          console.log(
+            `Processing automatic refund for appointment ${id} (Payment Intent: ${appointment.stripePaymentIntentId})`,
+          );
+
+          const refund = await stripe.refunds.create({
+            payment_intent: appointment.stripePaymentIntentId,
+            reason: "requested_by_customer",
+            metadata: {
+              appointmentId: id,
+              cancelledBy: cancelledBy,
+              refundReason: data.cancelReason || "Appointment cancelled",
+            },
+          });
+
+          // Update payment status to refunded
+          appointment.paymentStatus = "refunded";
+          appointment.refundedAt = new Date();
+          await appointment.save();
+
+          console.log(
+            `Refund processed successfully: ${refund.id} - Amount: $${refund.amount / 100}`,
+          );
+        } catch (refundError: any) {
+          console.error("Error processing automatic refund:", refundError);
+          // Don't fail the cancellation if refund fails - log it for manual processing
+          console.error(
+            `Manual refund required for appointment ${id}. Payment Intent: ${appointment.stripePaymentIntentId}`,
+          );
+        }
+      } else if (appointment.paymentStatus === "pending") {
+        // If payment is still pending, mark as cancelled
+        appointment.paymentStatus = "cancelled";
+        await appointment.save();
+      }
     }
 
     return NextResponse.json(appointment);

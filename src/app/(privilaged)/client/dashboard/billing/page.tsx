@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { PaymentModal } from "@/components/payments";
 import { apiClient } from "@/lib/api-client";
 
-type PaymentStatus = "paid" | "pending" | "overdue" | "upcoming" | "processing";
+type PaymentStatus = "paid" | "pending" | "overdue" | "upcoming" | "processing" | "refunded" | "cancelled";
 
 interface Payment {
   _id: string;
@@ -96,6 +96,10 @@ export default function ClientBillingPage() {
         let status: PaymentStatus = "pending";
         if (apt.paymentStatus === "paid") {
           status = "paid";
+        } else if (apt.paymentStatus === "refunded") {
+          status = "refunded";
+        } else if (apt.paymentStatus === "cancelled") {
+          status = "cancelled";
         } else if (apt.paymentStatus === "processing") {
           status = "processing";
         } else if (new Date(apt.date) > new Date()) {
@@ -161,6 +165,12 @@ export default function ClientBillingPage() {
         return "bg-blue-500/15 text-blue-700 dark:text-blue-400";
       case "overdue":
         return "bg-red-500/15 text-red-700 dark:text-red-400";
+      case "refunded":
+        return "bg-purple-500/15 text-purple-700 dark:text-purple-400";
+      case "cancelled":
+        return "bg-gray-500/15 text-gray-700 dark:text-gray-400";
+      case "processing":
+        return "bg-blue-500/15 text-blue-700 dark:text-blue-400";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -171,10 +181,14 @@ export default function ClientBillingPage() {
       case "paid":
         return <CheckCircle2 className="h-4 w-4" />;
       case "pending":
-        return <Clock className="h-4 w-4" />;
       case "upcoming":
+      case "processing":
         return <Clock className="h-4 w-4" />;
       case "overdue":
+        return <AlertCircle className="h-4 w-4" />;
+      case "refunded":
+        return <Wallet className="h-4 w-4" />;
+      case "cancelled":
         return <AlertCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
