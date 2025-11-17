@@ -53,7 +53,7 @@ export default function MedicalProfile({
     try {
       setIsLoading(true);
       const response = userId
-        ? await medicalProfileAPI.get() // Assuming get by userId if needed, but API might not support
+        ? await medicalProfileAPI.getByUserId(userId)
         : await medicalProfileAPI.get();
       setMedicalProfile(response as IMedicalProfile);
       if (setProfile) setProfile(response as IMedicalProfile);

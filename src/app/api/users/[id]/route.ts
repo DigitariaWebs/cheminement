@@ -17,9 +17,22 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Only admins can view other users' details
+    // Only admins can view other users' details, or professionals can view clients they have appointments with
     if (session.user.role !== "admin" && session.user.id !== id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      if (session.user.role === "professional") {
+        // Check if professional has appointments with this client
+        const Appointment = (await import("@/models/Appointment")).default;
+        const hasAppointment = await Appointment.findOne({
+          professionalId: session.user.id,
+          clientId: id,
+          status: { $in: ["scheduled", "pending", "completed"] },
+        });
+        if (!hasAppointment) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      } else {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
     }
 
     await connectToDatabase();

@@ -20,12 +20,31 @@ export async function GET(
 
     const userId = params.id;
 
-    // Only allow admins to fetch other users' medical profiles, or users to fetch their own
+    // Only allow admins to fetch other users' medical profiles, or users to fetch their own, or professionals to fetch clients they have appointments with
     if (session.user.role !== "admin" && session.user.id !== userId) {
-      return NextResponse.json(
-        { error: "Forbidden: You can only access your own medical profile" },
-        { status: 403 },
-      );
+      if (session.user.role === "professional") {
+        // Check if professional has appointments with this client
+        const Appointment = (await import("@/models/Appointment")).default;
+        const hasAppointment = await Appointment.findOne({
+          professionalId: session.user.id,
+          clientId: userId,
+          status: { $in: ["scheduled", "pending", "completed"] },
+        });
+        if (!hasAppointment) {
+          return NextResponse.json(
+            {
+              error:
+                "Forbidden: You can only access medical profiles of clients you have appointments with",
+            },
+            { status: 403 },
+          );
+        }
+      } else {
+        return NextResponse.json(
+          { error: "Forbidden: You can only access your own medical profile" },
+          { status: 403 },
+        );
+      }
     }
 
     const medicalProfile = await MedicalProfile.findOne({ userId });

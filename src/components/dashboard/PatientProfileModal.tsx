@@ -1,6 +1,11 @@
 "use client";
 
-import { X, Mail, Calendar, User } from "lucide-react";
+import { X, Calendar, Check, X as XIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import BasicInformation from "./BasicInformation";
+import MedicalProfile from "./MedicalProfile";
+import { appointmentsAPI } from "@/lib/api-client";
 
 interface PopulatedUser {
   _id: string;
@@ -17,7 +22,7 @@ export interface AppointmentData {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show";
+  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -28,12 +33,14 @@ interface AppointmentDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   appointment: AppointmentData | null;
+  onAction?: () => void;
 }
 
 export default function AppointmentDetailsModal({
   isOpen,
   onClose,
   appointment,
+  onAction,
 }: AppointmentDetailsModalProps) {
   if (!isOpen || !appointment) return null;
 
@@ -54,17 +61,8 @@ export default function AppointmentDetailsModal({
   };
 
   const getStatusBadge = (status: AppointmentData["status"]) => {
-    const styles = {
-      scheduled: "bg-blue-100 text-blue-700",
-      completed: "bg-green-100 text-green-700",
-      cancelled: "bg-gray-100 text-gray-700",
-      "no-show": "bg-red-100 text-red-700",
-    };
-
     return (
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-light ${styles[status]}`}
-      >
+      <span className={`px-3 py-1 rounded-full text-xs font-light`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -107,145 +105,192 @@ export default function AppointmentDetailsModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Appointment Details */}
-          <div className="rounded-xl bg-card p-6 border border-border/40">
-            <h3 className="text-lg font-serif font-light text-foreground mb-4 flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              Appointment Details
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Date
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {formatDate(appointment.date)}
-                  </p>
+        <div className="p-6">
+          <Tabs defaultValue="appointment-details" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="appointment-details">
+                Appointment Details
+              </TabsTrigger>
+              <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+              <TabsTrigger value="medical-info">Medical Info</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="appointment-details" className="space-y-6 mt-6">
+              {/* Appointment Details */}
+              <div className="rounded-xl bg-card p-6 border border-border/40">
+                <h3 className="text-lg font-serif font-light text-foreground mb-4 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Appointment Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground font-light mb-1">
+                        Date
+                      </p>
+                      <p className="text-sm text-foreground font-light">
+                        {formatDate(appointment.date)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-light mb-1">
+                        Time
+                      </p>
+                      <p className="text-sm text-foreground font-light">
+                        {appointment.time}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-light mb-1">
+                        Duration
+                      </p>
+                      <p className="text-sm text-foreground font-light">
+                        {appointment.duration} minutes
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground font-light mb-1">
+                        Type
+                      </p>
+                      <p className="text-sm text-foreground font-light">
+                        {appointment.type.charAt(0).toUpperCase() +
+                          appointment.type.slice(1)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-light mb-1">
+                        Issue Type
+                      </p>
+                      <p className="text-sm text-foreground font-light">
+                        {appointment.issueType || "N/A"}
+                      </p>
+                    </div>
+                    {appointment.location && (
+                      <div>
+                        <p className="text-xs text-muted-foreground font-light mb-1">
+                          Location
+                        </p>
+                        <p className="text-sm text-foreground font-light">
+                          {appointment.location}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Time
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {appointment.time}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Duration
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {appointment.duration} minutes
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Type
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {appointment.type.charAt(0).toUpperCase() +
-                      appointment.type.slice(1)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Issue Type
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {appointment.issueType || "N/A"}
-                  </p>
-                </div>
-                {appointment.location && (
-                  <div>
-                    <p className="text-xs text-muted-foreground font-light mb-1">
-                      Location
+                {appointment.notes && (
+                  <div className="mt-6 pt-6 border-t border-border/40">
+                    <p className="text-xs text-muted-foreground font-light mb-2">
+                      Notes
                     </p>
-                    <p className="text-sm text-foreground font-light">
-                      {appointment.location}
+                    <p className="text-sm text-foreground font-light leading-relaxed">
+                      {appointment.notes}
                     </p>
                   </div>
                 )}
+                {appointment.meetingLink && (
+                  <div className="mt-6 pt-6 border-t border-border/40">
+                    <p className="text-xs text-muted-foreground font-light mb-2">
+                      Meeting Link
+                    </p>
+                    <a
+                      href={appointment.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary font-light hover:underline"
+                    >
+                      {appointment.meetingLink}
+                    </a>
+                  </div>
+                )}
               </div>
-            </div>
-            {appointment.notes && (
-              <div className="mt-6 pt-6 border-t border-border/40">
-                <p className="text-xs text-muted-foreground font-light mb-2">
-                  Notes
-                </p>
-                <p className="text-sm text-foreground font-light leading-relaxed">
-                  {appointment.notes}
-                </p>
-              </div>
-            )}
-            {appointment.meetingLink && (
-              <div className="mt-6 pt-6 border-t border-border/40">
-                <p className="text-xs text-muted-foreground font-light mb-2">
-                  Meeting Link
-                </p>
-                <a
-                  href={appointment.meetingLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary font-light hover:underline"
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-6 border-t border-border/40">
+                <Button
+                  onClick={onClose}
+                  variant="outline"
+                  className="rounded-full"
                 >
-                  {appointment.meetingLink}
-                </a>
+                  Close
+                </Button>
+                {appointment.status === "pending" && (
+                  <>
+                    <Button
+                      onClick={async () => {
+                        try {
+                          await appointmentsAPI.update(appointment._id, {
+                            status: "cancelled",
+                          });
+                          onClose();
+                          onAction?.();
+                        } catch (error) {
+                          console.error("Error denying appointment:", error);
+                        }
+                      }}
+                      variant="destructive"
+                      className="gap-2 rounded-full"
+                    >
+                      <XIcon className="h-4 w-4" />
+                      Deny Request
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        try {
+                          await appointmentsAPI.update(appointment._id, {
+                            status: "scheduled",
+                          });
+                          onClose();
+                          onAction?.();
+                        } catch (error) {
+                          console.error("Error accepting appointment:", error);
+                        }
+                      }}
+                      className="gap-2 rounded-full"
+                    >
+                      <Check className="h-4 w-4" />
+                      Accept Request
+                    </Button>
+                  </>
+                )}
+                {appointment.status === "scheduled" && (
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await appointmentsAPI.update(appointment._id, {
+                          status: "cancelled",
+                        });
+                        onClose();
+                        onAction?.();
+                      } catch (error) {
+                        console.error("Error cancelling appointment:", error);
+                      }
+                    }}
+                    variant="destructive"
+                    className="gap-2 rounded-full"
+                  >
+                    <XIcon className="h-4 w-4" />
+                    Cancel Appointment
+                  </Button>
+                )}
               </div>
-            )}
-          </div>
+            </TabsContent>
 
-          {/* Client Information */}
-          <div className="rounded-xl bg-card p-6 border border-border/40">
-            <h3 className="text-lg font-serif font-light text-foreground mb-4 flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
-              Client Information
-            </h3>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <User className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Name
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {appointment.clientId.firstName}{" "}
-                    {appointment.clientId.lastName}
-                  </p>
-                </div>
-              </div>
+            <TabsContent value="basic-info" className="mt-6">
+              <BasicInformation
+                isEditable={false}
+                userId={appointment.clientId._id}
+              />
+            </TabsContent>
 
-              <div className="flex items-start gap-3">
-                <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-xs text-muted-foreground font-light mb-1">
-                    Email
-                  </p>
-                  <p className="text-sm text-foreground font-light">
-                    {appointment.clientId.email}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-6 border-t border-border/40">
-            <button
-              onClick={onClose}
-              className="px-6 py-2.5 text-foreground font-light transition-colors hover:text-muted-foreground rounded-full"
-            >
-              Close
-            </button>
-            {appointment.status === "scheduled" && (
-              <button className="px-6 py-2.5 bg-red-100 text-red-700 rounded-full font-light tracking-wide transition-all duration-300 hover:bg-red-200">
-                Cancel Appointment
-              </button>
-            )}
-          </div>
+            <TabsContent value="medical-info" className="mt-6 space-y-6">
+              <MedicalProfile
+                isEditable={false}
+                userId={appointment.clientId._id}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
