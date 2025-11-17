@@ -55,10 +55,7 @@ export default function PaymentModal({
       const response = await apiClient.post<{
         clientSecret: string;
         paymentIntentId: string;
-      }>(
-        "/payments/create-intent",
-        { appointmentId },
-      );
+      }>("/payments/create-intent", { appointmentId });
 
       setClientSecret(response.clientSecret);
     } catch (err: any) {
@@ -138,4 +135,3 @@ export default function PaymentModal({
     </Dialog>
   );
 }
-

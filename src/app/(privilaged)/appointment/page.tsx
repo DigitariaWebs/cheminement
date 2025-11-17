@@ -599,13 +599,15 @@ export default function BookAppointmentPage() {
               <h3 className="text-lg font-serif font-light text-foreground mb-4">
                 Appointment Details
               </h3>
-              
+
               <div className="space-y-4">
                 {/* Professional */}
                 <div className="flex items-start gap-3">
                   <User className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Professional</p>
+                    <p className="text-sm text-muted-foreground">
+                      Professional
+                    </p>
                     <p className="font-medium text-foreground">
                       {selectedProfessionalData?.firstName}{" "}
                       {selectedProfessionalData?.lastName}
@@ -645,7 +647,9 @@ export default function BookAppointmentPage() {
                 <div className="flex items-start gap-3">
                   {getTypeIcon(selectedType)}
                   <div>
-                    <p className="text-sm text-muted-foreground">Session Type</p>
+                    <p className="text-sm text-muted-foreground">
+                      Session Type
+                    </p>
                     <p className="font-medium text-foreground capitalize">
                       {selectedType.replace("-", " ")}
                     </p>
@@ -658,7 +662,9 @@ export default function BookAppointmentPage() {
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Primary Concern</p>
+                    <p className="text-sm text-muted-foreground">
+                      Primary Concern
+                    </p>
                     <p className="font-medium text-foreground">{issueType}</p>
                   </div>
                 </div>
@@ -697,13 +703,12 @@ export default function BookAppointmentPage() {
                 Next Steps
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Complete your payment now to confirm your appointment, or pay later from your billing page.
+                Complete your payment now to confirm your appointment, or pay
+                later from your billing page.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
-                  onClick={() =>
-                    router.push("/client/dashboard/billing")
-                  }
+                  onClick={() => router.push("/client/dashboard/billing")}
                   className="flex-1 gap-2"
                   size="lg"
                 >

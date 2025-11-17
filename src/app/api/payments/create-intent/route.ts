@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     // Create or retrieve Stripe Customer for the client
     let customerId = null;
-    
+
     // Search for existing customer by email
     const existingCustomers = await stripe.customers.list({
       email: client.email,
@@ -124,4 +124,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

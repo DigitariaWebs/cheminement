@@ -70,7 +70,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentSucceeded(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   console.log("Payment succeeded:", paymentIntent.id);
 
   const appointmentId = paymentIntent.metadata.appointmentId;
@@ -135,7 +137,9 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   // TODO: Optionally cancel appointment if payment required upfront
 }
 
-async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentCanceled(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   console.log("Payment canceled:", paymentIntent.id);
 
   const appointmentId = paymentIntent.metadata.appointmentId;
@@ -170,7 +174,9 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   });
 
   if (!appointment) {
-    console.error(`Appointment not found for payment intent ${paymentIntentId}`);
+    console.error(
+      `Appointment not found for payment intent ${paymentIntentId}`,
+    );
     return;
   }
 
@@ -183,4 +189,3 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   // TODO: Send refund confirmation to client
   // TODO: Notify professional about refund
 }
-

@@ -138,7 +138,10 @@ export async function GET(req: NextRequest) {
       (sum, b) => sum + b.amount,
       0,
     );
-    const pendingBalance = balance.pending.reduce((sum, b) => sum + b.amount, 0);
+    const pendingBalance = balance.pending.reduce(
+      (sum, b) => sum + b.amount,
+      0,
+    );
 
     return NextResponse.json({
       setupComplete: account.charges_enabled && account.payouts_enabled,
@@ -160,4 +163,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

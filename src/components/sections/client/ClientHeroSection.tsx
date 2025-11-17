@@ -34,7 +34,7 @@ export default function ClientHeroSection() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
             <Link
-              href="/book/appointment"
+              href="/appointment"
               className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
               <span className="relative z-10">{t("bookAppointment")}</span>

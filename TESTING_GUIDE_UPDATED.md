@@ -33,7 +33,7 @@ You'll see a **4-step process** with a stepper at the top.
 **Step 1/4 - Personal Information:**
 
 1. **First Name:** `Marie`
-2. **Last Name:** `Dubois`  
+2. **Last Name:** `Dubois`
 3. **Email:** `marie.prof@example.com`
 4. **Phone:** `514-555-1234` (or any format)
 5. Click **"Continue"** button (arrow icon →)
@@ -95,6 +95,7 @@ You'll see a **4-step process** with a stepper at the top.
 ### **Step 6: Verify Professional Dashboard**
 
 You should now see the professional dashboard with:
+
 - Welcome message
 - Dashboard sections (Schedule, Clients, Billing, etc.)
 - Sidebar navigation
@@ -172,6 +173,7 @@ You'll see a **3-step process** (simpler than professional).
 ### **Step 12: Verify Client Dashboard**
 
 You should see the client dashboard with:
+
 - Welcome message
 - Quick actions (Book Appointment, etc.)
 - Dashboard sections
@@ -189,10 +191,12 @@ You should see the client dashboard with:
 From the client dashboard:
 
 **Option A:**
+
 1. Click **"Book Appointment"** button on the dashboard
 
 **Option B:**
-1. Navigate to: **http://localhost:3000/book/appointment**
+
+1. Navigate to: **http://localhost:3000/appointment**
 
 ---
 
@@ -261,11 +265,13 @@ From the client dashboard:
 You should see a beautiful success page with THREE cards:
 
 **Card 1: Success Header**
+
 - ✅ Green checkmark icon
 - **"Appointment Booked Successfully!"** heading
 - "Your appointment has been scheduled. You'll receive a confirmation email shortly."
 
 **Card 2: Appointment Details** (Shows everything!)
+
 - **Professional:** Marie Dubois (Psychologist)
 - **Date & Time:** Full date like "Monday, November 18, 2025" and time
 - **Session Type:** Video Call (or what you selected)
@@ -275,6 +281,7 @@ You should see a beautiful success page with THREE cards:
   - Payment Status: **"Pending"** (yellow badge with clock icon)
 
 **Card 3: Next Steps**
+
 - Text: "Complete your payment now to confirm your appointment, or pay later from your billing page."
 - Three buttons:
   - **"Pay Now"** (blue button with wallet icon) ← Click this!
@@ -288,11 +295,13 @@ You should see a beautiful success page with THREE cards:
 You have TWO options:
 
 **Option A: Pay Immediately (Recommended)**
+
 1. Click the **"Pay Now"** button
 2. You'll be taken directly to the billing page
 3. Continue with **Step 18** below
 
 **Option B: Pay Later**
+
 1. Click **"View Dashboard"**
 2. Later, navigate to billing page manually
 3. Then continue with **Step 18**
@@ -304,10 +313,12 @@ You have TWO options:
 ### **Step 18: Navigate to Billing Page**
 
 **If you clicked "Pay Now" from Step 17:**
+
 - You're already on the billing page! ✅
 - Skip to **Step 19**
 
 **If you clicked "View Dashboard" instead:**
+
 1. Look for sidebar navigation
 2. Click **"Billing"** or **"Billing & Payments"**
 3. OR navigate directly to: **http://localhost:3000/client/dashboard/billing**
@@ -318,6 +329,7 @@ You have TWO options:
 
 1. You should see **"Payments Owed"** tab (active by default)
 2. Your appointment should be listed:
+
    ```
    Session - Marie Dubois
    Date: [Your selected date and time]
@@ -386,17 +398,20 @@ The Stripe Elements form should appear with input fields:
 You should see ONE of these outcomes:
 
 **Option A: Success in Modal** ✅
+
 - Green checkmark icon
 - "Payment Successful!" message
 - "Your appointment has been confirmed"
 - Modal closes automatically or has a close button
 
 **Option B: Redirect to Success Page**
+
 - Redirected back to appointments or billing page
 - Success notification appears
 - URL may have `?payment_success=true`
 
 **Option C: Processing State** (if webhook not setup)
+
 - "Your payment is processing" message
 - This is NORMAL without webhooks!
 - Payment DID go through in Stripe
@@ -412,11 +427,13 @@ You should see ONE of these outcomes:
 3. Look for your appointment
 
 **If Webhook IS Setup:**
+
 - Status should show: **"Paid"** (green badge) ✅
 - Payment date: Today's date
 - Payment method may show
 
 **If Webhook NOT Setup:**
+
 - Status may still show: **"Pending"** or **"Processing"**
 - Don't worry! Payment still went through
 - We just need to verify in Stripe Dashboard...
@@ -433,6 +450,7 @@ This is the definitive proof your payment worked:
 4. Click **"Payments"** in the left sidebar
 
 5. You should see your payment at the top of the list:
+
    ```
    Amount: $120.00 CAD
    Status: Succeeded ✅
@@ -443,6 +461,7 @@ This is the definitive proof your payment worked:
 6. **Click on the payment** to see full details
 
 7. In the payment details, scroll down to **"Metadata"** section:
+
    ```
    appointmentId: [your appointment MongoDB ID]
    clientId: [your user ID]
@@ -488,7 +507,7 @@ If you want to verify in MongoDB:
 If you can see the payment in Stripe Dashboard with status "Succeeded", you've successfully:
 
 - ✅ Created professional account
-- ✅ Created client account  
+- ✅ Created client account
 - ✅ Booked an appointment
 - ✅ Processed payment through Stripe
 - ✅ Stripe integration is working!
@@ -502,16 +521,19 @@ If you can see the payment in Stripe Dashboard with status "Succeeded", you've s
 ### **Problem 1: Can't See Payment Form in Modal**
 
 **Symptoms:**
+
 - Modal opens but no payment form appears
 - Just see "Preparing payment..." forever
 - Or error message appears
 
 **Check Console (F12 → Console tab):**
 Look for errors related to:
+
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - Stripe.js loading issues
 
 **Common Causes:**
+
 1. **Missing or wrong publishable key**
    - Check `.env`: `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...`
    - MUST start with `pk_test_`
@@ -526,6 +548,7 @@ Look for errors related to:
    - Run `npm run dev` again
 
 **Fix:**
+
 ```bash
 # In .env file
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_KEY_HERE
@@ -539,6 +562,7 @@ npm run dev
 ### **Problem 2: "Failed to Create Payment Intent" Error**
 
 **Symptoms:**
+
 - Modal shows error: "Failed to initialize payment"
 - Console shows 500 error from `/api/payments/create-intent`
 
@@ -546,11 +570,13 @@ npm run dev
 Look at your dev server terminal for errors.
 
 **Common Causes:**
+
 1. **Wrong secret key (using publishable key as secret)**
+
    ```bash
    # WRONG:
    STRIPE_SECRET_KEY=pk_test_xxx  ❌
-   
+
    # CORRECT:
    STRIPE_SECRET_KEY=sk_test_xxx  ✅
    ```
@@ -566,6 +592,7 @@ Look at your dev server terminal for errors.
    - Make sure database is accessible
 
 **Fix:**
+
 ```bash
 # In .env file
 STRIPE_SECRET_KEY=sk_test_YOUR_ACTUAL_SECRET_KEY
@@ -581,11 +608,13 @@ npm run dev
 **This is NORMAL without webhook setup!**
 
 **What Happened:**
+
 - ✅ Payment processed successfully in Stripe
 - ❌ Your app didn't receive webhook notification
 - ❌ Database wasn't auto-updated
 
 **Verification:**
+
 1. Go to Stripe Dashboard → Payments
 2. If payment shows "Succeeded" → **Payment worked!** ✅
 3. The money is collected, just status didn't update in your app
@@ -602,10 +631,10 @@ You can manually verify all payments in Stripe Dashboard. For testing purposes, 
 
 **Make sure you're using the correct test card:**
 
-| Card Number | Result |
-|-------------|--------|
-| `4242 4242 4242 4242` | ✅ Success (always) |
-| `4000 0000 0000 0002` | ❌ Declined |
+| Card Number           | Result                |
+| --------------------- | --------------------- |
+| `4242 4242 4242 4242` | ✅ Success (always)   |
+| `4000 0000 0000 0002` | ❌ Declined           |
 | `4000 0000 0000 9995` | ❌ Insufficient funds |
 | `4000 0025 0000 3155` | 🔒 Requires 3D Secure |
 
@@ -620,6 +649,7 @@ You can manually verify all payments in Stripe Dashboard. For testing purposes, 
 You need to create a professional account first.
 
 **Solution:**
+
 1. Logout from client account
 2. Go back to Part 1 of this guide
 3. Create professional account
@@ -630,12 +660,14 @@ You need to create a professional account first.
 ### **Problem 6: Appointment Not Created**
 
 **Check:**
+
 1. Did you select a primary concern? (required field)
 2. Did you select both date AND time?
 3. Check browser console for errors (F12)
 4. Check terminal logs for API errors
 
 **Common Issues:**
+
 - Date in the past
 - Time slot already taken
 - Database connection issue
@@ -649,11 +681,13 @@ To make appointment status auto-update to "paid", you need webhooks.
 ### **Why Webhooks?**
 
 Without webhooks:
+
 - Payment succeeds in Stripe ✅
 - Your app doesn't know about it ❌
 - Status stays "pending" ❌
 
 With webhooks:
+
 - Payment succeeds in Stripe ✅
 - Stripe notifies your app ✅
 - Status auto-updates to "paid" ✅
@@ -663,17 +697,20 @@ With webhooks:
 **Step 1: Install Stripe CLI**
 
 **Windows (Scoop):**
+
 ```powershell
 scoop bucket add stripe https://github.com/stripe/scoop-stripe-cli.git
 scoop install stripe
 ```
 
 **Windows (Direct Download):**
+
 1. Download from: https://github.com/stripe/stripe-cli/releases/latest
 2. Extract `stripe.exe`
 3. Add to PATH or use from download folder
 
 **Mac:**
+
 ```bash
 brew install stripe/stripe-cli/stripe
 ```
@@ -685,6 +722,7 @@ brew install stripe/stripe-cli/stripe
 ```bash
 stripe login
 ```
+
 - Browser will open
 - Click "Allow access"
 - Return to terminal
@@ -700,6 +738,7 @@ stripe listen --forward-to localhost:3000/api/payments/webhook
 ```
 
 You should see:
+
 ```
 > Ready! Your webhook signing secret is whsec_xxxxxxxxxxxxxxxxxxxxx
 ```
@@ -722,6 +761,7 @@ You should see:
 **Step 5: Keep Both Running**
 
 While testing with webhooks, you need:
+
 - ✅ Terminal 1: `npm run dev` (dev server)
 - ✅ Terminal 2: `stripe listen --forward-to localhost:3000/api/payments/webhook`
 
@@ -742,7 +782,8 @@ While testing with webhooks, you need:
 
 ## 📊 **Testing Checklist**
 
-###Basic Functional Tests**
+###Basic Functional Tests\*\*
+
 - [ ] ✅ Create professional account with all 4 steps
 - [ ] ✅ Professional redirects to `/professional/dashboard`
 - [ ] ✅ Logout from professional
@@ -766,11 +807,13 @@ While testing with webhooks, you need:
 - [ ] ✅ Verify in Stripe Dashboard (status: Succeeded)
 
 ### **Advanced Tests (With Webhook)**
+
 - [ ] Payment updates appointment status to "paid"
 - [ ] Paid date is recorded in database
 - [ ] Payment intent ID is saved
 
 ### **Error Tests**
+
 - [ ] Try declined card: `4000 0000 0000 0002`
 - [ ] Try incomplete card number
 - [ ] Try expired date
@@ -802,4 +845,3 @@ If stuck:
 ---
 
 **Good luck testing! 🚀**
-

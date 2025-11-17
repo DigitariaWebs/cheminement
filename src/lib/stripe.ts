@@ -36,4 +36,3 @@ export function toCents(amount: number): number {
 export function fromCents(amount: number): number {
   return amount / 100;
 }
-

@@ -196,7 +196,7 @@ export default function ClientAppointmentsPage() {
           <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Button
-          onClick={() => router.push("/book/appointment")}
+          onClick={() => router.push("/appointment")}
           className="gap-2 rounded-full"
         >
           <Calendar className="h-4 w-4" />
@@ -254,7 +254,7 @@ export default function ClientAppointmentsPage() {
           </h3>
           {activeTab === "upcoming" && (
             <Button
-              onClick={() => router.push("/book/appointment")}
+              onClick={() => router.push("/appointment")}
               className="mt-6 gap-2 rounded-full"
             >
               <Calendar className="h-4 w-4" />

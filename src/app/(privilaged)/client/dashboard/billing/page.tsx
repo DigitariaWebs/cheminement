@@ -19,7 +19,14 @@ import { Button } from "@/components/ui/button";
 import { PaymentModal } from "@/components/payments";
 import { apiClient } from "@/lib/api-client";
 
-type PaymentStatus = "paid" | "pending" | "overdue" | "upcoming" | "processing" | "refunded" | "cancelled";
+type PaymentStatus =
+  | "paid"
+  | "pending"
+  | "overdue"
+  | "upcoming"
+  | "processing"
+  | "refunded"
+  | "cancelled";
 
 interface Payment {
   _id: string;
@@ -84,7 +91,7 @@ export default function ClientBillingPage() {
       setLoading(true);
       setError(null);
       const data = await apiClient.get<any[]>("/appointments");
-      
+
       // Transform appointments to payment format
       const transformedPayments: Payment[] = data.map((apt) => {
         const professional = apt.professionalId;
@@ -117,7 +124,9 @@ export default function ClientBillingPage() {
           amount: apt.price || 120,
           status,
           paymentStatus: apt.paymentStatus,
-          paymentMethod: apt.stripePaymentMethodId ? "Visa ••••4242" : undefined,
+          paymentMethod: apt.stripePaymentMethodId
+            ? "Visa ••••4242"
+            : undefined,
           invoiceUrl: apt.paymentStatus === "paid" ? "#" : undefined,
           dueDate: apt.date,
         };
@@ -482,7 +491,7 @@ export default function ClientBillingPage() {
                     {(payment.status === "pending" ||
                       payment.status === "upcoming" ||
                       payment.status === "overdue") && (
-                      <Button 
+                      <Button
                         className="gap-2 rounded-full"
                         onClick={() => handlePayNow(payment)}
                       >

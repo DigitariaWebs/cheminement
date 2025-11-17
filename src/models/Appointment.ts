@@ -98,7 +98,14 @@ const AppointmentSchema = new Schema<IAppointment>(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "processing", "paid", "failed", "refunded", "cancelled"],
+      enum: [
+        "pending",
+        "processing",
+        "paid",
+        "failed",
+        "refunded",
+        "cancelled",
+      ],
       default: "pending",
     },
     stripePaymentIntentId: String,

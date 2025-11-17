@@ -18,7 +18,13 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 
-type PaymentStatus = "paid" | "pending" | "upcoming" | "processing" | "refunded" | "cancelled";
+type PaymentStatus =
+  | "paid"
+  | "pending"
+  | "upcoming"
+  | "processing"
+  | "refunded"
+  | "cancelled";
 
 interface Payment {
   _id: string;
@@ -55,7 +61,7 @@ export default function ProfessionalBillingPage() {
       setLoading(true);
       setError(null);
       const data = await apiClient.get<any[]>("/appointments");
-      
+
       // Transform appointments to payment format
       const transformedPayments: Payment[] = data.map((apt) => {
         const client = apt.clientId;
@@ -110,7 +116,12 @@ export default function ProfessionalBillingPage() {
       p.status === "upcoming" ||
       p.status === "processing",
   );
-  const paidPayments = payments.filter((p) => p.status === "paid" || p.status === "refunded" || p.status === "cancelled");
+  const paidPayments = payments.filter(
+    (p) =>
+      p.status === "paid" ||
+      p.status === "refunded" ||
+      p.status === "cancelled",
+  );
 
   const totalReceivables = receivablePayments.reduce(
     (sum, p) => sum + p.netAmount,
