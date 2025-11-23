@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import {
   Calendar,
   Clock,
@@ -61,7 +60,6 @@ interface AvailabilityData {
 
 export default function BookAppointmentPage() {
   const router = useRouter();
-  const t = useTranslations("Booking");
 
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
@@ -77,7 +75,6 @@ export default function BookAppointmentPage() {
   >("video");
   const [issueType, setIssueType] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
-  const [createdAppointmentId, setCreatedAppointmentId] = useState<string>("");
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -131,7 +128,7 @@ export default function BookAppointmentPage() {
     return dates;
   };
 
-  const loadAvailableSlots = async () => {
+  const loadAvailableSlots = useCallback(async () => {
     if (!selectedProfessional || !selectedDate) return;
 
     try {
@@ -159,13 +156,13 @@ export default function BookAppointmentPage() {
     } finally {
       setLoadingSlots(false);
     }
-  };
+  }, [selectedProfessional, selectedDate]);
 
   useEffect(() => {
     if (selectedProfessional && selectedDate) {
       loadAvailableSlots();
     }
-  }, [selectedProfessional, selectedDate]);
+  }, [selectedProfessional, selectedDate, loadAvailableSlots]);
 
   const handleProfessionalSelect = (professionalId: string) => {
     setSelectedProfessional(professionalId);
@@ -204,19 +201,15 @@ export default function BookAppointmentPage() {
       setLoading(true);
       setError("");
 
-      const response = await apiClient.post<{ appointmentId: string }>(
-        "/appointments",
-        {
-          professionalId: selectedProfessional,
-          date: selectedDate,
-          time: selectedTime,
-          type: selectedType,
-          issueType,
-          notes,
-        },
-      );
+      await apiClient.post<{ appointmentId: string }>("/appointments", {
+        professionalId: selectedProfessional,
+        date: selectedDate,
+        time: selectedTime,
+        type: selectedType,
+        issueType,
+        notes,
+      });
 
-      setCreatedAppointmentId(response.appointmentId);
       setCompletedSteps([1, 2, 3]);
       setCurrentStep(4); // Success step
     } catch (err: any) {
@@ -589,7 +582,7 @@ export default function BookAppointmentPage() {
                 Appointment Booked Successfully!
               </h2>
               <p className="text-muted-foreground">
-                Your appointment has been scheduled. You'll receive a
+                Your appointment has been scheduled. You&apos;ll receive a
                 confirmation email shortly.
               </p>
             </div>

@@ -485,7 +485,7 @@ export default function ReportsPage() {
           </h2>
           <div className="space-y-3">
             {topIssueTypes.length > 0 ? (
-              topIssueTypes.slice(0, 5).map((issue, index) => (
+              topIssueTypes.slice(0, 5).map((issue) => (
                 <div
                   key={issue.type}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
@@ -535,7 +535,7 @@ export default function ReportsPage() {
             </thead>
             <tbody>
               {professionalPerformance.length > 0 ? (
-                professionalPerformance.map((prof, index) => (
+                professionalPerformance.map((prof) => (
                   <tr
                     key={prof.name}
                     className="border-t border-border/40 hover:bg-muted/20 transition-colors"

@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
-import { Error } from "mongoose";
-import { sendCancellationNotification } from "@/lib/notifications";
+
 import { stripe } from "@/lib/stripe";
 
 export async function GET(
@@ -92,18 +91,6 @@ export async function PATCH(
     ) {
       const cancelledBy =
         session.user.role === "client" ? "client" : "professional";
-
-      const emailData = {
-        clientName: `${(appointment.clientId as any).firstName} ${(appointment.clientId as any).lastName}`,
-        clientEmail: (appointment.clientId as any).email,
-        professionalName: `${(appointment.professionalId as any).firstName} ${(appointment.professionalId as any).lastName}`,
-        professionalEmail: (appointment.professionalId as any).email,
-        date: appointment.date.toISOString(),
-        time: appointment.time,
-        duration: appointment.duration,
-        type: appointment.type,
-        cancelledBy,
-      };
 
       // Send notification without blocking the response
       // Temporarily disabled for development/testing

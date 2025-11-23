@@ -58,8 +58,6 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .lean();
 
-    const total = await Admin.countDocuments({ isActive: true });
-
     // Filter out admins with null userId to prevent errors
     const validAdmins = admins.filter((admin) => admin.userId);
 

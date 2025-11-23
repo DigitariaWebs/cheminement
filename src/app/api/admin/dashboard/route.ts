@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
@@ -29,7 +29,6 @@ export async function GET(req: NextRequest) {
       totalProfessionals,
       totalPatients,
       totalSessions,
-      completedSessions,
       totalRevenue,
       recentUsers,
       recentAppointments,
@@ -46,12 +45,6 @@ export async function GET(req: NextRequest) {
 
       // Total sessions (all time)
       Appointment.countDocuments(),
-
-      // Completed sessions this month
-      Appointment.countDocuments({
-        status: "completed",
-        createdAt: { $gte: lastMonth },
-      }),
 
       // Calculate revenue (assuming $80 per session)
       Appointment.countDocuments({ status: "completed" }).then(

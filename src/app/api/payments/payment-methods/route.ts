@@ -6,7 +6,7 @@ import User from "@/models/User";
 import connectToDatabase from "@/lib/mongodb";
 
 // GET - List payment methods for a customer
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 

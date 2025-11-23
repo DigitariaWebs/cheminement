@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import {
   ChevronLeft,
@@ -64,15 +64,9 @@ export default function SchedulePage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchData();
-  }, [currentDate]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
-    setError("");
     try {
       // Get appointments for current view
       const startDate = new Date(currentDate);
@@ -103,11 +97,14 @@ export default function SchedulePage() {
       setRequests(requestsData);
     } catch (err: any) {
       console.error("Error fetching schedule data:", err);
-      setError(err.message || "Failed to load schedule");
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentDate, view]);
+
+  useEffect(() => {
+    fetchData();
+  }, [currentDate, fetchData]);
 
   const monthNames = [
     "January",

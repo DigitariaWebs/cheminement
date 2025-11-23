@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import {
@@ -41,13 +41,7 @@ export default function PaymentModal({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (open && appointmentId) {
-      createPaymentIntent();
-    }
-  }, [open, appointmentId]);
-
-  const createPaymentIntent = async () => {
+  const createPaymentIntent = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -64,7 +58,13 @@ export default function PaymentModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [appointmentId]);
+
+  useEffect(() => {
+    if (open && appointmentId) {
+      createPaymentIntent();
+    }
+  }, [open, appointmentId, createPaymentIntent]);
 
   const handleSuccess = () => {
     onSuccess?.();
@@ -123,7 +123,6 @@ export default function PaymentModal({
               stripe={stripePromise}
             >
               <CheckoutForm
-                appointmentId={appointmentId}
                 amount={amount}
                 onSuccess={handleSuccess}
                 onError={setError}

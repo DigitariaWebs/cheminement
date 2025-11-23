@@ -27,7 +27,7 @@ export default function ProfessionalDetailPage() {
       try {
         const profileData = await profileAPI.getById(params.id as string);
         setProfile(profileData as IProfile);
-      } catch (error) {
+      } catch {
         console.log("Profile not found for professional:", params.id);
         setProfile(null);
       }

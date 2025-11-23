@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Download,
   Wallet,
@@ -61,33 +61,36 @@ export default function AdminBillingPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const t = useTranslations("Admin.billing");
 
-  const fetchBillingData = async (page = 1) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: "20",
-        search: search,
-        status: statusFilter,
-      });
-      const response = await fetch(`/api/admin/billing?${params}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch billing data");
+  const fetchBillingData = useCallback(
+    async (page = 1) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: "20",
+          search: search,
+          status: statusFilter,
+        });
+        const response = await fetch(`/api/admin/billing?${params}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch billing data");
+        }
+        const result = await response.json();
+        setData(result);
+        setCurrentPage(page);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
       }
-      const result = await response.json();
-      setData(result);
-      setCurrentPage(page);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [search, statusFilter],
+  );
 
   useEffect(() => {
     fetchBillingData(1);
-  }, [search, statusFilter]);
+  }, [fetchBillingData]);
 
   const payments = data?.payments || [];
   const stats = data?.summary || {

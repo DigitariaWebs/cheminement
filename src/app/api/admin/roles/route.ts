@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { ADMIN_ROLE_PERMISSIONS, type AdminRole } from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
 
 // GET - Get available admin roles and their default permissions
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 

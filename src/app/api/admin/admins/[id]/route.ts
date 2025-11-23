@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
-import Admin, {
-  ADMIN_ROLE_PERMISSIONS,
-  type AdminRole,
-  type IAdminPermissions,
-} from "@/models/Admin";
+import Admin, { ADMIN_ROLE_PERMISSIONS, type AdminRole } from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
 
 // GET - Get specific admin details

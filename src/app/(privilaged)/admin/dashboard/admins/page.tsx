@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
@@ -9,8 +9,6 @@ import {
   Shield,
   AlertCircle,
   RefreshCw,
-  ShieldCheck,
-  ShieldX,
   Crown,
   Settings,
   Users,
@@ -39,7 +37,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 
 type AdminRole =
   | "super_admin"
@@ -135,7 +132,7 @@ export default function AdminsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [availableRoles, setAvailableRoles] = useState<RoleInfo[]>([]);
 
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -156,9 +153,9 @@ export default function AdminsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchQuery, roleFilter]);
 
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
     try {
       const response = await fetch("/api/admin/roles");
       if (response.ok) {
@@ -168,12 +165,12 @@ export default function AdminsPage() {
     } catch (err) {
       console.error("Failed to fetch roles:", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAdmins();
     fetchRoles();
-  }, [searchQuery, roleFilter]);
+  }, [fetchAdmins, fetchRoles]);
 
   const admins = data?.admins || [];
 
@@ -488,8 +485,7 @@ function CreateAdminForm({
     role: "support_admin" as AdminRole,
     useCustomPermissions: false,
   });
-  const [customPermissions, setCustomPermissions] =
-    useState<AdminPermissions | null>(null);
+  const [customPermissions] = useState<AdminPermissions | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 

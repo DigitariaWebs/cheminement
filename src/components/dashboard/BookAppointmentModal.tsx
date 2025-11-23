@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -99,13 +99,7 @@ export default function BookAppointmentModal({
     return dates;
   };
 
-  useEffect(() => {
-    if (selectedDate && professionalId) {
-      fetchAvailableSlots();
-    }
-  }, [selectedDate, professionalId]);
-
-  const fetchAvailableSlots = async () => {
+  const fetchAvailableSlots = useCallback(async () => {
     setLoadingSlots(true);
     setError("");
     try {
@@ -130,7 +124,13 @@ export default function BookAppointmentModal({
     } finally {
       setLoadingSlots(false);
     }
-  };
+  }, [selectedDate, professionalId]);
+
+  useEffect(() => {
+    if (selectedDate && professionalId) {
+      fetchAvailableSlots();
+    }
+  }, [selectedDate, professionalId, fetchAvailableSlots]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -172,19 +172,6 @@ export default function BookAppointmentModal({
   const handleClose = () => {
     resetForm();
     onClose();
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "video":
-        return <Video className="h-4 w-4" />;
-      case "in-person":
-        return <MapPin className="h-4 w-4" />;
-      case "phone":
-        return <Phone className="h-4 w-4" />;
-      default:
-        return <Calendar className="h-4 w-4" />;
-    }
   };
 
   const getPricing = () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
@@ -72,33 +72,36 @@ export default function PatientsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const fetchPatients = async (page = 1) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: "20",
-        search: searchQuery,
-        status: statusFilter,
-      });
-      const response = await fetch(`/api/admin/patients?${params}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch patients");
+  const fetchPatients = useCallback(
+    async (page = 1) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: "20",
+          search: searchQuery,
+          status: statusFilter,
+        });
+        const response = await fetch(`/api/admin/patients?${params}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch patients");
+        }
+        const result = await response.json();
+        setData(result);
+        setCurrentPage(page);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
       }
-      const result = await response.json();
-      setData(result);
-      setCurrentPage(page);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [searchQuery, statusFilter],
+  );
 
   useEffect(() => {
     fetchPatients(1);
-  }, [searchQuery, statusFilter]);
+  }, [fetchPatients]);
 
   const patients = data?.patients || [];
   const summary = data?.summary || {

@@ -10,14 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface CheckoutFormProps {
-  appointmentId: string;
   amount: number;
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
 
 export default function CheckoutForm({
-  appointmentId,
   amount,
   onSuccess,
   onError,

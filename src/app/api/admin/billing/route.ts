@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/User";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
 
@@ -84,7 +83,7 @@ export async function GET(req: NextRequest) {
       : await Appointment.countDocuments(query);
 
     // Transform to payment format
-    const payments = filteredAppointments.map((appointment, index) => {
+    const payments = filteredAppointments.map((appointment) => {
       const client = appointment.clientId as any;
       const professional = appointment.professionalId as any;
 

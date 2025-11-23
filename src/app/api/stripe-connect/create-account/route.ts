@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
@@ -6,7 +6,7 @@ import connectToDatabase from "@/lib/mongodb";
 import User, { IUser } from "@/models/User";
 
 // Create Stripe Connect account for professionals
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const session = await getServerSession(authOptions);
 

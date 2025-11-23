@@ -16,18 +16,18 @@ const transporter = nodemailer.createTransporter({
 });
 */
 
-interface EmailData {
-  clientName: string;
-  clientEmail: string;
-  professionalName: string;
-  professionalEmail: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: string;
-  meetingLink?: string;
-  location?: string;
-}
+// interface EmailData {
+//   clientName: string;
+//   clientEmail: string;
+//   professionalName: string;
+//   professionalEmail: string;
+//   date: string;
+//   time: string;
+//   duration: number;
+//   type: string;
+//   meetingLink?: string;
+//   location?: string;
+// }
 
 /*
 export async function sendAppointmentConfirmation(data: EmailData) {
