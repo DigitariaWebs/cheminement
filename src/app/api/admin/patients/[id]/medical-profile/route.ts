@@ -33,7 +33,12 @@ export async function GET(
     return NextResponse.json(
       {
         error: "Failed to fetch medical profile",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details:
+          error instanceof Error
+            ? error instanceof Error
+              ? error.message
+              : "Unknown error"
+            : "Unknown error",
       },
       { status: 500 },
     );

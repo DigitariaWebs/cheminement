@@ -55,10 +55,13 @@ export async function GET() {
         billing_details: pm.billing_details,
       })),
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get payment methods error:", error);
     return NextResponse.json(
-      { error: "Failed to retrieve payment methods", details: error.message },
+      {
+        error: "Failed to retrieve payment methods",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -133,10 +136,13 @@ export async function POST(req: NextRequest) {
       success: true,
       message: "Payment method added successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Add payment method error:", error);
     return NextResponse.json(
-      { error: "Failed to add payment method", details: error.message },
+      {
+        error: "Failed to add payment method",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -168,10 +174,13 @@ export async function DELETE(req: NextRequest) {
       success: true,
       message: "Payment method removed successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Delete payment method error:", error);
     return NextResponse.json(
-      { error: "Failed to remove payment method", details: error.message },
+      {
+        error: "Failed to remove payment method",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

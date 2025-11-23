@@ -221,10 +221,13 @@ export async function GET() {
     };
 
     return NextResponse.json(dashboardData);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin dashboard API error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch dashboard data", details: error.message },
+      {
+        error: "Failed to fetch dashboard data",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

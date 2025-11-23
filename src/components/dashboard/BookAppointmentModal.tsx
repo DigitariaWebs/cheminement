@@ -279,7 +279,9 @@ export default function BookAppointmentModal({
             <Label htmlFor="type">{t("booking.sessionType")}</Label>
             <Select
               value={selectedType}
-              onValueChange={(value: any) => setSelectedType(value)}
+              onValueChange={(value: "video" | "in-person" | "phone") =>
+                setSelectedType(value)
+              }
             >
               <SelectTrigger id="type">
                 <SelectValue />

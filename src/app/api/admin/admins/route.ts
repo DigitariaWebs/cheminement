@@ -98,10 +98,13 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil(validAdmins.length / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get admins error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch admins", details: error.message },
+      {
+        error: "Failed to fetch admins",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -221,10 +224,13 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Create admin error:", error);
     return NextResponse.json(
-      { error: "Failed to create admin", details: error.message },
+      {
+        error: "Failed to create admin",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

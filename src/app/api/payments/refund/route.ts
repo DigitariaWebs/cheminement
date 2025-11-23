@@ -103,13 +103,16 @@ export async function POST(req: NextRequest) {
         paymentStatus: appointment.paymentStatus,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Refund error:", error);
 
     // Handle specific Stripe errors
     if (error.type === "StripeInvalidRequestError") {
       return NextResponse.json(
-        { error: "Invalid refund request", details: error.message },
+        {
+          error: "Invalid refund request",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
         { status: 400 },
       );
     }
@@ -117,7 +120,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to process refund",
-        details: error.message,
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     );

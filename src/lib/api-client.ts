@@ -1,10 +1,53 @@
 /**
  * API Client Utility
- * Provides helper functions for making API calls with proper error handling
+ * Provides helper functions for making API calls with proper error handling and Zod validation
  */
 
+import { z } from "zod";
+import {
+  signupRequestSchema,
+  signupResponseSchema,
+  type SignupRequest,
+  type SignupResponse,
+  profileResponseSchema,
+  updateProfileRequestSchema,
+  type UpdateProfileRequest,
+  type ProfileResponse,
+  medicalProfileResponseSchema,
+  updateMedicalProfileRequestSchema,
+  type UpdateMedicalProfileRequest,
+  type MedicalProfileResponse,
+  createAppointmentRequestSchema,
+  updateAppointmentRequestSchema,
+  appointmentResponseSchema,
+  listAppointmentsQuerySchema,
+  type CreateAppointmentRequest,
+  type UpdateAppointmentRequest,
+  type AppointmentResponse,
+  type ListAppointmentsQuery,
+  createRequestRequestSchema,
+  updateRequestRequestSchema,
+  requestResponseSchema,
+  listRequestsQuerySchema,
+  type CreateRequestRequest,
+  type UpdateRequestRequest,
+  type RequestResponse,
+  type ListRequestsQuery,
+  updateUserRequestSchema,
+  userResponseSchema,
+  listUsersQuerySchema,
+  listClientsQuerySchema,
+  type UpdateUserRequest,
+  type UserResponse,
+  type ListUsersQuery,
+  type ListClientsQuery,
+  ValidationError,
+} from "./schemas";
+
 interface FetchOptions extends RequestInit {
-  data?: any;
+  data?: unknown;
+  requestSchema?: z.ZodSchema;
+  responseSchema?: z.ZodSchema;
 }
 
 class ApiClient {
@@ -18,7 +61,19 @@ class ApiClient {
     endpoint: string,
     options: FetchOptions = {},
   ): Promise<T> {
-    const { data, ...fetchOptions } = options;
+    const { data, requestSchema, responseSchema, ...fetchOptions } = options;
+
+    // Validate request data if schema provided
+    if (data && requestSchema) {
+      const result = requestSchema.safeParse(data);
+      if (!result.success) {
+        const errors = result.error.issues.map((err: z.ZodIssue) => ({
+          path: err.path.join("."),
+          message: err.message,
+        }));
+        throw new ValidationError("Request validation failed", errors);
+      }
+    }
 
     const config: RequestInit = {
       ...fetchOptions,
@@ -40,7 +95,19 @@ class ApiClient {
         throw new Error(error.error || "An error occurred");
       }
 
-      return await response.json();
+      const responseData = await response.json();
+
+      // Validate response data if schema provided
+      if (responseSchema) {
+        const result = responseSchema.safeParse(responseData);
+        if (!result.success) {
+          console.warn("Response validation failed:", result.error.issues);
+          // Return data anyway but log warning
+        }
+        return result.data as T;
+      }
+
+      return responseData as T;
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -57,7 +124,7 @@ class ApiClient {
   // POST request
   async post<T>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     options?: FetchOptions,
   ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "POST", data });
@@ -66,7 +133,7 @@ class ApiClient {
   // PUT request
   async put<T>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     options?: FetchOptions,
   ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "PUT", data });
@@ -75,7 +142,7 @@ class ApiClient {
   // PATCH request
   async patch<T>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     options?: FetchOptions,
   ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "PATCH", data });
@@ -90,181 +157,182 @@ class ApiClient {
 // Export singleton instance
 export const apiClient = new ApiClient();
 
-// Specific API functions for common operations
+// Specific API functions with Zod validation
 
 // Auth
 export const authAPI = {
-  signup: (data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-    phone?: string;
-    dateOfBirth?: string;
-    gender?: string;
-    language?: string;
-    location?: string;
-    // Medical Profile fields
-    concernedPerson?: string;
-    medicalConditions?: string[];
-    currentMedications?: string[];
-    allergies?: string[];
-    substanceUse?: string;
-    previousTherapy?: boolean;
-    previousTherapyDetails?: string;
-    psychiatricHospitalization?: boolean;
-    currentTreatment?: string;
-    diagnosedConditions?: string[];
-    primaryIssue?: string;
-    secondaryIssues?: string[];
-    issueDescription?: string;
-    severity?: string;
-    duration?: string;
-    triggeringSituation?: string;
-    symptoms?: string[];
-    dailyLifeImpact?: string;
-    sleepQuality?: string;
-    appetiteChanges?: string;
-    treatmentGoals?: string[];
-    therapyApproach?: string[];
-    concernsAboutTherapy?: string;
-    availability?: string[];
-    modality?: string;
-    sessionFrequency?: string;
-    notes?: string;
-    emergencyContactName?: string;
-    emergencyContactPhone?: string;
-    emergencyContactRelation?: string;
-    crisisPlan?: string;
-    suicidalThoughts?: boolean;
-    preferredGender?: string;
-    preferredAge?: string;
-    languagePreference?: string;
-    culturalConsiderations?: string;
-    // Professional fields
-    professionalProfile?: {
-      problematics?: string[];
-      approaches?: string[];
-      ageCategories?: string[];
-      skills?: string[];
-      bio?: string;
-      yearsOfExperience?: number;
-      specialty?: string;
-      license?: string;
-      certifications?: string[];
-      availability?: {
-        days: {
-          day: string;
-          isWorkDay: boolean;
-          startTime: string;
-          endTime: string;
-        }[];
-        sessionDurationMinutes?: number;
-        breakDurationMinutes?: number;
-        firstDayOfWeek?: string;
-      };
-      languages?: string[];
-      sessionTypes?: string[];
-      modalities?: string[];
-      paymentAgreement?: string;
-      pricing?: {
-        individualSession?: number;
-        coupleSession?: number;
-        groupSession?: number;
-      };
-      education?: {
-        degree: string;
-        institution: string;
-        year?: number;
-      }[];
-    };
-  }) => apiClient.post("/auth/signup", data),
+  signup: (data: SignupRequest): Promise<SignupResponse> =>
+    apiClient.post<SignupResponse>("/auth/signup", data, {
+      requestSchema: signupRequestSchema,
+      responseSchema: signupResponseSchema,
+    }),
 };
 
 // Profile
 export const profileAPI = {
-  get: async () => {
+  get: async (): Promise<ProfileResponse | null> => {
     try {
-      return await apiClient.get("/profile");
-    } catch (error: any) {
-      if (error.message === "Profile not found") {
+      return await apiClient.get<ProfileResponse>("/profile", {
+        responseSchema: profileResponseSchema,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Profile not found") {
         return null;
       }
       throw error;
     }
   },
-  getById: (id: string) => apiClient.get(`/profile/${id}`),
-  update: (data: any) => apiClient.put("/profile", data),
+  getById: (id: string): Promise<ProfileResponse> =>
+    apiClient.get<ProfileResponse>(`/profile/${id}`, {
+      responseSchema: profileResponseSchema,
+    }),
+  update: (data: UpdateProfileRequest): Promise<ProfileResponse> =>
+    apiClient.put<ProfileResponse>("/profile", data, {
+      requestSchema: updateProfileRequestSchema,
+      responseSchema: profileResponseSchema,
+    }),
 };
 
 // Medical Profile
 export const medicalProfileAPI = {
-  get: () => apiClient.get("/medical-profile"),
-  getByUserId: (userId: string) => apiClient.get(`/medical-profile/${userId}`),
-  update: (data: any) => apiClient.put("/medical-profile", data),
+  get: (): Promise<MedicalProfileResponse> =>
+    apiClient.get<MedicalProfileResponse>("/medical-profile", {
+      responseSchema: medicalProfileResponseSchema,
+    }),
+  getByUserId: (userId: string): Promise<MedicalProfileResponse> =>
+    apiClient.get<MedicalProfileResponse>(`/medical-profile/${userId}`, {
+      responseSchema: medicalProfileResponseSchema,
+    }),
+  update: (
+    data: UpdateMedicalProfileRequest,
+  ): Promise<MedicalProfileResponse> =>
+    apiClient.put<MedicalProfileResponse>("/medical-profile", data, {
+      requestSchema: updateMedicalProfileRequestSchema,
+      responseSchema: medicalProfileResponseSchema,
+    }),
 };
 
 // Appointments
 export const appointmentsAPI = {
-  list: (params?: {
-    status?: string;
-    startDate?: string;
-    endDate?: string;
-    clientId?: string;
-  }) => {
-    const query = new URLSearchParams(params as any).toString();
-    return apiClient.get(`/appointments${query ? `?${query}` : ""}`);
+  list: (params?: ListAppointmentsQuery): Promise<AppointmentResponse[]> => {
+    const validated = listAppointmentsQuerySchema.parse(params || {});
+    const query = new URLSearchParams(
+      validated as unknown as Record<string, string>,
+    ).toString();
+    return apiClient.get<AppointmentResponse[]>(
+      `/appointments${query ? `?${query}` : ""}`,
+      {
+        responseSchema: z.array(appointmentResponseSchema),
+      },
+    );
   },
-  create: (data: any) => apiClient.post("/appointments", data),
-  get: (id: string) => apiClient.get(`/appointments/${id}`),
-  update: (id: string, data: any) =>
-    apiClient.patch(`/appointments/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/appointments/${id}`),
+  create: (data: CreateAppointmentRequest): Promise<AppointmentResponse> =>
+    apiClient.post<AppointmentResponse>("/appointments", data, {
+      requestSchema: createAppointmentRequestSchema,
+      responseSchema: appointmentResponseSchema,
+    }),
+  get: (id: string): Promise<AppointmentResponse> =>
+    apiClient.get<AppointmentResponse>(`/appointments/${id}`, {
+      responseSchema: appointmentResponseSchema,
+    }),
+  update: (
+    id: string,
+    data: UpdateAppointmentRequest,
+  ): Promise<AppointmentResponse> =>
+    apiClient.patch<AppointmentResponse>(`/appointments/${id}`, data, {
+      requestSchema: updateAppointmentRequestSchema,
+      responseSchema: appointmentResponseSchema,
+    }),
+  delete: (id: string): Promise<{ message: string }> =>
+    apiClient.delete(`/appointments/${id}`),
 };
 
 // Requests
 export const requestsAPI = {
-  list: (params?: { status?: string }) => {
-    const query = new URLSearchParams(params as any).toString();
-    return apiClient.get(`/requests${query ? `?${query}` : ""}`);
+  list: (params?: ListRequestsQuery): Promise<RequestResponse[]> => {
+    const validated = listRequestsQuerySchema.parse(params || {});
+    const query = new URLSearchParams(
+      validated as unknown as Record<string, string>,
+    ).toString();
+    return apiClient.get<RequestResponse[]>(
+      `/requests${query ? `?${query}` : ""}`,
+      {
+        responseSchema: z.array(requestResponseSchema),
+      },
+    );
   },
-  create: (data: any) => apiClient.post("/requests", data),
-  get: (id: string) => apiClient.get(`/requests/${id}`),
-  update: (id: string, data: any) => apiClient.patch(`/requests/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/requests/${id}`),
+  create: (data: CreateRequestRequest): Promise<RequestResponse> =>
+    apiClient.post<RequestResponse>("/requests", data, {
+      requestSchema: createRequestRequestSchema,
+      responseSchema: requestResponseSchema,
+    }),
+  get: (id: string): Promise<RequestResponse> =>
+    apiClient.get<RequestResponse>(`/requests/${id}`, {
+      responseSchema: requestResponseSchema,
+    }),
+  update: (id: string, data: UpdateRequestRequest): Promise<RequestResponse> =>
+    apiClient.patch<RequestResponse>(`/requests/${id}`, data, {
+      requestSchema: updateRequestRequestSchema,
+      responseSchema: requestResponseSchema,
+    }),
+  delete: (id: string): Promise<{ message: string }> =>
+    apiClient.delete(`/requests/${id}`),
 };
 
-// Blogs
+// Blogs (no validation for now)
 export const blogsAPI = {
   list: (params?: {
     category?: string;
     published?: boolean;
     limit?: number;
     page?: number;
-  }) => {
-    const query = new URLSearchParams(params as any).toString();
+  }): Promise<unknown[]> => {
+    const query = new URLSearchParams(
+      params as Record<string, string>,
+    ).toString();
     return apiClient.get(`/blogs${query ? `?${query}` : ""}`);
   },
-  create: (data: any) => apiClient.post("/blogs", data),
+  create: (data: unknown): Promise<unknown> => apiClient.post("/blogs", data),
 };
 
 // Users
 export const usersAPI = {
-  get: () => apiClient.get("/users/me"),
-  getById: (id: string) => apiClient.get(`/users/${id}`),
-  update: (data: any) => apiClient.patch("/users/me", data),
-  updateById: (id: string, data: any) => apiClient.patch(`/users/${id}`, data),
-  list: (params?: { role?: string }) => {
-    const query = new URLSearchParams(params as any).toString();
-    return apiClient.get(`/users${query ? `?${query}` : ""}`);
+  get: (): Promise<UserResponse> =>
+    apiClient.get<UserResponse>("/users/me", {
+      responseSchema: userResponseSchema,
+    }),
+  getById: (id: string): Promise<UserResponse> =>
+    apiClient.get<UserResponse>(`/users/${id}`, {
+      responseSchema: userResponseSchema,
+    }),
+  update: (data: UpdateUserRequest): Promise<UserResponse> =>
+    apiClient.patch<UserResponse>("/users/me", data, {
+      requestSchema: updateUserRequestSchema,
+      responseSchema: userResponseSchema,
+    }),
+  updateById: (id: string, data: UpdateUserRequest): Promise<UserResponse> =>
+    apiClient.patch<UserResponse>(`/users/${id}`, data, {
+      requestSchema: updateUserRequestSchema,
+      responseSchema: userResponseSchema,
+    }),
+  list: (params?: ListUsersQuery): Promise<UserResponse[]> => {
+    const validated = listUsersQuerySchema.parse(params || {});
+    const query = new URLSearchParams(
+      validated as unknown as Record<string, string>,
+    ).toString();
+    return apiClient.get<UserResponse[]>(`/users${query ? `?${query}` : ""}`, {
+      responseSchema: z.array(userResponseSchema),
+    });
   },
 };
 
 // Clients
 export const clientsAPI = {
-  list: (params?: { status?: string; issueType?: string; search?: string }) => {
-    const query = new URLSearchParams(params as any).toString();
+  list: (params?: ListClientsQuery): Promise<unknown[]> => {
+    const validated = listClientsQuerySchema.parse(params || {});
+    const query = new URLSearchParams(
+      validated as unknown as Record<string, string>,
+    ).toString();
     return apiClient.get(`/clients${query ? `?${query}` : ""}`);
   },
 };

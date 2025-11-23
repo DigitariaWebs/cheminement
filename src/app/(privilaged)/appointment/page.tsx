@@ -506,7 +506,9 @@ export default function BookAppointmentPage() {
                 <Label>Therapy Type *</Label>
                 <Select
                   value={therapyType}
-                  onValueChange={(value: any) => setTherapyType(value)}
+                  onValueChange={(value: "couple" | "solo" | "group") =>
+                    setTherapyType(value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -539,7 +541,9 @@ export default function BookAppointmentPage() {
                 <Label>Session Type</Label>
                 <Select
                   value={selectedType}
-                  onValueChange={(value: any) => setSelectedType(value)}
+                  onValueChange={(value: "video" | "in-person" | "phone") =>
+                    setSelectedType(value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />

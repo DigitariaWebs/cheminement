@@ -36,10 +36,13 @@ export async function GET() {
     }
 
     return NextResponse.json(settings);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get platform settings error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch platform settings", details: error.message },
+      {
+        error: "Failed to fetch platform settings",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -95,10 +98,13 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json(settings);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Update platform settings error:", error);
     return NextResponse.json(
-      { error: "Failed to update platform settings", details: error.message },
+      {
+        error: "Failed to update platform settings",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

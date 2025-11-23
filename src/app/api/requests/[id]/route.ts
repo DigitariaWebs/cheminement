@@ -28,10 +28,13 @@ export async function GET(
     }
 
     return NextResponse.json(request);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get request error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch request", details: error.message },
+      {
+        error: "Failed to fetch request",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -64,10 +67,13 @@ export async function PATCH(
     }
 
     return NextResponse.json(request);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Update request error:", error);
     return NextResponse.json(
-      { error: "Failed to update request", details: error.message },
+      {
+        error: "Failed to update request",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -95,10 +101,13 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: "Request deleted successfully" });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Delete request error:", error);
     return NextResponse.json(
-      { error: "Failed to delete request", details: error.message },
+      {
+        error: "Failed to delete request",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

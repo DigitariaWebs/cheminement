@@ -51,7 +51,12 @@ export async function GET(
     return NextResponse.json(
       {
         error: "Failed to fetch appointment",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details:
+          error instanceof Error
+            ? error instanceof Error
+              ? error.message
+              : "Unknown error"
+            : "Unknown error",
       },
       { status: 500 },
     );
@@ -192,7 +197,12 @@ export async function PATCH(
     return NextResponse.json(
       {
         error: "Failed to update appointment",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details:
+          error instanceof Error
+            ? error instanceof Error
+              ? error.message
+              : "Unknown error"
+            : "Unknown error",
       },
       { status: 500 },
     );
@@ -229,7 +239,12 @@ export async function DELETE(
     return NextResponse.json(
       {
         error: "Failed to delete appointment",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details:
+          error instanceof Error
+            ? error instanceof Error
+              ? error.message
+              : "Unknown error"
+            : "Unknown error",
       },
       { status: 500 },
     );

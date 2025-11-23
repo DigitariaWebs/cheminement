@@ -43,10 +43,13 @@ export async function GET(
     }
 
     return NextResponse.json(user);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get user by ID error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch user", details: error.message },
+      {
+        error: "Failed to fetch user",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -110,10 +113,13 @@ export async function PATCH(
     }
 
     return NextResponse.json(user);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Update user error:", error);
     return NextResponse.json(
-      { error: "Failed to update user", details: error.message },
+      {
+        error: "Failed to update user",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

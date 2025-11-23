@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
 
-    const query: any = {};
+    const query: Record<string, unknown> = {};
 
     // Filter by user role
     if (session.user.role === "client") {
@@ -37,10 +37,13 @@ export async function GET(req: NextRequest) {
       .sort({ requestDate: -1 });
 
     return NextResponse.json(requests);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get requests error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch requests", details: error.message },
+      {
+        error: "Failed to fetch requests",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -62,10 +65,13 @@ export async function POST(req: NextRequest) {
     await request.save();
 
     return NextResponse.json(request, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Create request error:", error);
     return NextResponse.json(
-      { error: "Failed to create request", details: error.message },
+      {
+        error: "Failed to create request",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

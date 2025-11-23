@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
 
     // Build query for professionals
-    const query: any = { role: "professional" };
+    const query: Record<string, unknown> = { role: "professional" };
 
     if (status !== "all") {
       query.status = status;
@@ -109,10 +109,13 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin professionals API error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch professionals data", details: error.message },
+      {
+        error: "Failed to fetch professionals data",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

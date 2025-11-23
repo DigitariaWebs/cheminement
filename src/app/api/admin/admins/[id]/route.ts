@@ -66,10 +66,13 @@ export async function GET(
     };
 
     return NextResponse.json(adminData);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get admin error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch admin", details: error.message },
+      {
+        error: "Failed to fetch admin",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -114,7 +117,7 @@ export async function PUT(
 
     // Prevent super admin from modifying themselves
     if (
-      id === (currentAdmin._id as any).toString() &&
+      id === (currentAdmin._id as { toString(): string }).toString() &&
       currentAdmin.role === "super_admin"
     ) {
       return NextResponse.json(
@@ -124,7 +127,7 @@ export async function PUT(
     }
 
     // Update role and permissions
-    const updates: any = {};
+    const updates: Record<string, unknown> = {};
 
     if (role && role !== adminToUpdate.role) {
       updates.role = role;
@@ -160,10 +163,13 @@ export async function PUT(
         isActive: (updatedAdmin as any).isActive,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Update admin error:", error);
     return NextResponse.json(
-      { error: "Failed to update admin", details: error.message },
+      {
+        error: "Failed to update admin",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -204,7 +210,7 @@ export async function DELETE(
     }
 
     // Prevent super admin from deleting themselves
-    if (id === (currentAdmin._id as any).toString()) {
+    if (id === (currentAdmin._id as { toString(): string }).toString()) {
       return NextResponse.json(
         { error: "Cannot delete your own admin account" },
         { status: 400 },
@@ -219,10 +225,13 @@ export async function DELETE(
     });
 
     return NextResponse.json({ message: "Admin deactivated successfully" });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Delete admin error:", error);
     return NextResponse.json(
-      { error: "Failed to delete admin", details: error.message },
+      {
+        error: "Failed to delete admin",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

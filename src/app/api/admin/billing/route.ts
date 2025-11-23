@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
 
     // Build query for appointments (which represent billable sessions)
-    const query: any = {
+    const query: Record<string, unknown> = {
       status: { $in: ["completed", "scheduled", "cancelled", "no-show"] },
     };
 
@@ -174,10 +174,13 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin billing API error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch billing data", details: error.message },
+      {
+        error: "Failed to fetch billing data",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

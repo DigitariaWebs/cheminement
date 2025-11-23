@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
 
     // Build query for patients
-    const query: any = { role: "client" };
+    const query: Record<string, unknown> = { role: "client" };
 
     if (status !== "all") {
       query.status = status;
@@ -115,10 +115,13 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin patients API error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch patients data", details: error.message },
+      {
+        error: "Failed to fetch patients data",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

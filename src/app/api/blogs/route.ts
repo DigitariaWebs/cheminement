@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const page = parseInt(searchParams.get("page") || "1");
 
-    const query: any = {};
+    const query: Record<string, unknown> = {};
 
     if (category) {
       query.category = category;
@@ -46,10 +46,13 @@ export async function GET(req: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get blogs error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch blogs", details: error.message },
+      {
+        error: "Failed to fetch blogs",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -71,10 +74,13 @@ export async function POST(req: NextRequest) {
     await blog.save();
 
     return NextResponse.json(blog, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Create blog error:", error);
     return NextResponse.json(
-      { error: "Failed to create blog", details: error.message },
+      {
+        error: "Failed to create blog",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

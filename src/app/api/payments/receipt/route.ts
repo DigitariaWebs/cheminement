@@ -295,7 +295,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to generate receipt",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details:
+          error instanceof Error
+            ? error instanceof Error
+              ? error.message
+              : "Unknown error"
+            : "Unknown error",
       },
       { status: 500 },
     );

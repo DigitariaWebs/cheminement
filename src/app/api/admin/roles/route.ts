@@ -20,10 +20,13 @@ export async function GET() {
     }));
 
     return NextResponse.json({ roles });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get roles error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch roles", details: error.message },
+      {
+        error: "Failed to fetch roles",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

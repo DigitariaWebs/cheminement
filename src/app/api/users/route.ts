@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const role = searchParams.get("role");
 
-    const query: any = {};
+    const query: Record<string, unknown> = {};
 
     if (role) {
       query.role = role;
@@ -30,10 +30,13 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 });
 
     return NextResponse.json(users);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get users error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch users", details: error.message },
+      {
+        error: "Failed to fetch users",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

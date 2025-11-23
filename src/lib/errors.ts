@@ -74,7 +74,7 @@ export function handleApiError(error: unknown): Response {
  * Validation helper
  */
 export function validateRequired(
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   requiredFields: string[],
 ): void {
   const missingFields = requiredFields.filter((field) => !data[field]);

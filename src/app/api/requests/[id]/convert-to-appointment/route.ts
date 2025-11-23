@@ -157,7 +157,7 @@ export async function POST(
     }
 
     // Create the appointment
-    const appointmentData: any = {
+    const appointmentData: Record<string, unknown> = {
       clientId,
       professionalId,
       date: appointmentDate,
@@ -202,12 +202,12 @@ export async function POST(
       },
       { status: 201 },
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Convert request to appointment error:", error);
     return NextResponse.json(
       {
         error: "Failed to convert request to appointment",
-        details: error.message,
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     );

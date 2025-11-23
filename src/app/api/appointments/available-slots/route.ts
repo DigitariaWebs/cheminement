@@ -199,12 +199,12 @@ export async function GET(req: NextRequest) {
         end: dayAvailability.endTime,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get available slots error:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch available slots",
-        details: error.message,
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     );
