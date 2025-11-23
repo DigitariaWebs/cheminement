@@ -168,27 +168,41 @@ export async function GET(req: NextRequest) {
       154,
     );
 
+    const therapyTypeLabel =
+      appointment.therapyType === "solo"
+        ? "Individual"
+        : appointment.therapyType === "couple"
+          ? "Couple"
+          : "Group";
+    doc.text(`Therapy Type: ${therapyTypeLabel}`, 25, 162);
+
     // Payment Details
     doc.setTextColor(...textColor);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("Payment Details", 20, 175);
+    doc.text("Payment Details", 20, 183);
 
     // Payment table background
     doc.setFillColor(...lightGray);
-    doc.roundedRect(20, 180, 170, 10, 2, 2, "F");
+    doc.roundedRect(20, 188, 170, 10, 2, 2, "F");
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text("Description", 25, 187);
-    doc.text("Amount", 160, 187, { align: "right" });
+    doc.text("Description", 25, 195);
+    doc.text("Amount", 160, 195, { align: "right" });
 
     // Payment rows
-    let yPos = 197;
+    let yPos = 205;
 
     // Session fee
     doc.setFont("helvetica", "normal");
-    doc.text("Therapy Session", 25, yPos);
+    const therapyLabel =
+      appointment.therapyType === "solo"
+        ? "Individual"
+        : appointment.therapyType === "couple"
+          ? "Couple"
+          : "Group";
+    doc.text(`${therapyLabel} Therapy Session`, 25, yPos);
     doc.text(`$${appointment.price.toFixed(2)}`, 160, yPos, { align: "right" });
 
     yPos += 10;

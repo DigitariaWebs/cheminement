@@ -4,6 +4,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
+import PlatformSettings from "@/models/PlatformSettings";
 import { authOptions } from "@/lib/auth";
 
 // Helper function to generate time slots
@@ -146,6 +147,41 @@ export async function GET(req: NextRequest) {
       return true;
     });
 
+    // Get pricing information (professional or platform defaults)
+    let pricingInfo: {
+      individualSession?: number;
+      coupleSession?: number;
+      groupSession?: number;
+    } = profile.pricing || {};
+
+    // If professional doesn't have pricing set, use platform defaults
+    if (
+      !pricingInfo.individualSession &&
+      !pricingInfo.coupleSession &&
+      !pricingInfo.groupSession
+    ) {
+      let platformSettings = await PlatformSettings.findOne();
+
+      if (!platformSettings) {
+        platformSettings = new PlatformSettings({
+          defaultPricing: {
+            solo: 120,
+            couple: 150,
+            group: 80,
+          },
+          platformFeePercentage: 10,
+          currency: "CAD",
+        });
+        await platformSettings.save();
+      }
+
+      pricingInfo = {
+        individualSession: platformSettings.defaultPricing.solo,
+        coupleSession: platformSettings.defaultPricing.couple,
+        groupSession: platformSettings.defaultPricing.group,
+      };
+    }
+
     return NextResponse.json({
       date: dateStr,
       dayOfWeek,
@@ -155,7 +191,7 @@ export async function GET(req: NextRequest) {
         id: professional._id,
         name: `${professional.firstName} ${professional.lastName}`,
         sessionDuration,
-        pricing: profile.pricing || {},
+        pricing: pricingInfo,
         sessionTypes: profile.sessionTypes || [],
       },
       workingHours: {

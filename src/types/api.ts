@@ -67,6 +67,7 @@ export interface AppointmentResponse {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
+  therapyType: "solo" | "couple" | "group";
   status: "scheduled" | "completed" | "cancelled" | "no-show";
   issueType?: string;
   notes?: string;

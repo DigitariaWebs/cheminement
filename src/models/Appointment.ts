@@ -7,6 +7,7 @@ export interface IAppointment extends Document {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
+  therapyType: "solo" | "couple" | "group";
   status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
   issueType?: string;
   notes?: string;
@@ -67,6 +68,12 @@ const AppointmentSchema = new Schema<IAppointment>(
       enum: ["video", "in-person", "phone"],
       required: true,
       default: "video",
+    },
+    therapyType: {
+      type: String,
+      enum: ["solo", "couple", "group"],
+      required: true,
+      default: "solo",
     },
     status: {
       type: String,

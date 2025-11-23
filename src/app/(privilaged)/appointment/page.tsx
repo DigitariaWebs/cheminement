@@ -9,6 +9,7 @@ import {
   Video,
   Phone,
   User,
+  Users,
   ArrowLeft,
   Loader2,
   CheckCircle2,
@@ -47,7 +48,9 @@ interface AvailableSlot {
 interface AvailabilityData {
   professionalInfo: Professional & {
     pricing: {
-      individualSession: number;
+      individualSession?: number;
+      coupleSession?: number;
+      groupSession?: number;
     };
   };
   workingHours: {
@@ -73,6 +76,9 @@ export default function BookAppointmentPage() {
   const [selectedType, setSelectedType] = useState<
     "video" | "in-person" | "phone"
   >("video");
+  const [therapyType, setTherapyType] = useState<"solo" | "couple" | "group">(
+    "solo",
+  );
   const [issueType, setIssueType] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
 
@@ -212,6 +218,7 @@ export default function BookAppointmentPage() {
         date: selectedDate,
         time: selectedTime,
         type: selectedType,
+        therapyType,
         issueType,
         notes,
       });
@@ -235,6 +242,7 @@ export default function BookAppointmentPage() {
     setSelectedDate("");
     setSelectedTime("");
     setSelectedType("video");
+    setTherapyType("solo");
     setIssueType("");
     setNotes("");
     setAvailableSlots([]);
@@ -252,6 +260,25 @@ export default function BookAppointmentPage() {
         return <Phone className="h-5 w-5" />;
       default:
         return <Calendar className="h-5 w-5" />;
+    }
+  };
+
+  const getSessionPrice = () => {
+    if (!availabilityData?.professionalInfo.pricing) {
+      return therapyType === "solo" ? 120 : therapyType === "couple" ? 150 : 80;
+    }
+
+    switch (therapyType) {
+      case "solo":
+        return (
+          availabilityData.professionalInfo.pricing.individualSession || 120
+        );
+      case "couple":
+        return availabilityData.professionalInfo.pricing.coupleSession || 150;
+      case "group":
+        return availabilityData.professionalInfo.pricing.groupSession || 80;
+      default:
+        return 120;
     }
   };
 
@@ -474,6 +501,39 @@ export default function BookAppointmentPage() {
               </h2>
             </div>
             <div className="p-6 space-y-6">
+              {/* Therapy Type */}
+              <div className="space-y-2">
+                <Label>Therapy Type *</Label>
+                <Select
+                  value={therapyType}
+                  onValueChange={(value: any) => setTherapyType(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="solo">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Individual Therapy
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="couple">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Couple Therapy
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="group">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Group Therapy
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Session Type */}
               <div className="space-y-2">
                 <Label>Session Type</Label>
@@ -547,16 +607,16 @@ export default function BookAppointmentPage() {
                   <div className="flex items-center justify-between">
                     <span className="font-medium">Session Price</span>
                     <span className="text-lg font-semibold">
-                      $
-                      {
-                        availabilityData.professionalInfo.pricing
-                          .individualSession
-                      }{" "}
-                      CAD
+                      ${getSessionPrice()} CAD
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    60-minute session
+                    {therapyType === "solo"
+                      ? "Individual"
+                      : therapyType === "couple"
+                        ? "Couple"
+                        : "Group"}{" "}
+                    therapy session
                   </p>
                 </div>
               )}
@@ -659,6 +719,29 @@ export default function BookAppointmentPage() {
 
                 <Separator />
 
+                {/* Therapy Type */}
+                <div className="flex items-start gap-3">
+                  {therapyType === "solo" ? (
+                    <User className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  ) : (
+                    <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  )}
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Therapy Type
+                    </p>
+                    <p className="font-medium text-foreground">
+                      {therapyType === "solo"
+                        ? "Individual Therapy"
+                        : therapyType === "couple"
+                          ? "Couple Therapy"
+                          : "Group Therapy"}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+
                 {/* Primary Concern */}
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
@@ -679,10 +762,7 @@ export default function BookAppointmentPage() {
                       Session Price
                     </span>
                     <span className="text-lg font-semibold text-foreground">
-                      $
-                      {availabilityData?.professionalInfo.pricing
-                        ?.individualSession || 120}{" "}
-                      CAD
+                      ${getSessionPrice()} CAD
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

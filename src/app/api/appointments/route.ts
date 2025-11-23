@@ -5,6 +5,7 @@ import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
+import { calculateAppointmentPricing } from "@/lib/pricing";
 
 export async function GET(req: NextRequest) {
   try {
@@ -82,6 +83,19 @@ export async function POST(req: NextRequest) {
     if (!data.professionalId || !data.date || !data.time || !data.type) {
       return NextResponse.json(
         { error: "Missing required fields: professionalId, date, time, type" },
+        { status: 400 },
+      );
+    }
+
+    // Set default therapy type if not provided
+    if (!data.therapyType) {
+      data.therapyType = "solo";
+    }
+
+    // Validate therapy type
+    if (!["solo", "couple", "group"].includes(data.therapyType)) {
+      return NextResponse.json(
+        { error: "Invalid therapy type. Must be solo, couple, or group" },
         { status: 400 },
       );
     }
@@ -167,6 +181,17 @@ export async function POST(req: NextRequest) {
         { status: 409 },
       );
     }
+
+    // Calculate pricing based on therapy type using professional or platform defaults
+    const pricingResult = await calculateAppointmentPricing(
+      data.professionalId,
+      data.therapyType,
+    );
+
+    // Set pricing in appointment data
+    data.price = pricingResult.sessionPrice;
+    data.platformFee = pricingResult.platformFee;
+    data.professionalPayout = pricingResult.professionalPayout;
 
     // Set default duration from profile or default to 60 minutes
     if (!data.duration) {
