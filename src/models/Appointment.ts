@@ -11,6 +11,8 @@ export interface IAppointment extends Document {
   issueType?: string;
   notes?: string;
   cancelReason?: string;
+  cancelledBy?: "client" | "professional" | "admin";
+  cancelledAt?: Date;
   meetingLink?: string;
   location?: string;
   reminderSent: boolean;
@@ -74,6 +76,11 @@ const AppointmentSchema = new Schema<IAppointment>(
     issueType: String,
     notes: String,
     cancelReason: String,
+    cancelledBy: {
+      type: String,
+      enum: ["client", "professional", "admin"],
+    },
+    cancelledAt: Date,
     meetingLink: String,
     location: String,
     reminderSent: {

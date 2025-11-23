@@ -1802,13 +1802,21 @@
       "policy": "Policy",
       "default": "Default",
       "addPaymentMethod": "Add Payment Method",
+      "addPaymentMethodNote": "Payment methods can be added during checkout",
+      "noPaymentMethods": "No payment methods added yet",
+      "confirmDeletePaymentMethod": "Are you sure you want to delete this payment method?",
       "show": "Show",
       "hide": "Hide",
+      "waitingProfessionalConfirmation": "Waiting for professional to confirm appointment before payment",
+      "awaitingConfirmation": "Awaiting professional confirmation before payment",
       "status": {
         "paid": "Paid",
         "pending": "Pending",
         "upcoming": "Upcoming",
-        "overdue": "Overdue"
+        "overdue": "Overdue",
+        "processing": "Processing",
+        "refunded": "Refunded",
+        "cancelled": "Cancelled"
       }
     }
   },

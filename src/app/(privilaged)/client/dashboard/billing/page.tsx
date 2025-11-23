@@ -10,13 +10,13 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
-  Plus,
   Trash2,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { PaymentModal } from "@/components/payments";
+import { PaymentModal, AddPaymentMethodModal } from "@/components/payments";
 import { apiClient } from "@/lib/api-client";
 
 type PaymentStatus =
@@ -40,57 +40,65 @@ interface Payment {
   invoiceUrl?: string;
   dueDate?: string;
   paymentStatus?: string;
+  appointmentStatus?: string;
 }
 
 interface PaymentMethod {
-  id: number;
-  type: "card" | "insurance";
-  last4?: string;
-  brand?: string;
-  expiryDate?: string;
-  isDefault: boolean;
-  insuranceProvider?: string;
-  policyNumber?: string;
+  id: string;
+  type: string;
+  card?: {
+    brand: string;
+    last4: string;
+    expMonth: number;
+    expYear: number;
+  };
 }
-
-const mockPaymentMethods: PaymentMethod[] = [
-  {
-    id: 1,
-    type: "card",
-    last4: "4242",
-    brand: "Visa",
-    expiryDate: "12/26",
-    isDefault: true,
-  },
-  {
-    id: 2,
-    type: "insurance",
-    insuranceProvider: "Manulife",
-    policyNumber: "POL-123456",
-    isDefault: false,
-  },
-];
 
 export default function ClientBillingPage() {
   const [activeTab, setActiveTab] = useState<"owed" | "history">("owed");
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showAddPaymentMethod, setShowAddPaymentMethod] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(false);
+  const [appointmentStatuses, setAppointmentStatuses] = useState<
+    Record<string, string>
+  >({});
   const t = useTranslations("Client.billing");
 
   // Fetch real appointments from API
   useEffect(() => {
     fetchAppointments();
+    fetchPaymentMethods();
   }, []);
 
   const fetchAppointments = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiClient.get<any[]>("/appointments");
+      const data = await apiClient.get<
+        Array<{
+          _id: string;
+          professionalId?: { firstName: string; lastName: string };
+          paymentStatus?: string;
+          status?: string;
+          date: string;
+          time?: string;
+          price?: number;
+          stripePaymentMethodId?: string;
+        }>
+      >("/appointments");
+
+      // Store appointment statuses
+      const statusMap: Record<string, string> = {};
+      data.forEach((apt) => {
+        statusMap[apt._id] = apt.status || "pending";
+      });
+      setAppointmentStatuses(statusMap);
 
       // Transform appointments to payment format
       const transformedPayments: Payment[] = data.map((apt) => {
@@ -99,7 +107,7 @@ export default function ClientBillingPage() {
           ? `${professional.firstName} ${professional.lastName}`
           : "Unknown Professional";
 
-        // Map payment status
+        // Map payment status - can't pay until professional confirms (status changes from pending to scheduled)
         let status: PaymentStatus = "pending";
         if (apt.paymentStatus === "paid") {
           status = "paid";
@@ -109,10 +117,20 @@ export default function ClientBillingPage() {
           status = "cancelled";
         } else if (apt.paymentStatus === "processing") {
           status = "processing";
-        } else if (new Date(apt.date) > new Date()) {
-          status = "upcoming";
         } else if (apt.paymentStatus === "pending") {
-          status = "pending";
+          // Check if appointment is confirmed by professional
+          const appointmentStatus = apt.status;
+          if (appointmentStatus === "pending") {
+            // Appointment not yet confirmed by professional
+            status = "upcoming"; // Show as upcoming but don't allow payment
+          } else if (appointmentStatus === "scheduled") {
+            // Appointment confirmed, payment can be made
+            status = "pending";
+          } else if (new Date(apt.date) > new Date()) {
+            status = "upcoming";
+          } else {
+            status = "pending";
+          }
         }
 
         return {
@@ -124,6 +142,7 @@ export default function ClientBillingPage() {
           amount: apt.price || 120,
           status,
           paymentStatus: apt.paymentStatus,
+          appointmentStatus: apt.status,
           paymentMethod: apt.stripePaymentMethodId
             ? "Visa ••••4242"
             : undefined,
@@ -133,11 +152,50 @@ export default function ClientBillingPage() {
       });
 
       setPayments(transformedPayments);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching appointments:", err);
-      setError(err.message || "Failed to load appointments");
+      setError(
+        err instanceof Error ? err.message : "Failed to load appointments",
+      );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPaymentMethods = async () => {
+    try {
+      setLoadingPaymentMethods(true);
+      const data = await apiClient.get<{ paymentMethods: PaymentMethod[] }>(
+        "/payments/payment-methods",
+      );
+      setPaymentMethods(data.paymentMethods || []);
+    } catch (err) {
+      console.error("Error fetching payment methods:", err);
+    } finally {
+      setLoadingPaymentMethods(false);
+    }
+  };
+
+  const handleDeletePaymentMethod = async (paymentMethodId: string) => {
+    if (
+      !confirm(
+        t("confirmDeletePaymentMethod") ||
+          "Are you sure you want to delete this payment method?",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await apiClient.delete(
+        `/payments/payment-methods?paymentMethodId=${paymentMethodId}`,
+      );
+      await fetchPaymentMethods();
+    } catch (err) {
+      console.error("Error deleting payment method:", err);
+      alert(
+        err instanceof Error ? err.message : "Failed to delete payment method",
+      );
     }
   };
 
@@ -149,6 +207,7 @@ export default function ClientBillingPage() {
   const handlePaymentSuccess = () => {
     // Refresh appointments after payment
     fetchAppointments();
+    fetchPaymentMethods();
     setShowPaymentModal(false);
   };
 
@@ -291,7 +350,7 @@ export default function ClientBillingPage() {
                 {t("paymentMethods")}
               </p>
               <p className="text-2xl font-light text-foreground">
-                {mockPaymentMethods.length}
+                {paymentMethods.length}
               </p>
             </div>
           </div>
@@ -320,52 +379,57 @@ export default function ClientBillingPage() {
 
         {showPaymentMethods && (
           <div className="mt-6 space-y-4">
-            {mockPaymentMethods.map((method) => (
-              <div
-                key={method.id}
-                className="flex items-center justify-between rounded-2xl border border-border/20 bg-card/70 p-5"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-primary/10 p-3">
-                    {method.type === "card" ? (
-                      <CreditCard className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Wallet className="h-5 w-5 text-primary" />
-                    )}
-                  </div>
-                  <div>
-                    {method.type === "card" ? (
-                      <>
-                        <p className="font-medium text-foreground">
-                          {method.brand} ••••{method.last4}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {t("expires")} {method.expiryDate}
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="font-medium text-foreground">
-                          {method.insuranceProvider}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {t("policy")} {method.policyNumber}
-                        </p>
-                      </>
-                    )}
-                    {method.isDefault && (
-                      <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary">
-                        {t("default")}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Trash2 className="h-4 w-4 text-muted-foreground" />
-                </Button>
+            {loadingPaymentMethods ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
-            ))}
-            <Button className="gap-2 rounded-full" variant="outline">
+            ) : paymentMethods.length === 0 ? (
+              <div className="rounded-2xl border border-border/20 bg-card/70 p-8 text-center">
+                <CreditCard className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {t("noPaymentMethods") || "No payment methods added yet"}
+                </p>
+              </div>
+            ) : (
+              paymentMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className="flex items-center justify-between rounded-2xl border border-border/20 bg-card/70 p-5"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-full bg-primary/10 p-3">
+                      <CreditCard className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      {method.card && (
+                        <>
+                          <p className="font-medium text-foreground capitalize">
+                            {method.card.brand} ••••{method.card.last4}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t("expires")} {method.card.expMonth}/
+                            {method.card.expYear}
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleDeletePaymentMethod(method.id)}
+                  >
+                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-600" />
+                  </Button>
+                </div>
+              ))
+            )}
+            <Button
+              className="gap-2 rounded-full w-full"
+              variant="outline"
+              onClick={() => setShowAddPaymentMethod(true)}
+            >
               <Plus className="h-4 w-4" />
               {t("addPaymentMethod")}
             </Button>
@@ -491,14 +555,31 @@ export default function ClientBillingPage() {
                     {(payment.status === "pending" ||
                       payment.status === "upcoming" ||
                       payment.status === "overdue") && (
-                      <Button
-                        className="gap-2 rounded-full"
-                        onClick={() => handlePayNow(payment)}
-                      >
-                        <CreditCard className="h-4 w-4" />
-                        {t("payNow")}
-                      </Button>
+                      <>
+                        {appointmentStatuses[payment._id] === "pending" ? (
+                          <div className="text-sm text-muted-foreground italic">
+                            {t("waitingProfessionalConfirmation") ||
+                              "Waiting for professional to confirm appointment before payment"}
+                          </div>
+                        ) : (
+                          <Button
+                            className="gap-2 rounded-full"
+                            onClick={() => handlePayNow(payment)}
+                          >
+                            <CreditCard className="h-4 w-4" />
+                            {t("payNow")}
+                          </Button>
+                        )}
+                      </>
                     )}
+                    {payment.status === "upcoming" &&
+                      payment.paymentStatus === "pending" &&
+                      payment.appointmentStatus === "pending" && (
+                        <div className="text-sm text-muted-foreground italic">
+                          {t("awaitingConfirmation") ||
+                            "Awaiting professional confirmation before payment"}
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
@@ -519,6 +600,16 @@ export default function ClientBillingPage() {
           onSuccess={handlePaymentSuccess}
         />
       )}
+
+      {/* Add Payment Method Modal */}
+      <AddPaymentMethodModal
+        open={showAddPaymentMethod}
+        onOpenChange={setShowAddPaymentMethod}
+        onSuccess={() => {
+          fetchPaymentMethods();
+          setShowAddPaymentMethod(false);
+        }}
+      />
     </div>
   );
 }

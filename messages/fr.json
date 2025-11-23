@@ -1810,11 +1810,17 @@
       "addPaymentMethod": "Ajouter une méthode de paiement",
       "show": "Afficher",
       "hide": "Masquer",
+      "addPaymentMethodNote": "Les méthodes de paiement peuvent être ajoutées lors du paiement",
+      "noPaymentMethods": "Aucune méthode de paiement ajoutée",
+      "confirmDeletePaymentMethod": "Êtes-vous sûr de vouloir supprimer cette méthode de paiement?",
       "status": {
         "paid": "Payé",
         "pending": "En attente",
         "upcoming": "À venir",
-        "overdue": "En retard"
+        "overdue": "En retard",
+        "processing": "En cours",
+        "refunded": "Remboursé",
+        "cancelled": "Annulé"
       }
     }
   },

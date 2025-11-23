@@ -44,6 +44,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if appointment is confirmed by professional
+    if (appointment.status === "pending") {
+      return NextResponse.json(
+        {
+          error:
+            "Cannot process payment until professional confirms the appointment",
+        },
+        { status: 400 },
+      );
+    }
+
     // Check if already paid
     if (appointment.paymentStatus === "paid") {
       return NextResponse.json(

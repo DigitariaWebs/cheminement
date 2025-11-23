@@ -696,26 +696,27 @@ export default function BookAppointmentPage() {
                 Next Steps
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Complete your payment now to confirm your appointment, or pay
-                later from your billing page.
+                Your appointment request has been sent to the professional. Once
+                they confirm your appointment, you&apos;ll be able to complete
+                payment from your billing page.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
-                  onClick={() => router.push("/client/dashboard/billing")}
-                  className="flex-1 gap-2"
-                  size="lg"
-                >
-                  <Wallet className="h-4 w-4" />
-                  Pay Now
-                </Button>
-                <Button
-                  variant="outline"
                   onClick={() => router.push("/client/dashboard")}
                   className="flex-1 gap-2"
                   size="lg"
                 >
                   <User className="h-4 w-4" />
                   View Dashboard
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/client/dashboard/billing")}
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  <Wallet className="h-4 w-4" />
+                  View Billing
                 </Button>
               </div>
               <Button

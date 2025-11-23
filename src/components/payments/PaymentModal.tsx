@@ -52,9 +52,11 @@ export default function PaymentModal({
       }>("/payments/create-intent", { appointmentId });
 
       setClientSecret(response.clientSecret);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error creating payment intent:", err);
-      setError(err.message || "Failed to initialize payment");
+      setError(
+        err instanceof Error ? err.message : "Failed to initialize payment",
+      );
     } finally {
       setLoading(false);
     }
@@ -87,8 +89,8 @@ export default function PaymentModal({
             Complete Payment
           </DialogTitle>
           <DialogDescription className="space-y-2">
-            <p>Session with {professionalName}</p>
-            <p className="text-sm">{appointmentDate}</p>
+            <span>Session with {professionalName}</span>
+            <span className="text-sm">{appointmentDate}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -124,6 +126,7 @@ export default function PaymentModal({
             >
               <CheckoutForm
                 amount={amount}
+                clientSecret={clientSecret}
                 onSuccess={handleSuccess}
                 onError={setError}
               />

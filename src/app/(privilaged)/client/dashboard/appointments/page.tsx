@@ -21,15 +21,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { apiClient, appointmentsAPI } from "@/lib/api-client";
+import { appointmentsAPI } from "@/lib/api-client";
+import { CancelAppointmentDialog } from "@/components/appointments";
 import Link from "next/link";
 
 interface Professional {
@@ -52,6 +45,14 @@ interface Appointment {
   notes?: string;
   meetingLink?: string;
   location?: string;
+  price: number;
+  paymentStatus:
+    | "pending"
+    | "processing"
+    | "paid"
+    | "failed"
+    | "refunded"
+    | "cancelled";
   createdAt: string;
 }
 
@@ -60,11 +61,9 @@ export default function ClientAppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [cancelingId, setCancelingId] = useState<string | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(
-    null,
-  );
+  const [appointmentToCancel, setAppointmentToCancel] =
+    useState<Appointment | null>(null);
   const t = useTranslations("Client.appointments");
   const router = useRouter();
 
@@ -78,16 +77,18 @@ export default function ClientAppointmentsPage() {
     try {
       const data = (await appointmentsAPI.list()) as Appointment[];
       setAppointments(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching appointments:", err);
-      setError(err.message || "Failed to load appointments");
+      setError(
+        err instanceof Error ? err.message : "Failed to load appointments",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const openCancelDialog = (appointmentId: string) => {
-    setAppointmentToCancel(appointmentId);
+  const openCancelDialog = (appointment: Appointment) => {
+    setAppointmentToCancel(appointment);
     setShowCancelDialog(true);
   };
 
@@ -96,24 +97,9 @@ export default function ClientAppointmentsPage() {
     setAppointmentToCancel(null);
   };
 
-  const handleCancelAppointment = async () => {
-    if (!appointmentToCancel) return;
-
-    setCancelingId(appointmentToCancel);
+  const handleCancelSuccess = () => {
+    fetchAppointments();
     closeCancelDialog();
-
-    try {
-      await apiClient.patch(`/appointments/${appointmentToCancel}`, {
-        status: "cancelled",
-        cancelReason: "Cancelled by client",
-      });
-      await fetchAppointments();
-    } catch (err: any) {
-      console.error("Error cancelling appointment:", err);
-      alert(err.message || "Failed to cancel appointment");
-    } finally {
-      setCancelingId(null);
-    }
   };
 
   const handleJoinSession = (appointment: Appointment) => {
@@ -357,13 +343,9 @@ export default function ClientAppointmentsPage() {
                             )}
                           <Button
                             variant="outline"
-                            onClick={() => openCancelDialog(appointment._id)}
-                            disabled={cancelingId === appointment._id}
+                            onClick={() => openCancelDialog(appointment)}
                             className="gap-2 rounded-full text-red-600 hover:text-red-700"
                           >
-                            {cancelingId === appointment._id && (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            )}
                             {t("actions.cancel")}
                           </Button>
                         </>
@@ -402,38 +384,19 @@ export default function ClientAppointmentsPage() {
         </div>
       )}
 
-      {/* Cancel Confirmation Dialog */}
-      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("confirmCancelTitle")}</DialogTitle>
-            <DialogDescription>{t("confirmCancelMessage")}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex gap-2 sm:justify-end">
-            <Button
-              variant="outline"
-              onClick={closeCancelDialog}
-              disabled={cancelingId !== null}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleCancelAppointment}
-              disabled={cancelingId !== null}
-            >
-              {cancelingId !== null ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("cancelling")}
-                </>
-              ) : (
-                t("confirmCancel")
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Cancel Appointment Dialog */}
+      {appointmentToCancel && (
+        <CancelAppointmentDialog
+          open={showCancelDialog}
+          onOpenChange={setShowCancelDialog}
+          appointmentId={appointmentToCancel._id}
+          appointmentDate={appointmentToCancel.date}
+          appointmentTime={appointmentToCancel.time}
+          amount={appointmentToCancel.price}
+          isPaid={appointmentToCancel.paymentStatus === "paid"}
+          onSuccess={handleCancelSuccess}
+        />
+      )}
     </div>
   );
 }

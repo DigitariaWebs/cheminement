@@ -6,6 +6,10 @@ import { authOptions } from "@/lib/auth";
 
 import { stripe } from "@/lib/stripe";
 
+// Cancellation fee configuration
+const CANCELLATION_FEE_PERCENTAGE = 0.15; // 15% cancellation fee
+const HOURS_BEFORE_APPOINTMENT_FOR_FREE_CANCELLATION = 24; // Free cancellation if more than 24 hours before
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -42,10 +46,13 @@ export async function GET(
     }
 
     return NextResponse.json(appointment);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Get appointment error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch appointment", details: error.message },
+      {
+        error: "Failed to fetch appointment",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -92,6 +99,10 @@ export async function PATCH(
       const cancelledBy =
         session.user.role === "client" ? "client" : "professional";
 
+      // Update cancellation metadata
+      appointment.cancelledBy = cancelledBy;
+      appointment.cancelledAt = new Date();
+
       // Send notification without blocking the response
       // Temporarily disabled for development/testing
       /*
@@ -100,35 +111,68 @@ export async function PATCH(
       );
       */
 
-      // Process automatic refund if appointment was paid
+      // Process automatic refund with fee calculation if appointment was paid
       if (
         appointment.stripePaymentIntentId &&
         appointment.paymentStatus === "paid"
       ) {
         try {
           console.log(
-            `Processing automatic refund for appointment ${id} (Payment Intent: ${appointment.stripePaymentIntentId})`,
+            `Processing refund for appointment ${id} (Payment Intent: ${appointment.stripePaymentIntentId})`,
           );
 
-          const refund = await stripe.refunds.create({
-            payment_intent: appointment.stripePaymentIntentId,
-            reason: "requested_by_customer",
-            metadata: {
-              appointmentId: id,
-              cancelledBy: cancelledBy,
-              refundReason: data.cancelReason || "Appointment cancelled",
-            },
-          });
+          // Calculate hours until appointment
+          const appointmentDateTime = new Date(appointment.date);
+          const now = new Date();
+          const hoursUntilAppointment =
+            (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+          // Determine if cancellation fee applies (only for client cancellations)
+          const isFreeCancel =
+            hoursUntilAppointment >=
+            HOURS_BEFORE_APPOINTMENT_FOR_FREE_CANCELLATION;
+          const isClientCancellation = cancelledBy === "client";
+
+          let refundAmount = appointment.price || 0;
+          let cancellationFee = 0;
+
+          // Apply cancellation fee only for client cancellations within 24 hours
+          if (isClientCancellation && !isFreeCancel) {
+            cancellationFee = refundAmount * CANCELLATION_FEE_PERCENTAGE;
+            refundAmount = refundAmount - cancellationFee;
+          }
+
+          // Process refund through Stripe (in cents)
+          const refundAmountCents = Math.round(refundAmount * 100);
+
+          if (refundAmountCents > 0) {
+            const refund = await stripe.refunds.create({
+              payment_intent: appointment.stripePaymentIntentId,
+              amount: refundAmountCents,
+              reason: "requested_by_customer",
+              metadata: {
+                appointmentId: id,
+                cancelledBy: cancelledBy,
+                cancellationFee: cancellationFee.toFixed(2),
+                refundReason: data.cancelReason || "Appointment cancelled",
+                hoursBeforeAppointment: hoursUntilAppointment.toFixed(2),
+              },
+            });
+
+            console.log(
+              `Refund processed successfully: ${refund.id} - Amount: $${refund.amount / 100} (Fee: $${cancellationFee.toFixed(2)})`,
+            );
+          } else {
+            console.log(
+              `No refund issued (100% cancellation fee applied): $${cancellationFee.toFixed(2)}`,
+            );
+          }
 
           // Update payment status to refunded
           appointment.paymentStatus = "refunded";
           appointment.refundedAt = new Date();
           await appointment.save();
-
-          console.log(
-            `Refund processed successfully: ${refund.id} - Amount: $${refund.amount / 100}`,
-          );
-        } catch (refundError: any) {
+        } catch (refundError: unknown) {
           console.error("Error processing automatic refund:", refundError);
           // Don't fail the cancellation if refund fails - log it for manual processing
           console.error(
@@ -143,10 +187,13 @@ export async function PATCH(
     }
 
     return NextResponse.json(appointment);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Update appointment error:", error);
     return NextResponse.json(
-      { error: "Failed to update appointment", details: error.message },
+      {
+        error: "Failed to update appointment",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
@@ -177,10 +224,13 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: "Appointment deleted successfully" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Delete appointment error:", error);
     return NextResponse.json(
-      { error: "Failed to delete appointment", details: error.message },
+      {
+        error: "Failed to delete appointment",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
