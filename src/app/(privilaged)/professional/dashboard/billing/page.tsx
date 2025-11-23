@@ -102,9 +102,11 @@ export default function ProfessionalBillingPage() {
       });
 
       setPayments(transformedPayments);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching appointments:", err);
-      setError(err.message || "Failed to load appointments");
+      setError(
+        err instanceof Error ? err.message : "Failed to load appointments",
+      );
     } finally {
       setLoading(false);
     }

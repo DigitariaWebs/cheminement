@@ -103,14 +103,38 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     if (user.role === "professional") {
-      // Create empty profile for the user
+      // Create profile for the user with provided professional data
       const profile = new Profile({
         userId: user._id,
-        ...professionalProfile,
+        // Professional Information
+        problematics: professionalProfile?.problematics,
+        approaches: professionalProfile?.approaches,
+        ageCategories: professionalProfile?.ageCategories,
+        skills: professionalProfile?.skills,
+        bio: professionalProfile?.bio,
+        yearsOfExperience: professionalProfile?.yearsOfExperience,
+        specialty: professionalProfile?.specialty,
+        license: professionalProfile?.license,
+        certifications: professionalProfile?.certifications,
+        // Availability & Scheduling
+        availability: professionalProfile?.availability,
+        // Languages & Session Types
+        languages: professionalProfile?.languages,
+        sessionTypes: professionalProfile?.sessionTypes,
+        modalities: professionalProfile?.modalities,
+        // Pricing & Payment
+        pricing: professionalProfile?.pricing,
+        paymentAgreement: professionalProfile?.paymentAgreement,
+        // Education
+        education: professionalProfile?.education,
         profileCompleted: false,
       });
 
       await profile.save();
+
+      // Link the profile to the user
+      user.profile = profile.id;
+      await user.save();
     } else if (user.role === "client") {
       // Create medical profile for the client with signup data
       const medicalProfile = new MedicalProfile({
@@ -179,10 +203,13 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Signup error:", error);
     return NextResponse.json(
-      { error: "Failed to create user", details: error.message },
+      {
+        error: "Failed to create user",
+        details: error instanceof Error ? error.message : "unknown error",
+      },
       { status: 500 },
     );
   }

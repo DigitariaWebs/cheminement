@@ -96,9 +96,11 @@ export default function BookAppointmentPage() {
         "/users?role=professional",
       );
       setProfessionals(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error loading professionals:", err);
-      setError("Failed to load professionals");
+      setError(
+        err instanceof Error ? err.message : "Failed to load professionals",
+      );
     } finally {
       setLoading(false);
     }
@@ -149,9 +151,13 @@ export default function BookAppointmentPage() {
         setAvailabilityData(response);
         setError(response.message || "No available slots for this date");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching slots:", err);
-      setError(err.message || "Failed to load available time slots");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load available time slots",
+      );
       setAvailableSlots([]);
     } finally {
       setLoadingSlots(false);
@@ -212,9 +218,11 @@ export default function BookAppointmentPage() {
 
       setCompletedSteps([1, 2, 3]);
       setCurrentStep(4); // Success step
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error booking appointment:", err);
-      setError(err.message || "Failed to book appointment");
+      setError(
+        err instanceof Error ? err.message : "Failed to book appointment",
+      );
     } finally {
       setLoading(false);
     }

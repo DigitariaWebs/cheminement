@@ -57,8 +57,8 @@ export default function AddPatientModal({
         phone: "",
         location: "",
       });
-    } catch (err: any) {
-      setError(err.message || "Failed to create patient");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create patient");
     } finally {
       setIsLoading(false);
     }

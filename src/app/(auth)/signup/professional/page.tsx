@@ -2,219 +2,315 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { authAPI } from "@/lib/api-client";
+import { signIn } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Briefcase,
   Mail,
   Lock,
   User,
-  Phone,
-  MapPin,
   ArrowRight,
   ArrowLeft,
   Loader2,
   Eye,
   EyeOff,
+  Phone,
+  MapPin,
+  Calendar,
+  Globe,
+  GraduationCap,
+  Target,
+  Clock,
+  DollarSign,
+  CheckCircle2,
+  Users,
 } from "lucide-react";
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { authAPI } from "@/lib/api-client";
-import { signIn } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   AuthContainer,
   AuthHeader,
   AuthCard,
   AuthFooter,
 } from "@/components/auth";
-import { Stepper } from "@/components/ui/stepper";
+
+interface FormData {
+  // Basic Information
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone: string;
+  dateOfBirth: string;
+  gender: string;
+  language: string;
+  location: string;
+
+  // Professional Profile
+  specialty: string;
+  license: string;
+  yearsOfExperience: string;
+  bio: string;
+
+  // Education
+  degree: string;
+  institution: string;
+  graduationYear: string;
+
+  // Certifications
+  certifications: string[];
+
+  // Practice Details
+  problematics: string[];
+  approaches: string[];
+  ageCategories: string[];
+  sessionTypes: string[];
+  modalities: string[];
+  languages: string[];
+
+  // Pricing
+  individualSessionRate: string;
+  coupleSessionRate: string;
+  groupSessionRate: string;
+  paymentAgreement: string;
+
+  // Availability
+  availableDays: string[];
+  sessionDuration: string;
+  breakDuration: string;
+
+  agreeToTerms: boolean;
+}
 
 export default function ProfessionalSignupPage() {
-  const t = useTranslations("Auth.professionalSignup");
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [direction, setDirection] = useState(1);
 
-  const STEPS = [
-    {
-      title: t("steps.personalInfo"),
-      description: t("steps.personalInfoDesc"),
-    },
-    {
-      title: t("steps.professional"),
-      description: t("steps.professionalDesc"),
-    },
-    { title: t("steps.security"), description: t("steps.securityDesc") },
-    { title: t("steps.confirm"), description: t("steps.confirmDesc") },
-  ];
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    license: "",
-    specialty: "",
-    location: "",
     password: "",
     confirmPassword: "",
+    phone: "",
+    dateOfBirth: "",
+    gender: "",
+    language: "",
+    location: "",
+    specialty: "",
+    license: "",
+    yearsOfExperience: "",
+    bio: "",
+    degree: "",
+    institution: "",
+    graduationYear: "",
+    certifications: [],
+    problematics: [],
+    approaches: [],
+    ageCategories: [],
+    sessionTypes: [],
+    modalities: [],
+    languages: [],
+    individualSessionRate: "",
+    coupleSessionRate: "",
+    groupSessionRate: "",
+    paymentAgreement: "",
+    availableDays: [],
+    sessionDuration: "",
+    breakDuration: "",
     agreeToTerms: false,
   });
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password: string) => {
-    return password.length >= 8;
-  };
+  const sections = [
+    { title: "Basic Information", icon: User, required: true },
+    { title: "Professional Details", icon: Briefcase, required: true },
+    { title: "Education & Credentials", icon: GraduationCap, required: true },
+    { title: "Expertise & Approach", icon: Target, required: false },
+    { title: "Session Types & Modalities", icon: Users, required: false },
+    { title: "Pricing & Payment", icon: DollarSign, required: false },
+    { title: "Availability", icon: Clock, required: false },
+    { title: "Review & Confirm", icon: CheckCircle2, required: true },
+  ];
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
-  };
+    const target = e.target as HTMLInputElement;
 
-  const isCurrentStepValid = () => {
-    if (currentStep === 0) {
-      // Step 1: Personal Information validation
-      return (
-        formData.firstName.trim() &&
-        formData.lastName.trim() &&
-        formData.email.trim() &&
-        validateEmail(formData.email) &&
-        formData.phone.trim()
-      );
-    } else if (currentStep === 1) {
-      // Step 2: Professional Details validation
-      return (
-        formData.license.trim() &&
-        formData.specialty &&
-        formData.location.trim()
-      );
-    } else if (currentStep === 2) {
-      // Step 3: Security validation
-      return (
-        formData.password &&
-        validatePassword(formData.password) &&
-        formData.confirmPassword &&
-        formData.password === formData.confirmPassword
-      );
-    } else if (currentStep === 3) {
-      // Step 4: Terms validation
-      return formData.agreeToTerms;
+    if (type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: target.checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-    return true;
   };
 
-  const handleNext = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleArrayChange = (name: keyof FormData, value: string) => {
+    setFormData((prev) => {
+      const currentArray = (prev[name] as string[]) || [];
+      const newArray = currentArray.includes(value)
+        ? currentArray.filter((item) => item !== value)
+        : [...currentArray, value];
+      return { ...prev, [name]: newArray };
+    });
+  };
+
+  const validateSection = () => {
+    switch (currentSection) {
+      case 0: // Basic Information
+        if (!formData.firstName.trim()) return "First name is required";
+        if (!formData.lastName.trim()) return "Last name is required";
+        if (!formData.email.trim()) return "Email is required";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+          return "Invalid email address";
+        if (!formData.password) return "Password is required";
+        if (formData.password.length < 8)
+          return "Password must be at least 8 characters";
+        if (formData.password !== formData.confirmPassword)
+          return "Passwords do not match";
+        break;
+      case 1: // Professional Details
+        if (!formData.specialty) return "Specialty is required";
+        if (!formData.license.trim())
+          return "License/Practice number is required";
+        break;
+      case 2: // Education
+        if (!formData.degree.trim()) return "Degree is required";
+        if (!formData.institution.trim()) return "Institution is required";
+        break;
+    }
+    return null;
+  };
+
+  const handleNext = () => {
+    const validationError = validateSection();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     setError("");
-
-    // Validate current step before proceeding
-    if (currentStep === 0) {
-      // Step 1: Personal Information validation
-      if (!formData.firstName.trim()) {
-        setError("First name is required");
-        return;
-      }
-      if (!formData.lastName.trim()) {
-        setError("Last name is required");
-        return;
-      }
-      if (!formData.email.trim()) {
-        setError("Email is required");
-        return;
-      }
-      if (!validateEmail(formData.email)) {
-        setError("Please enter a valid email address");
-        return;
-      }
-      if (!formData.phone.trim()) {
-        setError("Phone number is required");
-        return;
-      }
-    } else if (currentStep === 1) {
-      // Step 2: Professional Details validation
-      if (!formData.license.trim()) {
-        setError("License number is required");
-        return;
-      }
-      if (!formData.specialty) {
-        setError("Please select a specialty");
-        return;
-      }
-      if (!formData.location.trim()) {
-        setError("Location is required");
-        return;
-      }
-    } else if (currentStep === 2) {
-      // Step 3: Security validation
-      if (!formData.password) {
-        setError("Password is required");
-        return;
-      }
-      if (!validatePassword(formData.password)) {
-        setError("Password must be at least 8 characters long");
-        return;
-      }
-      if (!formData.confirmPassword) {
-        setError("Please confirm your password");
-        return;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
-    }
-
-    if (currentStep < STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
+    setDirection(1);
+    setCurrentSection((prev) => Math.min(prev + 1, sections.length - 1));
   };
 
   const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    setError("");
+    setDirection(-1);
+    setCurrentSection((prev) => Math.max(prev - 1, 0));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
-    // Final validation before submission
     if (!formData.agreeToTerms) {
       setError("You must agree to the terms and conditions");
       return;
     }
 
     setIsLoading(true);
+    setError("");
 
     try {
-      // Create account
       await authAPI.signup({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: "professional",
-        location: formData.location,
         phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        language: formData.language,
+        location: formData.location,
         professionalProfile: {
           specialty: formData.specialty,
           license: formData.license,
+          yearsOfExperience: formData.yearsOfExperience
+            ? Number(formData.yearsOfExperience)
+            : undefined,
+          bio: formData.bio,
+          problematics:
+            formData.problematics.length > 0
+              ? formData.problematics
+              : undefined,
+          approaches:
+            formData.approaches.length > 0 ? formData.approaches : undefined,
+          ageCategories:
+            formData.ageCategories.length > 0
+              ? formData.ageCategories
+              : undefined,
+          sessionTypes:
+            formData.sessionTypes.length > 0
+              ? formData.sessionTypes
+              : undefined,
+          modalities:
+            formData.modalities.length > 0 ? formData.modalities : undefined,
+          languages:
+            formData.languages.length > 0 ? formData.languages : undefined,
+          certifications:
+            formData.certifications.length > 0
+              ? formData.certifications
+              : undefined,
+          paymentAgreement: formData.paymentAgreement || undefined,
+          pricing: {
+            individualSession: formData.individualSessionRate
+              ? Number(formData.individualSessionRate)
+              : undefined,
+            coupleSession: formData.coupleSessionRate
+              ? Number(formData.coupleSessionRate)
+              : undefined,
+            groupSession: formData.groupSessionRate
+              ? Number(formData.groupSessionRate)
+              : undefined,
+          },
+          education:
+            formData.degree || formData.institution
+              ? [
+                  {
+                    degree: formData.degree,
+                    institution: formData.institution,
+                    year: formData.graduationYear
+                      ? Number(formData.graduationYear)
+                      : undefined,
+                  },
+                ]
+              : undefined,
+          availability:
+            formData.sessionDuration || formData.breakDuration
+              ? {
+                  sessionDurationMinutes: formData.sessionDuration
+                    ? Number(formData.sessionDuration)
+                    : undefined,
+                  breakDurationMinutes: formData.breakDuration
+                    ? Number(formData.breakDuration)
+                    : undefined,
+                  days: [],
+                  firstDayOfWeek: "Monday",
+                }
+              : undefined,
         },
       });
 
-      // Sign in automatically
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
@@ -227,424 +323,992 @@ export default function ProfessionalSignupPage() {
       } else {
         router.push("/professional/dashboard");
       }
-    } catch {
-      setError("Failed to create account. Please try again.");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to create account. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+  };
+
+  const renderSection = () => {
+    switch (currentSection) {
+      case 0: // Basic Information
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  First Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="John"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="flex items-center gap-2">
+                  Last Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Doe"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                Email <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  Phone Number
+                </Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="dateOfBirth"
+                  className="flex items-center gap-2"
+                >
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  Date of Birth
+                </Label>
+                <Input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(val) => handleSelectChange("gender", val)}
+                >
+                  <SelectTrigger id="gender">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="preferNotToSay">
+                      Prefer not to say
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="language" className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  Preferred Language
+                </Label>
+                <Select
+                  value={formData.language}
+                  onValueChange={(val) => handleSelectChange("language", val)}
+                >
+                  <SelectTrigger id="language">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="french">French</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="location" className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                Location / Postal Code
+              </Label>
+              <Input
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="City, Province or A1A 1A1"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+                Password <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                At least 8 characters
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">
+                Confirm Password <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+        );
+
+      case 1: // Professional Details
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="specialty">
+                Profession / Specialty <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={formData.specialty}
+                onValueChange={(val) => handleSelectChange("specialty", val)}
+              >
+                <SelectTrigger id="specialty">
+                  <SelectValue placeholder="Select your specialty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="psychologist">Psychologist</SelectItem>
+                  <SelectItem value="psychotherapist">
+                    Psychotherapist
+                  </SelectItem>
+                  <SelectItem value="counselor">Counselor</SelectItem>
+                  <SelectItem value="socialWorker">Social Worker</SelectItem>
+                  <SelectItem value="psychiatrist">Psychiatrist</SelectItem>
+                  <SelectItem value="coach">Coach</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="license">
+                Practice Number / License{" "}
+                <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="license"
+                name="license"
+                value={formData.license}
+                onChange={handleChange}
+                placeholder="Enter your practice number or license"
+              />
+              <p className="text-xs text-muted-foreground">
+                Professional license, doctoral student status, or permit by
+                equivalency in progress
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="yearsOfExperience">Years of Experience</Label>
+              <Input
+                id="yearsOfExperience"
+                name="yearsOfExperience"
+                type="number"
+                min="0"
+                value={formData.yearsOfExperience}
+                onChange={handleChange}
+                placeholder="5"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio">Professional Bio</Label>
+              <Textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                placeholder="Tell us about your professional background and approach..."
+                className="min-h-[120px] resize-none"
+                maxLength={1000}
+              />
+              <p className="text-xs text-muted-foreground">
+                {formData.bio.length}/1000 characters
+              </p>
+            </div>
+          </div>
+        );
+
+      case 2: // Education & Credentials
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="degree">
+                Degree <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="degree"
+                name="degree"
+                value={formData.degree}
+                onChange={handleChange}
+                placeholder="e.g., Ph.D. in Clinical Psychology"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="institution">
+                Institution <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="institution"
+                name="institution"
+                value={formData.institution}
+                onChange={handleChange}
+                placeholder="University name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="graduationYear">Graduation Year</Label>
+              <Input
+                id="graduationYear"
+                name="graduationYear"
+                type="number"
+                min="1950"
+                max={new Date().getFullYear()}
+                value={formData.graduationYear}
+                onChange={handleChange}
+                placeholder="2020"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Certifications (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "CBT Certified",
+                  "DBT Certified",
+                  "EMDR Certified",
+                  "Family Therapy",
+                  "Trauma-Informed",
+                  "Substance Abuse",
+                  "Child & Adolescent",
+                  "Couples Therapy",
+                ].map((cert) => (
+                  <div key={cert} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`cert-${cert}`}
+                      checked={formData.certifications.includes(cert)}
+                      onCheckedChange={() =>
+                        handleArrayChange("certifications", cert)
+                      }
+                    />
+                    <label
+                      htmlFor={`cert-${cert}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {cert}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3: // Expertise & Approach
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>Issues Handled (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "Anxiety",
+                  "Depression",
+                  "Trauma & PTSD",
+                  "Relationship Issues",
+                  "Grief & Loss",
+                  "Stress Management",
+                  "Self-Esteem",
+                  "Life Transitions",
+                  "Addiction",
+                  "Eating Disorders",
+                  "OCD",
+                  "ADHD",
+                ].map((issue) => (
+                  <div key={issue} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`issue-${issue}`}
+                      checked={formData.problematics.includes(issue)}
+                      onCheckedChange={() =>
+                        handleArrayChange("problematics", issue)
+                      }
+                    />
+                    <label
+                      htmlFor={`issue-${issue}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {issue}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Therapeutic Approaches (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "Cognitive Behavioral (CBT)",
+                  "Psychodynamic",
+                  "Humanistic",
+                  "Mindfulness-Based",
+                  "Solution-Focused",
+                  "Narrative Therapy",
+                  "Dialectical Behavior (DBT)",
+                  "EMDR",
+                ].map((approach) => (
+                  <div key={approach} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`approach-${approach}`}
+                      checked={formData.approaches.includes(approach)}
+                      onCheckedChange={() =>
+                        handleArrayChange("approaches", approach)
+                      }
+                    />
+                    <label
+                      htmlFor={`approach-${approach}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {approach}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Age Categories (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "Children (0-12)",
+                  "Adolescents (13-17)",
+                  "Adults (18-64)",
+                  "Seniors (65+)",
+                ].map((age) => (
+                  <div key={age} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`age-${age}`}
+                      checked={formData.ageCategories.includes(age)}
+                      onCheckedChange={() =>
+                        handleArrayChange("ageCategories", age)
+                      }
+                    />
+                    <label
+                      htmlFor={`age-${age}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {age}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 4: // Session Types & Modalities
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>Session Types (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {["Individual", "Couple", "Family", "Group", "Coaching"].map(
+                  (type) => (
+                    <div key={type} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`session-${type}`}
+                        checked={formData.sessionTypes.includes(type)}
+                        onCheckedChange={() =>
+                          handleArrayChange("sessionTypes", type)
+                        }
+                      />
+                      <label
+                        htmlFor={`session-${type}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {type}
+                      </label>
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Modalities (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "In-Person (Office)",
+                  "Video Call",
+                  "Phone Call",
+                  "Chat/Messaging",
+                ].map((modality) => (
+                  <div key={modality} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`modality-${modality}`}
+                      checked={formData.modalities.includes(modality)}
+                      onCheckedChange={() =>
+                        handleArrayChange("modalities", modality)
+                      }
+                    />
+                    <label
+                      htmlFor={`modality-${modality}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {modality}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Languages Spoken (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "English",
+                  "French",
+                  "Spanish",
+                  "Mandarin",
+                  "Arabic",
+                  "Other",
+                ].map((lang) => (
+                  <div key={lang} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`lang-${lang}`}
+                      checked={formData.languages.includes(lang)}
+                      onCheckedChange={() =>
+                        handleArrayChange("languages", lang)
+                      }
+                    />
+                    <label
+                      htmlFor={`lang-${lang}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {lang}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 5: // Pricing & Payment
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="individualSessionRate">
+                Individual Session Rate (per session)
+              </Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  $
+                </span>
+                <Input
+                  id="individualSessionRate"
+                  name="individualSessionRate"
+                  type="number"
+                  min="0"
+                  value={formData.individualSessionRate}
+                  onChange={handleChange}
+                  placeholder="100"
+                  className="pl-7"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="coupleSessionRate">
+                Couple Session Rate (per session)
+              </Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  $
+                </span>
+                <Input
+                  id="coupleSessionRate"
+                  name="coupleSessionRate"
+                  type="number"
+                  min="0"
+                  value={formData.coupleSessionRate}
+                  onChange={handleChange}
+                  placeholder="150"
+                  className="pl-7"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="groupSessionRate">
+                Group Session Rate (per session)
+              </Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  $
+                </span>
+                <Input
+                  id="groupSessionRate"
+                  name="groupSessionRate"
+                  type="number"
+                  min="0"
+                  value={formData.groupSessionRate}
+                  onChange={handleChange}
+                  placeholder="75"
+                  className="pl-7"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="paymentAgreement">Payment Agreement</Label>
+              <Select
+                value={formData.paymentAgreement}
+                onValueChange={(val) =>
+                  handleSelectChange("paymentAgreement", val)
+                }
+              >
+                <SelectTrigger id="paymentAgreement">
+                  <SelectValue placeholder="Select payment frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="per-session">Per Session</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        );
+
+      case 6: // Availability
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>Available Days (select all that apply)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ].map((day) => (
+                  <div key={day} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`day-${day}`}
+                      checked={formData.availableDays.includes(day)}
+                      onCheckedChange={() =>
+                        handleArrayChange("availableDays", day)
+                      }
+                    />
+                    <label
+                      htmlFor={`day-${day}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {day}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sessionDuration">
+                Session Duration (minutes)
+              </Label>
+              <Select
+                value={formData.sessionDuration}
+                onValueChange={(val) =>
+                  handleSelectChange("sessionDuration", val)
+                }
+              >
+                <SelectTrigger id="sessionDuration">
+                  <SelectValue placeholder="Select duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="30">30 minutes</SelectItem>
+                  <SelectItem value="45">45 minutes</SelectItem>
+                  <SelectItem value="50">50 minutes</SelectItem>
+                  <SelectItem value="60">60 minutes</SelectItem>
+                  <SelectItem value="90">90 minutes</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="breakDuration">
+                Break Between Sessions (minutes)
+              </Label>
+              <Select
+                value={formData.breakDuration}
+                onValueChange={(val) =>
+                  handleSelectChange("breakDuration", val)
+                }
+              >
+                <SelectTrigger id="breakDuration">
+                  <SelectValue placeholder="Select break duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">No break</SelectItem>
+                  <SelectItem value="5">5 minutes</SelectItem>
+                  <SelectItem value="10">10 minutes</SelectItem>
+                  <SelectItem value="15">15 minutes</SelectItem>
+                  <SelectItem value="30">30 minutes</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="p-4 bg-muted rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                You can set detailed availability hours and specific time slots
+                after registration in your dashboard.
+              </p>
+            </div>
+          </div>
+        );
+
+      case 7: // Review & Confirm
+        return (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Review Your Information</h3>
+
+              <div className="space-y-3">
+                <div className="p-4 bg-muted rounded-lg">
+                  <h4 className="font-medium mb-2">Basic Information</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.firstName} {formData.lastName}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.email}
+                  </p>
+                  {formData.phone && (
+                    <p className="text-sm text-muted-foreground">
+                      {formData.phone}
+                    </p>
+                  )}
+                </div>
+
+                <div className="p-4 bg-muted rounded-lg">
+                  <h4 className="font-medium mb-2">Professional Details</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.specialty || "Not specified"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    License: {formData.license || "Not specified"}
+                  </p>
+                  {formData.yearsOfExperience && (
+                    <p className="text-sm text-muted-foreground">
+                      {formData.yearsOfExperience} years of experience
+                    </p>
+                  )}
+                </div>
+
+                {formData.degree && (
+                  <div className="p-4 bg-muted rounded-lg">
+                    <h4 className="font-medium mb-2">Education</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {formData.degree}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {formData.institution}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="agreeToTerms"
+                checked={formData.agreeToTerms}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    agreeToTerms: checked as boolean,
+                  }))
+                }
+              />
+              <label
+                htmlFor="agreeToTerms"
+                className="text-sm cursor-pointer leading-tight"
+              >
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  className="text-primary underline"
+                  target="_blank"
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  className="text-primary underline"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </Link>
+                <span className="text-red-500">*</span>
+              </label>
+            </div>
+
+            <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <p className="text-sm text-blue-900 dark:text-blue-100">
+                Your account will be pending approval. Once approved by our
+                team, you&apos;ll be able to access your professional dashboard
+                and start accepting clients.
+              </p>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const CurrentIcon = sections[currentSection].icon;
+
   return (
     <AuthContainer maxWidth="2xl">
       <AuthHeader
         icon={<Briefcase className="w-8 h-8 text-primary" />}
-        title={t("title")}
-        description={t("description")}
+        title="Professional Registration"
+        description="Create your professional account and profile"
       />
 
       <AuthCard>
-        {/* Stepper */}
+        {/* Progress Bar */}
         <div className="mb-8">
-          <Stepper steps={STEPS} currentStep={currentStep} />
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Step {currentSection + 1} of {sections.length}
+            </span>
+            <span className="text-sm font-medium text-primary">
+              {Math.round(((currentSection + 1) / sections.length) * 100)}%
+            </span>
+          </div>
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+            <motion.div
+              className="h-full bg-primary rounded-full"
+              initial={{ width: "0%" }}
+              animate={{
+                width: `${((currentSection + 1) / sections.length) * 100}%`,
+              }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
-            {error}
+        {/* Section Title */}
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <CurrentIcon className="w-6 h-6 text-primary" />
+            <h2 className="text-2xl font-bold">
+              {sections[currentSection].title}
+            </h2>
           </div>
+          {sections[currentSection].required && (
+            <p className="text-sm text-muted-foreground">
+              * Required fields must be completed
+            </p>
+          )}
+        </motion.div>
+
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg text-sm"
+          >
+            {error}
+          </motion.div>
         )}
 
+        {/* Form Content */}
         <form
           onSubmit={
-            currentStep === STEPS.length - 1 ? handleSubmit : handleNext
+            currentSection === sections.length - 1
+              ? handleSubmit
+              : (e) => e.preventDefault()
           }
         >
-          {/* Step 1: Personal Information */}
-          {currentStep === 0 && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName" className="font-light mb-2">
-                    {t("firstName")}
-                  </Label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      type="text"
-                      required
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="pl-9 h-10"
-                      placeholder={t("firstNamePlaceholder")}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="lastName" className="font-light mb-2">
-                    {t("lastName")}
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    required
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="h-10"
-                    placeholder={t("lastNamePlaceholder")}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="email" className="font-light mb-2">
-                  {t("email")}
-                </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="pl-9 h-10"
-                    placeholder={t("emailPlaceholder")}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="phone" className="font-light mb-2">
-                  {t("phone")}
-                </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="pl-9 h-10"
-                    placeholder={t("phonePlaceholder")}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Professional Details */}
-          {currentStep === 1 && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="license" className="font-light mb-2">
-                    {t("license")}
-                  </Label>
-                  <Input
-                    id="license"
-                    name="license"
-                    type="text"
-                    required
-                    value={formData.license}
-                    onChange={handleChange}
-                    className="h-10"
-                    placeholder={t("licensePlaceholder")}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="specialty" className="font-light mb-2">
-                    {t("specialty")}
-                  </Label>
-                  <select
-                    id="specialty"
-                    name="specialty"
-                    required
-                    value={formData.specialty}
-                    onChange={handleChange}
-                    className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                  >
-                    <option value="">{t("specialtyPlaceholder")}</option>
-                    <option value="psychologist">
-                      {t("specialtyOptions.psychologist")}
-                    </option>
-                    <option value="psychiatrist">
-                      {t("specialtyOptions.psychiatrist")}
-                    </option>
-                    <option value="therapist">
-                      {t("specialtyOptions.therapist")}
-                    </option>
-                    <option value="counselor">
-                      {t("specialtyOptions.counselor")}
-                    </option>
-                    <option value="social-worker">
-                      {t("specialtyOptions.socialWorker")}
-                    </option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="location" className="font-light mb-2">
-                  {t("location")}
-                </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    id="location"
-                    name="location"
-                    type="text"
-                    required
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="pl-9 h-10"
-                    placeholder={t("locationPlaceholder")}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Password */}
-          {currentStep === 2 && (
-            <div className="space-y-6">
-              <div>
-                <Label htmlFor="password" className="font-light mb-2">
-                  {t("password")}
-                </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="pl-9 pr-9 h-10"
-                    placeholder={t("passwordPlaceholder")}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {t("passwordHint")}
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="confirmPassword" className="font-light mb-2">
-                  {t("confirmPassword")}
-                </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="pl-9 pr-9 h-10"
-                    placeholder={t("passwordPlaceholder")}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Terms & Conditions */}
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              <div className="rounded-lg bg-muted/50 p-6 space-y-4">
-                <h3 className="font-serif font-light text-lg">
-                  {t("reviewTitle")}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground mb-2">
-                      {t("personalInformation")}
-                    </p>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("name")}
-                        </span>
-                        <span className="font-medium">
-                          {formData.firstName} {formData.lastName}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("email")}
-                        </span>
-                        <span className="font-medium">{formData.email}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("phone")}
-                        </span>
-                        <span className="font-medium">{formData.phone}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground mb-2">
-                      {t("professionalDetails")}
-                    </p>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("license")}
-                        </span>
-                        <span className="font-medium">{formData.license}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("specialty")}
-                        </span>
-                        <span className="font-medium capitalize">
-                          {formData.specialty.replace("-", " ")}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("location")}
-                        </span>
-                        <span className="font-medium">{formData.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <input
-                  id="agreeToTerms"
-                  name="agreeToTerms"
-                  type="checkbox"
-                  required
-                  checked={formData.agreeToTerms}
-                  onChange={handleChange}
-                  className="h-4 w-4 mt-1 text-primary focus:ring-primary border-border/20 rounded"
-                />
-                <Label htmlFor="agreeToTerms" className="ml-2 font-light">
-                  {t("agreeToTerms")}{" "}
-                  <Link
-                    href="/terms"
-                    className="text-primary hover:text-primary/80 transition-colors"
-                  >
-                    {t("termsOfService")}
-                  </Link>{" "}
-                  {t("and")}{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-primary hover:text-primary/80 transition-colors"
-                  >
-                    {t("privacyPolicy")}
-                  </Link>
-                </Label>
-              </div>
-            </div>
-          )}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentSection}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+            >
+              {renderSection()}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between gap-4 mt-8">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              className="flex items-center gap-2 px-6 py-3 text-foreground font-light transition-opacity disabled:opacity-0 disabled:pointer-events-none"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>{t("back")}</span>
-            </button>
+          <div className="mt-8 flex justify-between gap-4">
+            {currentSection > 0 ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                disabled={isLoading}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+            ) : (
+              <div />
+            )}
 
-            <button
-              type="submit"
-              disabled={isLoading || !isCurrentStepValid()}
-              className="group flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>{t("creating") || "Creating account..."}</span>
-                </>
-              ) : (
-                <>
-                  <span>
-                    {currentStep === STEPS.length - 1
-                      ? t("createAccount")
-                      : t("continue")}
-                  </span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
+            {currentSection < sections.length - 1 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium transition-colors ml-auto"
+                disabled={isLoading}
+              >
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={isLoading || !formData.agreeToTerms}
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    Create Account
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </form>
       </AuthCard>
 
       <AuthFooter>
-        <p className="text-sm text-muted-foreground font-light">
-          {t("hasAccount")}{" "}
-          <Link
-            href="/login"
-            className="text-primary hover:text-primary/80 transition-colors"
-          >
-            {t("signIn")}
-          </Link>
-        </p>
-      </AuthFooter>
-
-      <AuthFooter>
+        Already have an account?{" "}
         <Link
-          href="/"
-          className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
+          href="/login"
+          className="font-medium text-primary hover:underline"
         >
-          {t("backToHome")}
+          Sign In
         </Link>
       </AuthFooter>
     </AuthContainer>

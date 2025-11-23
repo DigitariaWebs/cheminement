@@ -117,9 +117,13 @@ export default function BookAppointmentModal({
         setAvailabilityData(response);
         setError(response.message || "No available slots for this date");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching slots:", err);
-      setError(err.message || "Failed to load available time slots");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load available time slots",
+      );
       setAvailableSlots([]);
     } finally {
       setLoadingSlots(false);
@@ -150,9 +154,11 @@ export default function BookAppointmentModal({
       onSuccess?.();
       onClose();
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error booking appointment:", err);
-      setError(err.message || "Failed to book appointment");
+      setError(
+        err instanceof Error ? err.message : "Failed to book appointment",
+      );
     } finally {
       setLoading(false);
     }

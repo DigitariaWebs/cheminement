@@ -95,7 +95,7 @@ export default function SchedulePage() {
 
       setAppointments(appointmentsData);
       setRequests(requestsData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching schedule data:", err);
     } finally {
       setLoading(false);

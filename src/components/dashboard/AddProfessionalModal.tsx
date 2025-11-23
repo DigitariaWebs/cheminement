@@ -78,8 +78,10 @@ export default function AddProfessionalModal({
         specialty: "",
         license: "",
       });
-    } catch (err: any) {
-      setError(err.message || "Failed to create professional");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Failed to create professional",
+      );
     } finally {
       setIsLoading(false);
     }

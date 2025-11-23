@@ -24,6 +24,8 @@ export interface IProfile extends Document {
   };
   languages?: string[];
   sessionTypes?: string[];
+  modalities?: string[];
+  paymentAgreement?: string;
   pricing?: {
     individualSession: number;
     coupleSession: number;
@@ -99,6 +101,8 @@ const ProfileSchema = new Schema<IProfile>(
     },
     languages: [String],
     sessionTypes: [String],
+    modalities: [String],
+    paymentAgreement: String,
     pricing: {
       individualSession: Number,
       coupleSession: Number,

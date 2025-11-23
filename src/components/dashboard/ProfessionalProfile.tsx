@@ -268,6 +268,202 @@ export default function ProfessionalProfile({
         </div>
       </div>
 
+      {/* Education & Certifications */}
+      <div className="rounded-xl bg-card p-6">
+        <h2 className="text-xl font-serif font-light text-foreground mb-6">
+          Education & Credentials
+        </h2>
+
+        <div className="space-y-6">
+          {professionalProfile?.education &&
+          professionalProfile.education.length > 0 ? (
+            <div>
+              <Label className="font-light mb-3 text-base">Education</Label>
+              <div className="space-y-3">
+                {professionalProfile.education.map((edu, index) => (
+                  <div key={index} className="p-4 bg-muted/30 rounded-lg">
+                    <p className="font-medium text-foreground">{edu.degree}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {edu.institution}
+                    </p>
+                    {edu.year && (
+                      <p className="text-sm text-muted-foreground">
+                        {edu.year}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Label className="font-light mb-3 text-base">Education</Label>
+              <p className="text-muted-foreground">N/A</p>
+            </div>
+          )}
+
+          {professionalProfile?.certifications &&
+          professionalProfile.certifications.length > 0 ? (
+            <div>
+              <Label className="font-light mb-3 text-base">
+                Certifications
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {professionalProfile.certifications.map((cert) => (
+                  <span
+                    key={cert}
+                    className="px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-light"
+                  >
+                    {cert}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Label className="font-light mb-3 text-base">
+                Certifications
+              </Label>
+              <p className="text-muted-foreground">N/A</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Session Types & Modalities */}
+      <div className="rounded-xl bg-card p-6">
+        <h2 className="text-xl font-serif font-light text-foreground mb-6">
+          Services Offered
+        </h2>
+
+        <div className="space-y-6">
+          <div>
+            <Label className="font-light mb-3 text-base">Session Types</Label>
+            {professionalProfile?.sessionTypes &&
+            professionalProfile.sessionTypes.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {professionalProfile.sessionTypes.map((type) => (
+                  <span
+                    key={type}
+                    className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-light"
+                  >
+                    {type}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">N/A</p>
+            )}
+          </div>
+
+          <div>
+            <Label className="font-light mb-3 text-base">Modalities</Label>
+            {professionalProfile?.modalities &&
+            professionalProfile.modalities.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {professionalProfile.modalities.map((modality) => (
+                  <span
+                    key={modality}
+                    className="px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-light"
+                  >
+                    {modality}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">N/A</p>
+            )}
+          </div>
+
+          <div>
+            <Label className="font-light mb-3 text-base">
+              Languages Spoken
+            </Label>
+            {professionalProfile?.languages &&
+            professionalProfile.languages.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {professionalProfile.languages.map((lang) => (
+                  <span
+                    key={lang}
+                    className="px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-light"
+                  >
+                    {lang}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">N/A</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing & Payment */}
+      <div className="rounded-xl bg-card p-6">
+        <h2 className="text-xl font-serif font-light text-foreground mb-6">
+          Pricing & Payment
+        </h2>
+
+        <div className="space-y-4">
+          {professionalProfile?.pricing && (
+            <div className="grid gap-4 md:grid-cols-3">
+              {professionalProfile.pricing.individualSession && (
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <Label className="font-light mb-1 text-sm">
+                    Individual Session
+                  </Label>
+                  <p className="text-2xl font-medium text-foreground">
+                    ${professionalProfile.pricing.individualSession}
+                  </p>
+                  <p className="text-xs text-muted-foreground">per session</p>
+                </div>
+              )}
+
+              {professionalProfile.pricing.coupleSession && (
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <Label className="font-light mb-1 text-sm">
+                    Couple Session
+                  </Label>
+                  <p className="text-2xl font-medium text-foreground">
+                    ${professionalProfile.pricing.coupleSession}
+                  </p>
+                  <p className="text-xs text-muted-foreground">per session</p>
+                </div>
+              )}
+
+              {professionalProfile.pricing.groupSession && (
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <Label className="font-light mb-1 text-sm">
+                    Group Session
+                  </Label>
+                  <p className="text-2xl font-medium text-foreground">
+                    ${professionalProfile.pricing.groupSession}
+                  </p>
+                  <p className="text-xs text-muted-foreground">per session</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!professionalProfile?.pricing?.individualSession &&
+            !professionalProfile?.pricing?.coupleSession &&
+            !professionalProfile?.pricing?.groupSession && (
+              <p className="text-muted-foreground">Pricing not set</p>
+            )}
+
+          {professionalProfile?.paymentAgreement && (
+            <div>
+              <Label className="font-light mb-2 text-base">
+                Payment Agreement
+              </Label>
+              <p className="text-foreground capitalize">
+                {professionalProfile.paymentAgreement.replace(/-/g, " ")}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Profile Completion Modal */}
       <ProfileCompletionModal
         isOpen={isEditable && isModalOpen}

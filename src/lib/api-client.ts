@@ -144,8 +144,40 @@ export const authAPI = {
     culturalConsiderations?: string;
     // Professional fields
     professionalProfile?: {
+      problematics?: string[];
+      approaches?: string[];
+      ageCategories?: string[];
+      skills?: string[];
+      bio?: string;
+      yearsOfExperience?: number;
       specialty?: string;
       license?: string;
+      certifications?: string[];
+      availability?: {
+        days: {
+          day: string;
+          isWorkDay: boolean;
+          startTime: string;
+          endTime: string;
+        }[];
+        sessionDurationMinutes?: number;
+        breakDurationMinutes?: number;
+        firstDayOfWeek?: string;
+      };
+      languages?: string[];
+      sessionTypes?: string[];
+      modalities?: string[];
+      paymentAgreement?: string;
+      pricing?: {
+        individualSession?: number;
+        coupleSession?: number;
+        groupSession?: number;
+      };
+      education?: {
+        degree: string;
+        institution: string;
+        year?: number;
+      }[];
     };
   }) => apiClient.post("/auth/signup", data),
 };

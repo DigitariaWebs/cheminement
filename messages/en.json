@@ -487,6 +487,7 @@
       "pendingReviewDesc": "Your account is currently under review. Complete your profile setup below to start matching with clients once approved.",
       "incompleteDesc": "Please complete all required profile information to submit for review.",
       "approvedDesc": "Your account is active and ready to accept clients.",
+      "completeSetupTitle": "Complete Your Professional Profile",
       "completeSetupDesc": "To start matching with clients, please complete your professional profile with your specializations, approaches, and preferences.",
       "completeNow": "Complete Profile Now",
       "complete": "Complete",
