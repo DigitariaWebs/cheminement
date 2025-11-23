@@ -1851,7 +1851,9 @@
         "paid": "Paid",
         "pending": "Pending",
         "upcoming": "Upcoming",
-        "processing": "Processing"
+        "processing": "Processing",
+        "refunded": "Refunded",
+        "cancelled": "Cancelled"
       }
     }
   },

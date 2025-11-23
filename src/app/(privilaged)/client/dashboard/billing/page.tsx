@@ -204,6 +204,32 @@ export default function ClientBillingPage() {
     setShowPaymentModal(true);
   };
 
+  const handleDownloadReceipt = async (appointmentId: string) => {
+    try {
+      const response = await fetch(
+        `/api/payments/receipt?appointmentId=${appointmentId}`,
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to download receipt");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `receipt-${appointmentId.slice(-8)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Error downloading receipt:", err);
+      alert(err instanceof Error ? err.message : "Failed to download receipt");
+    }
+  };
+
   const handlePaymentSuccess = () => {
     // Refresh appointments after payment
     fetchAppointments();
@@ -540,16 +566,14 @@ export default function ClientBillingPage() {
 
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2">
-                    {payment.status === "paid" && payment.invoiceUrl && (
+                    {payment.status === "paid" && (
                       <Button
                         variant="outline"
                         className="gap-2 rounded-full"
-                        asChild
+                        onClick={() => handleDownloadReceipt(payment._id)}
                       >
-                        <a href={payment.invoiceUrl} download>
-                          <Download className="h-4 w-4" />
-                          {t("downloadReceipt")}
-                        </a>
+                        <Download className="h-4 w-4" />
+                        {t("downloadReceipt")}
                       </Button>
                     )}
                     {(payment.status === "pending" ||
