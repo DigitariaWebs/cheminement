@@ -16,7 +16,46 @@ export async function POST(req: NextRequest) {
       lastName,
       role,
       phone,
+      dateOfBirth,
+      gender,
+      language,
       location,
+      concernedPerson,
+      medicalConditions,
+      currentMedications,
+      allergies,
+      substanceUse,
+      previousTherapy,
+      previousTherapyDetails,
+      psychiatricHospitalization,
+      currentTreatment,
+      diagnosedConditions,
+      primaryIssue,
+      secondaryIssues,
+      issueDescription,
+      severity,
+      duration,
+      triggeringSituation,
+      symptoms,
+      dailyLifeImpact,
+      sleepQuality,
+      appetiteChanges,
+      treatmentGoals,
+      therapyApproach,
+      concernsAboutTherapy,
+      availability,
+      modality,
+      sessionFrequency,
+      notes,
+      emergencyContactName,
+      emergencyContactPhone,
+      emergencyContactRelation,
+      crisisPlan,
+      suicidalThoughts,
+      preferredGender,
+      preferredAge,
+      languagePreference,
+      culturalConsiderations,
       professionalProfile,
     } = await req.json();
 
@@ -50,7 +89,15 @@ export async function POST(req: NextRequest) {
       role,
       status: role == "professional" ? "pending" : "active",
       phone,
-      location,
+      gender,
+      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+      language:
+        language === "english"
+          ? "en"
+          : language === "french"
+            ? "fr"
+            : undefined,
+      location: location,
     });
 
     await user.save();
@@ -65,9 +112,54 @@ export async function POST(req: NextRequest) {
 
       await profile.save();
     } else if (user.role === "client") {
-      // Create empty medical profile for the client
+      // Create medical profile for the client with signup data
       const medicalProfile = new MedicalProfile({
         userId: user._id,
+        // Personal Information
+        concernedPerson: concernedPerson,
+        // Health Background
+        medicalConditions: medicalConditions,
+        currentMedications: currentMedications,
+        allergies: allergies,
+        substanceUse: substanceUse,
+        // Mental Health History
+        previousTherapy: previousTherapy,
+        previousTherapyDetails: previousTherapyDetails,
+        psychiatricHospitalization: psychiatricHospitalization,
+        currentTreatment: currentTreatment,
+        diagnosedConditions: diagnosedConditions,
+        // Current Concerns
+        primaryIssue: primaryIssue,
+        secondaryIssues: secondaryIssues,
+        issueDescription: issueDescription,
+        severity: severity,
+        duration: duration,
+        triggeringSituation: triggeringSituation,
+        // Symptoms & Impact
+        symptoms: symptoms,
+        dailyLifeImpact: dailyLifeImpact,
+        sleepQuality: sleepQuality,
+        appetiteChanges: appetiteChanges,
+        // Goals & Treatment Preferences
+        treatmentGoals: treatmentGoals,
+        therapyApproach: therapyApproach,
+        concernsAboutTherapy: concernsAboutTherapy,
+        // Appointment Preferences
+        availability: availability,
+        modality: modality,
+        sessionFrequency: sessionFrequency,
+        notes: notes,
+        // Emergency Information
+        emergencyContactName: emergencyContactName,
+        emergencyContactPhone: emergencyContactPhone,
+        emergencyContactRelation: emergencyContactRelation,
+        crisisPlan: crisisPlan,
+        suicidalThoughts: suicidalThoughts,
+        // Professional Matching Preferences
+        preferredGender: preferredGender,
+        preferredAge: preferredAge,
+        languagePreference: languagePreference,
+        culturalConsiderations: culturalConsiderations,
         profileCompleted: false,
       });
 
