@@ -12,6 +12,7 @@ import {
   ClipboardList,
   Wallet,
   Shield,
+  Settings,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -79,6 +80,11 @@ export function AdminSidebar() {
           title: "Admins",
           url: "/admin/dashboard/admins",
           icon: Shield,
+        },
+        {
+          title: "Settings",
+          url: "/admin/dashboard/settings",
+          icon: Settings,
         },
       ],
     },
