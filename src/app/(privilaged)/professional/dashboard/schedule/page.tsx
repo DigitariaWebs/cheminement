@@ -7,7 +7,6 @@ import {
   ChevronRight,
   User,
   Filter,
-  Eye,
   Loader2,
   Video,
   MapPin,
@@ -37,32 +36,12 @@ interface Appointment {
   location?: string;
 }
 
-interface Request {
-  _id: string;
-  patientId?: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-  };
-  patientName: string;
-  email: string;
-  phone: string;
-  preferredDate?: string;
-  preferredTime?: string;
-  issueType: string;
-  urgency: "low" | "medium" | "high";
-  isNewClient: boolean;
-  status: "pending" | "approved" | "rejected" | "contacted";
-  message?: string;
-}
-
 export default function SchedulePage() {
   const t = useTranslations("Dashboard.scheduleCalendar");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"day" | "week" | "month">("week");
   const [showRequests, setShowRequests] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -86,15 +65,10 @@ export default function SchedulePage() {
         endDate.setMonth(startDate.getMonth() + 1);
       }
 
-      const [appointmentsData, requestsData] = await Promise.all([
-        apiClient.get<Appointment[]>(
-          `/appointments?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
-        ),
-        apiClient.get<Request[]>("/requests?status=pending"),
-      ]);
-
+      const appointmentsData = await apiClient.get<Appointment[]>(
+        `/appointments?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+      );
       setAppointments(appointmentsData);
-      setRequests(requestsData);
     } catch (err: unknown) {
       console.error("Error fetching schedule data:", err);
     } finally {
@@ -192,19 +166,6 @@ export default function SchedulePage() {
         return <Phone className="h-4 w-4" />;
       default:
         return <User className="h-4 w-4" />;
-    }
-  };
-
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case "high":
-        return "bg-red-100 text-red-700";
-      case "medium":
-        return "bg-yellow-100 text-yellow-700";
-      case "low":
-        return "bg-green-100 text-green-700";
-      default:
-        return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -385,34 +346,6 @@ export default function SchedulePage() {
                                   </div>
                                 </div>
                               ))}
-                            {showRequests &&
-                              requests
-                                .filter(
-                                  (r) =>
-                                    r.preferredTime &&
-                                    parseInt(r.preferredTime.split(":")[0]) ===
-                                      hour,
-                                )
-                                .map((request) => (
-                                  <div
-                                    key={request._id}
-                                    className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-1 hover:bg-yellow-100 transition-colors cursor-pointer"
-                                  >
-                                    <div className="flex items-center gap-1 text-xs font-light">
-                                      <User className="h-3 w-3" />
-                                      <span className="text-foreground">
-                                        {request.patientName}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-1 mt-1">
-                                      <span
-                                        className={`text-xs px-2 py-0.5 rounded-full font-light ${getUrgencyColor(request.urgency)}`}
-                                      >
-                                        {request.urgency}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
                           </div>
                         );
                       })}
@@ -466,26 +399,6 @@ export default function SchedulePage() {
                             {appointment.clientId.lastName}
                           </div>
                         ))}
-                    {showRequests &&
-                      requests
-                        .filter((req) => {
-                          if (!req.preferredDate) return false;
-                          const reqDate = new Date(req.preferredDate);
-                          return (
-                            reqDate.getDate() === day.getDate() &&
-                            reqDate.getMonth() === day.getMonth() &&
-                            reqDate.getFullYear() === day.getFullYear()
-                          );
-                        })
-                        .slice(0, 2)
-                        .map((request) => (
-                          <div
-                            key={request._id}
-                            className="bg-yellow-50 rounded px-2 py-1 text-xs font-light truncate"
-                          >
-                            {request.preferredTime} {request.patientName}
-                          </div>
-                        ))}
                   </div>
                 </div>
               ))}
@@ -510,9 +423,6 @@ export default function SchedulePage() {
                 <div className="rounded-lg bg-muted/30 p-4">
                   <div className="text-sm font-light text-muted-foreground mb-1">
                     {t("pendingRequests")}
-                  </div>
-                  <div className="text-2xl font-serif font-light text-foreground">
-                    {requests.filter((r) => r.status === "pending").length}
                   </div>
                 </div>
               </div>
@@ -569,52 +479,6 @@ export default function SchedulePage() {
                             </div>
                           </div>
                         ))}
-                      {showRequests &&
-                        requests
-                          .filter(
-                            (r) =>
-                              r.preferredTime &&
-                              parseInt(r.preferredTime.split(":")[0]) === hour,
-                          )
-                          .map((request) => (
-                            <div
-                              key={request._id}
-                              className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 hover:bg-yellow-100 transition-colors cursor-pointer"
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <User className="h-5 w-5 text-muted-foreground" />
-                                  <div>
-                                    <div className="font-light text-foreground">
-                                      {request.patientName}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground font-light flex items-center gap-2">
-                                      {request.preferredTime} •{" "}
-                                      {request.issueType}
-                                      <span
-                                        className={`px-2 py-0.5 rounded-full text-xs font-light ${getUrgencyColor(request.urgency)}`}
-                                      >
-                                        {request.urgency}
-                                      </span>
-                                      {request.isNewClient && (
-                                        <span className="px-2 py-0.5 rounded-full text-xs font-light bg-purple-100 text-purple-700">
-                                          {t("new")}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <button className="p-2 rounded-full hover:bg-muted transition-colors">
-                                    <Eye className="h-4 w-4" />
-                                  </button>
-                                  <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform">
-                                    {t("accept")}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
                     </div>
                   </div>
                 );

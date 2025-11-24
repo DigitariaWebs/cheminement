@@ -223,18 +223,6 @@ export const appointmentsAPI = {
   delete: (id: string) => apiClient.delete(`/appointments/${id}`),
 };
 
-// Requests
-export const requestsAPI = {
-  list: (params?: { status?: string }) => {
-    const query = new URLSearchParams(params as any).toString();
-    return apiClient.get(`/requests${query ? `?${query}` : ""}`);
-  },
-  create: (data: any) => apiClient.post("/requests", data),
-  get: (id: string) => apiClient.get(`/requests/${id}`),
-  update: (id: string, data: any) => apiClient.patch(`/requests/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/requests/${id}`),
-};
-
 // Users
 export const usersAPI = {
   get: () => apiClient.get("/users/me"),

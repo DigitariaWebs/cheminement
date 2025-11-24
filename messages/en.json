@@ -1,13 +1,12 @@
 {
   "Header": {
     "nav": {
-          "home": "Home",
-          "whoWeAre": "Who We Are",
-          "whyUs": "Why Us",
-          "approaches": "Approaches",
-          "services": "Services",
-          "contact": "Contact"
-        }
+      "home": "Home",
+      "whoWeAre": "Who We Are",
+      "whyUs": "Why Us",
+      "approaches": "Approaches",
+      "services": "Services",
+      "contact": "Contact"
     },
     "login": "Login",
     "getStarted": "Get Started",
