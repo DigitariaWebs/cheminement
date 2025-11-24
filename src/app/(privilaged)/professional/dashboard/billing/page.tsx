@@ -39,6 +39,7 @@ interface Payment {
   invoiceUrl?: string;
   paidDate?: string;
   paymentStatus?: string;
+  cancelReason?: string;
 }
 
 export default function ProfessionalBillingPage() {
@@ -85,19 +86,36 @@ export default function ProfessionalBillingPage() {
           status = "pending";
         }
 
+        // When paymentStatus is "cancelled", the client only pays a percentage
+        // of the original session price. The backend already adjusted:
+        // - price: actual amount charged to the client after cancellation policy
+        // - platformFee: platform's share of that amount
+        // - professionalPayout: net amount for the professional (may be 0)
+        const grossAmount =
+          apt.paymentStatus === "cancelled" ? apt.price : apt.price || 120;
+        const platformFee =
+          apt.paymentStatus === "cancelled"
+            ? apt.platformFee
+            : apt.platformFee || 12;
+        const netAmount =
+          apt.paymentStatus === "cancelled"
+            ? apt.professionalPayout
+            : apt.professionalPayout || 108;
+
         return {
           _id: apt._id,
           sessionId: `SES-${apt._id.slice(-6).toUpperCase()}`,
           client: clientName,
           date: apt.date,
           sessionDate: `${new Date(apt.date).toLocaleDateString()} ${apt.time}`,
-          amount: apt.price || 120,
-          platformFee: apt.platformFee || 12,
-          netAmount: apt.professionalPayout || 108,
+          amount: grossAmount,
+          platformFee: platformFee ?? 0,
+          netAmount: netAmount ?? 0,
           status,
           paymentStatus: apt.paymentStatus,
           paidDate: apt.paidAt ? new Date(apt.paidAt).toISOString() : undefined,
           invoiceUrl: apt.paymentStatus === "paid" ? "#" : undefined,
+          cancelReason: apt.cancelReason,
         };
       });
 
@@ -472,6 +490,16 @@ export default function ProfessionalBillingPage() {
                         </p>
                         <p className="font-medium text-foreground">
                           {formatDate(payment.paidDate)}
+                        </p>
+                      </div>
+                    )}
+                    {payment.status === "cancelled" && payment.cancelReason && (
+                      <div className="md:col-span-4">
+                        <p className="text-xs text-muted-foreground">
+                          {t("cancelReason")}
+                        </p>
+                        <p className="font-medium text-foreground">
+                          {payment.cancelReason}
                         </p>
                       </div>
                     )}

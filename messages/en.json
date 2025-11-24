@@ -1844,6 +1844,7 @@
       "netAmount": "Net Amount",
       "paidDate": "Paid Date",
       "downloadInvoice": "Download Invoice",
+      "cancelReason": "Cancellation reason",
       "show": "Show",
       "hide": "Hide",
       "status": {

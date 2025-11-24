@@ -250,21 +250,14 @@ export default function AppointmentDetailsModal({
                     </Button>
                     <Button
                       onClick={async () => {
-                        if (appointment.type === "video") {
-                          setShowMeetingLinkInput(true);
-                        } else {
-                          try {
-                            await appointmentsAPI.update(appointment._id, {
-                              status: "scheduled",
-                            });
-                            onClose();
-                            onAction?.();
-                          } catch (error) {
-                            console.error(
-                              "Error accepting appointment:",
-                              error,
-                            );
-                          }
+                        try {
+                          await appointmentsAPI.update(appointment._id, {
+                            status: "scheduled",
+                          });
+                          onClose();
+                          onAction?.();
+                        } catch (error) {
+                          console.error("Error accepting appointment:", error);
                         }
                       }}
                       className="gap-2 rounded-full"
