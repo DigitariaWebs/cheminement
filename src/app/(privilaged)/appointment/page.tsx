@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Wallet,
+  Info,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -29,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { apiClient } from "@/lib/api-client";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface Professional {
   _id: string;
@@ -38,6 +41,7 @@ interface Professional {
   specialty?: string;
   license?: string;
   bio?: string;
+  hasSchedule?: boolean;
 }
 
 interface AvailableSlot {
@@ -46,27 +50,39 @@ interface AvailableSlot {
 }
 
 interface AvailabilityData {
-  professionalInfo: Professional & {
+  date: string;
+  dayOfWeek: string;
+  available: boolean;
+  slots: AvailableSlot[];
+  professionalInfo: {
+    id: string;
+    name: string;
+    sessionDuration: number;
     pricing: {
       individualSession?: number;
       coupleSession?: number;
       groupSession?: number;
     };
+    sessionTypes: string[];
   };
   workingHours: {
     start: string;
     end: string;
   };
-  available: boolean;
-  slots: AvailableSlot[];
+  message?: string;
 }
 
 export default function BookAppointmentPage() {
   const router = useRouter();
 
   // Step management
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // Start at 0 for selection method
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+
+  // Selection method
+  const [selectionMethod, setSelectionMethod] = useState<
+    "best-fit" | "choose" | null
+  >(null);
 
   // Form data
   const [professionals, setProfessionals] = useState<Professional[]>([]);
@@ -98,10 +114,17 @@ export default function BookAppointmentPage() {
   const loadProfessionals = async () => {
     try {
       setLoading(true);
+      setError("");
       const data = await apiClient.get<Professional[]>(
         "/users?role=professional",
       );
       setProfessionals(data);
+      
+      if (data.length === 0) {
+        setError(
+          "No professionals available."
+        );
+      }
     } catch (err: unknown) {
       console.error("Error loading professionals:", err);
       setError(
@@ -112,27 +135,33 @@ export default function BookAppointmentPage() {
     }
   };
 
+  const handleSelectionMethodChoice = (method: "best-fit" | "choose") => {
+    setSelectionMethod(method);
+    if (method === "best-fit") {
+      // For best fit, auto-select the first available professional
+      if (professionals.length > 0) {
+        handleProfessionalSelect(professionals[0]._id);
+      }
+    } else {
+      setCurrentStep(1);
+    }
+  };
+
   const getAvailableDates = () => {
     const dates = [];
     const today = new Date();
-
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-
-      // Skip weekends if professional doesn't work weekends
-      if (date.getDay() === 0 || date.getDay() === 6) continue;
-
       dates.push({
         value: date.toISOString().split("T")[0],
         label: date.toLocaleDateString("en-US", {
           weekday: "long",
-          month: "short",
+          month: "long",
           day: "numeric",
         }),
       });
     }
-
     return dates;
   };
 
@@ -142,14 +171,11 @@ export default function BookAppointmentPage() {
     try {
       setLoadingSlots(true);
       setError("");
-
-      const response = await apiClient.get<
-        AvailabilityData & { message?: string }
-      >(
+      const response = await apiClient.get<AvailabilityData>(
         `/appointments/available-slots?professionalId=${selectedProfessional}&date=${selectedDate}`,
       );
 
-      if (response.available) {
+      if (response.available && response.slots) {
         setAvailableSlots(response.slots);
         setAvailabilityData(response);
       } else {
@@ -235,60 +261,31 @@ export default function BookAppointmentPage() {
     }
   };
 
-  const resetBooking = () => {
-    setCurrentStep(1);
-    setCompletedSteps([]);
-    setSelectedProfessional("");
-    setSelectedDate("");
-    setSelectedTime("");
-    setSelectedType("video");
-    setTherapyType("solo");
-    setIssueType("");
-    setNotes("");
-    setAvailableSlots([]);
-    setAvailabilityData(null);
-    setError("");
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "video":
-        return <Video className="h-5 w-5" />;
-      case "in-person":
-        return <MapPin className="h-5 w-5" />;
-      case "phone":
-        return <Phone className="h-5 w-5" />;
-      default:
-        return <Calendar className="h-5 w-5" />;
-    }
-  };
+  const selectedProfessionalData = professionals.find(
+    (p) => p._id === selectedProfessional,
+  );
 
   const getSessionPrice = () => {
-    if (!availabilityData?.professionalInfo.pricing) {
+    if (!availabilityData?.professionalInfo?.pricing) {
       return therapyType === "solo" ? 120 : therapyType === "couple" ? 150 : 80;
     }
 
+    const pricing = availabilityData.professionalInfo.pricing;
     switch (therapyType) {
       case "solo":
-        return (
-          availabilityData.professionalInfo.pricing.individualSession || 120
-        );
+        return pricing.individualSession || 120;
       case "couple":
-        return availabilityData.professionalInfo.pricing.coupleSession || 150;
+        return pricing.coupleSession || 150;
       case "group":
-        return availabilityData.professionalInfo.pricing.groupSession || 80;
+        return pricing.groupSession || 80;
       default:
         return 120;
     }
   };
 
-  const selectedProfessionalData = professionals.find(
-    (p) => p._id === selectedProfessional,
-  );
-
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted/20">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
           <Button
@@ -310,7 +307,7 @@ export default function BookAppointmentPage() {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4">
-            {[1, 2, 3, 4].map((step) => (
+            {[0, 1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
@@ -321,7 +318,7 @@ export default function BookAppointmentPage() {
                         : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {step === 4 ? <CheckCircle2 className="h-5 w-5" /> : step}
+                  {step === 4 ? <CheckCircle2 className="h-5 w-5" /> : step + 1}
                 </div>
                 {step < 4 && (
                   <div
@@ -333,7 +330,12 @@ export default function BookAppointmentPage() {
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-4 space-x-16 text-sm text-muted-foreground">
+          <div className="flex justify-center mt-4 space-x-12 text-sm text-muted-foreground">
+            <span
+              className={currentStep >= 0 ? "text-foreground font-medium" : ""}
+            >
+              Selection Method
+            </span>
             <span
               className={currentStep >= 1 ? "text-foreground font-medium" : ""}
             >
@@ -357,6 +359,95 @@ export default function BookAppointmentPage() {
           </div>
         </div>
 
+        {/* Error Display */}
+        {error && currentStep < 4 && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/30 p-4">
+            <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
+              <AlertCircle className="h-5 w-5" />
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Step 0: Selection Method */}
+        {currentStep === 0 && (
+          <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
+            <div className="p-6 border-b border-border/40">
+              <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                How would you like to choose your professional?
+              </h2>
+            </div>
+            <div className="p-6">
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <RadioGroup
+                  value={selectionMethod || ""}
+                  onValueChange={(value) =>
+                    handleSelectionMethodChoice(value as "best-fit" | "choose")
+                  }
+                  className="space-y-4"
+                >
+                  <div
+                    className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
+                      selectionMethod === "best-fit"
+                        ? "border-primary bg-primary/5"
+                        : "border-border/40 hover:border-border"
+                    }`}
+                    onClick={() => handleSelectionMethodChoice("best-fit")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <RadioGroupItem value="best-fit" id="best-fit" />
+                      <div className="flex-1">
+                        <Label
+                          htmlFor="best-fit"
+                          className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
+                        >
+                          <Sparkles className="h-5 w-5 text-primary" />
+                          Best Fit for Me (Recommended)
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Let us match you with the most suitable professional based on availability and expertise. 
+                          This option gets you started quickly with a qualified professional.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
+                      selectionMethod === "choose"
+                        ? "border-primary bg-primary/5"
+                        : "border-border/40 hover:border-border"
+                    }`}
+                    onClick={() => handleSelectionMethodChoice("choose")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <RadioGroupItem value="choose" id="choose" />
+                      <div className="flex-1">
+                        <Label
+                          htmlFor="choose"
+                          className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
+                        >
+                          <User className="h-5 w-5 text-primary" />
+                          I'll Choose My Professional
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Browse through our active professionals and select the one that best suits your needs. 
+                          View their specialties, experience, and availability.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </RadioGroup>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Step 1: Choose Professional */}
         {currentStep === 1 && (
           <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
@@ -365,11 +456,24 @@ export default function BookAppointmentPage() {
                 <User className="h-5 w-5" />
                 Choose Your Professional
               </h2>
+              <p className="text-sm text-muted-foreground mt-2">
+                All professionals shown are active and have availability schedules configured
+              </p>
             </div>
             <div className="p-6">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : professionals.length === 0 ? (
+                <div className="text-center py-12">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    No professionals available at the moment.
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Please check back later or contact support for assistance.
+                  </p>
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -391,9 +495,8 @@ export default function BookAppointmentPage() {
                           <h3 className="font-medium text-foreground">
                             {professional.firstName} {professional.lastName}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {professional.specialty ||
-                              "Mental Health Professional"}
+                          <p className="text-sm text-muted-foreground capitalize">
+                            {professional.specialty || "Mental Health Professional"}
                           </p>
                         </div>
                       </div>
@@ -407,10 +510,22 @@ export default function BookAppointmentPage() {
                           Licensed: {professional.license}
                         </Badge>
                       )}
+                      <Badge variant="outline" className="mt-2 ml-2">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Active & Available
+                      </Badge>
                     </div>
                   ))}
                 </div>
               )}
+              <div className="flex justify-between pt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(0)}
+                >
+                  Back
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -457,29 +572,27 @@ export default function BookAppointmentPage() {
                       <Loader2 className="h-6 w-6 animate-spin text-primary" />
                     </div>
                   ) : availableSlots.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                       {availableSlots.map((slot) => (
-                        <button
+                        <Button
                           key={slot.time}
+                          variant={selectedTime === slot.time ? "default" : "outline"}
+                          disabled={!slot.available}
                           onClick={() => handleTimeSelect(slot.time)}
-                          className={`rounded-lg border px-4 py-3 text-sm font-light transition ${
-                            selectedTime === slot.time
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card hover:border-primary/50"
-                          }`}
+                          className="w-full"
                         >
                           {slot.time}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   ) : (
                     <div className="rounded-lg border border-border/40 bg-muted/30 p-6 text-center">
+                      <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
-                        {error || "No available slots for this date"}
+                        No available time slots for this date
                       </p>
                     </div>
                   )}
-
                   {availabilityData && (
                     <p className="text-xs text-muted-foreground">
                       Working hours: {availabilityData.workingHours.start} -{" "}
@@ -488,25 +601,41 @@ export default function BookAppointmentPage() {
                   )}
                 </div>
               )}
+
+              <div className="flex justify-between pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setCurrentStep(selectionMethod === "best-fit" ? 0 : 1);
+                    setSelectedDate("");
+                    setSelectedTime("");
+                  }}
+                >
+                  Back
+                </Button>
+              </div>
             </div>
           </div>
         )}
 
         {/* Step 3: Appointment Details */}
         {currentStep === 3 && (
-          <div className="max-w-2xl mx-auto rounded-xl bg-card border border-border/40">
+          <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
             <div className="p-6 border-b border-border/40">
-              <h2 className="text-xl font-serif font-light text-foreground">
+              <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                <Clock className="h-5 w-5" />
                 Appointment Details
               </h2>
             </div>
             <div className="p-6 space-y-6">
-              {/* Therapy Type */}
+              {/* Session Type */}
               <div className="space-y-2">
-                <Label>Therapy Type *</Label>
+                <Label>Session Type</Label>
                 <Select
                   value={therapyType}
-                  onValueChange={(value: any) => setTherapyType(value)}
+                  onValueChange={(value: "solo" | "couple" | "group") =>
+                    setTherapyType(value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -515,31 +644,33 @@ export default function BookAppointmentPage() {
                     <SelectItem value="solo">
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4" />
-                        Individual Therapy
+                        Individual Session
                       </div>
                     </SelectItem>
                     <SelectItem value="couple">
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />
-                        Couple Therapy
+                        Couple Session
                       </div>
                     </SelectItem>
                     <SelectItem value="group">
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />
-                        Group Therapy
+                        Group Session
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Session Type */}
+              {/* Appointment Type */}
               <div className="space-y-2">
-                <Label>Session Type</Label>
+                <Label>Appointment Type</Label>
                 <Select
                   value={selectedType}
-                  onValueChange={(value: any) => setSelectedType(value)}
+                  onValueChange={(value: "video" | "in-person" | "phone") =>
+                    setSelectedType(value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -569,10 +700,10 @@ export default function BookAppointmentPage() {
 
               {/* Issue Type */}
               <div className="space-y-2">
-                <Label>Primary Concern *</Label>
+                <Label htmlFor="issueType">What brings you here? *</Label>
                 <Select value={issueType} onValueChange={setIssueType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your primary concern" />
+                  <SelectTrigger id="issueType">
+                    <SelectValue placeholder="Select a topic" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Anxiety">Anxiety</SelectItem>
@@ -601,89 +732,60 @@ export default function BookAppointmentPage() {
                 />
               </div>
 
-              {/* Pricing */}
-              {availabilityData?.professionalInfo.pricing && (
-                <div className="rounded-lg bg-muted/30 p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Session Price</span>
-                    <span className="text-lg font-semibold">
-                      ${getSessionPrice()} CAD
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {therapyType === "solo"
-                      ? "Individual"
-                      : therapyType === "couple"
-                        ? "Couple"
-                        : "Group"}{" "}
-                    therapy session
-                  </p>
-                </div>
-              )}
-
-              {error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                  {error}
-                </div>
-              )}
-
-              <Button
-                onClick={handleSubmit}
-                disabled={loading || !issueType}
-                className="w-full gap-2"
-                size="lg"
-              >
-                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                Book Appointment
-              </Button>
+              <div className="flex justify-between pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setCurrentStep(2);
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={loading || !issueType}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Booking...
+                    </>
+                  ) : (
+                    "Continue to Confirmation"
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         )}
 
         {/* Step 4: Success */}
         {currentStep === 4 && (
-          <div className="max-w-3xl mx-auto space-y-6">
-            {/* Success Header */}
-            <div className="rounded-xl bg-card border border-border/40 text-center py-8">
-              <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="rounded-xl bg-card border border-border/40 p-8">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
               <h2 className="text-2xl font-serif font-light text-foreground mb-2">
-                Appointment Booked Successfully!
+                Appointment Requested!
               </h2>
-              <p className="text-muted-foreground">
-                Your appointment has been scheduled. You&apos;ll receive a
-                confirmation email shortly.
+              <p className="text-muted-foreground mb-6">
+                Your appointment request has been submitted successfully. You'll receive a
+                confirmation email shortly with all the details.
               </p>
-            </div>
 
-            {/* Appointment Details Card */}
-            <div className="rounded-xl bg-card border border-border/40 p-6">
-              <h3 className="text-lg font-serif font-light text-foreground mb-4">
-                Appointment Details
-              </h3>
-
-              <div className="space-y-4">
-                {/* Professional */}
+              <div className="space-y-4 text-left bg-muted/30 rounded-lg p-6 mb-6">
                 <div className="flex items-start gap-3">
                   <User className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm text-muted-foreground">
-                      Professional
-                    </p>
+                    <p className="text-sm text-muted-foreground">Professional</p>
                     <p className="font-medium text-foreground">
                       {selectedProfessionalData?.firstName}{" "}
                       {selectedProfessionalData?.lastName}
                     </p>
-                    {selectedProfessionalData?.specialty && (
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {selectedProfessionalData.specialty}
-                      </p>
-                    )}
                   </div>
                 </div>
-
                 <Separator />
-
-                {/* Date & Time */}
                 <div className="flex items-start gap-3">
                   <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
@@ -691,142 +793,32 @@ export default function BookAppointmentPage() {
                     <p className="font-medium text-foreground">
                       {new Date(selectedDate).toLocaleDateString("en-US", {
                         weekday: "long",
-                        year: "numeric",
                         month: "long",
                         day: "numeric",
+                        year: "numeric",
                       })}
                     </p>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedTime}
-                    </p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Session Type */}
-                <div className="flex items-start gap-3">
-                  {getTypeIcon(selectedType)}
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Session Type
-                    </p>
-                    <p className="font-medium text-foreground capitalize">
-                      {selectedType.replace("-", " ")}
-                    </p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Therapy Type */}
-                <div className="flex items-start gap-3">
-                  {therapyType === "solo" ? (
-                    <User className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  ) : (
-                    <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  )}
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Therapy Type
-                    </p>
-                    <p className="font-medium text-foreground">
-                      {therapyType === "solo"
-                        ? "Individual Therapy"
-                        : therapyType === "couple"
-                          ? "Couple Therapy"
-                          : "Group Therapy"}
-                    </p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Primary Concern */}
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Primary Concern
-                    </p>
-                    <p className="font-medium text-foreground">{issueType}</p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Pricing */}
-                <div className="rounded-lg bg-muted/30 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">
-                      Session Price
-                    </span>
-                    <span className="text-lg font-semibold text-foreground">
-                      ${getSessionPrice()} CAD
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Payment Status
-                    </span>
-                    <span className="inline-flex items-center rounded-full bg-yellow-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
-                      <Clock className="h-3 w-3 mr-1" />
-                      Pending
-                    </span>
+                    <p className="text-sm text-muted-foreground">{selectedTime}</p>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="rounded-xl bg-card border border-border/40 p-6">
-              <h3 className="text-lg font-serif font-light text-foreground mb-4">
-                Next Steps
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Your appointment request has been sent to the professional. Once
-                they confirm your appointment, you&apos;ll be able to complete
-                payment from your billing page.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button
-                  onClick={() => router.push("/client/dashboard")}
-                  className="flex-1 gap-2"
-                  size="lg"
+                  onClick={() => router.push("/client/dashboard/appointments")}
+                  className="gap-2"
                 >
-                  <User className="h-4 w-4" />
-                  View Dashboard
+                  <Calendar className="h-4 w-4" />
+                  View My Appointments
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/client/dashboard/billing")}
-                  className="flex-1 gap-2"
-                  size="lg"
+                  onClick={() => router.push("/client/dashboard")}
                 >
-                  <Wallet className="h-4 w-4" />
-                  View Billing
+                  Back to Dashboard
                 </Button>
               </div>
-              <Button
-                variant="ghost"
-                onClick={resetBooking}
-                className="w-full mt-2"
-              >
-                Book Another Appointment
-              </Button>
             </div>
-          </div>
-        )}
-
-        {/* Navigation */}
-        {currentStep > 1 && currentStep < 4 && (
-          <div className="flex justify-center mt-8 gap-4">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentStep(currentStep - 1)}
-            >
-              Back
-            </Button>
           </div>
         )}
       </div>
