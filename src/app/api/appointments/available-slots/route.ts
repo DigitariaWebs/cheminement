@@ -204,7 +204,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to fetch available slots",
-        details: error.message,
+        details: error instanceof Error ? error.message : error,
       },
       { status: 500 },
     );

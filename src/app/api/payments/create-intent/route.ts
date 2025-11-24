@@ -124,12 +124,15 @@ export async function POST(req: NextRequest) {
       amount: amount,
       currency: "CAD",
     });
-  } catch (error: any) {
-    console.error("Create payment intent error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Create payment intent error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
       {
         error: "Failed to create payment intent",
-        details: error.message,
+        details: error instanceof Error ? error.message : error,
       },
       { status: 500 },
     );

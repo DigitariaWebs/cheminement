@@ -23,7 +23,10 @@ export async function GET() {
   } catch (error: any) {
     console.error("Get roles error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch roles", details: error.message },
+      {
+        error: "Failed to fetch roles",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

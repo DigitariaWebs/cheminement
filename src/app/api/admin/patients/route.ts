@@ -118,7 +118,10 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Admin patients API error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch patients data", details: error.message },
+      {
+        error: "Failed to fetch patients data",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

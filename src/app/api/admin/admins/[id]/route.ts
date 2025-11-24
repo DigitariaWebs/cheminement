@@ -69,7 +69,10 @@ export async function GET(
   } catch (error: any) {
     console.error("Get admin error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch admin", details: error.message },
+      {
+        error: "Failed to fetch admin",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -163,7 +166,10 @@ export async function PUT(
   } catch (error: any) {
     console.error("Update admin error:", error);
     return NextResponse.json(
-      { error: "Failed to update admin", details: error.message },
+      {
+        error: "Failed to update admin",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -222,7 +228,10 @@ export async function DELETE(
   } catch (error: any) {
     console.error("Delete admin error:", error);
     return NextResponse.json(
-      { error: "Failed to delete admin", details: error.message },
+      {
+        error: "Failed to delete admin",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

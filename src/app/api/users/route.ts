@@ -30,10 +30,16 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 });
 
     return NextResponse.json(users);
-  } catch (error: any) {
-    console.error("Get users error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get users error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch users", details: error.message },
+      {
+        error: "Failed to fetch users",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

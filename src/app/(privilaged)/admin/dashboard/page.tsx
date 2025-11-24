@@ -13,6 +13,7 @@ import {
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
+import Link from "next/link";
 
 interface DashboardData {
   stats: {
@@ -374,7 +375,7 @@ export default function AdminDashboardPage() {
           Quick Actions
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
-          <a
+          <Link
             href="/admin/dashboard/professionals"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
@@ -384,8 +385,8 @@ export default function AdminDashboardPage() {
             <p className="text-sm text-muted-foreground font-light">
               Approve or manage professional accounts
             </p>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin/dashboard/patients"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
@@ -393,7 +394,7 @@ export default function AdminDashboardPage() {
             <p className="text-sm text-muted-foreground font-light">
               View and manage patient accounts
             </p>
-          </a>
+          </Link>
           <a
             href="/admin/dashboard/reports"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"

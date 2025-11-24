@@ -224,7 +224,10 @@ export async function GET() {
   } catch (error: any) {
     console.error("Admin dashboard API error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch dashboard data", details: error.message },
+      {
+        error: "Failed to fetch dashboard data",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

@@ -46,10 +46,16 @@ export async function GET(req: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
-    console.error("Get blogs error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get blogs error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch blogs", details: error.message },
+      {
+        error: "Failed to fetch blogs",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -71,10 +77,16 @@ export async function POST(req: NextRequest) {
     await blog.save();
 
     return NextResponse.json(blog, { status: 201 });
-  } catch (error: any) {
-    console.error("Create blog error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Create blog error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to create blog", details: error.message },
+      {
+        error: "Failed to create blog",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

@@ -37,10 +37,16 @@ export async function GET(req: NextRequest) {
       .sort({ requestDate: -1 });
 
     return NextResponse.json(requests);
-  } catch (error: any) {
-    console.error("Get requests error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get requests error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch requests", details: error.message },
+      {
+        error: "Failed to fetch requests",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -62,10 +68,16 @@ export async function POST(req: NextRequest) {
     await request.save();
 
     return NextResponse.json(request, { status: 201 });
-  } catch (error: any) {
-    console.error("Create request error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Create request error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to create request", details: error.message },
+      {
+        error: "Failed to create request",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

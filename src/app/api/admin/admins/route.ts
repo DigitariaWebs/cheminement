@@ -101,7 +101,10 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Get admins error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch admins", details: error.message },
+      {
+        error: "Failed to fetch admins",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -224,7 +227,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Create admin error:", error);
     return NextResponse.json(
-      { error: "Failed to create admin", details: error.message },
+      {
+        error: "Failed to create admin",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

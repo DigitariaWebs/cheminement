@@ -35,10 +35,16 @@ export async function GET(
     }
 
     return NextResponse.json(profile);
-  } catch (error: any) {
-    console.error("Get profile by ID error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get profile by ID error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch profile", details: error.message },
+      {
+        error: "Failed to fetch profile",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

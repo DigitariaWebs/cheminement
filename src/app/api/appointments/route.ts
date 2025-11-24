@@ -53,10 +53,16 @@ export async function GET(req: NextRequest) {
       .sort({ date: 1, time: 1 });
 
     return NextResponse.json(appointments);
-  } catch (error: any) {
-    console.error("Get appointments error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get appointments error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch appointments", details: error.message },
+      {
+        error: "Failed to fetch appointments",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -230,10 +236,16 @@ export async function POST(req: NextRequest) {
     */
 
     return NextResponse.json(populatedAppointment, { status: 201 });
-  } catch (error: any) {
-    console.error("Create appointment error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Create appointment error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to create appointment", details: error.message },
+      {
+        error: "Failed to create appointment",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

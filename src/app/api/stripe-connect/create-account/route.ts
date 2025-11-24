@@ -65,10 +65,16 @@ export async function POST() {
       accountId: account.id,
       onboardingUrl: accountLink.url,
     });
-  } catch (error: any) {
-    console.error("Create Connect account error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Create Connect account error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to create Connect account", details: error.message },
+      {
+        error: "Failed to create Connect account",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

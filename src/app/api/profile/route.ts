@@ -21,10 +21,16 @@ export async function GET() {
     }
 
     return NextResponse.json(profile);
-  } catch (error: any) {
-    console.error("Get profile error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get profile error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch profile", details: error.message },
+      {
+        error: "Failed to fetch profile",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -49,10 +55,16 @@ export async function PUT(req: NextRequest) {
     );
 
     return NextResponse.json(profile);
-  } catch (error: any) {
-    console.error("Update profile error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Update profile error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to update profile", details: error.message },
+      {
+        error: "Failed to update profile",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

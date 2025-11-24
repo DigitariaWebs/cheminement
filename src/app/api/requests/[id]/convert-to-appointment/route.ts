@@ -202,12 +202,15 @@ export async function POST(
       },
       { status: 201 },
     );
-  } catch (error: any) {
-    console.error("Convert request to appointment error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Convert request to appointment error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
       {
         error: "Failed to convert request to appointment",
-        details: error.message,
+        details: error instanceof Error ? error.message : error,
       },
       { status: 500 },
     );

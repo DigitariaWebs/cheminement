@@ -26,10 +26,16 @@ export async function GET() {
     }
 
     return NextResponse.json(medicalProfile);
-  } catch (error: any) {
-    console.error("Get medical profile error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get medical profile error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to fetch medical profile", details: error.message },
+      {
+        error: "Failed to fetch medical profile",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -54,10 +60,16 @@ export async function PUT(req: NextRequest) {
     );
 
     return NextResponse.json(medicalProfile);
-  } catch (error: any) {
-    console.error("Update medical profile error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Update medical profile error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to update medical profile", details: error.message },
+      {
+        error: "Failed to update medical profile",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }

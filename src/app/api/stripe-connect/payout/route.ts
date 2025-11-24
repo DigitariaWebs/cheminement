@@ -97,10 +97,16 @@ export async function POST(req: NextRequest) {
       amount: totalPayout,
       appointmentCount: appointments.length,
     });
-  } catch (error: any) {
-    console.error("Payout error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Payout error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to process payout", details: error.message },
+      {
+        error: "Failed to process payout",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
@@ -155,10 +161,16 @@ export async function GET() {
         detailsSubmitted: account.details_submitted,
       },
     });
-  } catch (error: any) {
-    console.error("Get payout status error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Get payout status error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
-      { error: "Failed to get payout status", details: error.message },
+      {
+        error: "Failed to get payout status",
+        details: error instanceof Error ? error.message : error,
+      },
       { status: 500 },
     );
   }
