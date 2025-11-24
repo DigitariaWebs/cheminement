@@ -2,7 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -19,6 +22,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Search,
   Filter,
   Calendar,
@@ -29,6 +40,7 @@ import {
   ChevronUp,
   Eye,
   MessageSquare,
+  Link as LinkIcon,
 } from "lucide-react";
 
 interface ApiAppointment {
@@ -47,6 +59,7 @@ interface ApiAppointment {
   price: number;
   issueType?: string;
   notes?: string;
+  meetingLink?: string;
 }
 
 interface Session {
@@ -57,14 +70,22 @@ interface Session {
   time: string;
   duration: number;
   type: "in-person" | "video" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
+  status:
+    | "scheduled"
+    | "completed"
+    | "cancelled"
+    | "no-show"
+    | "pending"
+    | "ongoing";
   paymentStatus: "paid" | "pending" | "overdue";
   amount: number;
   issueType?: string;
   notes?: string;
+  meetingLink?: string;
 }
 
 export default function SessionsPage() {
+  const router = useRouter();
   const t = useTranslations("Dashboard.sessions");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -74,6 +95,10 @@ export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [meetingLinkDialogOpen, setMeetingLinkDialogOpen] = useState(false);
+  const [meetingLink, setMeetingLink] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const today = useMemo(() => new Date(), []);
 
@@ -104,6 +129,7 @@ export default function SessionsPage() {
             amount: appointment.price,
             issueType: appointment.issueType,
             notes: appointment.notes,
+            meetingLink: appointment.meetingLink,
           }),
         );
         setSessions(transformedSessions);
@@ -227,6 +253,7 @@ export default function SessionsPage() {
       cancelled: "bg-red-100 text-red-700",
       "no-show": "bg-orange-100 text-orange-700",
       pending: "bg-yellow-100 text-yellow-700",
+      ongoing: "bg-purple-100 text-purple-700",
     };
 
     const labels = {
@@ -235,6 +262,7 @@ export default function SessionsPage() {
       cancelled: t("cancelled"),
       "no-show": t("noShow"),
       pending: t("pending"),
+      ongoing: "Ongoing",
     };
 
     return (
@@ -296,6 +324,91 @@ export default function SessionsPage() {
       day: "numeric",
       year: "numeric",
     });
+  };
+
+  const handleAddMeetingLink = (session: Session) => {
+    setSelectedSession(session);
+    setMeetingLink(session.meetingLink || "");
+    setMeetingLinkDialogOpen(true);
+  };
+
+  const handleSaveMeetingLink = async () => {
+    if (!selectedSession || !meetingLink) return;
+
+    try {
+      setIsSubmitting(true);
+      const response = await fetch(`/api/appointments/${selectedSession.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          meetingLink: meetingLink,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update meeting link");
+      }
+
+      // Update the local state
+      setSessions((prevSessions) =>
+        prevSessions.map((session) =>
+          session.id === selectedSession.id
+            ? { ...session, meetingLink: meetingLink }
+            : session,
+        ),
+      );
+
+      // Close dialog and reset state
+      setMeetingLinkDialogOpen(false);
+      setMeetingLink("");
+      setSelectedSession(null);
+    } catch (error) {
+      console.error("Error updating meeting link:", error);
+      alert("Failed to update meeting link. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleStartSession = async (session: Session) => {
+    if (session.type === "video" && !session.meetingLink) {
+      alert("Please add a meeting link before starting the session.");
+      handleAddMeetingLink(session);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/appointments/${session.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "ongoing",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start session");
+      }
+
+      // Update the local state
+      setSessions((prevSessions) =>
+        prevSessions.map((s) =>
+          s.id === session.id ? { ...s, status: "ongoing" as const } : s,
+        ),
+      );
+
+      // Open meeting link in new tab for video appointments
+      if (session.type === "video" && session.meetingLink) {
+        window.open(session.meetingLink, "_blank");
+      }
+    } catch (error) {
+      console.error("Error starting session:", error);
+      alert("Failed to start session. Please try again.");
+    }
   };
 
   if (loading) {
@@ -422,9 +535,24 @@ export default function SessionsPage() {
                 </div>
               </div>
             </div>
-            <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              {t("startSession")}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  router.push(
+                    `/professional/dashboard/sessions/${nextSession.id}`,
+                  )
+                }
+                className="px-6 py-2.5 bg-muted text-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:bg-muted/80"
+              >
+                View Details
+              </button>
+              <button
+                onClick={() => handleStartSession(nextSession)}
+                className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              >
+                {t("startSession")}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -470,9 +598,25 @@ export default function SessionsPage() {
                     {getPaymentStatusBadge(session.paymentStatus)}
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm transition-all duration-300 hover:scale-105">
-                  {t("startSession")}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `/professional/dashboard/sessions/${session.id}`,
+                      )
+                    }
+                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                    title="View Details"
+                  >
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                  <button
+                    onClick={() => handleStartSession(session)}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm transition-all duration-300 hover:scale-105"
+                  >
+                    {t("startSession")}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -635,6 +779,9 @@ export default function SessionsPage() {
                     <SelectItem value="pending">
                       <span className="font-light">{t("pending")}</span>
                     </SelectItem>
+                    <SelectItem value="ongoing">
+                      <span className="font-light">Ongoing</span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -791,14 +938,41 @@ export default function SessionsPage() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <button
+                        onClick={() =>
+                          router.push(
+                            `/professional/dashboard/sessions/${session.id}`,
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-muted transition-colors"
                         title={t("viewDetails")}
                       >
                         <Eye className="h-4 w-4 text-muted-foreground" />
                       </button>
-                      {session.status === "scheduled" && (
-                        <button className="px-3 py-1.5 bg-primary text-primary-foreground rounded-full font-light text-xs transition-all duration-300 hover:scale-105">
-                          {t("startSession")}
+                      {session.type === "video" &&
+                        session.status === "scheduled" && (
+                          <button
+                            onClick={() => handleAddMeetingLink(session)}
+                            className="p-2 rounded-lg hover:bg-muted transition-colors"
+                            title={
+                              session.meetingLink
+                                ? "Update Meeting Link"
+                                : "Add Meeting Link"
+                            }
+                          >
+                            <LinkIcon
+                              className={`h-4 w-4 ${session.meetingLink ? "text-primary" : "text-muted-foreground"}`}
+                            />
+                          </button>
+                        )}
+                      {(session.status === "scheduled" ||
+                        session.status === "ongoing") && (
+                        <button
+                          onClick={() => handleStartSession(session)}
+                          className="px-3 py-1.5 bg-primary text-primary-foreground rounded-full font-light text-xs transition-all duration-300 hover:scale-105"
+                        >
+                          {session.status === "ongoing"
+                            ? "Join Session"
+                            : t("startSession")}
                         </button>
                       )}
                     </div>
@@ -809,6 +983,77 @@ export default function SessionsPage() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Meeting Link Dialog */}
+      <Dialog
+        open={meetingLinkDialogOpen}
+        onOpenChange={setMeetingLinkDialogOpen}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Video className="h-5 w-5 text-primary" />
+              {selectedSession?.meetingLink
+                ? "Update Meeting Link"
+                : "Add Meeting Link"}
+            </DialogTitle>
+            <DialogDescription>
+              Provide an external meeting link for this video appointment (Zoom,
+              Google Meet, Microsoft Teams, etc.)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="meeting-link" className="text-sm font-light">
+                Meeting Link URL
+              </Label>
+              <Input
+                id="meeting-link"
+                type="url"
+                placeholder="https://zoom.us/j/123456789"
+                value={meetingLink}
+                onChange={(e) => setMeetingLink(e.target.value)}
+                className="font-light"
+              />
+            </div>
+            {selectedSession && (
+              <div className="rounded-lg bg-muted/50 p-3 space-y-1">
+                <p className="text-xs text-muted-foreground font-light">
+                  Appointment Details
+                </p>
+                <p className="text-sm font-light">
+                  {selectedSession.clientName}
+                </p>
+                <p className="text-xs text-muted-foreground font-light">
+                  {formatDate(selectedSession.date)} at{" "}
+                  {formatTime(selectedSession.time)}
+                </p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setMeetingLinkDialogOpen(false);
+                setMeetingLink("");
+                setSelectedSession(null);
+              }}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSaveMeetingLink}
+              disabled={!meetingLink || isSubmitting}
+            >
+              {isSubmitting ? "Saving..." : "Save Link"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -77,6 +77,32 @@ export async function PATCH(
     // Get the appointment before update to check for status changes
     const oldAppointment = await Appointment.findById(id);
 
+    // If status is being set to ongoing and scheduledStartAt is not provided,
+    // derive scheduledStartAt from the existing date/time fields so that
+    // timers can consistently count from the scheduled start time.
+    if (data.status === "ongoing" && !data.scheduledStartAt && oldAppointment) {
+      try {
+        const baseDate =
+          oldAppointment.date instanceof Date
+            ? new Date(oldAppointment.date)
+            : new Date(oldAppointment.date);
+        if (!isNaN(baseDate.getTime())) {
+          const [hoursStr, minutesStr] = (oldAppointment.time || "00:00").split(
+            ":",
+          );
+          const hours = parseInt(hoursStr || "0", 10);
+          const minutes = parseInt(minutesStr || "0", 10);
+          baseDate.setHours(hours);
+          baseDate.setMinutes(minutes);
+          baseDate.setSeconds(0);
+          baseDate.setMilliseconds(0);
+          data.scheduledStartAt = baseDate;
+        }
+      } catch {
+        // If anything goes wrong deriving scheduledStartAt, skip setting it
+      }
+    }
+
     const appointment = await Appointment.findByIdAndUpdate(id, data, {
       new: true,
     })

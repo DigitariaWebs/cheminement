@@ -8,7 +8,13 @@ export interface IAppointment extends Document {
   duration: number;
   type: "video" | "in-person" | "phone";
   therapyType: "solo" | "couple" | "group";
-  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
+  status:
+    | "scheduled"
+    | "completed"
+    | "cancelled"
+    | "no-show"
+    | "pending"
+    | "ongoing";
   issueType?: string;
   notes?: string;
   cancelReason?: string;
@@ -16,6 +22,7 @@ export interface IAppointment extends Document {
   cancelledAt?: Date;
   meetingLink?: string;
   location?: string;
+  scheduledStartAt?: Date;
   reminderSent: boolean;
   // Payment fields
   price: number; // Session price in dollars
@@ -77,7 +84,14 @@ const AppointmentSchema = new Schema<IAppointment>(
     },
     status: {
       type: String,
-      enum: ["scheduled", "completed", "cancelled", "no-show", "pending"],
+      enum: [
+        "scheduled",
+        "completed",
+        "cancelled",
+        "no-show",
+        "pending",
+        "ongoing",
+      ],
       default: "pending",
     },
     issueType: String,
@@ -90,6 +104,7 @@ const AppointmentSchema = new Schema<IAppointment>(
     cancelledAt: Date,
     meetingLink: String,
     location: String,
+    scheduledStartAt: Date,
     reminderSent: {
       type: Boolean,
       default: false,

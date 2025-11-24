@@ -204,11 +204,8 @@ export async function POST(req: NextRequest) {
       data.duration = profile.availability?.sessionDurationMinutes || 60;
     }
 
-    // Generate meeting link for video appointments
-    if (data.type === "video" && !data.meetingLink) {
-      // In a real app, integrate with Zoom/Teams/etc API
-      data.meetingLink = `https://meet.jecheminement.com/${Date.now()}`;
-    }
+    // Meeting link will be added by professional after confirming appointment
+    // No automatic generation
 
     const appointment = new Appointment(data);
     await appointment.save();

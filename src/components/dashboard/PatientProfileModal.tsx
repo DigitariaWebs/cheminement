@@ -1,11 +1,14 @@
 "use client";
 
-import { X, Calendar, Check, X as XIcon } from "lucide-react";
+import { X, Calendar, Check, X as XIcon, Video } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import BasicInformation from "./BasicInformation";
 import MedicalProfile from "./MedicalProfile";
 import { appointmentsAPI } from "@/lib/api-client";
+import { useState } from "react";
 
 interface PopulatedUser {
   _id: string;
@@ -22,7 +25,13 @@ export interface AppointmentData {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
+  status:
+    | "scheduled"
+    | "completed"
+    | "cancelled"
+    | "no-show"
+    | "pending"
+    | "ongoing";
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -42,6 +51,10 @@ export default function AppointmentDetailsModal({
   appointment,
   onAction,
 }: AppointmentDetailsModalProps) {
+  const [meetingLink, setMeetingLink] = useState("");
+  const [showMeetingLinkInput, setShowMeetingLinkInput] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   if (!isOpen || !appointment) return null;
 
   const getTypeBadge = (type: AppointmentData["type"]) => {
@@ -237,14 +250,21 @@ export default function AppointmentDetailsModal({
                     </Button>
                     <Button
                       onClick={async () => {
-                        try {
-                          await appointmentsAPI.update(appointment._id, {
-                            status: "scheduled",
-                          });
-                          onClose();
-                          onAction?.();
-                        } catch (error) {
-                          console.error("Error accepting appointment:", error);
+                        if (appointment.type === "video") {
+                          setShowMeetingLinkInput(true);
+                        } else {
+                          try {
+                            await appointmentsAPI.update(appointment._id, {
+                              status: "scheduled",
+                            });
+                            onClose();
+                            onAction?.();
+                          } catch (error) {
+                            console.error(
+                              "Error accepting appointment:",
+                              error,
+                            );
+                          }
                         }
                       }}
                       className="gap-2 rounded-full"
@@ -254,6 +274,17 @@ export default function AppointmentDetailsModal({
                     </Button>
                   </>
                 )}
+                {appointment.status === "scheduled" &&
+                  !appointment.meetingLink &&
+                  appointment.type === "video" && (
+                    <Button
+                      onClick={() => setShowMeetingLinkInput(true)}
+                      className="gap-2 rounded-full"
+                    >
+                      <Video className="h-4 w-4" />
+                      Add Meeting Link
+                    </Button>
+                  )}
                 {appointment.status === "scheduled" && (
                   <Button
                     onClick={async () => {
@@ -275,6 +306,74 @@ export default function AppointmentDetailsModal({
                   </Button>
                 )}
               </div>
+
+              {/* Meeting Link Input Section */}
+              {showMeetingLinkInput && (
+                <div className="rounded-xl bg-muted/50 p-6 border border-border/40 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Video className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-serif font-light text-foreground">
+                      Add Meeting Link
+                    </h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-light">
+                    Provide an external meeting link (Zoom, Google Meet,
+                    Microsoft Teams, etc.)
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="meetingLink" className="text-sm font-light">
+                      Meeting Link URL
+                    </Label>
+                    <Input
+                      id="meetingLink"
+                      type="url"
+                      placeholder="https://zoom.us/j/123456789 or https://meet.google.com/abc-defg-hij"
+                      value={meetingLink}
+                      onChange={(e) => setMeetingLink(e.target.value)}
+                      className="font-light"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <Button
+                      onClick={() => {
+                        setShowMeetingLinkInput(false);
+                        setMeetingLink("");
+                      }}
+                      variant="outline"
+                      className="rounded-full"
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        if (!meetingLink) return;
+
+                        try {
+                          setIsSubmitting(true);
+                          await appointmentsAPI.update(appointment._id, {
+                            status: "scheduled",
+                            meetingLink: meetingLink,
+                          });
+                          setShowMeetingLinkInput(false);
+                          setMeetingLink("");
+                          onClose();
+                          onAction?.();
+                        } catch (error) {
+                          console.error("Error accepting appointment:", error);
+                        } finally {
+                          setIsSubmitting(false);
+                        }
+                      }}
+                      className="gap-2 rounded-full"
+                      disabled={!meetingLink || isSubmitting}
+                    >
+                      <Check className="h-4 w-4" />
+                      {isSubmitting ? "Saving..." : "Confirm & Accept"}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="basic-info" className="mt-6">

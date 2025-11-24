@@ -34,7 +34,13 @@ interface Appointment {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
+  status:
+    | "scheduled"
+    | "completed"
+    | "cancelled"
+    | "no-show"
+    | "pending"
+    | "ongoing";
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -57,7 +63,8 @@ export default function ClientDashboardPage() {
         const upcoming = data.filter((apt: Appointment) => {
           const aptDate = new Date(apt.date);
           return (
-            aptDate >= today && ["scheduled", "pending"].includes(apt.status)
+            aptDate >= today &&
+            ["scheduled", "pending", "ongoing"].includes(apt.status)
           );
         });
         setUpcomingAppointments(upcoming.slice(0, 3)); // Limit to next 3 upcoming
@@ -78,6 +85,12 @@ export default function ClientDashboardPage() {
         return <Phone className="h-4 w-4" />;
       default:
         return <Calendar className="h-4 w-4" />;
+    }
+  };
+
+  const handleJoinSession = (appointment: Appointment) => {
+    if (appointment.meetingLink) {
+      window.open(appointment.meetingLink, "_blank");
     }
   };
 
@@ -287,28 +300,43 @@ export default function ClientDashboardPage() {
                 {upcomingAppointments.map((appointment) => (
                   <div
                     key={appointment._id}
-                    className="rounded-2xl border border-border/20 bg-card/70 p-5"
+                    className={`rounded-2xl border p-5 ${
+                      appointment.status === "ongoing"
+                        ? "border-purple-500/50 bg-purple-500/10"
+                        : "border-border/20 bg-card/70"
+                    }`}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="rounded-2xl bg-primary/10 p-3">
-                        <Calendar className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <h3 className="font-medium text-foreground">
-                          {formatDate(appointment.date)}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {appointment.time}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            {getModalityIcon(appointment.type)}
-                            {appointment.type === "in-person"
-                              ? "In Person"
-                              : appointment.type.charAt(0).toUpperCase() +
-                                appointment.type.slice(1)}
-                          </span>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                            <User className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium text-foreground">
+                                {formatDate(appointment.date)}
+                              </h3>
+                              {appointment.status === "ongoing" && (
+                                <span className="rounded-full bg-purple-500 px-2 py-0.5 text-xs font-medium text-white">
+                                  Ongoing
+                                </span>
+                              )}
+                            </div>
+                            <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                {appointment.time}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                {getModalityIcon(appointment.type)}
+                                {appointment.type === "in-person"
+                                  ? "In Person"
+                                  : appointment.type.charAt(0).toUpperCase() +
+                                    appointment.type.slice(1)}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {t("upcomingAppointments.with")}{" "}
@@ -316,6 +344,17 @@ export default function ClientDashboardPage() {
                           {appointment.professionalId.lastName}
                         </p>
                       </div>
+                      {appointment.status === "ongoing" &&
+                        appointment.type === "video" &&
+                        appointment.meetingLink && (
+                          <Button
+                            onClick={() => handleJoinSession(appointment)}
+                            className="gap-2 rounded-full"
+                          >
+                            <Video className="h-4 w-4" />
+                            Join Session
+                          </Button>
+                        )}
                     </div>
                   </div>
                 ))}

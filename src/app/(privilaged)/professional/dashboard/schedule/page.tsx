@@ -11,8 +11,20 @@ import {
   Video,
   MapPin,
   Phone,
+  Link as LinkIcon,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Client {
   _id: string;
@@ -29,7 +41,7 @@ interface Appointment {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show";
+  status: "scheduled" | "completed" | "cancelled" | "no-show" | "ongoing";
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -43,6 +55,11 @@ export default function SchedulePage() {
   const [showRequests, setShowRequests] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
+  const [meetingLinkDialogOpen, setMeetingLinkDialogOpen] = useState(false);
+  const [meetingLink, setMeetingLink] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -186,6 +203,96 @@ export default function SchedulePage() {
       const aptDate = new Date(apt.date).toISOString().split("T")[0];
       return aptDate === today && apt.status === "scheduled";
     });
+  };
+
+  const handleAddMeetingLink = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setMeetingLink(appointment.meetingLink || "");
+    setMeetingLinkDialogOpen(true);
+  };
+
+  const handleSaveMeetingLink = async () => {
+    if (!selectedAppointment || !meetingLink) return;
+
+    try {
+      setIsSubmitting(true);
+      const response = await fetch(
+        `/api/appointments/${selectedAppointment._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meetingLink: meetingLink,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update meeting link");
+      }
+
+      // Update the local state
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((apt) =>
+          apt._id === selectedAppointment._id
+            ? { ...apt, meetingLink: meetingLink }
+            : apt,
+        ),
+      );
+
+      // Close dialog and reset state
+      setMeetingLinkDialogOpen(false);
+      setMeetingLink("");
+      setSelectedAppointment(null);
+    } catch (error) {
+      console.error("Error updating meeting link:", error);
+      alert("Failed to update meeting link. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleStartSession = async (appointment: Appointment) => {
+    if (appointment.type === "video" && !appointment.meetingLink) {
+      alert("Please add a meeting link before starting the session.");
+      handleAddMeetingLink(appointment);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/appointments/${appointment._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "ongoing",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start session");
+      }
+
+      // Update the local state
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((apt) =>
+          apt._id === appointment._id
+            ? { ...apt, status: "ongoing" as const }
+            : apt,
+        ),
+      );
+
+      // Open meeting link in new tab for video appointments
+      if (appointment.type === "video" && appointment.meetingLink) {
+        window.open(appointment.meetingLink, "_blank");
+      }
+    } catch (error) {
+      console.error("Error starting session:", error);
+      alert("Failed to start session. Please try again.");
+    }
   };
 
   return (
@@ -462,20 +569,43 @@ export default function SchedulePage() {
                                   </div>
                                 </div>
                               </div>
-                              {appointment.type === "video" &&
-                                appointment.meetingLink && (
-                                  <button
-                                    onClick={() =>
-                                      window.open(
-                                        appointment.meetingLink,
-                                        "_blank",
-                                      )
-                                    }
-                                    className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform"
-                                  >
-                                    {t("startSession")}
-                                  </button>
-                                )}
+                              {appointment.type === "video" && (
+                                <>
+                                  {appointment.meetingLink ? (
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={() =>
+                                          handleStartSession(appointment)
+                                        }
+                                        className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-light text-sm hover:scale-105 transition-transform"
+                                      >
+                                        {appointment.status === "ongoing"
+                                          ? "Join Session"
+                                          : t("startSession")}
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handleAddMeetingLink(appointment)
+                                        }
+                                        className="p-2 rounded-full hover:bg-muted transition-colors"
+                                        title="Update Meeting Link"
+                                      >
+                                        <LinkIcon className="h-4 w-4 text-primary" />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={() =>
+                                        handleAddMeetingLink(appointment)
+                                      }
+                                      className="px-4 py-2 bg-muted text-foreground rounded-full font-light text-sm hover:bg-muted/80 transition-colors flex items-center gap-2"
+                                    >
+                                      <LinkIcon className="h-4 w-4" />
+                                      Add Link
+                                    </button>
+                                  )}
+                                </>
+                              )}
                             </div>
                           </div>
                         ))}
@@ -487,6 +617,85 @@ export default function SchedulePage() {
           ) : null}
         </div>
       </div>
+
+      {/* Meeting Link Dialog */}
+      <Dialog
+        open={meetingLinkDialogOpen}
+        onOpenChange={setMeetingLinkDialogOpen}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Video className="h-5 w-5 text-primary" />
+              {selectedAppointment?.meetingLink
+                ? "Update Meeting Link"
+                : "Add Meeting Link"}
+            </DialogTitle>
+            <DialogDescription>
+              Provide an external meeting link for this video appointment (Zoom,
+              Google Meet, Microsoft Teams, etc.)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="meeting-link" className="text-sm font-light">
+                Meeting Link URL
+              </Label>
+              <Input
+                id="meeting-link"
+                type="url"
+                placeholder="https://zoom.us/j/123456789"
+                value={meetingLink}
+                onChange={(e) => setMeetingLink(e.target.value)}
+                className="font-light"
+              />
+            </div>
+            {selectedAppointment && (
+              <div className="rounded-lg bg-muted/50 p-3 space-y-1">
+                <p className="text-xs text-muted-foreground font-light">
+                  Appointment Details
+                </p>
+                <p className="text-sm font-light">
+                  {selectedAppointment.clientId.firstName}{" "}
+                  {selectedAppointment.clientId.lastName}
+                </p>
+                <p className="text-xs text-muted-foreground font-light">
+                  {new Date(selectedAppointment.date).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    },
+                  )}{" "}
+                  at {selectedAppointment.time}
+                </p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setMeetingLinkDialogOpen(false);
+                setMeetingLink("");
+                setSelectedAppointment(null);
+              }}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSaveMeetingLink}
+              disabled={!meetingLink || isSubmitting}
+            >
+              {isSubmitting ? "Saving..." : "Save Link"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
