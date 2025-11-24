@@ -235,20 +235,6 @@ export const requestsAPI = {
   delete: (id: string) => apiClient.delete(`/requests/${id}`),
 };
 
-// Blogs
-export const blogsAPI = {
-  list: (params?: {
-    category?: string;
-    published?: boolean;
-    limit?: number;
-    page?: number;
-  }) => {
-    const query = new URLSearchParams(params as any).toString();
-    return apiClient.get(`/blogs${query ? `?${query}` : ""}`);
-  },
-  create: (data: any) => apiClient.post("/blogs", data),
-};
-
 // Users
 export const usersAPI = {
   get: () => apiClient.get("/users/me"),

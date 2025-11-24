@@ -1,13 +1,13 @@
 {
   "Header": {
     "nav": {
-      "home": "Home",
-      "whoWeAre": "Who We Are",
-      "whyUs": "Why Us",
-      "approaches": "Approaches",
-      "services": "Services",
-      "blog": "Blog",
-      "contact": "Contact"
+          "home": "Home",
+          "whoWeAre": "Who We Are",
+          "whyUs": "Why Us",
+          "approaches": "Approaches",
+          "services": "Services",
+          "contact": "Contact"
+        }
     },
     "login": "Login",
     "getStarted": "Get Started",
@@ -32,7 +32,6 @@
     "primaryCareWellness": "Primary Care Wellness",
     "eapCalculator": "EAP cost savings calculator",
     "contact": "Contact",
-    "blog": "Blog",
     "ios": "Je Chemine for iOS",
     "android": "Je Chemine for Android",
     "helpCentre": "Help Centre",

@@ -49,7 +49,7 @@ function getRoleDescription(role: AdminRole): string {
     platform_admin:
       "Complete platform management access. Can manage users, content, analytics, and billing but cannot manage other admins.",
     content_admin:
-      "Limited to content management. Can create and edit blog posts, manage platform content, and view analytics.",
+      "Limited to content management. Can manage platform content, and view analytics.",
     support_admin:
       "User support focused. Can manage user accounts, approve professionals, and handle support requests.",
   };

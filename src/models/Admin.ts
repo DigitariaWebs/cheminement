@@ -14,7 +14,6 @@ export interface IAdminPermissions {
   approveProfessionals: boolean;
 
   // Content Management
-  manageBlogs: boolean;
   manageContent: boolean;
 
   // System Management
@@ -52,7 +51,6 @@ const AdminPermissionsSchema = new Schema(
     approveProfessionals: { type: Boolean, default: false },
 
     // Content Management
-    manageBlogs: { type: Boolean, default: false },
     manageContent: { type: Boolean, default: false },
 
     // System Management
@@ -112,7 +110,6 @@ export const ADMIN_ROLE_PERMISSIONS: Record<AdminRole, IAdminPermissions> = {
     manageProfessionals: true,
     managePatients: true,
     approveProfessionals: true,
-    manageBlogs: true,
     manageContent: true,
     viewAnalytics: true,
     manageReports: true,
@@ -128,7 +125,6 @@ export const ADMIN_ROLE_PERMISSIONS: Record<AdminRole, IAdminPermissions> = {
     manageProfessionals: true,
     managePatients: true,
     approveProfessionals: true,
-    manageBlogs: true,
     manageContent: true,
     viewAnalytics: true,
     manageReports: true,
@@ -144,7 +140,6 @@ export const ADMIN_ROLE_PERMISSIONS: Record<AdminRole, IAdminPermissions> = {
     manageProfessionals: false,
     managePatients: false,
     approveProfessionals: false,
-    manageBlogs: true,
     manageContent: true,
     viewAnalytics: true,
     manageReports: true,
@@ -160,7 +155,6 @@ export const ADMIN_ROLE_PERMISSIONS: Record<AdminRole, IAdminPermissions> = {
     manageProfessionals: true,
     managePatients: true,
     approveProfessionals: true,
-    manageBlogs: false,
     manageContent: false,
     viewAnalytics: true,
     manageReports: false,

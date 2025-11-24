@@ -49,7 +49,6 @@ interface AdminPermissions {
   manageProfessionals: boolean;
   managePatients: boolean;
   approveProfessionals: boolean;
-  manageBlogs: boolean;
   manageContent: boolean;
   viewAnalytics: boolean;
   manageReports: boolean;

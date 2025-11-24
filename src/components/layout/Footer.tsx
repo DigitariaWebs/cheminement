@@ -144,14 +144,6 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/blog"
-                  className="text-sm text-white/70 hover:text-white transition-colors"
-                >
-                  {t("blog")}
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/ios"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
