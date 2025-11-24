@@ -45,6 +45,7 @@ interface Appointment {
   notes?: string;
   meetingLink?: string;
   location?: string;
+  paymentStatus?: string;
 }
 
 export default function ClientDashboardPage() {
@@ -89,7 +90,11 @@ export default function ClientDashboardPage() {
   };
 
   const handleJoinSession = (appointment: Appointment) => {
-    if (appointment.meetingLink) {
+    if (
+      appointment.meetingLink &&
+      appointment.status === "ongoing" &&
+      appointment.paymentStatus === "paid"
+    ) {
       window.open(appointment.meetingLink, "_blank");
     }
   };
@@ -346,7 +351,8 @@ export default function ClientDashboardPage() {
                       </div>
                       {appointment.status === "ongoing" &&
                         appointment.type === "video" &&
-                        appointment.meetingLink && (
+                        appointment.meetingLink &&
+                        appointment.paymentStatus === "paid" && (
                           <Button
                             onClick={() => handleJoinSession(appointment)}
                             className="gap-2 rounded-full"

@@ -40,7 +40,13 @@ interface Appointment {
   time: string;
   duration: number;
   type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
+  status:
+    | "scheduled"
+    | "completed"
+    | "cancelled"
+    | "no-show"
+    | "pending"
+    | "ongoing";
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -103,7 +109,11 @@ export default function ClientAppointmentsPage() {
   };
 
   const handleJoinSession = (appointment: Appointment) => {
-    if (appointment.meetingLink) {
+    if (
+      appointment.meetingLink &&
+      appointment.status === "ongoing" &&
+      appointment.paymentStatus === "paid"
+    ) {
       window.open(appointment.meetingLink, "_blank");
     }
   };
@@ -114,7 +124,10 @@ export default function ClientAppointmentsPage() {
 
   const upcomingAppointments = appointments.filter((apt) => {
     const aptDate = new Date(apt.date);
-    return aptDate >= today && ["scheduled", "pending"].includes(apt.status);
+    return (
+      aptDate >= today &&
+      ["scheduled", "pending", "ongoing"].includes(apt.status)
+    );
   });
 
   const pastAppointments = appointments.filter((apt) => {
@@ -331,16 +344,6 @@ export default function ClientAppointmentsPage() {
                     {activeTab === "upcoming" &&
                       appointment.status === "scheduled" && (
                         <>
-                          {appointment.type === "video" &&
-                            appointment.meetingLink && (
-                              <Button
-                                onClick={() => handleJoinSession(appointment)}
-                                className="gap-2 rounded-full"
-                              >
-                                <Video className="h-4 w-4" />
-                                {t("actions.joinSession")}
-                              </Button>
-                            )}
                           <Button
                             variant="outline"
                             onClick={() => openCancelDialog(appointment)}
@@ -349,6 +352,19 @@ export default function ClientAppointmentsPage() {
                             {t("actions.cancel")}
                           </Button>
                         </>
+                      )}
+                    {activeTab === "upcoming" &&
+                      appointment.status === "ongoing" &&
+                      appointment.type === "video" &&
+                      appointment.meetingLink &&
+                      appointment.paymentStatus === "paid" && (
+                        <Button
+                          onClick={() => handleJoinSession(appointment)}
+                          className="gap-2 rounded-full"
+                        >
+                          <Video className="h-4 w-4" />
+                          {t("actions.joinSession")}
+                        </Button>
                       )}
                   </div>
                 </div>
@@ -368,14 +384,16 @@ export default function ClientAppointmentsPage() {
                           {appointment.location}
                         </DropdownMenuItem>
                       )}
-                    {appointment.meetingLink && (
-                      <DropdownMenuItem
-                        onClick={() => handleJoinSession(appointment)}
-                      >
-                        <Video className="mr-2 h-4 w-4" />
-                        Open meeting link
-                      </DropdownMenuItem>
-                    )}
+                    {appointment.meetingLink &&
+                      appointment.status === "ongoing" &&
+                      appointment.paymentStatus === "paid" && (
+                        <DropdownMenuItem
+                          onClick={() => handleJoinSession(appointment)}
+                        >
+                          <Video className="mr-2 h-4 w-4" />
+                          Open meeting link
+                        </DropdownMenuItem>
+                      )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
