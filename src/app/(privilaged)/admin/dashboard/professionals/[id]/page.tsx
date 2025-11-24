@@ -45,6 +45,18 @@ export default function ProfessionalDetailPage() {
   const handleSetActive = async () => {
     if (!user) return;
 
+    // Check if professional has configured their schedule
+    const hasSchedule = profile?.availability?.days?.some(
+      (day) => day.isWorkDay === true
+    );
+
+    if (!hasSchedule) {
+      alert(
+        "Cannot activate professional. The professional must configure their schedule first."
+      );
+      return;
+    }
+
     setIsUpdatingStatus(true);
     try {
       await usersAPI.updateById(params.id as string, { status: "active" });

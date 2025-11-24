@@ -208,10 +208,23 @@ export default function MemberSignupPage() {
   const handleArrayChange = (name: keyof FormData, value: string) => {
     setFormData((prev) => {
       const currentArray = prev[name] as string[];
-      const newArray = currentArray.includes(value)
-        ? currentArray.filter((item) => item !== value)
-        : [...currentArray, value];
-      return { ...prev, [name]: newArray };
+
+      // Special handling for "None" option
+      if (value === "None") {
+        // If "None" is clicked, clear all other selections
+        if (currentArray.includes("None")) {
+          return { ...prev, [name]: [] };
+        } else {
+          return { ...prev, [name]: ["None"] };
+        }
+      } else {
+        // If any other option is clicked, remove "None" if it exists
+        const withoutNone = currentArray.filter((item) => item !== "None");
+        const newArray = withoutNone.includes(value)
+          ? withoutNone.filter((item) => item !== value)
+          : [...withoutNone, value];
+        return { ...prev, [name]: newArray };
+      }
     });
   };
 
