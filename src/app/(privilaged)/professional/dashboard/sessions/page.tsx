@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,143 +31,38 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+interface ApiAppointment {
+  _id: string;
+  clientId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  date: string;
+  time: string;
+  duration: number;
+  type: "video" | "in-person" | "phone";
+  status: string;
+  paymentStatus: string;
+  price: number;
+  issueType?: string;
+  notes?: string;
+}
+
 interface Session {
   id: string;
   clientName: string;
   clientId: string;
-  date: string;
+  date: Date;
   time: string;
   duration: number;
   type: "in-person" | "video" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show";
+  status: "scheduled" | "completed" | "cancelled" | "no-show" | "pending";
   paymentStatus: "paid" | "pending" | "overdue";
   amount: number;
-  issueType: string;
+  issueType?: string;
   notes?: string;
 }
-
-// Mock data
-const MOCK_SESSIONS: Session[] = [
-  {
-    id: "1",
-    clientName: "Sarah Johnson",
-    clientId: "1",
-    date: "2024-01-20",
-    time: "09:00",
-    duration: 60,
-    type: "video",
-    status: "scheduled",
-    paymentStatus: "pending",
-    amount: 150,
-    issueType: "Anxiety Disorders",
-  },
-  {
-    id: "2",
-    clientName: "Michael Chen",
-    clientId: "2",
-    date: "2024-01-20",
-    time: "14:00",
-    duration: 60,
-    type: "in-person",
-    status: "scheduled",
-    paymentStatus: "paid",
-    amount: 150,
-    issueType: "Depression",
-  },
-  {
-    id: "3",
-    clientName: "Emily Rodriguez",
-    clientId: "3",
-    date: "2024-01-21",
-    time: "10:00",
-    duration: 60,
-    type: "video",
-    status: "scheduled",
-    paymentStatus: "pending",
-    amount: 150,
-    issueType: "Stress Management",
-  },
-  {
-    id: "4",
-    clientName: "David Thompson",
-    clientId: "4",
-    date: "2024-01-21",
-    time: "15:30",
-    duration: 90,
-    type: "in-person",
-    status: "scheduled",
-    paymentStatus: "paid",
-    amount: 200,
-    issueType: "Trauma & PTSD",
-  },
-  {
-    id: "5",
-    clientName: "Jessica Martinez",
-    clientId: "5",
-    date: "2024-01-19",
-    time: "11:00",
-    duration: 60,
-    type: "video",
-    status: "completed",
-    paymentStatus: "paid",
-    amount: 150,
-    issueType: "Relationship Issues",
-    notes: "Great progress on communication skills",
-  },
-  {
-    id: "6",
-    clientName: "Robert Kim",
-    clientId: "6",
-    date: "2024-01-19",
-    time: "16:00",
-    duration: 60,
-    type: "in-person",
-    status: "completed",
-    paymentStatus: "pending",
-    amount: 150,
-    issueType: "Anxiety Disorders",
-    notes: "Discussed coping mechanisms",
-  },
-  {
-    id: "7",
-    clientName: "Sarah Johnson",
-    clientId: "1",
-    date: "2024-01-18",
-    time: "09:00",
-    duration: 60,
-    type: "video",
-    status: "no-show",
-    paymentStatus: "overdue",
-    amount: 150,
-    issueType: "Anxiety Disorders",
-  },
-  {
-    id: "8",
-    clientName: "Michael Chen",
-    clientId: "2",
-    date: "2024-01-22",
-    time: "11:00",
-    duration: 60,
-    type: "video",
-    status: "scheduled",
-    paymentStatus: "pending",
-    amount: 150,
-    issueType: "Depression",
-  },
-  {
-    id: "9",
-    clientName: "Emily Rodriguez",
-    clientId: "3",
-    date: "2024-01-23",
-    time: "13:00",
-    duration: 60,
-    type: "in-person",
-    status: "scheduled",
-    paymentStatus: "pending",
-    amount: 150,
-    issueType: "Stress Management",
-  },
-];
 
 export default function SessionsPage() {
   const t = useTranslations("Dashboard.sessions");
@@ -176,85 +71,154 @@ export default function SessionsPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const today = useMemo(() => new Date("2024-01-20"), []); // Mock today's date
+  const today = useMemo(() => new Date(), []);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const response = await fetch("/api/appointments");
+        if (!response.ok) {
+          throw new Error("Failed to fetch sessions");
+        }
+        const data = await response.json();
+        const transformedSessions: Session[] = data.map(
+          (appointment: ApiAppointment) => ({
+            id: appointment._id,
+            clientName: `${appointment.clientId.firstName} ${appointment.clientId.lastName}`,
+            clientId: appointment.clientId._id,
+            date: new Date(appointment.date),
+            time: appointment.time,
+            duration: appointment.duration,
+            type: appointment.type,
+            status: appointment.status,
+            paymentStatus:
+              appointment.paymentStatus === "paid"
+                ? "paid"
+                : appointment.paymentStatus === "pending"
+                  ? "pending"
+                  : "overdue",
+            amount: appointment.price,
+            issueType: appointment.issueType,
+            notes: appointment.notes,
+          }),
+        );
+        setSessions(transformedSessions);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSessions();
+  }, []);
 
   // Categorize sessions
   const todaysSessions = useMemo(() => {
-    return MOCK_SESSIONS.filter((session) => {
-      const sessionDate = new Date(session.date);
-      return (
-        sessionDate.toDateString() === today.toDateString() &&
-        session.status === "scheduled"
-      );
-    }).sort((a, b) => a.time.localeCompare(b.time));
-  }, [today]);
+    return sessions
+      .filter((session) => {
+        return (
+          session.date.toDateString() === today.toDateString() &&
+          session.status === "scheduled"
+        );
+      })
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [sessions, today]);
 
   const nextSession = useMemo(() => {
-    const upcoming = MOCK_SESSIONS.filter((session) => {
-      const sessionDateTime = new Date(`${session.date}T${session.time}`);
-      return sessionDateTime > today && session.status === "scheduled";
-    }).sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.time}`);
-      const dateB = new Date(`${b.date}T${b.time}`);
-      return dateA.getTime() - dateB.getTime();
-    });
+    const upcoming = sessions
+      .filter((session) => {
+        const sessionDateTime = new Date(
+          `${session.date.toISOString().split("T")[0]}T${session.time}`,
+        );
+        return sessionDateTime > today && session.status === "scheduled";
+      })
+      .sort((a, b) => {
+        const dateA = new Date(
+          `${a.date.toISOString().split("T")[0]}T${a.time}`,
+        );
+        const dateB = new Date(
+          `${b.date.toISOString().split("T")[0]}T${b.time}`,
+        );
+        return dateA.getTime() - dateB.getTime();
+      });
     return upcoming[0] || null;
-  }, [today]);
+  }, [sessions, today]);
 
   const upcomingSessions = useMemo(() => {
-    return MOCK_SESSIONS.filter((session) => {
-      const sessionDateTime = new Date(`${session.date}T${session.time}`);
-      return (
-        sessionDateTime > today &&
-        session.status === "scheduled" &&
-        session.id !== nextSession?.id
-      );
-    })
+    return sessions
+      .filter((session) => {
+        const sessionDateTime = new Date(
+          `${session.date.toISOString().split("T")[0]}T${session.time}`,
+        );
+        return (
+          sessionDateTime > today &&
+          session.status === "scheduled" &&
+          session.id !== nextSession?.id
+        );
+      })
       .sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
+        const dateA = new Date(
+          `${a.date.toISOString().split("T")[0]}T${a.time}`,
+        );
+        const dateB = new Date(
+          `${b.date.toISOString().split("T")[0]}T${b.time}`,
+        );
         return dateA.getTime() - dateB.getTime();
       })
       .slice(0, 5);
-  }, [nextSession, today]);
+  }, [sessions, nextSession, today]);
 
   // Filter all sessions
   const filteredSessions = useMemo(() => {
-    return MOCK_SESSIONS.filter((session) => {
-      const matchesSearch =
-        session.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        session.issueType.toLowerCase().includes(searchQuery.toLowerCase());
+    return sessions
+      .filter((session) => {
+        const matchesSearch =
+          session.clientName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          (session.issueType &&
+            session.issueType
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()));
 
-      const matchesStatus =
-        statusFilter === "all" || session.status === statusFilter;
+        const matchesStatus =
+          statusFilter === "all" || session.status === statusFilter;
 
-      const matchesType = typeFilter === "all" || session.type === typeFilter;
+        const matchesType = typeFilter === "all" || session.type === typeFilter;
 
-      const matchesPayment =
-        paymentFilter === "all" || session.paymentStatus === paymentFilter;
+        const matchesPayment =
+          paymentFilter === "all" || session.paymentStatus === paymentFilter;
 
-      return matchesSearch && matchesStatus && matchesType && matchesPayment;
-    }).sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.time}`);
-      const dateB = new Date(`${b.date}T${b.time}`);
-      return dateB.getTime() - dateA.getTime();
-    });
-  }, [searchQuery, statusFilter, typeFilter, paymentFilter]);
+        return matchesSearch && matchesStatus && matchesType && matchesPayment;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(
+          `${a.date.toISOString().split("T")[0]}T${a.time}`,
+        );
+        const dateB = new Date(
+          `${b.date.toISOString().split("T")[0]}T${b.time}`,
+        );
+        return dateB.getTime() - dateA.getTime();
+      });
+  }, [sessions, searchQuery, statusFilter, typeFilter, paymentFilter]);
 
   const stats = useMemo(() => {
     return {
       today: todaysSessions.length,
-      upcoming: MOCK_SESSIONS.filter(
-        (s) => new Date(s.date) > today && s.status === "scheduled",
+      upcoming: sessions.filter(
+        (s) => s.date > today && s.status === "scheduled",
       ).length,
-      completed: MOCK_SESSIONS.filter((s) => s.status === "completed").length,
-      revenue: MOCK_SESSIONS.filter((s) => s.paymentStatus === "paid").reduce(
-        (sum, s) => sum + s.amount,
-        0,
-      ),
+      completed: sessions.filter((s) => s.status === "completed").length,
+      revenue: sessions
+        .filter((s) => s.paymentStatus === "paid")
+        .reduce((sum, s) => sum + s.amount, 0),
     };
-  }, [todaysSessions, today]);
+  }, [sessions, todaysSessions, today]);
 
   const getStatusBadge = (status: Session["status"]) => {
     const styles = {
@@ -262,6 +226,7 @@ export default function SessionsPage() {
       completed: "bg-green-100 text-green-700",
       cancelled: "bg-red-100 text-red-700",
       "no-show": "bg-orange-100 text-orange-700",
+      pending: "bg-yellow-100 text-yellow-700",
     };
 
     const labels = {
@@ -269,6 +234,7 @@ export default function SessionsPage() {
       completed: t("completed"),
       cancelled: t("cancelled"),
       "no-show": t("noShow"),
+      pending: t("pending"),
     };
 
     return (
@@ -315,8 +281,7 @@ export default function SessionsPage() {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -324,8 +289,7 @@ export default function SessionsPage() {
     });
   };
 
-  const formatFullDate = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatFullDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",
@@ -333,6 +297,42 @@ export default function SessionsPage() {
       year: "numeric",
     });
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-serif font-light text-foreground">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground font-light mt-2">
+            {t("subtitle")}
+          </p>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <p>Loading sessions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-serif font-light text-foreground">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground font-light mt-2">
+            {t("subtitle")}
+          </p>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -632,6 +632,9 @@ export default function SessionsPage() {
                     <SelectItem value="no-show">
                       <span className="font-light">{t("noShow")}</span>
                     </SelectItem>
+                    <SelectItem value="pending">
+                      <span className="font-light">{t("pending")}</span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -694,10 +697,10 @@ export default function SessionsPage() {
                     {filteredSessions.length}
                   </span>
                   <span>
-                    {MOCK_SESSIONS.length} {t("allSessions")}
+                    {sessions.length} {t("allSessions")}
                   </span>
                 </div>
-                {filteredSessions.length !== MOCK_SESSIONS.length && (
+                {filteredSessions.length !== sessions.length && (
                   <span className="text-xs text-primary font-light">
                     {t("showFilters")}
                   </span>
