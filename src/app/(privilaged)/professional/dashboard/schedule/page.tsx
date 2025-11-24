@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 interface Client {
   _id: string;
@@ -50,6 +51,7 @@ interface Appointment {
 
 export default function SchedulePage() {
   const t = useTranslations("Dashboard.scheduleCalendar");
+  const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"day" | "week" | "month">("week");
   const [showRequests, setShowRequests] = useState(false);
@@ -173,6 +175,34 @@ export default function SchedulePage() {
     return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
   };
 
+  // Color-code time slots based on time of day
+  const getTimeSlotColor = (time: string) => {
+    const hour = parseInt(time.split(":")[0], 10);
+
+    // Early morning
+    if (hour >= 6 && hour < 10) {
+      return "bg-emerald-50/80 border-emerald-200 text-emerald-900";
+    }
+
+    // Late morning / midday
+    if (hour >= 10 && hour < 14) {
+      return "bg-sky-50/80 border-sky-200 text-sky-900";
+    }
+
+    // Afternoon
+    if (hour >= 14 && hour < 18) {
+      return "bg-amber-50/80 border-amber-200 text-amber-900";
+    }
+
+    // Evening
+    if (hour >= 18 && hour < 22) {
+      return "bg-violet-50/80 border-violet-200 text-violet-900";
+    }
+
+    // Night / fallback
+    return "bg-slate-50/80 border-slate-200 text-slate-900";
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "video":
@@ -209,6 +239,10 @@ export default function SchedulePage() {
     setSelectedAppointment(appointment);
     setMeetingLink(appointment.meetingLink || "");
     setMeetingLinkDialogOpen(true);
+  };
+
+  const handleAppointmentClick = (appointment: Appointment) => {
+    router.push(`/professional/dashboard/sessions/${appointment._id}`);
   };
 
   const handleSaveMeetingLink = async () => {
@@ -437,9 +471,13 @@ export default function SchedulePage() {
                           >
                             {!showRequests &&
                               dayAppointments.map((appointment) => (
-                                <div
+                                <button
+                                  type="button"
                                   key={appointment._id}
-                                  className="bg-primary/10 border border-primary/20 rounded p-2 mb-1 hover:bg-primary/20 transition-colors cursor-pointer"
+                                  onClick={() =>
+                                    handleAppointmentClick(appointment)
+                                  }
+                                  className={`w-full text-left border rounded p-2 mb-1 hover:brightness-95 transition-colors cursor-pointer ${getTimeSlotColor(appointment.time)}`}
                                 >
                                   <div className="flex items-center gap-1 text-xs font-light">
                                     {getTypeIcon(appointment.type)}
@@ -451,7 +489,7 @@ export default function SchedulePage() {
                                   <div className="text-xs text-muted-foreground font-light mt-1">
                                     {appointment.time} ({appointment.duration}m)
                                   </div>
-                                </div>
+                                </button>
                               ))}
                           </div>
                         );
@@ -498,13 +536,15 @@ export default function SchedulePage() {
                         })
                         .slice(0, 2)
                         .map((appointment) => (
-                          <div
+                          <button
+                            type="button"
                             key={appointment._id}
-                            className="bg-primary/10 rounded px-2 py-1 text-xs font-light truncate"
+                            onClick={() => handleAppointmentClick(appointment)}
+                            className={`w-full text-left rounded px-2 py-1 text-xs font-light truncate border cursor-pointer hover:brightness-95 ${getTimeSlotColor(appointment.time)}`}
                           >
                             {appointment.time} {appointment.clientId.firstName}{" "}
                             {appointment.clientId.lastName}
-                          </div>
+                          </button>
                         ))}
                   </div>
                 </div>
@@ -547,9 +587,11 @@ export default function SchedulePage() {
                     <div className="flex-1 min-h-[60px] border-l border-border/40 pl-4 space-y-2">
                       {!showRequests &&
                         hourAppointments.map((appointment) => (
-                          <div
+                          <button
+                            type="button"
                             key={appointment._id}
-                            className="bg-primary/10 border border-primary/20 rounded-lg p-3 hover:bg-primary/20 transition-colors cursor-pointer"
+                            onClick={() => handleAppointmentClick(appointment)}
+                            className={`w-full text-left border rounded-lg p-3 hover:brightness-95 transition-colors cursor-pointer ${getTimeSlotColor(appointment.time)}`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -607,7 +649,7 @@ export default function SchedulePage() {
                                 </>
                               )}
                             </div>
-                          </div>
+                          </button>
                         ))}
                     </div>
                   </div>
