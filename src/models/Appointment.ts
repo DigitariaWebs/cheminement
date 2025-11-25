@@ -1,5 +1,24 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export interface IPayment {
+  price: number;
+  platformFee: number;
+  professionalPayout: number;
+  status:
+    | "pending"
+    | "processing"
+    | "paid"
+    | "failed"
+    | "refunded"
+    | "cancelled";
+  stripePaymentIntentId?: string;
+  stripePaymentMethodId?: string;
+  paidAt?: Date;
+  refundedAt?: Date;
+  payoutTransferId?: string;
+  payoutDate?: Date;
+}
+
 export interface IAppointment extends Document {
   clientId: mongoose.Types.ObjectId;
   professionalId: mongoose.Types.ObjectId;
@@ -24,26 +43,49 @@ export interface IAppointment extends Document {
   location?: string;
   scheduledStartAt?: Date;
   reminderSent: boolean;
-  // Payment fields
-  price: number; // Session price in dollars
-  platformFee: number; // Platform fee amount
-  professionalPayout: number; // Amount professional receives
-  paymentStatus:
-    | "pending"
-    | "processing"
-    | "paid"
-    | "failed"
-    | "refunded"
-    | "cancelled";
-  stripePaymentIntentId?: string;
-  stripePaymentMethodId?: string;
-  paidAt?: Date;
-  refundedAt?: Date;
-  payoutTransferId?: string; // Stripe transfer ID for professional payout
-  payoutDate?: Date; // When professional was paid out
+  payment: IPayment;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const PaymentSchema = new Schema<IPayment>(
+  {
+    price: {
+      type: Number,
+      required: true,
+      default: 120,
+    },
+    platformFee: {
+      type: Number,
+      required: true,
+      default: 12,
+    },
+    professionalPayout: {
+      type: Number,
+      required: true,
+      default: 108,
+    },
+    status: {
+      type: String,
+      enum: [
+        "pending",
+        "processing",
+        "paid",
+        "failed",
+        "refunded",
+        "cancelled",
+      ],
+      default: "pending",
+    },
+    stripePaymentIntentId: String,
+    stripePaymentMethodId: String,
+    paidAt: Date,
+    refundedAt: Date,
+    payoutTransferId: String,
+    payoutDate: Date,
+  },
+  { _id: false },
+);
 
 const AppointmentSchema = new Schema<IAppointment>(
   {
@@ -109,40 +151,11 @@ const AppointmentSchema = new Schema<IAppointment>(
       type: Boolean,
       default: false,
     },
-    // Payment fields
-    price: {
-      type: Number,
+    payment: {
+      type: PaymentSchema,
       required: true,
-      default: 120, // Default session price in CAD
+      default: () => ({}),
     },
-    platformFee: {
-      type: Number,
-      required: true,
-      default: 12, // 10% of default price
-    },
-    professionalPayout: {
-      type: Number,
-      required: true,
-      default: 108, // 90% of default price
-    },
-    paymentStatus: {
-      type: String,
-      enum: [
-        "pending",
-        "processing",
-        "paid",
-        "failed",
-        "refunded",
-        "cancelled",
-      ],
-      default: "pending",
-    },
-    stripePaymentIntentId: String,
-    stripePaymentMethodId: String,
-    paidAt: Date,
-    refundedAt: Date,
-    payoutTransferId: String, // Stripe transfer ID for professional payout
-    payoutDate: Date, // When professional was paid out
   },
   {
     timestamps: true,

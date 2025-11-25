@@ -37,10 +37,26 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user is authorized (admin, professional, or the client)
+    const professionalDoc = appointment.professionalId;
+    const professionalId =
+      typeof professionalDoc === "object" &&
+      professionalDoc !== null &&
+      "_id" in professionalDoc
+        ? (
+            professionalDoc as { _id: { toString: () => string } }
+          )._id.toString()
+        : String(professionalDoc);
+
+    const clientDoc = appointment.clientId;
+    const clientId =
+      typeof clientDoc === "object" && clientDoc !== null && "_id" in clientDoc
+        ? (clientDoc as { _id: { toString: () => string } })._id.toString()
+        : String(clientDoc);
+
     const isAuthorized =
       session.user.role === "admin" ||
-      (appointment.professionalId as any)._id.toString() === session.user.id ||
-      (appointment.clientId as any)._id.toString() === session.user.id;
+      professionalId === session.user.id ||
+      clientId === session.user.id;
 
     if (!isAuthorized) {
       return NextResponse.json(
@@ -50,7 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if payment exists and was paid
-    if (!appointment.stripePaymentIntentId) {
+    if (!appointment.payment.stripePaymentIntentId) {
       return NextResponse.json(
         { error: "No payment found for this appointment" },
         { status: 400 },
@@ -58,17 +74,17 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if already refunded
-    if (appointment.paymentStatus === "refunded") {
+    if (appointment.payment.status === "refunded") {
       return NextResponse.json(
         { error: "This appointment has already been refunded" },
         { status: 400 },
       );
     }
 
-    if (appointment.paymentStatus !== "paid") {
+    if (appointment.payment.status !== "paid") {
       return NextResponse.json(
         {
-          error: `Cannot refund appointment with payment status: ${appointment.paymentStatus}`,
+          error: `Cannot refund appointment with payment status: ${appointment.payment.status}`,
         },
         { status: 400 },
       );
@@ -76,7 +92,7 @@ export async function POST(req: NextRequest) {
 
     // Process refund through Stripe
     const refund = await stripe.refunds.create({
-      payment_intent: appointment.stripePaymentIntentId,
+      payment_intent: appointment.payment.stripePaymentIntentId,
       reason: "requested_by_customer",
       metadata: {
         appointmentId: appointmentId,
@@ -86,8 +102,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Update appointment payment status
-    appointment.paymentStatus = "refunded";
-    appointment.refundedAt = new Date();
+    appointment.payment.status = "refunded";
+    appointment.payment.refundedAt = new Date();
     await appointment.save();
 
     return NextResponse.json({
@@ -96,21 +112,26 @@ export async function POST(req: NextRequest) {
         id: refund.id,
         amount: refund.amount / 100, // Convert from cents to dollars
         status: refund.status,
-        refundedAt: appointment.refundedAt,
+        refundedAt: appointment.payment.refundedAt,
       },
       appointment: {
         id: appointment._id,
-        paymentStatus: appointment.paymentStatus,
+        paymentStatus: appointment.payment.status,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(
       "Refund error:",
       error instanceof Error ? error.message : error,
     );
 
     // Handle specific Stripe errors
-    if (error.type === "StripeInvalidRequestError") {
+    if (
+      error &&
+      typeof error === "object" &&
+      "type" in error &&
+      error.type === "StripeInvalidRequestError"
+    ) {
       return NextResponse.json(
         {
           error: "Invalid refund request",

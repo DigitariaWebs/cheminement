@@ -103,7 +103,7 @@ export default function ClientDetailsModal({
   };
 
   const getPaymentStatusBadge = (
-    paymentStatus: AppointmentResponse["paymentStatus"],
+    paymentStatus: AppointmentResponse["payment"]["status"],
   ) => {
     const styles = {
       paid: "bg-green-100 text-green-700",
@@ -309,7 +309,7 @@ export default function ClientDetailsModal({
                             {session.type}
                           </p>
                           {getSessionStatusBadge(session.status)}
-                          {getPaymentStatusBadge(session.paymentStatus)}
+                          {getPaymentStatusBadge(session.payment.status)}
                         </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground font-light mb-2">
                           <div className="flex items-center gap-1">

@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Check if payment is completed
-    if (appointment.paymentStatus !== "paid") {
+    if (appointment.payment.status !== "paid") {
       return NextResponse.json(
         { error: "Receipt only available for paid appointments" },
         { status: 400 },
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
     doc.setTextColor(107, 114, 128); // Gray-500
     doc.text(`Receipt #: REC-${appointmentId.slice(-8).toUpperCase()}`, 20, 62);
     doc.text(
-      `Date Issued: ${appointment.paidAt ? new Date(appointment.paidAt).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" }) : "N/A"}`,
+      `Date Issued: ${appointment.payment.paidAt ? new Date(appointment.payment.paidAt).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" }) : "N/A"}`,
       20,
       68,
     );
@@ -203,23 +203,30 @@ export async function GET(req: NextRequest) {
           ? "Couple"
           : "Group";
     doc.text(`${therapyLabel} Therapy Session`, 25, yPos);
-    doc.text(`$${appointment.price.toFixed(2)}`, 160, yPos, { align: "right" });
+    doc.text(`$${appointment.payment.price.toFixed(2)}`, 160, yPos, {
+      align: "right",
+    });
 
     yPos += 10;
 
     // Platform fee (if showing breakdown)
-    if (appointment.platformFee > 0) {
+    if (appointment.payment.platformFee > 0) {
       doc.setTextColor(107, 114, 128);
       doc.setFontSize(9);
       doc.text("Platform Fee", 30, yPos);
-      doc.text(`$${appointment.platformFee.toFixed(2)}`, 160, yPos, {
+      doc.text(`$${appointment.payment.platformFee.toFixed(2)}`, 160, yPos, {
         align: "right",
       });
       yPos += 8;
       doc.text("Professional Amount", 30, yPos);
-      doc.text(`$${appointment.professionalPayout.toFixed(2)}`, 160, yPos, {
-        align: "right",
-      });
+      doc.text(
+        `$${appointment.payment.professionalPayout.toFixed(2)}`,
+        160,
+        yPos,
+        {
+          align: "right",
+        },
+      );
       yPos += 10;
     }
 
@@ -233,7 +240,7 @@ export async function GET(req: NextRequest) {
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.text("Total Paid", 25, yPos);
-    doc.text(`$${appointment.price.toFixed(2)} CAD`, 160, yPos, {
+    doc.text(`$${appointment.payment.price.toFixed(2)} CAD`, 160, yPos, {
       align: "right",
     });
 
@@ -246,7 +253,7 @@ export async function GET(req: NextRequest) {
     doc.text("Payment Method: Credit Card", 25, yPos);
     yPos += 5;
     doc.text(
-      `Transaction ID: ${appointment.stripePaymentIntentId?.slice(-16) || "N/A"}`,
+      `Transaction ID: ${appointment.payment.stripePaymentIntentId?.slice(-16) || "N/A"}`,
       25,
       yPos,
     );

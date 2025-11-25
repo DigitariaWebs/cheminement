@@ -65,7 +65,7 @@ export default function ClientDashboardPage() {
     if (
       appointment.meetingLink &&
       appointment.status === "ongoing" &&
-      appointment.paymentStatus === "paid"
+      appointment.payment.status === "paid"
     ) {
       window.open(appointment.meetingLink, "_blank");
     }
@@ -324,7 +324,7 @@ export default function ClientDashboardPage() {
                       {appointment.status === "ongoing" &&
                         appointment.type === "video" &&
                         appointment.meetingLink &&
-                        appointment.paymentStatus === "paid" && (
+                        appointment.payment.status === "paid" && (
                           <Button
                             onClick={() => handleJoinSession(appointment)}
                             className="gap-2 rounded-full"

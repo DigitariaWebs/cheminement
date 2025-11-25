@@ -92,13 +92,12 @@ async function handlePaymentIntentSucceeded(
   }
 
   // Update appointment payment status
-  appointment.paymentStatus = "paid";
-  appointment.stripePaymentIntentId = paymentIntent.id;
-  appointment.paidAt = new Date();
+  appointment.payment.status = "paid";
+  appointment.payment.paidAt = new Date();
 
   // Store payment method if available
   if (paymentIntent.payment_method) {
-    appointment.stripePaymentMethodId =
+    appointment.payment.stripePaymentMethodId =
       typeof paymentIntent.payment_method === "string"
         ? paymentIntent.payment_method
         : paymentIntent.payment_method.id;
@@ -130,7 +129,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     return;
   }
 
-  appointment.paymentStatus = "failed";
+  appointment.payment.status = "failed";
   await appointment.save();
 
   console.log(`Appointment ${appointmentId} payment failed`);
@@ -153,7 +152,7 @@ async function handlePaymentIntentCanceled(
   const appointment = await Appointment.findById(appointmentId);
 
   if (appointment) {
-    appointment.paymentStatus = "cancelled";
+    appointment.payment.status = "cancelled";
     await appointment.save();
   }
 }
@@ -172,7 +171,7 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
       : charge.payment_intent.id;
 
   const appointment = await Appointment.findOne({
-    stripePaymentIntentId: paymentIntentId,
+    "payment.stripePaymentIntentId": paymentIntentId,
   });
 
   if (!appointment) {
@@ -182,8 +181,8 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
     return;
   }
 
-  appointment.paymentStatus = "refunded";
-  appointment.refundedAt = new Date();
+  appointment.payment.status = "refunded";
+  appointment.payment.refundedAt = new Date();
   await appointment.save();
 
   console.log(`Appointment ${appointment._id} refunded`);

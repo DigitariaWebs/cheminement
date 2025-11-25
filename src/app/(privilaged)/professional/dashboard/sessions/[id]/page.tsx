@@ -591,13 +591,15 @@ export default function SessionDetailsPage() {
                   Payment Status
                 </Label>
                 <p className="mt-1 text-sm capitalize">
-                  {appointment.paymentStatus}
+                  {appointment.payment.status}
                 </p>
               </div>
 
               <div>
                 <Label className="text-xs text-muted-foreground">Fee</Label>
-                <p className="mt-1 text-sm font-medium">${appointment.price}</p>
+                <p className="mt-1 text-sm font-medium">
+                  ${appointment.payment.price}
+                </p>
               </div>
             </CardContent>
           </Card>

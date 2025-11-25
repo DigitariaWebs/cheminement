@@ -27,7 +27,8 @@ export async function GET(
 
     const appointment = await Appointment.findById(id)
       .populate("clientId", "firstName lastName email phone")
-      .populate("professionalId", "firstName lastName email phone");
+      .populate("professionalId", "firstName lastName email phone")
+      .populate("paymentId", "status");
 
     if (!appointment) {
       return NextResponse.json(
@@ -107,7 +108,8 @@ export async function PATCH(
       new: true,
     })
       .populate("clientId", "firstName lastName email phone")
-      .populate("professionalId", "firstName lastName email phone");
+      .populate("professionalId", "firstName lastName email phone")
+      .populate("paymentId", "status stripePaymentIntentId");
 
     if (!appointment) {
       return NextResponse.json(
@@ -119,7 +121,7 @@ export async function PATCH(
     // Send cancellation notification if status changed to cancelled
     if (
       oldAppointment &&
-      data.status === "cancelled" &&
+      appointment.status === "cancelled" &&
       oldAppointment.status !== "cancelled"
     ) {
       const cancelledBy =
@@ -139,12 +141,12 @@ export async function PATCH(
 
       // Process automatic refund with fee calculation if appointment was paid
       if (
-        appointment.stripePaymentIntentId &&
-        appointment.paymentStatus === "paid"
+        appointment.payment.stripePaymentIntentId &&
+        appointment.payment.status === "paid"
       ) {
         try {
           console.log(
-            `Processing refund for appointment ${id} (Payment Intent: ${appointment.stripePaymentIntentId})`,
+            `Processing refund for appointment ${id} (Payment Intent: ${appointment.payment.stripePaymentIntentId})`,
           );
 
           // Calculate hours until appointment
@@ -159,7 +161,7 @@ export async function PATCH(
             HOURS_BEFORE_APPOINTMENT_FOR_FREE_CANCELLATION;
           const isClientCancellation = cancelledBy === "client";
 
-          let refundAmount = appointment.price || 0;
+          let refundAmount = appointment.payment.price || 0;
           let cancellationFee = 0;
 
           // Apply cancellation fee only for client cancellations within 24 hours
@@ -173,7 +175,7 @@ export async function PATCH(
 
           if (refundAmountCents > 0) {
             const refund = await stripe.refunds.create({
-              payment_intent: appointment.stripePaymentIntentId,
+              payment_intent: appointment.payment.stripePaymentIntentId,
               amount: refundAmountCents,
               reason: "requested_by_customer",
               metadata: {
@@ -195,19 +197,19 @@ export async function PATCH(
           }
 
           // Update payment status to refunded
-          appointment.paymentStatus = "refunded";
-          appointment.refundedAt = new Date();
+          appointment.payment.status = "refunded";
+          appointment.payment.refundedAt = new Date();
           await appointment.save();
         } catch (refundError: unknown) {
           console.error("Error processing automatic refund:", refundError);
           // Don't fail the cancellation if refund fails - log it for manual processing
           console.error(
-            `Manual refund required for appointment ${id}. Payment Intent: ${appointment.stripePaymentIntentId}`,
+            `Manual refund required for appointment ${id}. Payment Intent: ${appointment.payment.stripePaymentIntentId}`,
           );
         }
-      } else if (appointment.paymentStatus === "pending") {
+      } else if (appointment.payment.status === "pending") {
         // If payment is still pending, mark as cancelled
-        appointment.paymentStatus = "cancelled";
+        appointment.payment.status = "cancelled";
         await appointment.save();
       }
     }

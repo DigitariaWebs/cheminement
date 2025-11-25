@@ -18,28 +18,12 @@ import { Button } from "@/components/ui/button";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 
-interface Payment {
-  _id: string;
-  sessionId: string;
-  client: string;
-  date: string;
-  sessionDate: string;
-  amount: number;
-  platformFee: number;
-  netAmount: number;
-  status: AppointmentResponse["paymentStatus"];
-  invoiceUrl?: string;
-  paidDate?: string;
-  paymentStatus?: string;
-  cancelReason?: string;
-}
-
 export default function ProfessionalBillingPage() {
   const [activeTab, setActiveTab] = useState<"receivables" | "history">(
     "receivables",
   );
   const [showBankDetails, setShowBankDetails] = useState(false);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("Professional.billing");
@@ -53,52 +37,9 @@ export default function ProfessionalBillingPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await appointmentsAPI.list();
+      const response = await appointmentsAPI.list();
 
-      // Transform appointments to payment format
-      const transformedPayments: Payment[] = data.map((apt) => {
-        const client = apt.clientId;
-        const clientName = client
-          ? `${client.firstName} ${client.lastName}`
-          : "Unknown Client";
-
-        // Map payment status
-        const status = apt.paymentStatus;
-
-        // When paymentStatus is "cancelled", the client only pays a percentage
-        // of the original session price. The backend already adjusted:
-        // - price: actual amount charged to the client after cancellation policy
-        // - platformFee: platform's share of that amount
-        // - professionalPayout: net amount for the professional (may be 0)
-        const grossAmount =
-          apt.paymentStatus === "cancelled" ? apt.price : apt.price || 120;
-        const platformFee =
-          apt.paymentStatus === "cancelled"
-            ? apt.platformFee
-            : apt.platformFee || 12;
-        const netAmount =
-          apt.paymentStatus === "cancelled"
-            ? apt.professionalPayout
-            : apt.professionalPayout || 108;
-
-        return {
-          _id: apt._id,
-          sessionId: `SES-${apt._id.slice(-6).toUpperCase()}`,
-          client: clientName,
-          date: apt.date,
-          sessionDate: `${new Date(apt.date).toLocaleDateString()} ${apt.time}`,
-          amount: grossAmount,
-          platformFee: platformFee ?? 0,
-          netAmount: netAmount ?? 0,
-          status,
-          paymentStatus: apt.paymentStatus,
-          paidDate: apt.paidAt ? new Date(apt.paidAt).toISOString() : undefined,
-          invoiceUrl: apt.paymentStatus === "paid" ? "#" : undefined,
-          cancelReason: apt.cancelReason,
-        };
-      });
-
-      setPayments(transformedPayments);
+      setAppointments(response);
     } catch (err: unknown) {
       console.error("Error fetching appointments:", err);
       setError(
@@ -109,33 +50,36 @@ export default function ProfessionalBillingPage() {
     }
   };
 
-  const receivablePayments = payments.filter(
-    (p) => p.status === "pending" || p.status === "processing",
+  const receivablePayments = appointments.filter(
+    (apt) => apt.status === "pending" || apt.payment.status === "processing",
   );
-  const paidPayments = payments.filter(
-    (p) =>
-      p.status === "paid" ||
-      p.status === "refunded" ||
-      p.status === "cancelled",
+  const paidPayments = appointments.filter(
+    (apt) =>
+      apt.payment.status === "paid" ||
+      apt.payment.status === "refunded" ||
+      apt.payment.status === "cancelled",
   );
 
   const totalReceivables = receivablePayments.reduce(
-    (sum, p) => sum + p.netAmount,
+    (sum, p) => sum + p.payment.professionalPayout,
     0,
   );
-  const totalReceived = paidPayments.reduce((sum, p) => sum + p.netAmount, 0);
+  const totalReceived = paidPayments.reduce(
+    (sum, p) => sum + p.payment.professionalPayout,
+    0,
+  );
   const monthlyRevenue = paidPayments
     .filter((p) => {
-      const date = new Date(p.paidDate || p.date);
+      const date = new Date(p.payment.paidAt || p.date);
       const now = new Date();
       return (
         date.getMonth() === now.getMonth() &&
         date.getFullYear() === now.getFullYear()
       );
     })
-    .reduce((sum, p) => sum + p.netAmount, 0);
+    .reduce((sum, p) => sum + p.payment.professionalPayout, 0);
 
-  const getStatusColor = (status: AppointmentResponse["paymentStatus"]) => {
+  const getStatusColor = (status: AppointmentResponse["payment"]["status"]) => {
     switch (status) {
       case "paid":
         return "bg-green-500/15 text-green-700 dark:text-green-400";
@@ -152,7 +96,7 @@ export default function ProfessionalBillingPage() {
     }
   };
 
-  const getStatusIcon = (status: AppointmentResponse["paymentStatus"]) => {
+  const getStatusIcon = (status: AppointmentResponse["payment"]["status"]) => {
     switch (status) {
       case "paid":
         return <CheckCircle2 className="h-4 w-4" />;
@@ -394,9 +338,9 @@ export default function ProfessionalBillingPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {displayPayments.map((payment) => (
+          {displayPayments.map((apt) => (
             <div
-              key={payment._id}
+              key={apt._id}
               className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg transition hover:shadow-xl"
             >
               <div className="flex items-start justify-between gap-4">
@@ -405,19 +349,20 @@ export default function ProfessionalBillingPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-serif text-xl font-light text-foreground">
-                        {t("session")} - {payment.client}
+                        {t("session")} - {apt.clientId.firstName}{" "}
+                        {apt.clientId.lastName}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {formatDate(payment.sessionDate)}
+                        {formatDate(apt.date)}
                       </p>
                     </div>
                     <span
                       className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider ${getStatusColor(
-                        payment.status,
+                        apt.payment.status,
                       )}`}
                     >
-                      {getStatusIcon(payment.status)}
-                      {t(`status.${payment.status}`)}
+                      {getStatusIcon(apt.payment.status)}
+                      {t(`status.${apt.status}`)}
                     </span>
                   </div>
 
@@ -427,16 +372,14 @@ export default function ProfessionalBillingPage() {
                       <p className="text-xs text-muted-foreground">
                         {t("invoiceNumber")}
                       </p>
-                      <p className="font-medium text-foreground">
-                        {payment.sessionId}
-                      </p>
+                      <p className="font-medium text-foreground">{apt._id}</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">
                         {t("grossAmount")}
                       </p>
                       <p className="font-medium text-foreground">
-                        {payment.amount.toFixed(2)} $
+                        {apt.payment.price.toFixed(2)} $
                       </p>
                     </div>
                     <div>
@@ -444,7 +387,7 @@ export default function ProfessionalBillingPage() {
                         {t("platformFee")}
                       </p>
                       <p className="font-medium text-foreground">
-                        -{payment.platformFee.toFixed(2)} $
+                        -{apt.payment.platformFee.toFixed(2)} $
                       </p>
                     </div>
                     <div>
@@ -452,38 +395,38 @@ export default function ProfessionalBillingPage() {
                         {t("netAmount")}
                       </p>
                       <p className="font-medium text-primary">
-                        {payment.netAmount.toFixed(2)} $
+                        {apt.payment.professionalPayout.toFixed(2)} $
                       </p>
                     </div>
-                    {payment.paidDate && (
+                    {apt.payment.paidAt && (
                       <div>
                         <p className="text-xs text-muted-foreground">
                           {t("paidDate")}
                         </p>
                         <p className="font-medium text-foreground">
-                          {formatDate(payment.paidDate)}
+                          {formatDate(apt.payment.paidAt)}
                         </p>
                       </div>
                     )}
-                    {payment.status === "cancelled" && payment.cancelReason && (
+                    {apt.status === "cancelled" && apt.cancelReason && (
                       <div className="md:col-span-4">
                         <p className="text-xs text-muted-foreground">
                           {t("cancelReason")}
                         </p>
                         <p className="font-medium text-foreground">
-                          {payment.cancelReason}
+                          {apt.cancelReason}
                         </p>
                       </div>
                     )}
                   </div>
 
                   {/* Actions */}
-                  {payment.status === "paid" && (
+                  {apt.payment.status === "paid" && (
                     <div className="flex flex-wrap gap-2">
                       <Button
                         variant="outline"
                         className="gap-2 rounded-full"
-                        onClick={() => handleDownloadReceipt(payment._id)}
+                        onClick={() => handleDownloadReceipt(apt._id)}
                       >
                         <Download className="h-4 w-4" />
                         {t("downloadInvoice")}

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { stripe, toCents, calculatePlatformFee } from "@/lib/stripe";
+import { stripe, toCents } from "@/lib/stripe";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 
@@ -37,7 +37,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify the user is the client for this appointment
-    if ((appointment.clientId as any)._id.toString() !== session.user.id) {
+    const clientDoc = appointment.clientId;
+    const clientId =
+      typeof clientDoc === "object" && clientDoc !== null && "_id" in clientDoc
+        ? (clientDoc as { _id: { toString: () => string } })._id.toString()
+        : String(clientDoc);
+
+    if (clientId !== session.user.id) {
       return NextResponse.json(
         { error: "You can only pay for your own appointments" },
         { status: 403 },
@@ -56,17 +62,27 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if already paid
-    if (appointment.paymentStatus === "paid") {
+    if (appointment.payment.status === "paid") {
       return NextResponse.json(
         { error: "This appointment has already been paid" },
         { status: 400 },
       );
     }
 
-    const client = appointment.clientId as any;
-    const professional = appointment.professionalId as any;
-    const amount = appointment.price;
-    const platformFee = calculatePlatformFee(amount);
+    const client = appointment.clientId as unknown as {
+      _id: { toString: () => string };
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+    const professional = appointment.professionalId as unknown as {
+      _id: { toString: () => string };
+      firstName: string;
+      lastName: string;
+    };
+    const amount = appointment.payment.price;
+    const platformFee = appointment.payment.platformFee;
+    const professionalPayout = appointment.payment.professionalPayout;
 
     // Create or retrieve Stripe Customer for the client
     let customerId = null;
@@ -98,13 +114,13 @@ export async function POST(req: NextRequest) {
       currency: "cad",
       customer: customerId,
       metadata: {
-        appointmentId: (appointment._id as any).toString(),
+        appointmentId: String(appointment._id),
         clientId: session.user.id,
-        professionalId: (appointment.professionalId as any)._id.toString(),
+        professionalId: professional._id.toString(),
         sessionDate: appointment.date.toISOString(),
         sessionTime: appointment.time,
         platformFee: platformFee.toString(),
-        professionalPayout: appointment.professionalPayout.toString(),
+        professionalPayout: professionalPayout.toString(),
       },
       description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${appointment.date.toLocaleDateString()}`,
       // Enable automatic payment methods
@@ -113,9 +129,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Update appointment with payment intent ID
-    appointment.stripePaymentIntentId = paymentIntent.id;
-    appointment.paymentStatus = "processing";
+    // Update appointment payment information
+    appointment.payment.stripePaymentIntentId = paymentIntent.id;
+    appointment.payment.status = "processing";
     await appointment.save();
 
     return NextResponse.json({

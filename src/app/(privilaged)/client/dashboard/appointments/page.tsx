@@ -76,7 +76,7 @@ export default function ClientAppointmentsPage() {
     if (
       appointment.meetingLink &&
       appointment.status === "ongoing" &&
-      appointment.paymentStatus === "paid"
+      appointment.payment.status === "paid"
     ) {
       window.open(appointment.meetingLink, "_blank");
     }
@@ -321,7 +321,7 @@ export default function ClientAppointmentsPage() {
                       appointment.status === "ongoing" &&
                       appointment.type === "video" &&
                       appointment.meetingLink &&
-                      appointment.paymentStatus === "paid" && (
+                      appointment.payment.status === "paid" && (
                         <Button
                           onClick={() => handleJoinSession(appointment)}
                           className="gap-2 rounded-full"
@@ -350,7 +350,7 @@ export default function ClientAppointmentsPage() {
                       )}
                     {appointment.meetingLink &&
                       appointment.status === "ongoing" &&
-                      appointment.paymentStatus === "paid" && (
+                      appointment.payment.status === "paid" && (
                         <DropdownMenuItem
                           onClick={() => handleJoinSession(appointment)}
                         >
@@ -374,8 +374,8 @@ export default function ClientAppointmentsPage() {
           appointmentId={appointmentToCancel._id}
           appointmentDate={appointmentToCancel.date}
           appointmentTime={appointmentToCancel.time}
-          amount={appointmentToCancel.price}
-          isPaid={appointmentToCancel.paymentStatus === "paid"}
+          amount={appointmentToCancel.payment.price}
+          isPaid={appointmentToCancel.payment.status === "paid"}
           onSuccess={handleCancelSuccess}
         />
       )}

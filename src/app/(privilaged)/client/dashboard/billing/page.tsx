@@ -17,31 +17,8 @@ import {
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { PaymentModal, AddPaymentMethodModal } from "@/components/payments";
-import { apiClient } from "@/lib/api-client";
-
-type PaymentStatus =
-  | "paid"
-  | "pending"
-  | "overdue"
-  | "upcoming"
-  | "processing"
-  | "refunded"
-  | "cancelled";
-
-interface Payment {
-  _id: string;
-  sessionId: string;
-  professional: string;
-  date: string;
-  sessionDate: string;
-  amount: number;
-  status: PaymentStatus;
-  paymentMethod?: string;
-  invoiceUrl?: string;
-  dueDate?: string;
-  paymentStatus?: string;
-  appointmentStatus?: string;
-}
+import { apiClient, appointmentsAPI } from "@/lib/api-client";
+import { AppointmentResponse } from "@/types/api";
 
 interface PaymentMethod {
   id: string;
@@ -57,54 +34,17 @@ interface PaymentMethod {
 export default function ClientBillingPage() {
   const [activeTab, setActiveTab] = useState<"owed" | "history">("owed");
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<AppointmentResponse | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showAddPaymentMethod, setShowAddPaymentMethod] = useState(false);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(false);
-  const [appointmentStatuses, setAppointmentStatuses] = useState<
-    Record<string, string>
-  >({});
+
   const t = useTranslations("Client.billing");
-  type AppointmentResponse = {
-    _id: string;
-    clientId: {
-      _id: string;
-      email: string;
-      firstName: string;
-      lastName: string;
-      phone: string;
-    };
-    professionalId?: {
-      _id: string;
-      email: string;
-      firstName: string;
-      lastName: string;
-      phone: string;
-    };
-    date: string;
-    time?: string;
-    duration?: number;
-    type?: string;
-    therapyType?: string;
-    status?: string;
-    issueType?: string;
-    notes?: string;
-    meetingLink?: string;
-    reminderSent?: boolean;
-    price?: number;
-    platformFee?: number;
-    professionalPayout?: number;
-    paymentStatus?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    cancelledAt?: string;
-    cancelledBy?: string;
-    stripePaymentMethodId?: string;
-  };
 
   // Fetch real appointments from API
   useEffect(() => {
@@ -116,67 +56,9 @@ export default function ClientBillingPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiClient.get<AppointmentResponse[]>("/appointments");
+      const response = await appointmentsAPI.list();
 
-      // Store appointment statuses
-      const statusMap: Record<string, string> = {};
-      data.forEach((apt) => {
-        statusMap[apt._id] = apt.status || "pending";
-      });
-      setAppointmentStatuses(statusMap);
-
-      // Transform appointments to payment format
-      const transformedPayments: Payment[] = data.map((apt) => {
-        const professional = apt.professionalId;
-        const professionalName = professional
-          ? `${professional.firstName} ${professional.lastName}`
-          : "Unknown Professional";
-
-        // Map payment status - can't pay until professional confirms (status changes from pending to scheduled)
-        let status: PaymentStatus = "pending";
-        if (apt.paymentStatus === "paid") {
-          status = "paid";
-        } else if (apt.paymentStatus === "refunded") {
-          status = "refunded";
-        } else if (apt.paymentStatus === "cancelled") {
-          status = "cancelled";
-        } else if (apt.paymentStatus === "processing") {
-          status = "processing";
-        } else if (apt.paymentStatus === "pending") {
-          // Check if appointment is confirmed by professional
-          const appointmentStatus = apt.status;
-          if (appointmentStatus === "pending") {
-            // Appointment not yet confirmed by professional
-            status = "upcoming"; // Show as upcoming but don't allow payment
-          } else if (appointmentStatus === "scheduled") {
-            // Appointment confirmed, payment can be made
-            status = "pending";
-          } else if (new Date(apt.date) > new Date()) {
-            status = "upcoming";
-          } else {
-            status = "pending";
-          }
-        }
-
-        return {
-          _id: apt._id,
-          sessionId: `SES-${apt._id.slice(-6).toUpperCase()}`,
-          professional: professionalName,
-          date: apt.date,
-          sessionDate: `${new Date(apt.date).toLocaleDateString()} ${apt.time}`,
-          amount: apt.price || 120,
-          status,
-          paymentStatus: apt.paymentStatus,
-          appointmentStatus: apt.status,
-          paymentMethod: apt.stripePaymentMethodId
-            ? "Visa ••••4242"
-            : undefined,
-          invoiceUrl: apt.paymentStatus === "paid" ? "#" : undefined,
-          dueDate: apt.date,
-        };
-      });
-
-      setPayments(transformedPayments);
+      setAppointments(response);
     } catch (err) {
       console.error("Error fetching appointments:", err);
       setError(
@@ -224,8 +106,8 @@ export default function ClientBillingPage() {
     }
   };
 
-  const handlePayNow = (payment: Payment) => {
-    setSelectedPayment(payment);
+  const handlePayNow = (appointment: AppointmentResponse) => {
+    setSelectedAppointment(appointment);
     setShowPaymentModal(true);
   };
 
@@ -262,28 +144,20 @@ export default function ClientBillingPage() {
     setShowPaymentModal(false);
   };
 
-  const owedPayments = payments.filter(
-    (p) =>
-      p.status === "pending" ||
-      p.status === "upcoming" ||
-      p.status === "overdue" ||
-      p.status === "processing",
+  const owedPayments = appointments.filter(
+    (p) => p.payment.status === "pending" || p.payment.status === "processing",
   );
-  const paidPayments = payments.filter((p) => p.status === "paid");
+  const paidPayments = appointments.filter((p) => p.payment.status === "paid");
 
-  const totalOwed = owedPayments.reduce((sum, p) => sum + p.amount, 0);
-  const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalOwed = owedPayments.reduce((sum, p) => sum + p.payment.price, 0);
+  const totalPaid = paidPayments.reduce((sum, p) => sum + p.payment.price, 0);
 
-  const getStatusColor = (status: PaymentStatus) => {
+  const getStatusColor = (status: AppointmentResponse["payment"]["status"]) => {
     switch (status) {
       case "paid":
         return "bg-green-500/15 text-green-700 dark:text-green-400";
       case "pending":
         return "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400";
-      case "upcoming":
-        return "bg-blue-500/15 text-blue-700 dark:text-blue-400";
-      case "overdue":
-        return "bg-red-500/15 text-red-700 dark:text-red-400";
       case "refunded":
         return "bg-purple-500/15 text-purple-700 dark:text-purple-400";
       case "cancelled":
@@ -295,16 +169,12 @@ export default function ClientBillingPage() {
     }
   };
 
-  const getStatusIcon = (status: PaymentStatus) => {
+  const getStatusIcon = (status: AppointmentResponse["payment"]["status"]) => {
     switch (status) {
       case "paid":
         return <CheckCircle2 className="h-4 w-4" />;
-      case "pending":
-      case "upcoming":
       case "processing":
         return <Clock className="h-4 w-4" />;
-      case "overdue":
-        return <AlertCircle className="h-4 w-4" />;
       case "refunded":
         return <Wallet className="h-4 w-4" />;
       case "cancelled":
@@ -522,9 +392,9 @@ export default function ClientBillingPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {displayPayments.map((payment) => (
+          {displayPayments.map((apt) => (
             <div
-              key={payment._id}
+              key={apt._id}
               className="rounded-3xl border border-border/20 bg-card/80 p-6 shadow-lg transition hover:shadow-xl"
             >
               <div className="flex items-start justify-between gap-4">
@@ -533,19 +403,20 @@ export default function ClientBillingPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-serif text-xl font-light text-foreground">
-                        {t("session")} - {payment.professional}
+                        {t("session")} - {apt.professionalId.firstName}{" "}
+                        {apt.professionalId.lastName}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {formatDate(payment.sessionDate)}
+                        {formatDate(apt.date)}
                       </p>
                     </div>
                     <span
                       className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider ${getStatusColor(
-                        payment.status,
+                        apt.payment.status,
                       )}`}
                     >
-                      {getStatusIcon(payment.status)}
-                      {t(`status.${payment.status}`)}
+                      {getStatusIcon(apt.payment.status)}
+                      {t(`status.${apt.status}`)}
                     </span>
                   </div>
 
@@ -555,35 +426,23 @@ export default function ClientBillingPage() {
                       <p className="text-xs text-muted-foreground">
                         {t("invoiceNumber")}
                       </p>
-                      <p className="font-medium text-foreground">
-                        {payment.sessionId}
-                      </p>
+                      <p className="font-medium text-foreground">{apt._id}</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">
                         {t("amount")}
                       </p>
                       <p className="font-medium text-foreground">
-                        {payment.amount.toFixed(2)} $
+                        {apt.payment.price.toFixed(2)} $
                       </p>
                     </div>
-                    {payment.paymentMethod && (
+                    {apt.payment.stripePaymentMethodId && (
                       <div>
                         <p className="text-xs text-muted-foreground">
                           {t("paymentMethod")}
                         </p>
                         <p className="font-medium text-foreground">
-                          {payment.paymentMethod}
-                        </p>
-                      </div>
-                    )}
-                    {payment.dueDate && (
-                      <div>
-                        <p className="text-xs text-muted-foreground">
-                          {t("dueDate")}
-                        </p>
-                        <p className="font-medium text-foreground">
-                          {formatDate(payment.dueDate)}
+                          {apt.payment.stripePaymentMethodId}
                         </p>
                       </div>
                     )}
@@ -591,21 +450,19 @@ export default function ClientBillingPage() {
 
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2">
-                    {payment.status === "paid" && (
+                    {apt.payment.status === "paid" && (
                       <Button
                         variant="outline"
                         className="gap-2 rounded-full"
-                        onClick={() => handleDownloadReceipt(payment._id)}
+                        onClick={() => handleDownloadReceipt(apt._id)}
                       >
                         <Download className="h-4 w-4" />
                         {t("downloadReceipt")}
                       </Button>
                     )}
-                    {(payment.status === "pending" ||
-                      payment.status === "upcoming" ||
-                      payment.status === "overdue") && (
+                    {apt.status === "pending" && (
                       <>
-                        {appointmentStatuses[payment._id] === "pending" ? (
+                        {apt.status === "pending" ? (
                           <div className="text-sm text-muted-foreground italic">
                             {t("waitingProfessionalConfirmation") ||
                               "Waiting for professional to confirm appointment before payment"}
@@ -613,7 +470,7 @@ export default function ClientBillingPage() {
                         ) : (
                           <Button
                             className="gap-2 rounded-full"
-                            onClick={() => handlePayNow(payment)}
+                            onClick={() => handlePayNow(apt)}
                           >
                             <CreditCard className="h-4 w-4" />
                             {t("payNow")}
@@ -621,9 +478,8 @@ export default function ClientBillingPage() {
                         )}
                       </>
                     )}
-                    {payment.status === "upcoming" &&
-                      payment.paymentStatus === "pending" &&
-                      payment.appointmentStatus === "pending" && (
+                    {apt.payment.status === "pending" &&
+                      apt.status === "pending" && (
                         <div className="text-sm text-muted-foreground italic">
                           {t("awaitingConfirmation") ||
                             "Awaiting professional confirmation before payment"}
@@ -638,14 +494,14 @@ export default function ClientBillingPage() {
       )}
 
       {/* Payment Modal */}
-      {selectedPayment && (
+      {selectedAppointment && (
         <PaymentModal
           open={showPaymentModal}
           onOpenChange={setShowPaymentModal}
-          appointmentId={selectedPayment._id}
-          amount={selectedPayment.amount}
-          professionalName={selectedPayment.professional}
-          appointmentDate={selectedPayment.sessionDate}
+          appointmentId={selectedAppointment._id}
+          amount={selectedAppointment.payment.price}
+          professionalName={`${selectedAppointment.professionalId.firstName} ${selectedAppointment.professionalId.lastName}`}
+          appointmentDate={selectedAppointment.date}
           onSuccess={handlePaymentSuccess}
         />
       )}

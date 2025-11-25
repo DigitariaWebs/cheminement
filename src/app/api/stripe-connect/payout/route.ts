@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     // Calculate total payout amount
     const totalPayout = appointments.reduce(
-      (sum, apt) => sum + apt.professionalPayout,
+      (sum, apt) => sum + apt.payment.professionalPayout,
       0,
     );
 
