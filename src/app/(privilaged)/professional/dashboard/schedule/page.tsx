@@ -13,7 +13,7 @@ import {
   Phone,
   Link as LinkIcon,
 } from "lucide-react";
-import { apiClient } from "@/lib/api-client";
+import { appointmentsAPI } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,28 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-
-interface Client {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-}
-
-interface Appointment {
-  _id: string;
-  clientId: Client;
-  date: string;
-  time: string;
-  duration: number;
-  type: "video" | "in-person" | "phone";
-  status: "scheduled" | "completed" | "cancelled" | "no-show" | "ongoing";
-  issueType?: string;
-  notes?: string;
-  meetingLink?: string;
-  location?: string;
-}
+import { AppointmentResponse } from "@/types/api";
 
 export default function SchedulePage() {
   const t = useTranslations("Dashboard.scheduleCalendar");
@@ -55,10 +34,10 @@ export default function SchedulePage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"day" | "week" | "month">("week");
   const [showRequests, setShowRequests] = useState(false);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] =
-    useState<Appointment | null>(null);
+    useState<AppointmentResponse | null>(null);
   const [meetingLinkDialogOpen, setMeetingLinkDialogOpen] = useState(false);
   const [meetingLink, setMeetingLink] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,9 +63,10 @@ export default function SchedulePage() {
         endDate.setMonth(startDate.getMonth() + 1);
       }
 
-      const appointmentsData = await apiClient.get<Appointment[]>(
-        `/appointments?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
-      );
+      const appointmentsData = await appointmentsAPI.list({
+        startDate: startDate.toISOString(),
+        endDate: endDate.toDateString(),
+      });
       setAppointments(appointmentsData);
     } catch (err: unknown) {
       console.error("Error fetching schedule data:", err);
@@ -235,13 +215,13 @@ export default function SchedulePage() {
     });
   };
 
-  const handleAddMeetingLink = (appointment: Appointment) => {
+  const handleAddMeetingLink = (appointment: AppointmentResponse) => {
     setSelectedAppointment(appointment);
     setMeetingLink(appointment.meetingLink || "");
     setMeetingLinkDialogOpen(true);
   };
 
-  const handleAppointmentClick = (appointment: Appointment) => {
+  const handleAppointmentClick = (appointment: AppointmentResponse) => {
     router.push(`/professional/dashboard/sessions/${appointment._id}`);
   };
 
@@ -288,7 +268,7 @@ export default function SchedulePage() {
     }
   };
 
-  const handleStartSession = async (appointment: Appointment) => {
+  const handleStartSession = async (appointment: AppointmentResponse) => {
     if (appointment.type === "video" && !appointment.meetingLink) {
       alert("Please add a meeting link before starting the session.");
       handleAddMeetingLink(appointment);
@@ -296,26 +276,14 @@ export default function SchedulePage() {
     }
 
     try {
-      const response = await fetch(`/api/appointments/${appointment._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: "ongoing",
-        }),
+      const response = await appointmentsAPI.update(appointment._id, {
+        status: "ongoing",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to start session");
-      }
 
       // Update the local state
       setAppointments((prevAppointments) =>
         prevAppointments.map((apt) =>
-          apt._id === appointment._id
-            ? { ...apt, status: "ongoing" as const }
-            : apt,
+          apt._id === appointment._id ? { ...response } : apt,
         ),
       );
 

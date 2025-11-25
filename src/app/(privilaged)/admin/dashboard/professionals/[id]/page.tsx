@@ -47,12 +47,12 @@ export default function ProfessionalDetailPage() {
 
     // Check if professional has configured their schedule
     const hasSchedule = profile?.availability?.days?.some(
-      (day) => day.isWorkDay === true
+      (day) => day.isWorkDay === true,
     );
 
     if (!hasSchedule) {
       alert(
-        "Cannot activate professional. The professional must configure their schedule first."
+        "Cannot activate professional. The professional must configure their schedule first.",
       );
       return;
     }

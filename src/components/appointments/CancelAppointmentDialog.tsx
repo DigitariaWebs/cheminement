@@ -60,16 +60,16 @@ export default function CancelAppointmentDialog({
   const appointmentDateTime = (() => {
     // Parse the date (might be ISO string or date string)
     const dateObj = new Date(appointmentDate);
-    
+
     // Parse time string (format: "HH:MM")
-    const [hours, minutes] = appointmentTime.split(':').map(Number);
-    
+    const [hours, minutes] = appointmentTime.split(":").map(Number);
+
     // Set the time on the date
     dateObj.setHours(hours, minutes, 0, 0);
-    
+
     return dateObj;
   })();
-  
+
   const now = new Date();
   const hoursUntilAppointment =
     (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);

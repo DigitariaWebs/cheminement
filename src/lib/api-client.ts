@@ -3,6 +3,8 @@
  * Provides helper functions for making API calls with proper error handling
  */
 
+import type { AppointmentResponse } from "@/types/api";
+
 interface FetchOptions extends RequestInit {
   data?: any;
 }
@@ -214,13 +216,18 @@ export const appointmentsAPI = {
     clientId?: string;
   }) => {
     const query = new URLSearchParams(params as any).toString();
-    return apiClient.get(`/appointments${query ? `?${query}` : ""}`);
+    return apiClient.get<AppointmentResponse[]>(
+      `/appointments${query ? `?${query}` : ""}`,
+    );
   },
-  create: (data: any) => apiClient.post("/appointments", data),
-  get: (id: string) => apiClient.get(`/appointments/${id}`),
+  create: (data: any) =>
+    apiClient.post<AppointmentResponse>("/appointments", data),
+  get: (id: string) =>
+    apiClient.get<AppointmentResponse>(`/appointments/${id}`),
   update: (id: string, data: any) =>
-    apiClient.patch(`/appointments/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/appointments/${id}`),
+    apiClient.patch<AppointmentResponse>(`/appointments/${id}`, data),
+  delete: (id: string) =>
+    apiClient.delete<{ success: boolean }>(`/appointments/${id}`),
 };
 
 // Users

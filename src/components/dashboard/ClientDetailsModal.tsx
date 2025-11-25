@@ -12,26 +12,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { appointmentsAPI } from "@/lib/api-client";
-
-interface Session {
-  id: string;
-  date: string;
-  duration: number;
-  type: string;
-  notes?: string;
-  status: "completed" | "cancelled" | "scheduled" | "no-show";
-  paymentStatus: "paid" | "pending" | "overdue";
-  amount?: number;
-}
-
-interface AppointmentData {
-  _id: string;
-  date: string;
-  duration?: number;
-  type: string;
-  notes?: string;
-  status: string;
-}
+import { AppointmentResponse } from "@/types/api";
 
 interface Client {
   id: string;
@@ -61,7 +42,7 @@ export default function ClientDetailsModal({
   client,
 }: ClientDetailsModalProps) {
   const t = useTranslations("Dashboard.clientModal");
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<AppointmentResponse[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
   useEffect(() => {
@@ -69,25 +50,10 @@ export default function ClientDetailsModal({
       const fetchSessions = async () => {
         setSessionsLoading(true);
         try {
-          const data = (await appointmentsAPI.list({
+          const data = await appointmentsAPI.list({
             clientId: client.id,
-          })) as AppointmentData[];
-          const mappedSessions: Session[] = data.map((appt) => ({
-            id: appt._id,
-            date: appt.date,
-            duration: appt.duration || 60,
-            type: appt.type,
-            notes: appt.notes || "",
-            status:
-              appt.status === "completed"
-                ? "completed"
-                : appt.status === "cancelled"
-                  ? "cancelled"
-                  : "scheduled",
-            paymentStatus: "paid", // Default, adjust as needed
-            amount: 150, // Default, adjust as needed
-          }));
-          setSessions(mappedSessions);
+          });
+          setSessions(data);
         } catch (error) {
           console.error("Failed to fetch sessions:", error);
           setSessions([]);
@@ -117,12 +83,14 @@ export default function ClientDetailsModal({
     );
   };
 
-  const getSessionStatusBadge = (status: Session["status"]) => {
+  const getSessionStatusBadge = (status: AppointmentResponse["status"]) => {
     const styles = {
       completed: "bg-green-100 text-green-700",
       cancelled: "bg-red-100 text-red-700",
       scheduled: "bg-blue-100 text-blue-700",
       "no-show": "bg-orange-100 text-orange-700",
+      ongoing: "bg-purple-100 text-purple-700",
+      pending: "bg-yellow-100 text-yellow-700",
     };
 
     return (
@@ -134,11 +102,17 @@ export default function ClientDetailsModal({
     );
   };
 
-  const getPaymentStatusBadge = (paymentStatus: Session["paymentStatus"]) => {
+  const getPaymentStatusBadge = (
+    paymentStatus: AppointmentResponse["paymentStatus"],
+  ) => {
     const styles = {
       paid: "bg-green-100 text-green-700",
       pending: "bg-yellow-100 text-yellow-700",
-      overdue: "bg-red-100 text-red-700",
+      processing: "bg-blue-100 text-blue-700",
+      overdue: "bg-orange-100 text-orange-700",
+      cancelled: "bg-red-100 text-red-700",
+      failed: "bg-red-100 text-red-700",
+      refunded: "bg-brown-100 text-brown-700",
     };
 
     return (
@@ -325,7 +299,7 @@ export default function ClientDetailsModal({
               ) : (
                 sessions.map((session) => (
                   <div
-                    key={session.id}
+                    key={session._id}
                     className="rounded-lg bg-muted/30 p-4 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -348,14 +322,6 @@ export default function ClientDetailsModal({
                               {session.duration} {t("sessions.duration")}
                             </span>
                           </div>
-                          {session.amount !== undefined &&
-                            session.amount > 0 && (
-                              <div className="flex items-center gap-1">
-                                <span className="font-medium">
-                                  ${session.amount}
-                                </span>
-                              </div>
-                            )}
                         </div>
                         {session.notes && (
                           <p className="text-sm text-muted-foreground font-light">

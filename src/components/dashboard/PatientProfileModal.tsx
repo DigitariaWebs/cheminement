@@ -9,39 +9,12 @@ import BasicInformation from "./BasicInformation";
 import MedicalProfile from "./MedicalProfile";
 import { appointmentsAPI } from "@/lib/api-client";
 import { useState } from "react";
-
-interface PopulatedUser {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-export interface AppointmentData {
-  _id: string;
-  clientId: PopulatedUser;
-  professionalId: PopulatedUser;
-  date: string;
-  time: string;
-  duration: number;
-  type: "video" | "in-person" | "phone";
-  status:
-    | "scheduled"
-    | "completed"
-    | "cancelled"
-    | "no-show"
-    | "pending"
-    | "ongoing";
-  issueType?: string;
-  notes?: string;
-  meetingLink?: string;
-  location?: string;
-}
+import { AppointmentResponse } from "@/types/api";
 
 interface AppointmentDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  appointment: AppointmentData | null;
+  appointment: AppointmentResponse | null;
   onAction?: () => void;
 }
 
@@ -57,7 +30,7 @@ export default function AppointmentDetailsModal({
 
   if (!isOpen || !appointment) return null;
 
-  const getTypeBadge = (type: AppointmentData["type"]) => {
+  const getTypeBadge = (type: AppointmentResponse["type"]) => {
     const styles = {
       video: "bg-blue-100 text-blue-700",
       "in-person": "bg-green-100 text-green-700",
@@ -73,7 +46,7 @@ export default function AppointmentDetailsModal({
     );
   };
 
-  const getStatusBadge = (status: AppointmentData["status"]) => {
+  const getStatusBadge = (status: AppointmentResponse["status"]) => {
     return (
       <span className={`px-3 py-1 rounded-full text-xs font-light`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}

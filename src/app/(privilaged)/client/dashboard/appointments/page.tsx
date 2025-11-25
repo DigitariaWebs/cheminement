@@ -24,52 +24,16 @@ import {
 import { appointmentsAPI } from "@/lib/api-client";
 import { CancelAppointmentDialog } from "@/components/appointments";
 import Link from "next/link";
-
-interface Professional {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-}
-
-interface Appointment {
-  _id: string;
-  professionalId: Professional;
-  date: string;
-  time: string;
-  duration: number;
-  type: "video" | "in-person" | "phone";
-  status:
-    | "scheduled"
-    | "completed"
-    | "cancelled"
-    | "no-show"
-    | "pending"
-    | "ongoing";
-  issueType?: string;
-  notes?: string;
-  meetingLink?: string;
-  location?: string;
-  price: number;
-  paymentStatus:
-    | "pending"
-    | "processing"
-    | "paid"
-    | "failed"
-    | "refunded"
-    | "cancelled";
-  createdAt: string;
-}
+import type { AppointmentResponse } from "@/types/api";
 
 export default function ClientAppointmentsPage() {
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] =
-    useState<Appointment | null>(null);
+    useState<AppointmentResponse | null>(null);
   const t = useTranslations("Client.appointments");
   const router = useRouter();
 
@@ -81,7 +45,7 @@ export default function ClientAppointmentsPage() {
     setLoading(true);
     setError("");
     try {
-      const data = (await appointmentsAPI.list()) as Appointment[];
+      const data = await appointmentsAPI.list();
       setAppointments(data);
     } catch (err) {
       console.error("Error fetching appointments:", err);
@@ -93,7 +57,7 @@ export default function ClientAppointmentsPage() {
     }
   };
 
-  const openCancelDialog = (appointment: Appointment) => {
+  const openCancelDialog = (appointment: AppointmentResponse) => {
     setAppointmentToCancel(appointment);
     setShowCancelDialog(true);
   };
@@ -108,7 +72,7 @@ export default function ClientAppointmentsPage() {
     closeCancelDialog();
   };
 
-  const handleJoinSession = (appointment: Appointment) => {
+  const handleJoinSession = (appointment: AppointmentResponse) => {
     if (
       appointment.meetingLink &&
       appointment.status === "ongoing" &&

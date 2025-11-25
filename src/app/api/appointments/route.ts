@@ -23,7 +23,12 @@ export async function GET(req: NextRequest) {
     const endDate = searchParams.get("endDate");
     const clientId = searchParams.get("clientId");
 
-    const query: any = {};
+    const query: {
+      clientId?: string;
+      professionalId?: string;
+      status?: string;
+      date?: { $gte?: Date; $lte?: Date };
+    } = {};
 
     // Filter by user role
     if (session.user.role === "client") {

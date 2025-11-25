@@ -11,24 +11,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Search, Eye } from "lucide-react";
-import AppointmentDetailsModal, {
-  AppointmentData,
-} from "@/components/dashboard/PatientProfileModal";
+import AppointmentDetailsModal from "@/components/dashboard/PatientProfileModal";
 import { appointmentsAPI } from "@/lib/api-client";
+import { AppointmentResponse } from "@/types/api";
 
 export default function RequestsPage() {
-  const [requests, setRequests] = useState<AppointmentData[]>([]);
+  const [requests, setRequests] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAppointment, setSelectedAppointment] =
-    useState<AppointmentData | null>(null);
+    useState<AppointmentResponse | null>(null);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
 
   const fetchAppointments = useCallback(async () => {
     try {
       const data = await appointmentsAPI.list({ status: "pending" });
-      setRequests(data as AppointmentData[]);
+      setRequests(data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load appointments",
@@ -60,7 +59,7 @@ export default function RequestsPage() {
     });
   }, [requests, searchQuery]);
 
-  const getTypeBadge = (type: AppointmentData["type"]) => {
+  const getTypeBadge = (type: AppointmentResponse["type"]) => {
     const styles = {
       video: "bg-blue-100 text-blue-700",
       "in-person": "bg-green-100 text-green-700",
@@ -76,7 +75,7 @@ export default function RequestsPage() {
     );
   };
 
-  const handleViewAppointment = (appointment: AppointmentData) => {
+  const handleViewAppointment = (appointment: AppointmentResponse) => {
     setSelectedAppointment(appointment);
     setIsAppointmentModalOpen(true);
   };

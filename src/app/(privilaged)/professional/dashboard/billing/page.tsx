@@ -9,22 +9,14 @@ import {
   CheckCircle2,
   Clock,
   TrendingUp,
-  Calendar,
   DollarSign,
   Loader2,
   AlertCircle,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { apiClient } from "@/lib/api-client";
-
-type PaymentStatus =
-  | "paid"
-  | "pending"
-  | "upcoming"
-  | "processing"
-  | "refunded"
-  | "cancelled";
+import { appointmentsAPI } from "@/lib/api-client";
+import { AppointmentResponse } from "@/types/api";
 
 interface Payment {
   _id: string;
@@ -35,7 +27,7 @@ interface Payment {
   amount: number;
   platformFee: number;
   netAmount: number;
-  status: PaymentStatus;
+  status: AppointmentResponse["paymentStatus"];
   invoiceUrl?: string;
   paidDate?: string;
   paymentStatus?: string;
@@ -61,7 +53,7 @@ export default function ProfessionalBillingPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiClient.get<any[]>("/appointments");
+      const data = await appointmentsAPI.list();
 
       // Transform appointments to payment format
       const transformedPayments: Payment[] = data.map((apt) => {
@@ -71,20 +63,7 @@ export default function ProfessionalBillingPage() {
           : "Unknown Client";
 
         // Map payment status
-        let status: PaymentStatus = "pending";
-        if (apt.paymentStatus === "paid") {
-          status = "paid";
-        } else if (apt.paymentStatus === "refunded") {
-          status = "refunded";
-        } else if (apt.paymentStatus === "cancelled") {
-          status = "cancelled";
-        } else if (apt.paymentStatus === "processing") {
-          status = "processing";
-        } else if (new Date(apt.date) > new Date()) {
-          status = "upcoming";
-        } else if (apt.paymentStatus === "pending") {
-          status = "pending";
-        }
+        const status = apt.paymentStatus;
 
         // When paymentStatus is "cancelled", the client only pays a percentage
         // of the original session price. The backend already adjusted:
@@ -131,10 +110,7 @@ export default function ProfessionalBillingPage() {
   };
 
   const receivablePayments = payments.filter(
-    (p) =>
-      p.status === "pending" ||
-      p.status === "upcoming" ||
-      p.status === "processing",
+    (p) => p.status === "pending" || p.status === "processing",
   );
   const paidPayments = payments.filter(
     (p) =>
@@ -159,14 +135,12 @@ export default function ProfessionalBillingPage() {
     })
     .reduce((sum, p) => sum + p.netAmount, 0);
 
-  const getStatusColor = (status: PaymentStatus) => {
+  const getStatusColor = (status: AppointmentResponse["paymentStatus"]) => {
     switch (status) {
       case "paid":
         return "bg-green-500/15 text-green-700 dark:text-green-400";
       case "pending":
         return "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400";
-      case "upcoming":
-        return "bg-blue-500/15 text-blue-700 dark:text-blue-400";
       case "processing":
         return "bg-purple-500/15 text-purple-700 dark:text-purple-400";
       case "refunded":
@@ -178,15 +152,13 @@ export default function ProfessionalBillingPage() {
     }
   };
 
-  const getStatusIcon = (status: PaymentStatus) => {
+  const getStatusIcon = (status: AppointmentResponse["paymentStatus"]) => {
     switch (status) {
       case "paid":
         return <CheckCircle2 className="h-4 w-4" />;
       case "pending":
       case "processing":
         return <Clock className="h-4 w-4" />;
-      case "upcoming":
-        return <Calendar className="h-4 w-4" />;
       case "refunded":
         return <AlertCircle className="h-4 w-4" />;
       case "cancelled":

@@ -14,8 +14,6 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  Wallet,
-  Info,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -119,11 +117,9 @@ export default function BookAppointmentPage() {
         "/users?role=professional",
       );
       setProfessionals(data);
-      
+
       if (data.length === 0) {
-        setError(
-          "No professionals available."
-        );
+        setError("No professionals available.");
       }
     } catch (err: unknown) {
       console.error("Error loading professionals:", err);
@@ -265,24 +261,6 @@ export default function BookAppointmentPage() {
     (p) => p._id === selectedProfessional,
   );
 
-  const getSessionPrice = () => {
-    if (!availabilityData?.professionalInfo?.pricing) {
-      return therapyType === "solo" ? 120 : therapyType === "couple" ? 150 : 80;
-    }
-
-    const pricing = availabilityData.professionalInfo.pricing;
-    switch (therapyType) {
-      case "solo":
-        return pricing.individualSession || 120;
-      case "couple":
-        return pricing.coupleSession || 150;
-      case "group":
-        return pricing.groupSession || 80;
-      default:
-        return 120;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -410,8 +388,9 @@ export default function BookAppointmentPage() {
                           Best Fit for Me (Recommended)
                         </Label>
                         <p className="text-sm text-muted-foreground mt-2">
-                          Let us match you with the most suitable professional based on availability and expertise. 
-                          This option gets you started quickly with a qualified professional.
+                          Let us match you with the most suitable professional
+                          based on availability and expertise. This option gets
+                          you started quickly with a qualified professional.
                         </p>
                       </div>
                     </div>
@@ -433,11 +412,12 @@ export default function BookAppointmentPage() {
                           className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
                         >
                           <User className="h-5 w-5 text-primary" />
-                          I'll Choose My Professional
+                          I&apos;ll Choose My Professional
                         </Label>
                         <p className="text-sm text-muted-foreground mt-2">
-                          Browse through our active professionals and select the one that best suits your needs. 
-                          View their specialties, experience, and availability.
+                          Browse through our active professionals and select the
+                          one that best suits your needs. View their
+                          specialties, experience, and availability.
                         </p>
                       </div>
                     </div>
@@ -457,7 +437,8 @@ export default function BookAppointmentPage() {
                 Choose Your Professional
               </h2>
               <p className="text-sm text-muted-foreground mt-2">
-                All professionals shown are active and have availability schedules configured
+                All professionals shown are active and have availability
+                schedules configured
               </p>
             </div>
             <div className="p-6">
@@ -496,7 +477,8 @@ export default function BookAppointmentPage() {
                             {professional.firstName} {professional.lastName}
                           </h3>
                           <p className="text-sm text-muted-foreground capitalize">
-                            {professional.specialty || "Mental Health Professional"}
+                            {professional.specialty ||
+                              "Mental Health Professional"}
                           </p>
                         </div>
                       </div>
@@ -519,10 +501,7 @@ export default function BookAppointmentPage() {
                 </div>
               )}
               <div className="flex justify-between pt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentStep(0)}
-                >
+                <Button variant="outline" onClick={() => setCurrentStep(0)}>
                   Back
                 </Button>
               </div>
@@ -576,7 +555,9 @@ export default function BookAppointmentPage() {
                       {availableSlots.map((slot) => (
                         <Button
                           key={slot.time}
-                          variant={selectedTime === slot.time ? "default" : "outline"}
+                          variant={
+                            selectedTime === slot.time ? "default" : "outline"
+                          }
                           disabled={!slot.available}
                           onClick={() => handleTimeSelect(slot.time)}
                           className="w-full"
@@ -741,10 +722,7 @@ export default function BookAppointmentPage() {
                 >
                   Back
                 </Button>
-                <Button
-                  onClick={handleSubmit}
-                  disabled={loading || !issueType}
-                >
+                <Button onClick={handleSubmit} disabled={loading || !issueType}>
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -770,15 +748,18 @@ export default function BookAppointmentPage() {
                 Appointment Requested!
               </h2>
               <p className="text-muted-foreground mb-6">
-                Your appointment request has been submitted successfully. You'll receive a
-                confirmation email shortly with all the details.
+                Your appointment request has been submitted successfully.
+                You&apos;ll receive a confirmation email shortly with all the
+                details.
               </p>
 
               <div className="space-y-4 text-left bg-muted/30 rounded-lg p-6 mb-6">
                 <div className="flex items-start gap-3">
                   <User className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Professional</p>
+                    <p className="text-sm text-muted-foreground">
+                      Professional
+                    </p>
                     <p className="font-medium text-foreground">
                       {selectedProfessionalData?.firstName}{" "}
                       {selectedProfessionalData?.lastName}
@@ -798,7 +779,9 @@ export default function BookAppointmentPage() {
                         year: "numeric",
                       })}
                     </p>
-                    <p className="text-sm text-muted-foreground">{selectedTime}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedTime}
+                    </p>
                   </div>
                 </div>
               </div>

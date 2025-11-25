@@ -18,39 +18,11 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { appointmentsAPI } from "@/lib/api-client";
-
-interface Professional {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-}
-
-interface Appointment {
-  _id: string;
-  professionalId: Professional;
-  date: string;
-  time: string;
-  duration: number;
-  type: "video" | "in-person" | "phone";
-  status:
-    | "scheduled"
-    | "completed"
-    | "cancelled"
-    | "no-show"
-    | "pending"
-    | "ongoing";
-  issueType?: string;
-  notes?: string;
-  meetingLink?: string;
-  location?: string;
-  paymentStatus?: string;
-}
+import { AppointmentResponse } from "@/types/api";
 
 export default function ClientDashboardPage() {
   const [upcomingAppointments, setUpcomingAppointments] = useState<
-    Appointment[]
+    AppointmentResponse[]
   >([]);
   const { data: session, status } = useSession();
   const t = useTranslations("Client.overview");
@@ -58,10 +30,10 @@ export default function ClientDashboardPage() {
   useEffect(() => {
     const fetchUpcomingAppointments = async () => {
       try {
-        const data = (await appointmentsAPI.list()) as Appointment[];
+        const data = await appointmentsAPI.list();
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const upcoming = data.filter((apt: Appointment) => {
+        const upcoming = data.filter((apt) => {
           const aptDate = new Date(apt.date);
           return (
             aptDate >= today &&
@@ -89,7 +61,7 @@ export default function ClientDashboardPage() {
     }
   };
 
-  const handleJoinSession = (appointment: Appointment) => {
+  const handleJoinSession = (appointment: AppointmentResponse) => {
     if (
       appointment.meetingLink &&
       appointment.status === "ongoing" &&

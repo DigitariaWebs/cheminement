@@ -42,48 +42,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-interface Client {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-}
-
-interface Appointment {
-  _id: string;
-  clientId: Client;
-  date: string;
-  time: string;
-  duration: number;
-  type: "video" | "in-person" | "phone";
-  status:
-    | "scheduled"
-    | "completed"
-    | "cancelled"
-    | "no-show"
-    | "pending"
-    | "ongoing";
-  issueType?: string;
-  notes?: string;
-  meetingLink?: string;
-  location?: string;
-  price: number;
-  paymentStatus: string;
-  therapyType?: string;
-  createdAt: string;
-  updatedAt: string;
-  // When the appointment was scheduled to start (server-derived date+time)
-  scheduledStartAt?: string;
-}
+import { AppointmentResponse } from "@/types/api";
+import { appointmentsAPI } from "@/lib/api-client";
 
 export default function SessionDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
 
-  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const [appointment, setAppointment] = useState<AppointmentResponse | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +64,7 @@ export default function SessionDetailsPage() {
   // Status change state
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [newStatus, setNewStatus] =
-    useState<Appointment["status"]>("scheduled");
+    useState<AppointmentResponse["status"]>("scheduled");
 
   // Reschedule state
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
@@ -107,52 +76,47 @@ export default function SessionDetailsPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    fetchAppointment();
-  }, [sessionId]);
+    const fetchAppointment = async () => {
+      try {
+        setLoading(true);
+        const response = await appointmentsAPI.get(sessionId);
+        setAppointment(response);
+        setSessionNotes(response.notes || "");
+        setNewStatus(response.status);
+        setRescheduleDate(response.date.split("T")[0]);
+        setRescheduleTime(response.time);
 
-  const fetchAppointment = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/appointments/${sessionId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch appointment");
-      }
-      const data = await response.json();
-      setAppointment(data);
-      setSessionNotes(data.notes || "");
-      setNewStatus(data.status);
-      setRescheduleDate(data.date.split("T")[0]);
-      setRescheduleTime(data.time);
-
-      // Initialize timer if session is already ongoing
-      // Always count from scheduledStartAt (server-derived), not from "now"
-      if (data.status === "ongoing") {
-        try {
-          // scheduledStartAt is a full ISO datetime string from backend
-          const startSource = data.scheduledStartAt || data.date;
-          const start = new Date(startSource);
-          if (!isNaN(start.getTime())) {
-            const now = new Date();
-            const diffSeconds = Math.max(
-              0,
-              Math.floor((now.getTime() - start.getTime()) / 1000),
-            );
-            setElapsedSeconds(diffSeconds);
-          } else {
+        // Initialize timer if session is already ongoing
+        // Always count from scheduledStartAt (server-derived), not from "now"
+        if (response.status === "ongoing") {
+          try {
+            // scheduledStartAt is a full ISO datetime string from backend
+            const startSource = response.scheduledStartAt || response.date;
+            const start = new Date(startSource);
+            if (!isNaN(start.getTime())) {
+              const now = new Date();
+              const diffSeconds = Math.max(
+                0,
+                Math.floor((now.getTime() - start.getTime()) / 1000),
+              );
+              setElapsedSeconds(diffSeconds);
+            } else {
+              setElapsedSeconds(0);
+            }
+          } catch {
             setElapsedSeconds(0);
           }
-        } catch {
+        } else {
           setElapsedSeconds(0);
         }
-      } else {
-        setElapsedSeconds(0);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchAppointment();
+  }, [sessionId]);
 
   // Start timer helper
   const startTimer = () => {
@@ -195,22 +159,11 @@ export default function SessionDetailsPage() {
 
     try {
       setSaving(true);
-      const response = await fetch(`/api/appointments/${sessionId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          notes: sessionNotes,
-        }),
+      const response = await appointmentsAPI.update(sessionId, {
+        notes: sessionNotes,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save notes");
-      }
-
-      const updatedAppointment = await response.json();
-      setAppointment(updatedAppointment);
+      setAppointment(response);
       setIsEditingNotes(false);
     } catch (err) {
       alert("Failed to save notes. Please try again.");
@@ -220,27 +173,16 @@ export default function SessionDetailsPage() {
     }
   };
 
-  const handleStatusChange = async () => {
+  const handleStatusChange = async (status?: AppointmentResponse["status"]) => {
     if (!appointment) return;
 
     try {
       setSaving(true);
-      const response = await fetch(`/api/appointments/${sessionId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-        }),
+      const response = await appointmentsAPI.update(appointment._id, {
+        status: status ?? newStatus,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update status");
-      }
-
-      const updatedAppointment = await response.json();
-      setAppointment(updatedAppointment);
+      setAppointment(response);
       setShowStatusDialog(false);
     } catch (err) {
       alert("Failed to update status. Please try again.");
@@ -258,90 +200,18 @@ export default function SessionDetailsPage() {
 
     try {
       setSaving(true);
-      const response = await fetch(`/api/appointments/${sessionId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          date: new Date(rescheduleDate),
-          time: rescheduleTime,
-        }),
+      const response = await appointmentsAPI.update(appointment._id, {
+        date: new Date(rescheduleDate),
+        time: rescheduleTime,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to reschedule appointment");
-      }
-
-      const updatedAppointment = await response.json();
-      setAppointment(updatedAppointment);
+      setAppointment(response);
       setShowRescheduleDialog(false);
     } catch (err) {
       alert("Failed to reschedule. Please try again.");
       console.error(err);
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleStartSession = async () => {
-    if (!appointment) return;
-
-    if (appointment.type === "video" && !appointment.meetingLink) {
-      alert("Please add a meeting link before starting the session.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/appointments/${sessionId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: "ongoing",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to start session");
-      }
-
-      const updatedAppointment = await response.json();
-      setAppointment(updatedAppointment);
-
-      // When session is started from this page, timer should still count
-      // from the scheduledStartAt set by the backend. We re-derive the
-      // elapsed time from updatedAppointment.scheduledStartAt instead of
-      // starting from 0 "now".
-      if (updatedAppointment.scheduledStartAt) {
-        try {
-          const start = new Date(updatedAppointment.scheduledStartAt);
-          if (!isNaN(start.getTime())) {
-            const now = new Date();
-            const diffSeconds = Math.max(
-              0,
-              Math.floor((now.getTime() - start.getTime()) / 1000),
-            );
-            setElapsedSeconds(diffSeconds);
-          } else {
-            setElapsedSeconds(0);
-          }
-        } catch {
-          setElapsedSeconds(0);
-        }
-      } else {
-        setElapsedSeconds(0);
-      }
-      startTimer();
-
-      // Open meeting link in new tab for video appointments
-      if (appointment.type === "video" && appointment.meetingLink) {
-        window.open(appointment.meetingLink, "_blank");
-      }
-    } catch (err) {
-      alert("Failed to start session. Please try again.");
-      console.error(err);
     }
   };
 
@@ -372,7 +242,7 @@ export default function SessionDetailsPage() {
     return parts.join(":");
   };
 
-  const getStatusBadge = (status: Appointment["status"]) => {
+  const getStatusBadge = (status: AppointmentResponse["status"]) => {
     const styles = {
       scheduled: "bg-blue-100 text-blue-700",
       completed: "bg-green-100 text-green-700",
@@ -469,7 +339,10 @@ export default function SessionDetailsPage() {
             </div>
           )}
           {appointment.status === "scheduled" && (
-            <Button onClick={handleStartSession} className="gap-2 rounded-full">
+            <Button
+              onClick={() => handleStatusChange("ongoing")}
+              className="gap-2 rounded-full"
+            >
               <Video className="h-4 w-4" />
               Start Session
             </Button>
@@ -773,7 +646,7 @@ export default function SessionDetailsPage() {
               <Select
                 value={newStatus}
                 onValueChange={(value) =>
-                  setNewStatus(value as Appointment["status"])
+                  setNewStatus(value as AppointmentResponse["status"])
                 }
               >
                 <SelectTrigger>
@@ -803,7 +676,7 @@ export default function SessionDetailsPage() {
             >
               Cancel
             </Button>
-            <Button onClick={handleStatusChange} disabled={saving}>
+            <Button onClick={() => handleStatusChange()} disabled={saving}>
               {saving ? "Updating..." : "Update Status"}
             </Button>
           </DialogFooter>

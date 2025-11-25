@@ -42,6 +42,7 @@ import {
   MessageSquare,
   Link as LinkIcon,
 } from "lucide-react";
+import { appointmentsAPI } from "@/lib/api-client";
 
 interface ApiAppointment {
   _id: string;
@@ -337,19 +338,9 @@ export default function SessionsPage() {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch(`/api/appointments/${selectedSession.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          meetingLink: meetingLink,
-        }),
+      await appointmentsAPI.update(selectedSession.id, {
+        meetingLink,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update meeting link");
-      }
 
       // Update the local state
       setSessions((prevSessions) =>
@@ -380,24 +371,14 @@ export default function SessionsPage() {
     }
 
     try {
-      const response = await fetch(`/api/appointments/${session.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: "ongoing",
-        }),
+      await appointmentsAPI.update(session.id, {
+        status: "ongoing",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to start session");
-      }
 
       // Update the local state
       setSessions((prevSessions) =>
         prevSessions.map((s) =>
-          s.id === session.id ? { ...s, status: "ongoing" as const } : s,
+          s.id === session.id ? { ...s, status: "ongoing" } : s,
         ),
       );
 

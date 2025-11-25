@@ -59,52 +59,61 @@ export interface ProfileResponse {
   profileCompleted: boolean;
 }
 
+interface PersonResponse {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
+type AppointmentType = "video" | "in-person" | "phone";
+type TherapyType = "solo" | "couple" | "group";
+type AppointmentStatus =
+  | "scheduled"
+  | "completed"
+  | "cancelled"
+  | "no-show"
+  | "pending"
+  | "ongoing";
+type PaymentStatus =
+  | "pending"
+  | "processing"
+  | "paid"
+  | "failed"
+  | "refunded"
+  | "cancelled";
+type CancelledBy = "client" | "professional" | "admin";
+
 export interface AppointmentResponse {
-  id: string;
-  clientId: UserResponse;
-  professionalId: UserResponse;
+  _id: string;
+  clientId: PersonResponse;
+  professionalId: PersonResponse;
   date: string;
   time: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
-  therapyType: "solo" | "couple" | "group";
-  status: "scheduled" | "completed" | "cancelled" | "no-show";
+  type: AppointmentType;
+  therapyType: TherapyType;
+  status: AppointmentStatus;
   issueType?: string;
   notes?: string;
   cancelReason?: string;
+  cancelledBy?: CancelledBy;
+  cancelledAt?: string;
   meetingLink?: string;
   location?: string;
+  scheduledStartAt?: string;
   reminderSent: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface RequestResponse {
-  id: string;
-  patientId?: string;
-  patientName: string;
-  email: string;
-  phone: string;
-  requestDate: string;
-  preferredDate?: string;
-  preferredTime?: string;
-  issueType: string;
-  urgency: "low" | "medium" | "high";
-  status: "pending" | "approved" | "rejected" | "contacted";
-  message?: string;
-  isNewClient: boolean;
-  age?: number;
-  gender?: string;
-  mentalIllness?: string[];
-  treatmentHistory?: {
-    previousTherapists?: number;
-    currentMedications?: string[];
-    currentlyInTreatment?: boolean;
-    treatmentDuration?: string;
-    previousDiagnoses?: string[];
-  };
-  assignedProfessional?: UserResponse;
-  adminNotes?: string;
+  price: number;
+  platformFee: number;
+  professionalPayout: number;
+  paymentStatus: PaymentStatus;
+  stripePaymentIntentId?: string;
+  stripePaymentMethodId?: string;
+  paidAt?: string;
+  refundedAt?: string;
+  payoutTransferId?: string;
+  payoutDate?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -53,12 +53,12 @@ export async function GET(req: NextRequest) {
             };
           }
           return null;
-        })
+        }),
       );
 
       // Filter out null values (professionals without schedule)
       const activeProfessionals = usersWithSchedule.filter(
-        (user) => user !== null
+        (user) => user !== null,
       );
 
       return NextResponse.json(activeProfessionals);
@@ -68,14 +68,14 @@ export async function GET(req: NextRequest) {
   } catch (error: unknown) {
     console.error(
       "Get users error:",
-      error instanceof Error ? error.message : error
+      error instanceof Error ? error.message : error,
     );
     return NextResponse.json(
       {
         error: "Failed to fetch users",
         details: error instanceof Error ? error.message : error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

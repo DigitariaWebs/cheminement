@@ -69,6 +69,42 @@ export default function ClientBillingPage() {
     Record<string, string>
   >({});
   const t = useTranslations("Client.billing");
+  type AppointmentResponse = {
+    _id: string;
+    clientId: {
+      _id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      phone: string;
+    };
+    professionalId?: {
+      _id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      phone: string;
+    };
+    date: string;
+    time?: string;
+    duration?: number;
+    type?: string;
+    therapyType?: string;
+    status?: string;
+    issueType?: string;
+    notes?: string;
+    meetingLink?: string;
+    reminderSent?: boolean;
+    price?: number;
+    platformFee?: number;
+    professionalPayout?: number;
+    paymentStatus?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    cancelledAt?: string;
+    cancelledBy?: string;
+    stripePaymentMethodId?: string;
+  };
 
   // Fetch real appointments from API
   useEffect(() => {
@@ -80,18 +116,7 @@ export default function ClientBillingPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiClient.get<
-        Array<{
-          _id: string;
-          professionalId?: { firstName: string; lastName: string };
-          paymentStatus?: string;
-          status?: string;
-          date: string;
-          time?: string;
-          price?: number;
-          stripePaymentMethodId?: string;
-        }>
-      >("/appointments");
+      const data = await apiClient.get<AppointmentResponse[]>("/appointments");
 
       // Store appointment statuses
       const statusMap: Record<string, string> = {};
