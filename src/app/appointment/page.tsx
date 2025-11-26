@@ -1053,8 +1053,9 @@ export default function BookAppointmentPage() {
                 Payment Information
               </h2>
               <p className="text-sm text-muted-foreground mt-2">
-                Enter your card details to complete the booking. You will only
-                be charged after your appointment is confirmed.
+                Enter your card details to complete the booking. Your card will
+                be charged immediately. If the professional does not confirm,
+                you will receive a full refund.
               </p>
             </div>
             <div className="p-6">
@@ -1077,13 +1078,12 @@ export default function BookAppointmentPage() {
                 <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h2 className="text-2xl font-serif font-light text-foreground mb-2">
-                Appointment Requested!
+                {isGuest ? "Appointment Booked!" : "Appointment Requested!"}
               </h2>
               <p className="text-muted-foreground mb-6">
-                Your appointment request has been submitted successfully.
                 {isGuest
-                  ? " A confirmation email has been sent to your email address."
-                  : " You'll receive a confirmation email shortly with all the details."}
+                  ? "Your payment has been processed and your appointment is pending confirmation. A confirmation email has been sent to your email address."
+                  : "Your appointment request has been submitted successfully. You'll receive a confirmation email shortly with all the details."}
               </p>
 
               <div className="space-y-4 text-left bg-muted/30 rounded-lg p-6 mb-6">
@@ -1137,14 +1137,23 @@ export default function BookAppointmentPage() {
 
               {isGuest ? (
                 <div className="space-y-4">
+                  <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-4">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      <strong>✓ Payment Successful</strong>
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      Your card has been charged. The professional will review
+                      your request and confirm the appointment. You&apos;ll
+                      receive an email once confirmed with meeting details.
+                    </p>
+                  </div>
                   <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      <strong>What happens next?</strong>
+                      <strong>Refund Policy</strong>
                     </p>
                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                      The professional will review your request. Once confirmed,
-                      your card will be charged and you&apos;ll receive another
-                      email with the final confirmation and meeting details.
+                      If the professional does not confirm your appointment, you
+                      will receive a full refund.
                     </p>
                   </div>
                   <Button

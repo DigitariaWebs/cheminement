@@ -4,7 +4,7 @@ import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
 import { calculateAppointmentPricing } from "@/lib/pricing";
-import { stripe } from "@/lib/stripe";
+import { stripe, toCents } from "@/lib/stripe";
 import {
   sendGuestBookingConfirmation,
   sendProfessionalNotification,
@@ -267,15 +267,65 @@ export async function POST(req: NextRequest) {
     // Set the client ID to the guest user
     appointmentData.clientId = guestUser._id;
 
-    // Create the appointment with payment method info
+    // Charge the guest's card immediately
+    let paymentIntentId: string | undefined;
+    let paymentStatus: "paid" | "processing" | "failed" = "processing";
+    let paidAt: Date | undefined;
+
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: toCents(appointmentData.price),
+        currency: "cad",
+        customer: stripeCustomerId,
+        payment_method: paymentMethodId,
+        off_session: true,
+        confirm: true,
+        metadata: {
+          visitorId: String(guestUser._id),
+          visitorEmail: email,
+          professionalId: appointmentData.professionalId,
+          type: "guest_booking",
+        },
+        description: `Therapy session with ${professional.firstName} ${professional.lastName}`,
+      });
+
+      paymentIntentId = paymentIntent.id;
+
+      if (paymentIntent.status === "succeeded") {
+        paymentStatus = "paid";
+        paidAt = new Date();
+        console.log(`Guest payment successful: ${paymentIntent.id}`);
+      } else {
+        console.log(
+          `Guest payment processing: ${paymentIntent.id} - Status: ${paymentIntent.status}`,
+        );
+      }
+    } catch (paymentError: unknown) {
+      console.error("Error charging guest card:", paymentError);
+      return NextResponse.json(
+        {
+          error:
+            "Payment failed. Please check your card details and try again.",
+          details:
+            paymentError instanceof Error
+              ? paymentError.message
+              : "Unknown payment error",
+        },
+        { status: 402 },
+      );
+    }
+
+    // Create the appointment with payment info
     const appointment = new Appointment({
       ...appointmentData,
       payment: {
         price: appointmentData.price,
         platformFee: appointmentData.platformFee,
         professionalPayout: appointmentData.professionalPayout,
-        status: "pending",
+        status: paymentStatus,
+        stripePaymentIntentId: paymentIntentId,
         stripePaymentMethodId: paymentMethodId,
+        paidAt: paidAt,
       },
     });
     await appointment.save();

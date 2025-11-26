@@ -261,6 +261,36 @@ export default function SessionDetailsPage() {
     );
   };
 
+  const getPaymentStatusBadge = (
+    paymentStatus: AppointmentResponse["payment"]["status"],
+  ) => {
+    const styles: Record<string, string> = {
+      paid: "bg-green-100 text-green-700",
+      pending: "bg-yellow-100 text-yellow-700",
+      processing: "bg-blue-100 text-blue-700",
+      failed: "bg-red-100 text-red-700",
+      refunded: "bg-purple-100 text-purple-700",
+      cancelled: "bg-gray-100 text-gray-700",
+    };
+
+    const labels: Record<string, string> = {
+      paid: "Paid",
+      pending: "Pending",
+      processing: "Processing",
+      failed: "Failed",
+      refunded: "Refunded",
+      cancelled: "Cancelled",
+    };
+
+    return (
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-medium ${styles[paymentStatus] || styles.pending}`}
+      >
+        {labels[paymentStatus] || paymentStatus}
+      </span>
+    );
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -511,6 +541,16 @@ export default function SessionDetailsPage() {
               <div>
                 <Label className="text-xs text-muted-foreground">Status</Label>
                 <div className="mt-1">{getStatusBadge(appointment.status)}</div>
+              </div>
+
+              <div>
+                <Label className="text-xs text-muted-foreground">Payment</Label>
+                <div className="mt-1 flex items-center gap-2">
+                  {getPaymentStatusBadge(appointment.payment.status)}
+                  <span className="text-sm text-muted-foreground">
+                    ${appointment.payment.price.toFixed(2)} CAD
+                  </span>
+                </div>
               </div>
 
               <div>

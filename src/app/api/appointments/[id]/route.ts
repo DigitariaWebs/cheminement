@@ -4,9 +4,12 @@ import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
-import { sendGuestPaymentConfirmation } from "@/lib/notifications";
+import {
+  sendGuestPaymentConfirmation,
+  sendMeetingLinkNotification,
+} from "@/lib/notifications";
 
-import { stripe, toCents } from "@/lib/stripe";
+import { stripe } from "@/lib/stripe";
 
 // Cancellation fee configuration
 const CANCELLATION_FEE_PERCENTAGE = 0.15; // 15% cancellation fee
@@ -29,8 +32,7 @@ export async function GET(
 
     const appointment = await Appointment.findById(id)
       .populate("clientId", "firstName lastName email phone")
-      .populate("professionalId", "firstName lastName email phone")
-      .populate("paymentId", "status");
+      .populate("professionalId", "firstName lastName email phone");
 
     if (!appointment) {
       return NextResponse.json(
@@ -119,122 +121,77 @@ export async function PATCH(
       );
     }
 
-    // Charge client when professional confirms the appointment (pending → scheduled)
+    // Send confirmation email to guest users when professional confirms the appointment
     if (
       oldAppointment &&
       oldAppointment.status === "pending" &&
-      appointment.status === "scheduled" &&
-      appointment.payment.stripePaymentMethodId &&
-      appointment.payment.status === "pending"
+      appointment.status === "scheduled"
     ) {
-      try {
-        const client = appointment.clientId as unknown as {
-          _id: { toString: () => string };
-          email: string;
-          firstName: string;
-          lastName: string;
-          stripeCustomerId?: string;
-        };
-        const professional = appointment.professionalId as unknown as {
-          _id: { toString: () => string };
-          firstName: string;
-          lastName: string;
-        };
+      const client = appointment.clientId as unknown as {
+        _id: { toString: () => string };
+        email: string;
+        firstName: string;
+        lastName: string;
+      };
+      const professional = appointment.professionalId as unknown as {
+        _id: { toString: () => string };
+        firstName: string;
+        lastName: string;
+      };
 
-        // Get or verify Stripe customer
-        let stripeCustomerId = client.stripeCustomerId;
-
-        if (!stripeCustomerId) {
-          // Try to find existing customer by email
-          const existingCustomers = await stripe.customers.list({
-            email: client.email,
-            limit: 1,
-          });
-
-          if (existingCustomers.data.length > 0) {
-            stripeCustomerId = existingCustomers.data[0].id;
-            // Save to user record
-            await User.findByIdAndUpdate(client._id, {
-              stripeCustomerId: stripeCustomerId,
-            });
-          }
-        }
-
-        if (!stripeCustomerId) {
-          console.error(
-            `No Stripe customer found for client ${client._id} - cannot charge`,
-          );
-        } else {
-          // Create payment intent and charge immediately using stored payment method
-          const paymentIntent = await stripe.paymentIntents.create({
-            amount: toCents(appointment.payment.price),
-            currency: "cad",
-            customer: stripeCustomerId,
-            payment_method: appointment.payment.stripePaymentMethodId,
-            off_session: true,
-            confirm: true,
-            metadata: {
-              appointmentId: String(appointment._id),
-              clientId: client._id.toString(),
-              professionalId: professional._id.toString(),
-              sessionDate: appointment.date.toISOString(),
-              sessionTime: appointment.time,
-              platformFee: appointment.payment.platformFee.toString(),
-              professionalPayout:
-                appointment.payment.professionalPayout.toString(),
-            },
-            description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${new Date(appointment.date).toLocaleDateString()}`,
-          });
-
-          // Update appointment with payment info
-          appointment.payment.stripePaymentIntentId = paymentIntent.id;
-
-          if (paymentIntent.status === "succeeded") {
-            appointment.payment.status = "paid";
-            appointment.payment.paidAt = new Date();
-            console.log(
-              `Payment successful for appointment ${id}: ${paymentIntent.id}`,
-            );
-
-            // Send payment confirmation email to guest users
-            const clientUser = await User.findById(client._id);
-            if (clientUser && clientUser.role === "guest") {
-              sendGuestPaymentConfirmation({
-                guestName: `${client.firstName} ${client.lastName}`,
-                guestEmail: client.email,
-                professionalName: `${professional.firstName} ${professional.lastName}`,
-                date: appointment.date.toISOString(),
-                time: appointment.time,
-                duration: appointment.duration || 60,
-                type: appointment.type,
-                therapyType: appointment.therapyType || "solo",
-                price: appointment.payment.price,
-                meetingLink: appointment.meetingLink,
-              }).catch((err) =>
-                console.error(
-                  "Error sending guest payment confirmation email:",
-                  err,
-                ),
-              );
-            }
-          } else {
-            appointment.payment.status = "processing";
-            console.log(
-              `Payment processing for appointment ${id}: ${paymentIntent.id} - Status: ${paymentIntent.status}`,
-            );
-          }
-
-          await appointment.save();
-        }
-      } catch (paymentError: unknown) {
-        console.error(
-          "Error charging client for confirmed appointment:",
-          paymentError,
+      // Send confirmation email to guest users
+      const clientUser = await User.findById(client._id);
+      if (clientUser && clientUser.role === "guest") {
+        sendGuestPaymentConfirmation({
+          guestName: `${client.firstName} ${client.lastName}`,
+          guestEmail: client.email,
+          professionalName: `${professional.firstName} ${professional.lastName}`,
+          date: appointment.date.toISOString(),
+          time: appointment.time,
+          duration: appointment.duration || 60,
+          type: appointment.type,
+          therapyType: appointment.therapyType || "solo",
+          price: appointment.payment.price,
+          meetingLink: appointment.meetingLink,
+        }).catch((err) =>
+          console.error("Error sending guest confirmation email:", err),
         );
-        // Don't fail the confirmation - mark payment as failed so it can be retried
-        appointment.payment.status = "failed";
-        await appointment.save();
-        // The appointment is still confirmed, but payment needs manual attention
+      }
+    }
+
+    // Send meeting link notification to guest users when professional adds meeting link
+    if (
+      oldAppointment &&
+      !oldAppointment.meetingLink &&
+      appointment.meetingLink &&
+      data.meetingLink
+    ) {
+      const client = appointment.clientId as unknown as {
+        _id: { toString: () => string };
+        email: string;
+        firstName: string;
+        lastName: string;
+      };
+      const professional = appointment.professionalId as unknown as {
+        firstName: string;
+        lastName: string;
+      };
+
+      // Check if client is a guest user
+      const clientUser = await User.findById(client._id);
+      if (clientUser && clientUser.role === "guest") {
+        sendMeetingLinkNotification({
+          guestName: `${client.firstName} ${client.lastName}`,
+          guestEmail: client.email,
+          professionalName: `${professional.firstName} ${professional.lastName}`,
+          date: appointment.date.toISOString(),
+          time: appointment.time,
+          duration: appointment.duration || 60,
+          type: appointment.type,
+          meetingLink: appointment.meetingLink,
+        }).catch((err) =>
+          console.error("Error sending meeting link notification email:", err),
+        );
       }
     }
 
