@@ -30,8 +30,8 @@ export async function GET(req: NextRequest) {
       date?: { $gte?: Date; $lte?: Date };
     } = {};
 
-    // Filter by user role
-    if (session.user.role === "client") {
+    // Filter by user role (guests are treated like clients)
+    if (session.user.role === "client" || session.user.role === "guest") {
       query.clientId = session.user.id;
     } else if (session.user.role === "professional") {
       query.professionalId = session.user.id;
@@ -85,8 +85,8 @@ export async function POST(req: NextRequest) {
 
     const data = await req.json();
 
-    // Ensure the client is the current user if role is client
-    if (session.user.role === "client") {
+    // Ensure the client is the current user if role is client or guest
+    if (session.user.role === "client" || session.user.role === "guest") {
       data.clientId = session.user.id;
     }
 

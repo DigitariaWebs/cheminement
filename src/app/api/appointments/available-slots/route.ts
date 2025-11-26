@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
 import PlatformSettings from "@/models/PlatformSettings";
-import { authOptions } from "@/lib/auth";
 
 // Helper function to generate time slots
 function generateTimeSlots(
@@ -34,11 +32,11 @@ function generateTimeSlots(
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // Remove authentication requirement to allow guest access
+    // const session = await getServerSession(authOptions);
+    // if (!session?.user?.id) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
 
     await connectToDatabase();
 
@@ -199,12 +197,12 @@ export async function GET(req: NextRequest) {
         end: dayAvailability.endTime,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Get available slots error:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch available slots",
-        details: error instanceof Error ? error.message : error,
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     );

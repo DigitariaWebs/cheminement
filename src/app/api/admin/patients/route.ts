@@ -21,8 +21,12 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
-    // Build query for patients
-    const query: any = { role: "client" };
+    // Build query for patients (include both clients and guests)
+    const query: {
+      role: { $in: string[] };
+      status?: string;
+      $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
+    } = { role: { $in: ["client", "guest"] } };
 
     if (status !== "all") {
       query.status = status;
@@ -67,7 +71,9 @@ export async function GET(req: NextRequest) {
           .sort({ createdAt: -1 })
           .lean();
 
-        const professional = latestAppointment?.professionalId as any;
+        const professional = latestAppointment?.professionalId as
+          | { firstName: string; lastName: string }
+          | undefined;
         const matchedWith = professional
           ? `${professional.firstName} ${professional.lastName}`
           : undefined;
@@ -78,6 +84,7 @@ export async function GET(req: NextRequest) {
           email: patient.email,
           phone: patient.phone || "",
           status: patient.status,
+          role: patient.role, // Include role to identify guests
           matchedWith,
           joinedDate: patient.createdAt.toISOString().split("T")[0],
           totalSessions,
@@ -86,14 +93,16 @@ export async function GET(req: NextRequest) {
       }),
     );
 
-    // Get summary stats
-    const totalPatients = await User.countDocuments({ role: "client" });
+    // Get summary stats (include both clients and guests)
+    const totalPatients = await User.countDocuments({
+      role: { $in: ["client", "guest"] },
+    });
     const activePatients = await User.countDocuments({
-      role: "client",
+      role: { $in: ["client", "guest"] },
       status: "active",
     });
     const pendingPatients = await User.countDocuments({
-      role: "client",
+      role: { $in: ["client", "guest"] },
       status: "pending",
     });
     const totalSessions = await Appointment.countDocuments({
@@ -115,7 +124,7 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Admin patients API error:", error);
     return NextResponse.json(
       {

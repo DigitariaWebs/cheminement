@@ -13,8 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, Mail, Phone, MapPin, Calendar, X } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  X,
+  UserCheck,
+} from "lucide-react";
 import { IUser } from "@/models/User";
+import { Badge } from "@/components/ui/badge";
 
 interface BasicInformationProps {
   isEditable?: boolean;
@@ -183,13 +192,47 @@ export default function BasicInformation({
     );
   }
 
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case "guest":
+        return (
+          <Badge variant="secondary" className="ml-2">
+            Guest
+          </Badge>
+        );
+      case "client":
+        return (
+          <Badge variant="default" className="ml-2">
+            Client
+          </Badge>
+        );
+      case "professional":
+        return (
+          <Badge variant="outline" className="ml-2">
+            Professional
+          </Badge>
+        );
+      case "admin":
+        return (
+          <Badge variant="destructive" className="ml-2">
+            Admin
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <div className="rounded-xl bg-card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-serif font-light text-foreground">
-            {t("title")}
-          </h2>
+          <div className="flex items-center">
+            <h2 className="text-xl font-serif font-light text-foreground">
+              {t("title")}
+            </h2>
+            {user.role && getRoleBadge(user.role)}
+          </div>
           {isEditable && (
             <Button
               onClick={handleOpenModal}
@@ -258,6 +301,14 @@ export default function BasicInformation({
           <div className="space-y-2">
             <Label className="font-light">{t("language")}</Label>
             <p className="text-foreground">{formatLanguage(user.language)}</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="font-light flex items-center gap-2">
+              <UserCheck className="h-4 w-4 text-muted-foreground" />
+              Account Type
+            </Label>
+            <p className="text-foreground capitalize">{user.role || "N/A"}</p>
           </div>
         </div>
       </div>

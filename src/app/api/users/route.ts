@@ -7,18 +7,22 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
     const role = searchParams.get("role");
 
-    const query: any = {};
+    // Allow unauthenticated access for fetching professionals (for guest booking)
+    // Require authentication for other roles
+    if (role !== "professional") {
+      const session = await getServerSession(authOptions);
+
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
+    const query: { role?: string; status?: string } = {};
 
     if (role) {
       query.role = role;
