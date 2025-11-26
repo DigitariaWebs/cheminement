@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
+import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
+import {
+  sendGuestPaymentConfirmation,
+  sendMeetingLinkNotification,
+} from "@/lib/notifications";
 
 import { stripe } from "@/lib/stripe";
 
@@ -27,8 +32,7 @@ export async function GET(
 
     const appointment = await Appointment.findById(id)
       .populate("clientId", "firstName lastName email phone")
-      .populate("professionalId", "firstName lastName email phone")
-      .populate("paymentId", "status");
+      .populate("professionalId", "firstName lastName email phone");
 
     if (!appointment) {
       return NextResponse.json(
@@ -107,15 +111,88 @@ export async function PATCH(
     const appointment = await Appointment.findByIdAndUpdate(id, data, {
       new: true,
     })
-      .populate("clientId", "firstName lastName email phone")
-      .populate("professionalId", "firstName lastName email phone")
-      .populate("paymentId", "status stripePaymentIntentId");
+      .populate("clientId", "firstName lastName email phone stripeCustomerId")
+      .populate("professionalId", "firstName lastName email phone");
 
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
         { status: 404 },
       );
+    }
+
+    // Send confirmation email to guest users when professional confirms the appointment
+    if (
+      oldAppointment &&
+      oldAppointment.status === "pending" &&
+      appointment.status === "scheduled"
+    ) {
+      const client = appointment.clientId as unknown as {
+        _id: { toString: () => string };
+        email: string;
+        firstName: string;
+        lastName: string;
+      };
+      const professional = appointment.professionalId as unknown as {
+        _id: { toString: () => string };
+        firstName: string;
+        lastName: string;
+      };
+
+      // Send confirmation email to guest users
+      const clientUser = await User.findById(client._id);
+      if (clientUser && clientUser.role === "guest") {
+        sendGuestPaymentConfirmation({
+          guestName: `${client.firstName} ${client.lastName}`,
+          guestEmail: client.email,
+          professionalName: `${professional.firstName} ${professional.lastName}`,
+          date: appointment.date.toISOString(),
+          time: appointment.time,
+          duration: appointment.duration || 60,
+          type: appointment.type,
+          therapyType: appointment.therapyType || "solo",
+          price: appointment.payment.price,
+          meetingLink: appointment.meetingLink,
+        }).catch((err) =>
+          console.error("Error sending guest confirmation email:", err),
+        );
+      }
+    }
+
+    // Send meeting link notification to guest users when professional adds meeting link
+    if (
+      oldAppointment &&
+      !oldAppointment.meetingLink &&
+      appointment.meetingLink &&
+      data.meetingLink
+    ) {
+      const client = appointment.clientId as unknown as {
+        _id: { toString: () => string };
+        email: string;
+        firstName: string;
+        lastName: string;
+      };
+      const professional = appointment.professionalId as unknown as {
+        firstName: string;
+        lastName: string;
+      };
+
+      // Check if client is a guest user
+      const clientUser = await User.findById(client._id);
+      if (clientUser && clientUser.role === "guest") {
+        sendMeetingLinkNotification({
+          guestName: `${client.firstName} ${client.lastName}`,
+          guestEmail: client.email,
+          professionalName: `${professional.firstName} ${professional.lastName}`,
+          date: appointment.date.toISOString(),
+          time: appointment.time,
+          duration: appointment.duration || 60,
+          type: appointment.type,
+          meetingLink: appointment.meetingLink,
+        }).catch((err) =>
+          console.error("Error sending meeting link notification email:", err),
+        );
+      }
     }
 
     // Send cancellation notification if status changed to cancelled

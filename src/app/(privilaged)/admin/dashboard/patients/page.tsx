@@ -11,6 +11,7 @@ import {
   AlertCircle,
   RefreshCw,
   Download,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ interface Patient {
   email: string;
   phone: string;
   status: PatientStatus;
+  role: "client" | "guest";
   matchedWith?: string;
   joinedDate: string;
   totalSessions: number;
@@ -356,7 +358,7 @@ export default function PatientsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Name
+                  Name / Type
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Contact
@@ -388,10 +390,16 @@ export default function PatientsPage() {
                   className="hover:bg-muted/20 transition-colors"
                 >
                   <TableCell>
-                    <div>
+                    <div className="flex items-center gap-2">
                       <p className="font-light text-foreground">
                         {patient.name}
                       </p>
+                      {patient.role === "guest" && (
+                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700">
+                          <User className="h-3 w-3" />
+                          Guest
+                        </span>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>

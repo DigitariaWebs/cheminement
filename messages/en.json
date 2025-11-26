@@ -1853,6 +1853,7 @@
         "upcoming": "Upcoming",
         "processing": "Processing",
         "refunded": "Refunded",
+        "scheduled": "Scheduled",
         "cancelled": "Cancelled"
       }
     }

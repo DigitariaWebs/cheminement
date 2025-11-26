@@ -2,10 +2,10 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IUser extends Document {
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
-  role: "client" | "professional" | "admin";
+  role: "client" | "professional" | "admin" | "guest";
   isAdmin: boolean;
   adminId?: mongoose.Types.ObjectId; // Reference to Admin document if user is admin
   profile?: mongoose.Types.ObjectId; // Reference to Profile document
@@ -34,7 +34,9 @@ const UserSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: function (this: IUser) {
+        return this.role !== "guest";
+      },
     },
     firstName: {
       type: String,
@@ -48,7 +50,7 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["client", "professional", "admin"],
+      enum: ["client", "professional", "admin", "guest"],
       required: [true, "Role is required"],
       default: "client",
     },

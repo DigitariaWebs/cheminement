@@ -661,7 +661,7 @@ export default function SchedulePage() {
               />
             </div>
             {selectedAppointment && (
-              <div className="rounded-lg bg-muted/50 p-3 space-y-1">
+              <div className="rounded-lg bg-muted/50 p-3 space-y-2">
                 <p className="text-xs text-muted-foreground font-light">
                   Appointment Details
                 </p>
@@ -680,6 +680,36 @@ export default function SchedulePage() {
                   )}{" "}
                   at {selectedAppointment.time}
                 </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-xs text-muted-foreground font-light">
+                    Payment:
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      selectedAppointment.payment?.status === "paid"
+                        ? "bg-green-100 text-green-700"
+                        : selectedAppointment.payment?.status === "failed"
+                          ? "bg-red-100 text-red-700"
+                          : selectedAppointment.payment?.status === "refunded"
+                            ? "bg-purple-100 text-purple-700"
+                            : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {selectedAppointment.payment?.status === "paid"
+                      ? "Paid"
+                      : selectedAppointment.payment?.status === "failed"
+                        ? "Failed"
+                        : selectedAppointment.payment?.status === "refunded"
+                          ? "Refunded"
+                          : selectedAppointment.payment?.status === "processing"
+                            ? "Processing"
+                            : "Pending"}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ${selectedAppointment.payment?.price?.toFixed(2) || "0.00"}{" "}
+                    CAD
+                  </span>
+                </div>
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   Calendar,
   Clock,
@@ -15,6 +16,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Sparkles,
+  Mail,
+  Home,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -30,6 +34,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { apiClient } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import AuthPromptModal from "@/components/appointment/AuthPromptModal";
+import { GuestPaymentForm } from "@/components/payments";
 
 interface Professional {
   _id: string;
@@ -70,11 +77,34 @@ interface AvailabilityData {
   message?: string;
 }
 
+interface GuestInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  location: string;
+}
+
 export default function BookAppointmentPage() {
   const router = useRouter();
+  const { status } = useSession();
 
-  // Step management
-  const [currentStep, setCurrentStep] = useState(0); // Start at 0 for selection method
+  // Auth state
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
+  const [authCheckDone, setAuthCheckDone] = useState(false);
+
+  // Guest info
+  const [guestInfo, setGuestInfo] = useState<GuestInfo>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    location: "",
+  });
+
+  // Step management - starts at -1 for auth check
+  const [currentStep, setCurrentStep] = useState(-1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   // Selection method
@@ -103,6 +133,28 @@ export default function BookAppointmentPage() {
   const [availabilityData, setAvailabilityData] =
     useState<AvailabilityData | null>(null);
   const [error, setError] = useState<string>("");
+
+  // Check authentication status on mount
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (status === "authenticated") {
+      // User is logged in, proceed to selection method
+      setIsGuest(false);
+      setAuthCheckDone(true);
+      setCurrentStep(0);
+    } else {
+      // User is not logged in, show auth prompt
+      setShowAuthPrompt(true);
+    }
+  }, [status]);
+
+  const handleContinueAsGuest = () => {
+    setShowAuthPrompt(false);
+    setIsGuest(true);
+    setAuthCheckDone(true);
+    setCurrentStep(0); // Start with guest info step
+  };
 
   // Load professionals on mount
   useEffect(() => {
@@ -134,12 +186,15 @@ export default function BookAppointmentPage() {
   const handleSelectionMethodChoice = (method: "best-fit" | "choose") => {
     setSelectionMethod(method);
     if (method === "best-fit") {
-      // For best fit, auto-select the first available professional
+      // Auto-select first available professional
       if (professionals.length > 0) {
+        setCompletedSteps(isGuest ? [0, 1] : [0]);
         handleProfessionalSelect(professionals[0]._id);
       }
     } else {
-      setCurrentStep(1);
+      const nextStep = isGuest ? 2 : 1;
+      setCompletedSteps(isGuest ? [0, 1] : [0]);
+      setCurrentStep(nextStep);
     }
   };
 
@@ -204,8 +259,9 @@ export default function BookAppointmentPage() {
     setSelectedTime("");
     setAvailableSlots([]);
     setAvailabilityData(null);
-    setCompletedSteps([1]);
-    setCurrentStep(2);
+    const nextStep = isGuest ? 3 : 2;
+    setCompletedSteps(isGuest ? [0, 1, 2] : [0, 1]);
+    setCurrentStep(nextStep);
   };
 
   const handleDateSelect = (date: string) => {
@@ -215,8 +271,92 @@ export default function BookAppointmentPage() {
 
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time);
-    setCompletedSteps([1, 2]);
-    setCurrentStep(3);
+    const nextStep = isGuest ? 4 : 3;
+    setCompletedSteps(isGuest ? [0, 1, 2, 3] : [0, 1, 2]);
+    setCurrentStep(nextStep);
+  };
+
+  const handleGuestInfoSubmit = () => {
+    // Validate guest info
+    if (
+      !guestInfo.firstName.trim() ||
+      !guestInfo.lastName.trim() ||
+      !guestInfo.email.trim() ||
+      !guestInfo.phone.trim() ||
+      !guestInfo.location.trim()
+    ) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(guestInfo.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Phone validation (basic)
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    if (!phoneRegex.test(guestInfo.phone)) {
+      setError("Please enter a valid phone number");
+      return;
+    }
+
+    setError("");
+    setCompletedSteps([0]);
+    setCurrentStep(1); // Move to selection method
+  };
+
+  // Handle moving to payment step for guests
+  const handleProceedToPayment = () => {
+    if (!issueType) {
+      setError("Please select what brings you here");
+      return;
+    }
+    setError("");
+    setCompletedSteps([0, 1, 2, 3, 4]);
+    setCurrentStep(5); // Move to payment step
+  };
+
+  // Handle payment success for guests
+  const handlePaymentSuccess = (methodId: string) => {
+    // Automatically proceed to create appointment after payment verification
+    handleGuestSubmitWithPayment(methodId);
+  };
+
+  // Submit guest appointment with payment method
+  const handleGuestSubmitWithPayment = async (methodId: string) => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const appointmentData = {
+        professionalId: selectedProfessional,
+        date: selectedDate,
+        time: selectedTime,
+        type: selectedType,
+        therapyType,
+        issueType,
+        notes,
+      };
+
+      await apiClient.post<{ appointmentId: string }>("/appointments/guest", {
+        ...appointmentData,
+        guestInfo,
+        paymentMethodId: methodId,
+      });
+
+      setCompletedSteps([0, 1, 2, 3, 4, 5, 6]);
+      setCurrentStep(6); // Success step
+    } catch (err: unknown) {
+      console.error("Error booking appointment:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to book appointment",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -231,11 +371,17 @@ export default function BookAppointmentPage() {
       return;
     }
 
+    // For guests, proceed to payment step instead of submitting
+    if (isGuest) {
+      handleProceedToPayment();
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
 
-      await apiClient.post<{ appointmentId: string }>("/appointments", {
+      const appointmentData = {
         professionalId: selectedProfessional,
         date: selectedDate,
         time: selectedTime,
@@ -243,10 +389,16 @@ export default function BookAppointmentPage() {
         therapyType,
         issueType,
         notes,
-      });
+      };
 
-      setCompletedSteps([1, 2, 3]);
-      setCurrentStep(4); // Success step
+      // Use regular endpoint for authenticated users
+      await apiClient.post<{ appointmentId: string }>(
+        "/appointments",
+        appointmentData,
+      );
+
+      setCompletedSteps([0, 1, 2, 3, 4]);
+      setCurrentStep(4); // Success step for authenticated users
     } catch (err: unknown) {
       console.error("Error booking appointment:", err);
       setError(
@@ -261,8 +413,46 @@ export default function BookAppointmentPage() {
     (p) => p._id === selectedProfessional,
   );
 
+  // Don't render until auth check is complete
+  if (!authCheckDone) {
+    return (
+      <>
+        <AuthPromptModal
+          open={showAuthPrompt}
+          onContinueAsGuest={handleContinueAsGuest}
+        />
+        <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </>
+    );
+  }
+
+  const steps = isGuest ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4];
+  const stepLabels = isGuest
+    ? [
+        "Your Info",
+        "Selection Method",
+        "Choose Professional",
+        "Select Date & Time",
+        "Appointment Details",
+        "Payment",
+        "Confirmation",
+      ]
+    : [
+        "Selection Method",
+        "Choose Professional",
+        "Select Date & Time",
+        "Appointment Details",
+        "Confirmation",
+      ];
+
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted/20">
+      <AuthPromptModal
+        open={showAuthPrompt}
+        onContinueAsGuest={handleContinueAsGuest}
+      />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
@@ -279,13 +469,18 @@ export default function BookAppointmentPage() {
           </h1>
           <p className="text-muted-foreground text-lg">
             Schedule a session with a qualified mental health professional
+            {isGuest && (
+              <span className="block text-sm mt-1 text-muted-foreground">
+                Booking as guest
+              </span>
+            )}
           </p>
         </div>
 
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
-            {[0, 1, 2, 3, 4].map((step) => (
+          <div className="flex items-center justify-center space-x-2">
+            {steps.map((step, idx) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
@@ -296,11 +491,15 @@ export default function BookAppointmentPage() {
                         : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {step === 4 ? <CheckCircle2 className="h-5 w-5" /> : step + 1}
+                  {step === steps.length - 1 ? (
+                    <CheckCircle2 className="h-5 w-5" />
+                  ) : (
+                    idx + 1
+                  )}
                 </div>
-                {step < 4 && (
+                {step < steps.length - 1 && (
                   <div
-                    className={`w-16 h-0.5 mx-2 transition-colors ${
+                    className={`w-12 h-0.5 mx-1 transition-colors ${
                       completedSteps.includes(step) ? "bg-primary" : "bg-muted"
                     }`}
                   />
@@ -308,32 +507,19 @@ export default function BookAppointmentPage() {
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-4 space-x-12 text-sm text-muted-foreground">
-            <span
-              className={currentStep >= 0 ? "text-foreground font-medium" : ""}
-            >
-              Selection Method
-            </span>
-            <span
-              className={currentStep >= 1 ? "text-foreground font-medium" : ""}
-            >
-              Choose Professional
-            </span>
-            <span
-              className={currentStep >= 2 ? "text-foreground font-medium" : ""}
-            >
-              Select Date & Time
-            </span>
-            <span
-              className={currentStep >= 3 ? "text-foreground font-medium" : ""}
-            >
-              Appointment Details
-            </span>
-            <span
-              className={currentStep >= 4 ? "text-foreground font-medium" : ""}
-            >
-              Confirmation
-            </span>
+          <div className="flex justify-center mt-4 space-x-6 text-xs text-muted-foreground">
+            {stepLabels.map((label, idx) => (
+              <span
+                key={idx}
+                className={
+                  currentStep >= (isGuest ? idx : idx)
+                    ? "text-foreground font-medium"
+                    : ""
+                }
+              >
+                {label}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -347,8 +533,123 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Step 0: Selection Method */}
-        {currentStep === 0 && (
+        {/* Step 0: Guest Info (only for guests) */}
+        {isGuest && currentStep === 0 && (
+          <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
+            <div className="p-6 border-b border-border/40">
+              <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Your Information
+              </h2>
+              <p className="text-sm text-muted-foreground mt-2">
+                Please provide your contact information to proceed with booking
+              </p>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">
+                    First Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="firstName"
+                    value={guestInfo.firstName}
+                    onChange={(e) =>
+                      setGuestInfo({ ...guestInfo, firstName: e.target.value })
+                    }
+                    placeholder="Enter your first name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">
+                    Last Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="lastName"
+                    value={guestInfo.lastName}
+                    onChange={(e) =>
+                      setGuestInfo({ ...guestInfo, lastName: e.target.value })
+                    }
+                    placeholder="Enter your last name"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">
+                  Email Address <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={guestInfo.email}
+                    onChange={(e) =>
+                      setGuestInfo({ ...guestInfo, email: e.target.value })
+                    }
+                    placeholder="your.email@example.com"
+                    className="pl-10"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  We&apos;ll send your appointment confirmation here
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">
+                  Phone Number <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={guestInfo.phone}
+                    onChange={(e) =>
+                      setGuestInfo({ ...guestInfo, phone: e.target.value })
+                    }
+                    placeholder="+1 (555) 123-4567"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">
+                  Location <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="location"
+                    value={guestInfo.location}
+                    onChange={(e) =>
+                      setGuestInfo({ ...guestInfo, location: e.target.value })
+                    }
+                    placeholder="City, Province"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button
+                  onClick={handleGuestInfoSubmit}
+                  size="lg"
+                  className="gap-2"
+                >
+                  Continue to Booking
+                  <ArrowLeft className="h-4 w-4 rotate-180" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 0/1: Selection Method */}
+        {currentStep === (isGuest ? 1 : 0) && (
           <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
             <div className="p-6 border-b border-border/40">
               <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
@@ -428,8 +729,8 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Step 1: Choose Professional */}
-        {currentStep === 1 && (
+        {/* Step 1/2: Choose Professional */}
+        {currentStep === (isGuest ? 2 : 1) && (
           <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
             <div className="p-6 border-b border-border/40">
               <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
@@ -509,8 +810,8 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Step 2: Select Date & Time */}
-        {currentStep === 2 && (
+        {/* Step 2/3: Select Date & Time */}
+        {currentStep === (isGuest ? 3 : 2) && (
           <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
             <div className="p-6 border-b border-border/40">
               <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
@@ -576,8 +877,8 @@ export default function BookAppointmentPage() {
                   )}
                   {availabilityData && (
                     <p className="text-xs text-muted-foreground">
-                      Working hours: {availabilityData.workingHours.start} -{" "}
-                      {availabilityData.workingHours.end}
+                      Working hours: {availabilityData.workingHours?.start} -{" "}
+                      {availabilityData.workingHours?.end}
                     </p>
                   )}
                 </div>
@@ -585,9 +886,13 @@ export default function BookAppointmentPage() {
 
               <div className="flex justify-between pt-4">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => {
-                    setCurrentStep(selectionMethod === "best-fit" ? 0 : 1);
+                    if (isGuest) {
+                      setCurrentStep(0); // Back to guest info
+                    } else {
+                      setCurrentStep(selectionMethod === "best-fit" ? 0 : 1);
+                    }
                     setSelectedDate("");
                     setSelectedTime("");
                   }}
@@ -599,8 +904,8 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Step 3: Appointment Details */}
-        {currentStep === 3 && (
+        {/* Step 3/4: Appointment Details */}
+        {currentStep === (isGuest ? 4 : 3) && (
           <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
             <div className="p-6 border-b border-border/40">
               <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
@@ -726,8 +1031,10 @@ export default function BookAppointmentPage() {
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Booking...
+                      {isGuest ? "Processing..." : "Booking..."}
                     </>
+                  ) : isGuest ? (
+                    "Continue to Payment"
                   ) : (
                     "Continue to Confirmation"
                   )}
@@ -737,20 +1044,46 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Step 4: Success */}
-        {currentStep === 4 && (
+        {/* Step 5: Payment (guests only) */}
+        {isGuest && currentStep === 5 && (
+          <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
+            <div className="p-6 border-b border-border/40">
+              <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Payment Information
+              </h2>
+              <p className="text-sm text-muted-foreground mt-2">
+                Enter your card details to complete the booking. Your card will
+                be charged immediately. If the professional does not confirm,
+                you will receive a full refund.
+              </p>
+            </div>
+            <div className="p-6">
+              <GuestPaymentForm
+                guestEmail={guestInfo.email}
+                guestName={`${guestInfo.firstName} ${guestInfo.lastName}`}
+                onSuccess={handlePaymentSuccess}
+                onBack={() => setCurrentStep(4)}
+                loading={loading}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Step 4/6: Success */}
+        {currentStep === (isGuest ? 6 : 4) && (
           <div className="max-w-2xl mx-auto text-center">
             <div className="rounded-xl bg-card border border-border/40 p-8">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h2 className="text-2xl font-serif font-light text-foreground mb-2">
-                Appointment Requested!
+                {isGuest ? "Appointment Booked!" : "Appointment Requested!"}
               </h2>
               <p className="text-muted-foreground mb-6">
-                Your appointment request has been submitted successfully.
-                You&apos;ll receive a confirmation email shortly with all the
-                details.
+                {isGuest
+                  ? "Your payment has been processed and your appointment is pending confirmation. A confirmation email has been sent to your email address."
+                  : "Your appointment request has been submitted successfully. You'll receive a confirmation email shortly with all the details."}
               </p>
 
               <div className="space-y-4 text-left bg-muted/30 rounded-lg p-6 mb-6">
@@ -784,23 +1117,72 @@ export default function BookAppointmentPage() {
                     </p>
                   </div>
                 </div>
+                {isGuest && (
+                  <>
+                    <Separator />
+                    <div className="flex items-start gap-3">
+                      <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Confirmation sent to
+                        </p>
+                        <p className="font-medium text-foreground">
+                          {guestInfo.email}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  onClick={() => router.push("/client/dashboard/appointments")}
-                  className="gap-2"
-                >
-                  <Calendar className="h-4 w-4" />
-                  View My Appointments
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/client/dashboard")}
-                >
-                  Back to Dashboard
-                </Button>
-              </div>
+              {isGuest ? (
+                <div className="space-y-4">
+                  <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-4">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      <strong>✓ Payment Successful</strong>
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      Your card has been charged. The professional will review
+                      your request and confirm the appointment. You&apos;ll
+                      receive an email once confirmed with meeting details.
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      <strong>Refund Policy</strong>
+                    </p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                      If the professional does not confirm your appointment, you
+                      will receive a full refund.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push("/")}
+                    className="gap-2"
+                  >
+                    Return to Home
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    onClick={() =>
+                      router.push("/client/dashboard/appointments")
+                    }
+                    className="gap-2"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    View My Appointments
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push("/client/dashboard")}
+                  >
+                    Back to Dashboard
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

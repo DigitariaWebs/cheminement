@@ -138,6 +138,29 @@ export function Header() {
                       </DropdownMenuItem>
                     )}
 
+                    {session.user.role === "guest" && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href="/appointment"
+                            className="flex items-center gap-3 cursor-pointer"
+                          >
+                            <UserCircle className="w-4 h-4" />
+                            Book Appointment
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href="/signup"
+                            className="flex items-center gap-3 cursor-pointer text-primary"
+                          >
+                            <UserCircle className="w-4 h-4" />
+                            Create Full Account
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => signOut({ callbackUrl: "/" })}

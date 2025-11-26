@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { usersAPI, medicalProfileAPI } from "@/lib/api-client";
 import { IUser } from "@/models/User";
 import { IMedicalProfile } from "@/models/MedicalProfile";
+import { UserPlus, AlertCircle } from "lucide-react";
 
 export default function PatientDetailPage() {
   const params = useParams();
@@ -129,42 +130,75 @@ export default function PatientDetailPage() {
                 : user.email}
             </h1>
           </div>
-          <Badge
-            variant={
-              user.status === "active"
-                ? "default"
-                : user.status === "pending"
-                  ? "secondary"
-                  : "destructive"
-            }
-            className="text-sm px-4 py-1.5 font-light tracking-wide capitalize"
-          >
-            {user.status || "Unknown"}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {user.role === "guest" && (
+              <Badge
+                variant="secondary"
+                className="text-sm px-4 py-1.5 font-light tracking-wide"
+              >
+                <UserPlus className="h-3 w-3 mr-1" />
+                Guest
+              </Badge>
+            )}
+            <Badge
+              variant={
+                user.status === "active"
+                  ? "default"
+                  : user.status === "pending"
+                    ? "secondary"
+                    : "destructive"
+              }
+              className="text-sm px-4 py-1.5 font-light tracking-wide capitalize"
+            >
+              {user.status || "Unknown"}
+            </Badge>
+          </div>
         </div>
       </div>
+      {user.role === "guest" && (
+        <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+              Guest Account
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              This user booked as a guest without creating a full account. They
+              have limited profile information and no medical profile. Consider
+              reaching out to convert them to a full client account.
+            </p>
+          </div>
+        </div>
+      )}
+
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-muted/30">
+        <TabsList
+          className={`grid w-full ${user.role === "guest" ? "grid-cols-1" : "grid-cols-2"} bg-muted/30`}
+        >
           <TabsTrigger value="basic" className="font-light">
             Basic Information
           </TabsTrigger>
-          <TabsTrigger value="medical" className="font-light">
-            Medical Profile
-          </TabsTrigger>
+          {user.role !== "guest" && (
+            <TabsTrigger value="medical" className="font-light">
+              Medical Profile
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="basic" className="space-y-6 mt-6">
           <BasicInformation user={user} isEditable={false} />
         </TabsContent>
 
-        <TabsContent value="medical" className="space-y-6 mt-6">
-          <MedicalProfile
-            profile={medicalProfile || undefined}
-            userId={params.id as string}
-            setProfile={setMedicalProfile}
-            isEditable={false}
-          />
-        </TabsContent>
+        {user.role !== "guest" && (
+          <TabsContent value="medical" className="space-y-6 mt-6">
+            <MedicalProfile
+              profile={medicalProfile || undefined}
+              userId={params.id as string}
+              setProfile={setMedicalProfile}
+              isEditable={false}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

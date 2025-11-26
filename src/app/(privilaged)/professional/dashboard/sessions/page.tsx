@@ -56,8 +56,21 @@ interface ApiAppointment {
   duration: number;
   type: "video" | "in-person" | "phone";
   status: string;
-  paymentStatus: string;
-  price: number;
+  payment: {
+    price: number;
+    platformFee: number;
+    professionalPayout: number;
+    status:
+      | "pending"
+      | "processing"
+      | "paid"
+      | "failed"
+      | "refunded"
+      | "cancelled";
+    stripePaymentIntentId?: string;
+    stripePaymentMethodId?: string;
+    paidAt?: string;
+  };
   issueType?: string;
   notes?: string;
   meetingLink?: string;
@@ -112,26 +125,34 @@ export default function SessionsPage() {
         }
         const data = await response.json();
         const transformedSessions: Session[] = data.map(
-          (appointment: ApiAppointment) => ({
-            id: appointment._id,
-            clientName: `${appointment.clientId.firstName} ${appointment.clientId.lastName}`,
-            clientId: appointment.clientId._id,
-            date: new Date(appointment.date),
-            time: appointment.time,
-            duration: appointment.duration,
-            type: appointment.type,
-            status: appointment.status,
-            paymentStatus:
-              appointment.paymentStatus === "paid"
-                ? "paid"
-                : appointment.paymentStatus === "pending"
-                  ? "pending"
-                  : "overdue",
-            amount: appointment.price,
-            issueType: appointment.issueType,
-            notes: appointment.notes,
-            meetingLink: appointment.meetingLink,
-          }),
+          (appointment: ApiAppointment) => {
+            // Map payment status from API to display status
+            let paymentStatus: "paid" | "pending" | "overdue" = "pending";
+            if (appointment.payment?.status === "paid") {
+              paymentStatus = "paid";
+            } else if (
+              appointment.payment?.status === "failed" ||
+              appointment.payment?.status === "cancelled"
+            ) {
+              paymentStatus = "overdue";
+            }
+
+            return {
+              id: appointment._id,
+              clientName: `${appointment.clientId.firstName} ${appointment.clientId.lastName}`,
+              clientId: appointment.clientId._id,
+              date: new Date(appointment.date),
+              time: appointment.time,
+              duration: appointment.duration,
+              type: appointment.type,
+              status: appointment.status,
+              paymentStatus,
+              amount: appointment.payment?.price || 0,
+              issueType: appointment.issueType,
+              notes: appointment.notes,
+              meetingLink: appointment.meetingLink,
+            };
+          },
         );
         setSessions(transformedSessions);
       } catch (err) {
