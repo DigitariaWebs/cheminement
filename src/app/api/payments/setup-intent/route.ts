@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import User from "@/models/User";
 import connectToDatabase from "@/lib/mongodb";
+import Stripe from "stripe";
+
+type PaymentMethodType = "card" | "acss_debit";
 
 // POST - Create a setup intent for adding payment methods
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -39,16 +42,54 @@ export async function POST() {
       await user.save();
     }
 
+    // Get payment method type from request body
+    let paymentMethodType: PaymentMethodType = "card";
+    try {
+      const body = await req.json();
+      if (
+        body.paymentMethodType &&
+        ["card", "acss_debit"].includes(body.paymentMethodType)
+      ) {
+        paymentMethodType = body.paymentMethodType;
+      }
+    } catch {
+      // Default to card if no body provided
+    }
+
+    // Configure setup intent based on payment method type
+    let setupIntentConfig: Stripe.SetupIntentCreateParams;
+
+    if (paymentMethodType === "acss_debit") {
+      setupIntentConfig = {
+        customer: customerId,
+        usage: "off_session",
+        payment_method_types: ["acss_debit"],
+        payment_method_options: {
+          acss_debit: {
+            currency: "cad",
+            mandate_options: {
+              payment_schedule: "sporadic",
+              transaction_type: "personal",
+            },
+            verification_method: "automatic",
+          },
+        },
+      };
+    } else {
+      setupIntentConfig = {
+        customer: customerId,
+        usage: "off_session",
+        payment_method_types: ["card"],
+      };
+    }
+
     // Create setup intent
-    const setupIntent = await stripe.setupIntents.create({
-      customer: customerId,
-      payment_method_types: ["card"],
-      usage: "off_session",
-    });
+    const setupIntent = await stripe.setupIntents.create(setupIntentConfig);
 
     return NextResponse.json({
       clientSecret: setupIntent.client_secret,
       setupIntentId: setupIntent.id,
+      paymentMethodType,
     });
   } catch (error: unknown) {
     console.error("Setup intent creation error:", error);

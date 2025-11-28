@@ -13,6 +13,7 @@ import {
   Trash2,
   Loader2,
   Plus,
+  Landmark,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,12 @@ interface PaymentMethod {
     last4: string;
     expMonth: number;
     expYear: number;
+  };
+  acss_debit?: {
+    bank_name: string;
+    last4: string;
+    institution_number?: string;
+    transit_number?: string;
   };
 }
 
@@ -319,7 +326,11 @@ export default function ClientBillingPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="rounded-full bg-primary/10 p-3">
-                      <CreditCard className="h-5 w-5 text-primary" />
+                      {method.type === "acss_debit" ? (
+                        <Landmark className="h-5 w-5 text-primary" />
+                      ) : (
+                        <CreditCard className="h-5 w-5 text-primary" />
+                      )}
                     </div>
                     <div>
                       {method.card && (
@@ -330,6 +341,17 @@ export default function ClientBillingPage() {
                           <p className="text-sm text-muted-foreground">
                             {t("expires")} {method.card.expMonth}/
                             {method.card.expYear}
+                          </p>
+                        </>
+                      )}
+                      {method.acss_debit && (
+                        <>
+                          <p className="font-medium text-foreground">
+                            {method.acss_debit.bank_name || "Bank Account"} ••••
+                            {method.acss_debit.last4}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Pre-authorized Debit
                           </p>
                         </>
                       )}

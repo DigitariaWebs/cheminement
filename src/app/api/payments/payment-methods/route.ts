@@ -34,14 +34,26 @@ export async function GET() {
 
     const customer = customers.data[0];
 
-    // Get all payment methods for this customer
-    const paymentMethods = await stripe.paymentMethods.list({
+    // Get card payment methods for this customer
+    const cardPaymentMethods = await stripe.paymentMethods.list({
       customer: customer.id,
       type: "card",
     });
 
+    // Get ACSS debit payment methods for this customer
+    const acssDebitPaymentMethods = await stripe.paymentMethods.list({
+      customer: customer.id,
+      type: "acss_debit",
+    });
+
+    // Combine all payment methods
+    const allPaymentMethods = [
+      ...cardPaymentMethods.data,
+      ...acssDebitPaymentMethods.data,
+    ];
+
     return NextResponse.json({
-      paymentMethods: paymentMethods.data.map((pm) => ({
+      paymentMethods: allPaymentMethods.map((pm) => ({
         id: pm.id,
         type: pm.type,
         card: pm.card
@@ -50,6 +62,14 @@ export async function GET() {
               last4: pm.card.last4,
               expMonth: pm.card.exp_month,
               expYear: pm.card.exp_year,
+            }
+          : null,
+        acss_debit: pm.acss_debit
+          ? {
+              bank_name: pm.acss_debit.bank_name,
+              last4: pm.acss_debit.last4,
+              institution_number: pm.acss_debit.institution_number,
+              transit_number: pm.acss_debit.transit_number,
             }
           : null,
         billing_details: pm.billing_details,
@@ -122,12 +142,18 @@ export async function POST(req: NextRequest) {
     });
 
     // Set as default payment method if this is the first one
-    const paymentMethods = await stripe.paymentMethods.list({
+    const cardPaymentMethods = await stripe.paymentMethods.list({
       customer: customer.id,
       type: "card",
     });
+    const acssPaymentMethods = await stripe.paymentMethods.list({
+      customer: customer.id,
+      type: "acss_debit",
+    });
+    const totalPaymentMethods =
+      cardPaymentMethods.data.length + acssPaymentMethods.data.length;
 
-    if (paymentMethods.data.length === 1) {
+    if (totalPaymentMethods === 1) {
       await stripe.customers.update(customer.id, {
         invoice_settings: {
           default_payment_method: paymentMethodId,

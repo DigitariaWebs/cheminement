@@ -16,12 +16,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle, CheckCircle2, CreditCard } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  CreditCard,
+  Landmark,
+} from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { cn } from "@/lib/utils";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
+
+type PaymentMethodType = "card" | "acss_debit";
 
 interface AddPaymentMethodModalProps {
   open: boolean;
@@ -29,12 +38,34 @@ interface AddPaymentMethodModalProps {
   onSuccess?: () => void;
 }
 
+const paymentMethodOptions: {
+  id: PaymentMethodType;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    id: "card",
+    label: "Credit/Debit Card",
+    description: "Add a card for instant payments",
+    icon: <CreditCard className="h-5 w-5" />,
+  },
+  {
+    id: "acss_debit",
+    label: "Pre-authorized Debit",
+    description: "Link your Canadian bank account",
+    icon: <Landmark className="h-5 w-5" />,
+  },
+];
+
 function SetupForm({
   onSuccess,
   onError,
+  paymentMethodType,
 }: {
   onSuccess?: () => void;
   onError?: (error: string) => void;
+  paymentMethodType: PaymentMethodType;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -78,10 +109,30 @@ function SetupForm({
         setMessage("Payment method added but failed to save");
         setLoading(false);
       }
+    } else if (setupIntent && setupIntent.status === "processing") {
+      setMessage("Verification in progress. This may take a moment...");
+      setIsComplete(true);
+      setTimeout(() => {
+        onSuccess?.();
+      }, 2000);
     } else {
       setMessage("Unable to add payment method");
       setLoading(false);
     }
+  };
+
+  const getIcon = () => {
+    return paymentMethodType === "acss_debit" ? (
+      <Landmark className="h-5 w-5 text-primary" />
+    ) : (
+      <CreditCard className="h-5 w-5 text-primary" />
+    );
+  };
+
+  const getLabel = () => {
+    return paymentMethodType === "acss_debit"
+      ? "Pre-authorized Debit"
+      : "Credit/Debit Card";
   };
 
   if (isComplete) {
@@ -89,10 +140,14 @@ function SetupForm({
       <div className="text-center py-8">
         <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
         <h3 className="text-xl font-medium text-foreground mb-2">
-          Payment Method Added!
+          {paymentMethodType === "acss_debit"
+            ? "Bank Account Linked!"
+            : "Payment Method Added!"}
         </h3>
         <p className="text-muted-foreground">
-          Your payment method has been saved successfully.
+          {paymentMethodType === "acss_debit"
+            ? "Your bank account has been linked successfully for pre-authorized debits."
+            : "Your payment method has been saved successfully."}
         </p>
       </div>
     );
@@ -102,16 +157,35 @@ function SetupForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg border border-border/40 bg-muted/30 p-4">
         <div className="flex items-center gap-3 mb-2">
-          <CreditCard className="h-5 w-5 text-primary" />
+          {getIcon()}
           <span className="text-sm font-medium text-foreground">
-            Add Payment Method
+            Add {getLabel()}
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          This card will be saved for future payments. No charge will be made
-          now.
+          {paymentMethodType === "acss_debit"
+            ? "Link your Canadian bank account for pre-authorized debits. No charge will be made now."
+            : "This card will be saved for future payments. No charge will be made now."}
         </p>
       </div>
+
+      {paymentMethodType === "acss_debit" && (
+        <div className="rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/20 dark:border-purple-800 p-4">
+          <div className="flex items-start gap-2">
+            <Landmark className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                Pre-authorized Debit Agreement
+              </p>
+              <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
+                By adding your bank account, you authorize us to debit your
+                account for future payments. You can remove this payment method
+                at any time.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <PaymentElement
         options={{
@@ -122,12 +196,12 @@ function SetupForm({
       {message && (
         <div
           className={`rounded-lg border p-4 flex items-start gap-3 ${
-            message.includes("success")
-              ? "border-green-200 bg-green-50 text-green-800"
-              : "border-red-200 bg-red-50 text-red-800"
+            message.includes("success") || message.includes("progress")
+              ? "border-green-200 bg-green-50 text-green-800 dark:bg-green-950/20 dark:text-green-200"
+              : "border-red-200 bg-red-50 text-red-800 dark:bg-red-950/20 dark:text-red-200"
           }`}
         >
-          {message.includes("success") ? (
+          {message.includes("success") || message.includes("progress") ? (
             <CheckCircle2 className="h-5 w-5 mt-0.5" />
           ) : (
             <AlertCircle className="h-5 w-5 mt-0.5" />
@@ -143,12 +217,17 @@ function SetupForm({
         size="lg"
       >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Adding..." : "Add Payment Method"}
+        {loading
+          ? "Adding..."
+          : paymentMethodType === "acss_debit"
+            ? "Link Bank Account"
+            : "Add Card"}
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
-        Secured by Stripe. Your card details are encrypted and never stored on
-        our servers.
+        {paymentMethodType === "acss_debit"
+          ? "Your bank account information is securely processed by Stripe."
+          : "Secured by Stripe. Your card details are encrypted and never stored on our servers."}
       </p>
     </form>
   );
@@ -160,10 +239,12 @@ export default function AddPaymentMethodModal({
   onSuccess,
 }: AddPaymentMethodModalProps) {
   const [clientSecret, setClientSecret] = useState<string>("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<PaymentMethodType>("card");
+  const [typeSelected, setTypeSelected] = useState(false);
 
-  const createSetupIntent = useCallback(async () => {
+  const createSetupIntent = useCallback(async (type: PaymentMethodType) => {
     try {
       setLoading(true);
       setError(null);
@@ -171,9 +252,11 @@ export default function AddPaymentMethodModal({
       const response = await apiClient.post<{
         clientSecret: string;
         setupIntentId: string;
-      }>("/payments/setup-intent", {});
+        paymentMethodType: string;
+      }>("/payments/setup-intent", { paymentMethodType: type });
 
       setClientSecret(response.clientSecret);
+      setTypeSelected(true);
     } catch (err) {
       console.error("Error creating setup intent:", err);
       setError(
@@ -187,15 +270,25 @@ export default function AddPaymentMethodModal({
   }, []);
 
   useEffect(() => {
-    if (open) {
-      createSetupIntent();
-    } else {
+    if (!open) {
       // Reset state when modal closes
       setClientSecret("");
       setError(null);
-      setLoading(true);
+      setLoading(false);
+      setSelectedType("card");
+      setTypeSelected(false);
     }
-  }, [open, createSetupIntent]);
+  }, [open]);
+
+  const handleContinue = () => {
+    createSetupIntent(selectedType);
+  };
+
+  const handleBack = () => {
+    setTypeSelected(false);
+    setClientSecret("");
+    setError(null);
+  };
 
   const handleSuccess = () => {
     onSuccess?.();
@@ -218,11 +311,78 @@ export default function AddPaymentMethodModal({
             Add Payment Method
           </DialogTitle>
           <DialogDescription>
-            Save a payment method for quick and easy checkouts
+            {typeSelected
+              ? "Enter your payment details below"
+              : "Choose a payment method type to add"}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4">
+          {/* Payment Method Type Selection */}
+          {!typeSelected && !loading && (
+            <div className="space-y-6">
+              <div className="space-y-3">
+                {paymentMethodOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => setSelectedType(option.id)}
+                    className={cn(
+                      "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                      selectedType === option.id
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border/40 bg-card/50 hover:bg-accent/50",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "rounded-full p-2.5",
+                        selectedType === option.id
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {option.icon}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground">
+                        {option.label}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {option.description}
+                      </p>
+                    </div>
+                    <div
+                      className={cn(
+                        "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                        selectedType === option.id
+                          ? "border-primary"
+                          : "border-muted-foreground/30",
+                      )}
+                    >
+                      {selectedType === option.id && (
+                        <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {error && (
+                <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+                  <p className="text-sm text-red-800 dark:text-red-200">
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              <Button onClick={handleContinue} className="w-full" size="lg">
+                Continue
+              </Button>
+            </div>
+          )}
+
           {loading && (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
@@ -230,26 +390,47 @@ export default function AddPaymentMethodModal({
             </div>
           )}
 
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-red-800">Error</p>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
+          {!loading && error && typeSelected && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                    Error
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                    {error}
+                  </p>
+                </div>
               </div>
+              <Button variant="outline" onClick={handleBack} className="w-full">
+                Go Back
+              </Button>
             </div>
           )}
 
-          {!loading && !error && clientSecret && (
-            <Elements
-              options={{
-                clientSecret,
-                appearance,
-              }}
-              stripe={stripePromise}
-            >
-              <SetupForm onSuccess={handleSuccess} onError={setError} />
-            </Elements>
+          {!loading && !error && clientSecret && typeSelected && (
+            <div className="space-y-4">
+              <button
+                onClick={handleBack}
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+              >
+                ← Change payment method type
+              </button>
+              <Elements
+                options={{
+                  clientSecret,
+                  appearance,
+                }}
+                stripe={stripePromise}
+              >
+                <SetupForm
+                  onSuccess={handleSuccess}
+                  onError={setError}
+                  paymentMethodType={selectedType}
+                />
+              </Elements>
+            </div>
           )}
         </div>
       </DialogContent>

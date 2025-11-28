@@ -14,6 +14,8 @@ import {
   CheckCircle2,
   CreditCard,
   Plus,
+  Building2,
+  Landmark,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
@@ -34,6 +36,7 @@ interface CheckoutFormProps {
   clientSecret: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
+  paymentMethod?: "card" | "transfer" | "direct_debit";
 }
 
 export default function CheckoutForm({
@@ -41,6 +44,7 @@ export default function CheckoutForm({
   clientSecret,
   onSuccess,
   onError,
+  paymentMethod = "card",
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -91,8 +95,14 @@ export default function CheckoutForm({
   );
 
   useEffect(() => {
-    fetchPaymentMethods();
-  }, []);
+    // Only fetch payment methods for card payments
+    if (paymentMethod === "card") {
+      fetchPaymentMethods();
+    } else {
+      setLoadingMethods(false);
+      setShowPaymentElement(true);
+    }
+  }, [paymentMethod]);
 
   useEffect(() => {
     if (!stripe) {
@@ -100,32 +110,34 @@ export default function CheckoutForm({
     }
 
     // Check initial payment intent status
-    const clientSecret = new URLSearchParams(window.location.search).get(
+    const clientSecretParam = new URLSearchParams(window.location.search).get(
       "payment_intent_client_secret",
     );
 
-    if (!clientSecret) {
+    if (!clientSecretParam) {
       return;
     }
 
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent?.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
-          setIsComplete(true);
-          onSuccess?.();
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Please provide payment details.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          break;
-      }
-    });
+    stripe
+      .retrievePaymentIntent(clientSecretParam)
+      .then(({ paymentIntent }) => {
+        switch (paymentIntent?.status) {
+          case "succeeded":
+            setMessage("Payment succeeded!");
+            setIsComplete(true);
+            onSuccess?.();
+            break;
+          case "processing":
+            setMessage("Your payment is processing.");
+            break;
+          case "requires_payment_method":
+            setMessage("Please provide payment details.");
+            break;
+          default:
+            setMessage("Something went wrong.");
+            break;
+        }
+      });
   }, [stripe, onSuccess]);
 
   const fetchPaymentMethods = async () => {
@@ -165,9 +177,12 @@ export default function CheckoutForm({
     setMessage(null);
 
     try {
-      // If using a saved payment method, use confirmCardPayment directly
-      if (selectedMethod !== "new" && selectedMethod) {
-        // Confirm with saved payment method using the clientSecret
+      // For card payments with saved payment method
+      if (
+        paymentMethod === "card" &&
+        selectedMethod !== "new" &&
+        selectedMethod
+      ) {
         const { error, paymentIntent } = await stripe.confirmCardPayment(
           clientSecret,
           {
@@ -193,14 +208,14 @@ export default function CheckoutForm({
           }, 1500);
         }
       } else {
-        // Using new payment method with PaymentElement
+        // For new payment methods (card, transfer, or direct debit)
         if (!elements) {
           setMessage("Payment form not ready. Please try again.");
           setLoading(false);
           return;
         }
 
-        const { error } = await stripe.confirmPayment({
+        const { error, paymentIntent } = await stripe.confirmPayment({
           elements,
           confirmParams: {
             return_url: `${window.location.origin}/client/dashboard/appointments?payment_success=true`,
@@ -218,12 +233,25 @@ export default function CheckoutForm({
             setMessage("An unexpected error occurred.");
           }
           onError?.(error.message || "Payment failed");
-        } else {
-          setMessage("Payment succeeded!");
-          setIsComplete(true);
-          setTimeout(() => {
-            onSuccess?.();
-          }, 1500);
+        } else if (paymentIntent) {
+          if (paymentIntent.status === "succeeded") {
+            setMessage("Payment succeeded!");
+            setIsComplete(true);
+            setTimeout(() => {
+              onSuccess?.();
+            }, 1500);
+          } else if (paymentIntent.status === "processing") {
+            setMessage(
+              "Your payment is being processed. We'll notify you once it's complete.",
+            );
+            setIsComplete(true);
+            setTimeout(() => {
+              onSuccess?.();
+            }, 2000);
+          } else if (paymentIntent.status === "requires_action") {
+            // Handle any additional action required (like 3D Secure)
+            setMessage("Please complete the additional verification step.");
+          }
         }
       }
     } catch (err) {
@@ -241,86 +269,161 @@ export default function CheckoutForm({
       <div className="text-center py-8">
         <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
         <h3 className="text-xl font-medium text-foreground mb-2">
-          Payment Successful!
+          {paymentMethod === "transfer"
+            ? "Transfer Instructions Sent!"
+            : paymentMethod === "direct_debit"
+              ? "Pre-authorized Debit Set Up!"
+              : "Payment Successful!"}
         </h3>
         <p className="text-muted-foreground">
-          Your appointment has been confirmed.
+          {paymentMethod === "transfer"
+            ? "Please complete the bank transfer to confirm your appointment."
+            : paymentMethod === "direct_debit"
+              ? "Your appointment will be confirmed once the debit is processed."
+              : "Your appointment has been confirmed."}
         </p>
       </div>
     );
   }
 
+  const getPaymentMethodIcon = () => {
+    switch (paymentMethod) {
+      case "transfer":
+        return <Building2 className="h-5 w-5 text-primary" />;
+      case "direct_debit":
+        return <Landmark className="h-5 w-5 text-primary" />;
+      default:
+        return <CreditCard className="h-5 w-5 text-primary" />;
+    }
+  };
+
+  const getPaymentMethodLabel = () => {
+    switch (paymentMethod) {
+      case "transfer":
+        return "Bank Transfer";
+      case "direct_debit":
+        return "Pre-authorized Debit";
+      default:
+        return "Card Payment";
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg border border-border/40 bg-muted/30 p-4">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-muted-foreground">Amount to pay</span>
           <span className="text-2xl font-semibold text-foreground">
             ${amount.toFixed(2)} CAD
           </span>
         </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {getPaymentMethodIcon()}
+          <span>{getPaymentMethodLabel()}</span>
+        </div>
       </div>
 
-      {/* Payment Method Selection */}
-      {loadingMethods ? (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
-      ) : paymentMethods.length > 0 ? (
-        <div className="space-y-4">
-          <Label className="text-base font-medium">Payment Method</Label>
-          <div className="space-y-3">
-            {/* Saved Payment Methods */}
-            {paymentMethods.map((method) => (
-              <RadioButton
-                key={method.id}
-                id={method.id}
-                value={method.id}
-                checked={selectedMethod === method.id}
-                onChange={handleMethodChange}
-              >
-                <div className="rounded-full bg-primary/10 p-2">
-                  <CreditCard className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1">
-                  {method.card && (
-                    <>
-                      <p className="font-medium text-foreground capitalize">
-                        {method.card.brand} ••••{method.card.last4}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Expires {method.card.expMonth}/{method.card.expYear}
-                      </p>
-                    </>
-                  )}
-                </div>
-              </RadioButton>
-            ))}
-
-            {/* Add New Payment Method Option */}
-            <RadioButton
-              id="new"
-              value="new"
-              checked={selectedMethod === "new"}
-              onChange={handleMethodChange}
-            >
-              <div className="rounded-full bg-primary/10 p-2">
-                <Plus className="h-4 w-4 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-foreground">
-                  Use a different card
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Enter new payment details
-                </p>
-              </div>
-            </RadioButton>
+      {/* Payment Method Instructions */}
+      {paymentMethod === "transfer" && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800 p-4 space-y-3">
+          <div className="flex items-start gap-2">
+            <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Bank Transfer Instructions
+              </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                Complete the payment form below to receive bank transfer
+                instructions. Your appointment will be confirmed once we receive
+                the funds (typically 1-3 business days).
+              </p>
+            </div>
           </div>
         </div>
-      ) : null}
+      )}
 
-      {/* Show PaymentElement only when "new" is selected or no saved methods */}
+      {paymentMethod === "direct_debit" && (
+        <div className="rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/20 dark:border-purple-800 p-4 space-y-3">
+          <div className="flex items-start gap-2">
+            <Landmark className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                Pre-authorized Debit (PAD)
+              </p>
+              <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
+                Authorize a one-time debit from your Canadian bank account.
+                Processing typically takes 3-5 business days. You will receive a
+                confirmation email.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Card Payment Method Selection - Only for card payments */}
+      {paymentMethod === "card" && (
+        <>
+          {loadingMethods ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : paymentMethods.length > 0 ? (
+            <div className="space-y-4">
+              <Label className="text-base font-medium">Select Card</Label>
+              <div className="space-y-3">
+                {/* Saved Payment Methods */}
+                {paymentMethods.map((method) => (
+                  <RadioButton
+                    key={method.id}
+                    id={method.id}
+                    value={method.id}
+                    checked={selectedMethod === method.id}
+                    onChange={handleMethodChange}
+                  >
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <CreditCard className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      {method.card && (
+                        <>
+                          <p className="font-medium text-foreground capitalize">
+                            {method.card.brand} ••••{method.card.last4}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Expires {method.card.expMonth}/{method.card.expYear}
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </RadioButton>
+                ))}
+
+                {/* Add New Payment Method Option */}
+                <RadioButton
+                  id="new"
+                  value="new"
+                  checked={selectedMethod === "new"}
+                  onChange={handleMethodChange}
+                >
+                  <div className="rounded-full bg-primary/10 p-2">
+                    <Plus className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">
+                      Use a different card
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Enter new payment details
+                    </p>
+                  </div>
+                </RadioButton>
+              </div>
+            </div>
+          ) : null}
+        </>
+      )}
+
+      {/* Show PaymentElement for new cards or other payment methods */}
       {showPaymentElement && (
         <div className="space-y-4">
           <PaymentElement
@@ -334,12 +437,12 @@ export default function CheckoutForm({
       {message && (
         <div
           className={`rounded-lg border p-4 flex items-start gap-3 ${
-            message.includes("succeeded")
+            message.includes("succeeded") || message.includes("processing")
               ? "border-green-200 bg-green-50 text-green-800 dark:bg-green-950/20 dark:text-green-200"
               : "border-red-200 bg-red-50 text-red-800 dark:bg-red-950/20 dark:text-red-200"
           }`}
         >
-          {message.includes("succeeded") ? (
+          {message.includes("succeeded") || message.includes("processing") ? (
             <CheckCircle2 className="h-5 w-5 mt-0.5 shrink-0" />
           ) : (
             <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
@@ -350,16 +453,30 @@ export default function CheckoutForm({
 
       <Button
         type="submit"
-        disabled={!stripe || loading || (selectedMethod === "new" && !elements)}
+        disabled={
+          !stripe ||
+          loading ||
+          (paymentMethod === "card" && selectedMethod === "new" && !elements)
+        }
         className="w-full"
         size="lg"
       >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Processing..." : `Pay $${amount.toFixed(2)} CAD`}
+        {loading
+          ? "Processing..."
+          : paymentMethod === "transfer"
+            ? `Get Transfer Instructions - $${amount.toFixed(2)} CAD`
+            : paymentMethod === "direct_debit"
+              ? `Authorize Debit - $${amount.toFixed(2)} CAD`
+              : `Pay $${amount.toFixed(2)} CAD`}
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
-        Your payment is secured by Stripe. We do not store your card details.
+        {paymentMethod === "transfer"
+          ? "You'll receive bank transfer instructions after submitting."
+          : paymentMethod === "direct_debit"
+            ? "By authorizing, you agree to a one-time debit from your account."
+            : "Your payment is secured by Stripe. We do not store your card details."}
       </p>
     </form>
   );

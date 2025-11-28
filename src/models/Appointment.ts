@@ -11,6 +11,7 @@ export interface IPayment {
     | "failed"
     | "refunded"
     | "cancelled";
+  method?: "card" | "transfer" | "direct_debit";
   stripePaymentIntentId?: string;
   stripePaymentMethodId?: string;
   paidAt?: Date;
@@ -78,6 +79,11 @@ const PaymentSchema = new Schema<IPayment>(
         "cancelled",
       ],
       default: "pending",
+    },
+    method: {
+      type: String,
+      enum: ["card", "transfer", "direct_debit"],
+      default: "card",
     },
     stripePaymentIntentId: String,
     stripePaymentMethodId: String,

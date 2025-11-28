@@ -13,11 +13,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { appointmentId } = await req.json();
+    const { appointmentId, paymentMethod = "card" } = await req.json();
 
     if (!appointmentId) {
       return NextResponse.json(
         { error: "Appointment ID is required" },
+        { status: 400 },
+      );
+    }
+
+    // Validate payment method
+    const validPaymentMethods = ["card", "transfer", "direct_debit"];
+    if (!validPaymentMethods.includes(paymentMethod)) {
+      return NextResponse.json(
+        { error: "Invalid payment method" },
         { status: 400 },
       );
     }
@@ -108,8 +117,24 @@ export async function POST(req: NextRequest) {
       customerId = customer.id;
     }
 
-    // Create Payment Intent
-    const paymentIntent = await stripe.paymentIntents.create({
+    // Configure payment method types based on selected method
+    let paymentMethodTypes: string[] = ["card"];
+
+    if (paymentMethod === "transfer") {
+      // Bank transfer (EFT/ACH style) - using customer_balance for bank transfers
+      paymentMethodTypes = ["customer_balance"];
+    } else if (paymentMethod === "direct_debit") {
+      // Pre-authorized debit for Canada
+      paymentMethodTypes = ["acss_debit"];
+    } else {
+      // Default to card
+      paymentMethodTypes = ["card"];
+    }
+
+    // Create Payment Intent with specific payment method types
+    const paymentIntentConfig: Parameters<
+      typeof stripe.paymentIntents.create
+    >[0] = {
       amount: toCents(amount),
       currency: "cad",
       customer: customerId,
@@ -121,17 +146,47 @@ export async function POST(req: NextRequest) {
         sessionTime: appointment.time,
         platformFee: platformFee.toString(),
         professionalPayout: professionalPayout.toString(),
+        paymentMethod: paymentMethod,
       },
       description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${appointment.date.toLocaleDateString()}`,
-      // Enable automatic payment methods
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
+      payment_method_types: paymentMethodTypes,
+    };
+
+    // Add payment method options for direct debit (ACSS)
+    if (paymentMethod === "direct_debit") {
+      paymentIntentConfig.payment_method_options = {
+        acss_debit: {
+          mandate_options: {
+            payment_schedule: "sporadic",
+            transaction_type: "personal",
+          },
+          verification_method: "automatic",
+        },
+      };
+    }
+
+    // Add funding instructions for bank transfer
+    if (paymentMethod === "transfer") {
+      paymentIntentConfig.payment_method_data = {
+        type: "customer_balance",
+      };
+      paymentIntentConfig.payment_method_options = {
+        customer_balance: {
+          funding_type: "bank_transfer",
+          bank_transfer: {
+            type: "us_bank_transfer",
+          },
+        },
+      };
+    }
+
+    const paymentIntent =
+      await stripe.paymentIntents.create(paymentIntentConfig);
 
     // Update appointment payment information
     appointment.payment.stripePaymentIntentId = paymentIntent.id;
     appointment.payment.status = "processing";
+    appointment.payment.method = paymentMethod;
     await appointment.save();
 
     return NextResponse.json({

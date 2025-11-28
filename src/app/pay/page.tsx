@@ -20,13 +20,18 @@ import {
   Shield,
   Home,
   Download,
+  Building2,
+  Landmark,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
+
+type PaymentMethodType = "card" | "transfer" | "direct_debit";
 
 interface AppointmentDetails {
   appointmentId: string;
@@ -47,9 +52,41 @@ interface CheckoutFormProps {
   amount: number;
   onSuccess: () => void;
   onError: (error: string) => void;
+  paymentMethod: PaymentMethodType;
 }
 
-function CheckoutForm({ amount, onSuccess, onError }: CheckoutFormProps) {
+const paymentMethodOptions: {
+  id: PaymentMethodType;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    id: "card",
+    label: "Credit/Debit Card",
+    description: "Pay instantly with your card",
+    icon: <CreditCard className="h-5 w-5" />,
+  },
+  {
+    id: "transfer",
+    label: "Bank Transfer",
+    description: "Transfer from your bank account",
+    icon: <Building2 className="h-5 w-5" />,
+  },
+  {
+    id: "direct_debit",
+    label: "Pre-authorized Debit",
+    description: "Automatic debit from your account",
+    icon: <Landmark className="h-5 w-5" />,
+  },
+];
+
+function CheckoutForm({
+  amount,
+  onSuccess,
+  onError,
+  paymentMethod,
+}: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -74,29 +111,125 @@ function CheckoutForm({ amount, onSuccess, onError }: CheckoutFormProps) {
       setMessage(error.message || "An error occurred");
       onError(error.message || "Payment failed");
       setLoading(false);
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      setMessage("Payment successful!");
-      onSuccess();
-    } else {
-      setMessage("Payment processing...");
-      setLoading(false);
+    } else if (paymentIntent) {
+      if (paymentIntent.status === "succeeded") {
+        setMessage("Payment successful!");
+        onSuccess();
+      } else if (paymentIntent.status === "processing") {
+        setMessage(
+          "Your payment is being processed. We'll notify you once it's complete.",
+        );
+        setTimeout(() => {
+          onSuccess();
+        }, 2000);
+      } else if (paymentIntent.status === "requires_action") {
+        setMessage("Please complete the additional verification step.");
+        setLoading(false);
+      } else {
+        setMessage("Payment processing...");
+        setLoading(false);
+      }
+    }
+  };
+
+  const getPaymentMethodIcon = () => {
+    switch (paymentMethod) {
+      case "transfer":
+        return <Building2 className="h-5 w-5 text-primary" />;
+      case "direct_debit":
+        return <Landmark className="h-5 w-5 text-primary" />;
+      default:
+        return <CreditCard className="h-5 w-5 text-primary" />;
+    }
+  };
+
+  const getPaymentMethodLabel = () => {
+    switch (paymentMethod) {
+      case "transfer":
+        return "Bank Transfer";
+      case "direct_debit":
+        return "Pre-authorized Debit";
+      default:
+        return "Card Payment";
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="rounded-lg border border-border/40 bg-muted/30 p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-muted-foreground">Amount to pay</span>
+          <span className="text-2xl font-semibold text-foreground">
+            ${amount.toFixed(2)} CAD
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {getPaymentMethodIcon()}
+          <span>{getPaymentMethodLabel()}</span>
+        </div>
+      </div>
+
+      {/* Payment Method Instructions */}
+      {paymentMethod === "transfer" && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800 p-4 space-y-3">
+          <div className="flex items-start gap-2">
+            <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Bank Transfer Instructions
+              </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                Complete the payment form below to receive bank transfer
+                instructions. Your appointment will be confirmed once we receive
+                the funds (typically 1-3 business days).
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {paymentMethod === "direct_debit" && (
+        <div className="rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/20 dark:border-purple-800 p-4 space-y-3">
+          <div className="flex items-start gap-2">
+            <Landmark className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                Pre-authorized Debit (PAD)
+              </p>
+              <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
+                Authorize a one-time debit from your Canadian bank account.
+                Processing typically takes 3-5 business days. You will receive a
+                confirmation email.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <PaymentElement
         options={{
           layout: "tabs",
         }}
       />
 
-      {message && !message.includes("successful") && (
-        <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400" />
-          <p className="text-sm text-red-800 dark:text-red-200">{message}</p>
-        </div>
-      )}
+      {message &&
+        !message.includes("successful") &&
+        !message.includes("processing") && (
+          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400" />
+            <p className="text-sm text-red-800 dark:text-red-200">{message}</p>
+          </div>
+        )}
+
+      {message &&
+        (message.includes("successful") || message.includes("processing")) && (
+          <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/20 p-4 flex items-start gap-3">
+            <CheckCircle2 className="h-5 w-5 mt-0.5 text-green-600 dark:text-green-400" />
+            <p className="text-sm text-green-800 dark:text-green-200">
+              {message}
+            </p>
+          </div>
+        )}
 
       <Button
         type="submit"
@@ -109,6 +242,16 @@ function CheckoutForm({ amount, onSuccess, onError }: CheckoutFormProps) {
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Processing...
           </>
+        ) : paymentMethod === "transfer" ? (
+          <>
+            <Building2 className="mr-2 h-4 w-4" />
+            Get Transfer Instructions - ${amount.toFixed(2)} CAD
+          </>
+        ) : paymentMethod === "direct_debit" ? (
+          <>
+            <Landmark className="mr-2 h-4 w-4" />
+            Authorize Debit - ${amount.toFixed(2)} CAD
+          </>
         ) : (
           <>
             <CreditCard className="mr-2 h-4 w-4" />
@@ -119,7 +262,13 @@ function CheckoutForm({ amount, onSuccess, onError }: CheckoutFormProps) {
 
       <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
         <Shield className="h-4 w-4" />
-        <span>Secured by Stripe</span>
+        <span>
+          {paymentMethod === "transfer"
+            ? "You'll receive bank transfer instructions after submitting."
+            : paymentMethod === "direct_debit"
+              ? "By authorizing, you agree to a one-time debit from your account."
+              : "Secured by Stripe"}
+        </span>
       </div>
     </form>
   );
@@ -139,6 +288,10 @@ function GuestPaymentContent() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [alreadyPaid, setAlreadyPaid] = useState(false);
   const [downloadingReceipt, setDownloadingReceipt] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<PaymentMethodType>("card");
+  const [paymentMethodSelected, setPaymentMethodSelected] = useState(false);
+  const [creatingIntent, setCreatingIntent] = useState(false);
 
   const fetchAppointment = useCallback(async () => {
     if (!token) {
@@ -163,26 +316,7 @@ function GuestPaymentContent() {
       // Check if already paid
       if (data.alreadyPaid) {
         setAlreadyPaid(true);
-        setLoading(false);
-        return;
       }
-
-      // Create payment intent
-      const intentResponse = await fetch("/api/payments/guest", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      const intentData = await intentResponse.json();
-
-      if (!intentResponse.ok) {
-        throw new Error(intentData.error || "Failed to initialize payment");
-      }
-
-      setClientSecret(intentData.clientSecret);
     } catch (err) {
       console.error("Error fetching appointment:", err);
       setError(
@@ -196,6 +330,49 @@ function GuestPaymentContent() {
   useEffect(() => {
     fetchAppointment();
   }, [fetchAppointment]);
+
+  const createPaymentIntent = async (method: PaymentMethodType) => {
+    if (!token) return;
+
+    try {
+      setCreatingIntent(true);
+      setError(null);
+
+      const intentResponse = await fetch("/api/payments/guest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, paymentMethod: method }),
+      });
+
+      const intentData = await intentResponse.json();
+
+      if (!intentResponse.ok) {
+        throw new Error(intentData.error || "Failed to initialize payment");
+      }
+
+      setClientSecret(intentData.clientSecret);
+      setPaymentMethodSelected(true);
+    } catch (err) {
+      console.error("Error creating payment intent:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to initialize payment",
+      );
+    } finally {
+      setCreatingIntent(false);
+    }
+  };
+
+  const handleContinueToPayment = () => {
+    createPaymentIntent(selectedPaymentMethod);
+  };
+
+  const handleBackToMethodSelection = () => {
+    setPaymentMethodSelected(false);
+    setClientSecret(null);
+    setError(null);
+  };
 
   const handlePaymentSuccess = () => {
     setPaymentSuccess(true);
@@ -374,11 +551,18 @@ function GuestPaymentContent() {
             <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
           <h1 className="text-2xl font-serif font-light text-foreground mb-2">
-            Payment Successful!
+            {selectedPaymentMethod === "transfer"
+              ? "Transfer Instructions Sent!"
+              : selectedPaymentMethod === "direct_debit"
+                ? "Pre-authorized Debit Set Up!"
+                : "Payment Successful!"}
           </h1>
           <p className="text-muted-foreground mb-6">
-            Your payment has been processed successfully. You will receive a
-            confirmation email with your session details shortly.
+            {selectedPaymentMethod === "transfer"
+              ? "Please complete the bank transfer to confirm your appointment. You will receive the transfer instructions via email."
+              : selectedPaymentMethod === "direct_debit"
+                ? "Your pre-authorized debit has been set up. Your appointment will be confirmed once the payment is processed."
+                : "Your payment has been processed successfully. You will receive a confirmation email with your session details shortly."}
           </p>
 
           {appointment && (
@@ -485,36 +669,137 @@ function GuestPaymentContent() {
             </div>
           )}
 
-          {/* Payment Form */}
+          {/* Payment Method Selection or Payment Form */}
           <div className="rounded-xl bg-card border border-border/40 p-6">
-            <h2 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Payment Information
-            </h2>
+            {!paymentMethodSelected ? (
+              <>
+                <h2 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
+                  Select Payment Method
+                </h2>
 
-            {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3 mb-4">
-                <AlertCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400" />
-                <p className="text-sm text-red-800 dark:text-red-200">
-                  {error}
-                </p>
-              </div>
-            )}
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    {paymentMethodOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setSelectedPaymentMethod(option.id)}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          selectedPaymentMethod === option.id
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            selectedPaymentMethod === option.id
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          {option.icon}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            {option.label}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {option.description}
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            selectedPaymentMethod === option.id
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {selectedPaymentMethod === option.id && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
 
-            {clientSecret && appointment && (
-              <Elements
-                options={{
-                  clientSecret,
-                  appearance,
-                }}
-                stripe={stripePromise}
-              >
-                <CheckoutForm
-                  amount={appointment.price}
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
-                />
-              </Elements>
+                  {error && (
+                    <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400" />
+                      <p className="text-sm text-red-800 dark:text-red-200">
+                        {error}
+                      </p>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleContinueToPayment}
+                    disabled={creatingIntent}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {creatingIntent ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Preparing...
+                      </>
+                    ) : (
+                      "Continue to Payment"
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
+                    {selectedPaymentMethod === "card" && (
+                      <CreditCard className="h-5 w-5" />
+                    )}
+                    {selectedPaymentMethod === "transfer" && (
+                      <Building2 className="h-5 w-5" />
+                    )}
+                    {selectedPaymentMethod === "direct_debit" && (
+                      <Landmark className="h-5 w-5" />
+                    )}
+                    Payment Information
+                  </h2>
+                  <button
+                    onClick={handleBackToMethodSelection}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    ← Change method
+                  </button>
+                </div>
+
+                {error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3 mb-4">
+                    <AlertCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400" />
+                    <p className="text-sm text-red-800 dark:text-red-200">
+                      {error}
+                    </p>
+                  </div>
+                )}
+
+                {clientSecret && appointment && (
+                  <Elements
+                    options={{
+                      clientSecret,
+                      appearance,
+                    }}
+                    stripe={stripePromise}
+                  >
+                    <CheckoutForm
+                      amount={appointment.price}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
+                      paymentMethod={selectedPaymentMethod}
+                    />
+                  </Elements>
+                )}
+              </>
             )}
           </div>
 
