@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
+import User from "@/models/User";
 import Stripe from "stripe";
+import { sendGuestPaymentComplete } from "@/lib/notifications";
 
 // Disable body parsing, need raw body for webhook signature verification
 export const runtime = "nodejs";
@@ -103,13 +105,62 @@ async function handlePaymentIntentSucceeded(
         : paymentIntent.payment_method.id;
   }
 
+  // Clear payment token after successful payment
+  appointment.payment.paymentToken = undefined;
+  appointment.payment.paymentTokenExpiry = undefined;
+
   await appointment.save();
 
   console.log(`Appointment ${appointmentId} payment completed`);
 
-  // TODO: Send confirmation email to client
-  // TODO: Send notification to professional
-  // TODO: Schedule payout to professional
+  // Send confirmation email for guest payments
+  if (
+    paymentIntent.metadata.type === "guest_payment" ||
+    paymentIntent.metadata.visitorEmail
+  ) {
+    try {
+      const populatedAppointment = await Appointment.findById(appointmentId)
+        .populate("clientId", "firstName lastName email")
+        .populate("professionalId", "firstName lastName");
+
+      if (populatedAppointment) {
+        const client = populatedAppointment.clientId as unknown as {
+          _id: { toString: () => string };
+          firstName: string;
+          lastName: string;
+          email: string;
+        };
+        const professional = populatedAppointment.professionalId as unknown as {
+          firstName: string;
+          lastName: string;
+        };
+
+        // Check if client is a guest
+        const clientUser = await User.findById(client._id);
+        if (clientUser && clientUser.role === "guest") {
+          sendGuestPaymentComplete({
+            guestName: `${client.firstName} ${client.lastName}`,
+            guestEmail: client.email,
+            professionalName: `${professional.firstName} ${professional.lastName}`,
+            date: populatedAppointment.date.toISOString(),
+            time: populatedAppointment.time,
+            duration: populatedAppointment.duration || 60,
+            type: populatedAppointment.type,
+            therapyType: populatedAppointment.therapyType || "solo",
+            price: populatedAppointment.payment.price,
+            meetingLink: populatedAppointment.meetingLink,
+          }).catch((err) =>
+            console.error(
+              "Error sending guest payment confirmation email:",
+              err,
+            ),
+          );
+        }
+      }
+    } catch (emailError) {
+      console.error("Error sending payment confirmation email:", emailError);
+    }
+  }
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {

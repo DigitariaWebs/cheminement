@@ -18,7 +18,6 @@ import {
   Sparkles,
   Mail,
   Home,
-  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -36,7 +35,6 @@ import { apiClient } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import AuthPromptModal from "@/components/appointment/AuthPromptModal";
-import { GuestPaymentForm } from "@/components/payments";
 
 interface Professional {
   _id: string;
@@ -308,25 +306,8 @@ export default function BookAppointmentPage() {
     setCurrentStep(1); // Move to selection method
   };
 
-  // Handle moving to payment step for guests
-  const handleProceedToPayment = () => {
-    if (!issueType) {
-      setError("Please select what brings you here");
-      return;
-    }
-    setError("");
-    setCompletedSteps([0, 1, 2, 3, 4]);
-    setCurrentStep(5); // Move to payment step
-  };
-
-  // Handle payment success for guests
-  const handlePaymentSuccess = (methodId: string) => {
-    // Automatically proceed to create appointment after payment verification
-    handleGuestSubmitWithPayment(methodId);
-  };
-
-  // Submit guest appointment with payment method
-  const handleGuestSubmitWithPayment = async (methodId: string) => {
+  // Submit guest appointment without payment
+  const handleGuestSubmit = async () => {
     try {
       setLoading(true);
       setError("");
@@ -344,11 +325,10 @@ export default function BookAppointmentPage() {
       await apiClient.post<{ appointmentId: string }>("/appointments/guest", {
         ...appointmentData,
         guestInfo,
-        paymentMethodId: methodId,
       });
 
-      setCompletedSteps([0, 1, 2, 3, 4, 5, 6]);
-      setCurrentStep(6); // Success step
+      setCompletedSteps([0, 1, 2, 3, 4, 5]);
+      setCurrentStep(5); // Success step
     } catch (err: unknown) {
       console.error("Error booking appointment:", err);
       setError(
@@ -371,9 +351,9 @@ export default function BookAppointmentPage() {
       return;
     }
 
-    // For guests, proceed to payment step instead of submitting
+    // For guests, submit without payment
     if (isGuest) {
-      handleProceedToPayment();
+      handleGuestSubmit();
       return;
     }
 
@@ -428,7 +408,7 @@ export default function BookAppointmentPage() {
     );
   }
 
-  const steps = isGuest ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4];
+  const steps = isGuest ? [0, 1, 2, 3, 4, 5] : [0, 1, 2, 3, 4];
   const stepLabels = isGuest
     ? [
         "Your Info",
@@ -436,7 +416,6 @@ export default function BookAppointmentPage() {
         "Choose Professional",
         "Select Date & Time",
         "Appointment Details",
-        "Payment",
         "Confirmation",
       ]
     : [
@@ -1031,10 +1010,10 @@ export default function BookAppointmentPage() {
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {isGuest ? "Processing..." : "Booking..."}
+                      {isGuest ? "Booking..." : "Requesting..."}
                     </>
                   ) : isGuest ? (
-                    "Continue to Payment"
+                    "Book Appointment"
                   ) : (
                     "Continue to Confirmation"
                   )}
@@ -1044,45 +1023,19 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Step 5: Payment (guests only) */}
-        {isGuest && currentStep === 5 && (
-          <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
-            <div className="p-6 border-b border-border/40">
-              <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Payment Information
-              </h2>
-              <p className="text-sm text-muted-foreground mt-2">
-                Enter your card details to complete the booking. Your card will
-                be charged immediately. If the professional does not confirm,
-                you will receive a full refund.
-              </p>
-            </div>
-            <div className="p-6">
-              <GuestPaymentForm
-                guestEmail={guestInfo.email}
-                guestName={`${guestInfo.firstName} ${guestInfo.lastName}`}
-                onSuccess={handlePaymentSuccess}
-                onBack={() => setCurrentStep(4)}
-                loading={loading}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Step 4/6: Success */}
-        {currentStep === (isGuest ? 6 : 4) && (
+        {/* Step 4/5: Success */}
+        {currentStep === (isGuest ? 5 : 4) && (
           <div className="max-w-2xl mx-auto text-center">
             <div className="rounded-xl bg-card border border-border/40 p-8">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h2 className="text-2xl font-serif font-light text-foreground mb-2">
-                {isGuest ? "Appointment Booked!" : "Appointment Requested!"}
+                Appointment Requested!
               </h2>
               <p className="text-muted-foreground mb-6">
                 {isGuest
-                  ? "Your payment has been processed and your appointment is pending confirmation. A confirmation email has been sent to your email address."
+                  ? "Your appointment request has been submitted. You'll receive an email when the professional confirms your session."
                   : "Your appointment request has been submitted successfully. You'll receive a confirmation email shortly with all the details."}
               </p>
 
@@ -1124,7 +1077,7 @@ export default function BookAppointmentPage() {
                       <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="text-sm text-muted-foreground">
-                          Confirmation sent to
+                          Confirmation will be sent to
                         </p>
                         <p className="font-medium text-foreground">
                           {guestInfo.email}
@@ -1137,23 +1090,14 @@ export default function BookAppointmentPage() {
 
               {isGuest ? (
                 <div className="space-y-4">
-                  <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-4">
-                    <p className="text-sm text-green-800 dark:text-green-200">
-                      <strong>✓ Payment Successful</strong>
-                    </p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      Your card has been charged. The professional will review
-                      your request and confirm the appointment. You&apos;ll
-                      receive an email once confirmed with meeting details.
-                    </p>
-                  </div>
                   <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      <strong>Refund Policy</strong>
+                      <strong>What happens next?</strong>
                     </p>
                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                      If the professional does not confirm your appointment, you
-                      will receive a full refund.
+                      The professional will review your request. Once confirmed,
+                      you&apos;ll receive an email with a link to complete your
+                      payment and access your session details.
                     </p>
                   </div>
                   <Button
@@ -1161,6 +1105,7 @@ export default function BookAppointmentPage() {
                     onClick={() => router.push("/")}
                     className="gap-2"
                   >
+                    <Home className="h-4 w-4" />
                     Return to Home
                   </Button>
                 </div>

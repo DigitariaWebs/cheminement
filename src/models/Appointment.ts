@@ -17,6 +17,8 @@ export interface IPayment {
   refundedAt?: Date;
   payoutTransferId?: string;
   payoutDate?: Date;
+  paymentToken?: string;
+  paymentTokenExpiry?: Date;
 }
 
 export interface IAppointment extends Document {
@@ -83,6 +85,11 @@ const PaymentSchema = new Schema<IPayment>(
     refundedAt: Date,
     payoutTransferId: String,
     payoutDate: Date,
+    paymentToken: {
+      type: String,
+      index: true,
+    },
+    paymentTokenExpiry: Date,
   },
   { _id: false },
 );

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import crypto from "crypto";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
@@ -10,6 +11,20 @@ import {
 } from "@/lib/notifications";
 
 import { stripe } from "@/lib/stripe";
+
+// Generate a secure payment token for guest users
+function generatePaymentToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// Get the base URL for payment links
+function getBaseUrl(): string {
+  return (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000"
+  );
+}
 
 // Cancellation fee configuration
 const CANCELLATION_FEE_PERCENTAGE = 0.15; // 15% cancellation fee
@@ -139,9 +154,23 @@ export async function PATCH(
         lastName: string;
       };
 
-      // Send confirmation email to guest users
+      // Send confirmation email to guest users with payment link
       const clientUser = await User.findById(client._id);
       if (clientUser && clientUser.role === "guest") {
+        // Generate payment token for guest user
+        const paymentToken = generatePaymentToken();
+        const paymentTokenExpiry = new Date();
+        paymentTokenExpiry.setDate(paymentTokenExpiry.getDate() + 7); // Token valid for 7 days
+
+        // Save payment token to appointment under payment object
+        await Appointment.findByIdAndUpdate(id, {
+          "payment.paymentToken": paymentToken,
+          "payment.paymentTokenExpiry": paymentTokenExpiry,
+        });
+
+        // Generate payment link
+        const paymentLink = `${getBaseUrl()}/pay?token=${paymentToken}`;
+
         sendGuestPaymentConfirmation({
           guestName: `${client.firstName} ${client.lastName}`,
           guestEmail: client.email,
@@ -152,7 +181,7 @@ export async function PATCH(
           type: appointment.type,
           therapyType: appointment.therapyType || "solo",
           price: appointment.payment.price,
-          meetingLink: appointment.meetingLink,
+          paymentLink,
         }).catch((err) =>
           console.error("Error sending guest confirmation email:", err),
         );

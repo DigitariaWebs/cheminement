@@ -39,6 +39,7 @@ interface GuestBookingEmailData extends BaseAppointmentData {
   therapyType: "solo" | "couple" | "group";
   price: number;
   meetingLink?: string;
+  paymentLink?: string;
 }
 
 interface MeetingLinkEmailData {
@@ -355,12 +356,12 @@ export async function sendGuestBookingConfirmation(
   const appointmentType = formatAppointmentType(data.type);
 
   const html = buildEmailHtml({
-    title: "Appointment Booked",
-    subtitle: "Payment Successful",
-    theme: "success",
-    badge: { text: "✓ Payment Confirmed", theme: "success" },
+    title: "Appointment Request Received",
+    subtitle: "Pending Confirmation",
+    theme: "info",
+    badge: { text: "⏳ Pending Confirmation", theme: "info" },
     greeting: `Dear ${data.guestName},`,
-    intro: `Thank you for booking with JeChemine! Your payment has been processed and your appointment is now <strong>pending confirmation</strong> from ${data.professionalName}.`,
+    intro: `Thank you for booking with JeChemine! Your appointment request has been submitted and is <strong>pending confirmation</strong> from ${data.professionalName}.`,
     details: [
       { label: "Professional", value: data.professionalName },
       { label: "Date", value: formattedDate },
@@ -369,24 +370,86 @@ export async function sendGuestBookingConfirmation(
       { label: "Session Type", value: `${sessionType} Session` },
       { label: "Appointment Type", value: appointmentType },
     ],
-    price: {
-      amount: data.price,
-      note: "Payment processed successfully",
-      theme: "success",
-    },
     infoBox: {
       title: "What happens next?",
       content:
-        "1. The professional will review your request and confirm the appointment.<br>2. You will receive a confirmation email once approved.<br>3. If the appointment is not confirmed, you will receive a full refund.",
+        "1. The professional will review your request.<br>2. Once confirmed, you'll receive an email with payment instructions.<br>3. Complete your payment to secure your session.",
     },
     outro:
       "If you have any questions or need to make changes, please reply to this email or contact our support team.",
   });
 
   const text = buildEmailText([
-    "Appointment Booked - Payment Successful",
+    "Appointment Request Received - Pending Confirmation",
     `Dear ${data.guestName},`,
-    `Thank you for booking with JeChemine! Your payment has been processed and your appointment is now pending confirmation from ${data.professionalName}.`,
+    `Thank you for booking with JeChemine! Your appointment request has been submitted and is pending confirmation from ${data.professionalName}.`,
+    "APPOINTMENT DETAILS",
+    `Professional: ${data.professionalName}`,
+    `Date: ${formattedDate}`,
+    `Time: ${data.time}`,
+    `Duration: ${data.duration} minutes`,
+    `Session Type: ${sessionType} Session`,
+    `Appointment Type: ${appointmentType}`,
+    "WHAT HAPPENS NEXT?",
+    "1. The professional will review your request.",
+    "2. Once confirmed, you'll receive an email with payment instructions.",
+    "3. Complete your payment to secure your session.",
+  ]);
+
+  return sendEmail({
+    to: data.guestEmail,
+    subject: `Appointment Request Received - ${formattedDate} at ${data.time}`,
+    html,
+    text,
+  });
+}
+
+export async function sendGuestPaymentConfirmation(
+  data: GuestBookingEmailData,
+): Promise<boolean> {
+  const formattedDate = formatEmailDate(data.date);
+  const sessionType = formatSessionType(data.therapyType);
+  const appointmentType = formatAppointmentType(data.type);
+
+  const details: Array<{ label: string; value: string; isLink?: boolean }> = [
+    { label: "Professional", value: data.professionalName },
+    { label: "Date", value: formattedDate },
+    { label: "Time", value: data.time },
+    { label: "Duration", value: `${data.duration} minutes` },
+    { label: "Session Type", value: `${sessionType} Session` },
+    { label: "Appointment Type", value: appointmentType },
+  ];
+
+  const html = buildEmailHtml({
+    title: "Appointment Confirmed",
+    subtitle: "Complete Your Payment",
+    theme: "success",
+    badge: { text: "✓ Confirmed by Professional", theme: "success" },
+    greeting: `Dear ${data.guestName},`,
+    intro: `Great news! Your appointment with ${data.professionalName} has been confirmed. Please complete your payment to secure your session.`,
+    details,
+    detailsBorderColor: "#28a745",
+    price: {
+      amount: data.price,
+      note: "Payment required to confirm booking",
+      theme: "info",
+    },
+    button: data.paymentLink
+      ? { text: "Complete Payment Now", url: data.paymentLink }
+      : undefined,
+    infoBox: {
+      title: "Complete Your Payment",
+      content:
+        "Your appointment has been confirmed by the professional. Please complete your payment as soon as possible to secure your session. You will receive meeting details once payment is complete.",
+    },
+    outro:
+      "If you have any questions or need assistance with payment, please reply to this email or contact our support team.",
+  });
+
+  const text = buildEmailText([
+    "Appointment Confirmed - Complete Your Payment",
+    `Dear ${data.guestName},`,
+    `Great news! Your appointment with ${data.professionalName} has been confirmed. Please complete your payment to secure your session.`,
     "APPOINTMENT DETAILS",
     `Professional: ${data.professionalName}`,
     `Date: ${formattedDate}`,
@@ -396,22 +459,22 @@ export async function sendGuestBookingConfirmation(
     `Appointment Type: ${appointmentType}`,
     "PAYMENT",
     `Amount: $${data.price.toFixed(2)} CAD`,
-    "Status: Payment processed successfully",
-    "WHAT HAPPENS NEXT?",
-    "1. The professional will review your request and confirm the appointment.",
-    "2. You will receive a confirmation email once approved.",
-    "3. If the appointment is not confirmed, you will receive a full refund.",
+    "Status: Payment required to confirm booking",
+    data.paymentLink ? `Payment Link: ${data.paymentLink}` : "",
+    "NEXT STEPS",
+    "Please complete your payment as soon as possible to secure your session.",
+    "You will receive meeting details once payment is complete.",
   ]);
 
   return sendEmail({
     to: data.guestEmail,
-    subject: `Appointment Booked - ${formattedDate} at ${data.time}`,
+    subject: `Appointment Confirmed - Complete Payment - ${formattedDate} at ${data.time}`,
     html,
     text,
   });
 }
 
-export async function sendGuestPaymentConfirmation(
+export async function sendGuestPaymentComplete(
   data: GuestBookingEmailData,
 ): Promise<boolean> {
   const formattedDate = formatEmailDate(data.date);
@@ -436,30 +499,36 @@ export async function sendGuestPaymentConfirmation(
   }
 
   const html = buildEmailHtml({
-    title: "Appointment Confirmed",
-    subtitle: "Payment Successful",
+    title: "Payment Successful",
+    subtitle: "Your Session is Confirmed",
     theme: "success",
-    badge: { text: "✓ Payment Confirmed", theme: "success" },
+    badge: { text: "✓ Payment Complete", theme: "success" },
     greeting: `Dear ${data.guestName},`,
-    intro: `Great news! Your appointment with ${data.professionalName} has been confirmed and your payment has been processed successfully.`,
+    intro: `Thank you! Your payment has been processed successfully. Your session with ${data.professionalName} is now fully confirmed.`,
     details,
     detailsBorderColor: "#28a745",
     price: {
       amount: data.price,
-      note: "Payment processed successfully",
+      note: "Payment completed",
       theme: "success",
     },
     button: data.meetingLink
       ? { text: "Join Video Session", url: data.meetingLink }
       : undefined,
+    infoBox: {
+      title: "What's Next?",
+      content: data.meetingLink
+        ? "Your session is ready! Click the button above to join when it's time for your appointment."
+        : "You will receive the meeting link from your professional before your scheduled session.",
+    },
     outro:
       "Please save this email for your records. If you need to reschedule or have any questions, please reply to this email.",
   });
 
   const text = buildEmailText([
-    "Appointment Confirmed - Payment Successful",
+    "Payment Successful - Your Session is Confirmed",
     `Dear ${data.guestName},`,
-    `Great news! Your appointment with ${data.professionalName} has been confirmed and your payment has been processed successfully.`,
+    `Thank you! Your payment has been processed successfully. Your session with ${data.professionalName} is now fully confirmed.`,
     "APPOINTMENT DETAILS",
     `Professional: ${data.professionalName}`,
     `Date: ${formattedDate}`,
@@ -470,12 +539,12 @@ export async function sendGuestPaymentConfirmation(
     data.meetingLink ? `Meeting Link: ${data.meetingLink}` : "",
     "PAYMENT",
     `Amount: $${data.price.toFixed(2)} CAD`,
-    "Status: Payment processed successfully",
+    "Status: Payment completed",
   ]);
 
   return sendEmail({
     to: data.guestEmail,
-    subject: `Appointment Confirmed - ${formattedDate} at ${data.time}`,
+    subject: `Payment Confirmed - Session on ${formattedDate} at ${data.time}`,
     html,
     text,
   });

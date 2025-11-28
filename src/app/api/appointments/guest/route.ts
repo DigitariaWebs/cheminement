@@ -4,7 +4,6 @@ import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
 import { calculateAppointmentPricing } from "@/lib/pricing";
-import { stripe, toCents } from "@/lib/stripe";
 import {
   sendGuestBookingConfirmation,
   sendProfessionalNotification,
@@ -16,20 +15,12 @@ export async function POST(req: NextRequest) {
 
     const data = await req.json();
 
-    // Extract guest info, payment method, and appointment data
-    const { guestInfo, paymentMethodId, ...appointmentData } = data;
+    // Extract guest info and appointment data
+    const { guestInfo, ...appointmentData } = data;
 
     if (!guestInfo) {
       return NextResponse.json(
         { error: "Guest information is required" },
-        { status: 400 },
-      );
-    }
-
-    // Payment method is required for guest bookings
-    if (!paymentMethodId) {
-      return NextResponse.json(
-        { error: "Payment method is required for guest bookings" },
         { status: 400 },
       );
     }
@@ -111,56 +102,6 @@ export async function POST(req: NextRequest) {
         language: "en",
       });
       await guestUser.save();
-    }
-
-    // Get or create Stripe customer and attach payment method
-    let stripeCustomerId = guestUser.stripeCustomerId;
-
-    if (!stripeCustomerId) {
-      // Check if customer already exists in Stripe
-      const existingCustomers = await stripe.customers.list({
-        email: email.toLowerCase(),
-        limit: 1,
-      });
-
-      if (existingCustomers.data.length > 0) {
-        stripeCustomerId = existingCustomers.data[0].id;
-      } else {
-        // Create new Stripe customer
-        const customer = await stripe.customers.create({
-          email: email.toLowerCase(),
-          name: `${firstName} ${lastName}`,
-          phone: phone,
-          metadata: {
-            userId: String(guestUser._id),
-            type: "guest",
-          },
-        });
-        stripeCustomerId = customer.id;
-      }
-
-      // Save Stripe customer ID to user
-      guestUser.stripeCustomerId = stripeCustomerId;
-      await guestUser.save();
-    }
-
-    // Verify and attach payment method to customer
-    try {
-      const paymentMethod =
-        await stripe.paymentMethods.retrieve(paymentMethodId);
-
-      // If payment method is not attached to this customer, attach it
-      if (paymentMethod.customer !== stripeCustomerId) {
-        await stripe.paymentMethods.attach(paymentMethodId, {
-          customer: stripeCustomerId,
-        });
-      }
-    } catch (stripeError) {
-      console.error("Error attaching payment method:", stripeError);
-      return NextResponse.json(
-        { error: "Invalid payment method" },
-        { status: 400 },
-      );
     }
 
     // Verify professional exists and is active
@@ -267,65 +208,15 @@ export async function POST(req: NextRequest) {
     // Set the client ID to the guest user
     appointmentData.clientId = guestUser._id;
 
-    // Charge the guest's card immediately
-    let paymentIntentId: string | undefined;
-    let paymentStatus: "paid" | "processing" | "failed" = "processing";
-    let paidAt: Date | undefined;
-
-    try {
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: toCents(appointmentData.price),
-        currency: "cad",
-        customer: stripeCustomerId,
-        payment_method: paymentMethodId,
-        off_session: true,
-        confirm: true,
-        metadata: {
-          visitorId: String(guestUser._id),
-          visitorEmail: email,
-          professionalId: appointmentData.professionalId,
-          type: "guest_booking",
-        },
-        description: `Therapy session with ${professional.firstName} ${professional.lastName}`,
-      });
-
-      paymentIntentId = paymentIntent.id;
-
-      if (paymentIntent.status === "succeeded") {
-        paymentStatus = "paid";
-        paidAt = new Date();
-        console.log(`Guest payment successful: ${paymentIntent.id}`);
-      } else {
-        console.log(
-          `Guest payment processing: ${paymentIntent.id} - Status: ${paymentIntent.status}`,
-        );
-      }
-    } catch (paymentError: unknown) {
-      console.error("Error charging guest card:", paymentError);
-      return NextResponse.json(
-        {
-          error:
-            "Payment failed. Please check your card details and try again.",
-          details:
-            paymentError instanceof Error
-              ? paymentError.message
-              : "Unknown payment error",
-        },
-        { status: 402 },
-      );
-    }
-
-    // Create the appointment with payment info
+    // Create the appointment with pending payment status (payment after professional confirmation)
     const appointment = new Appointment({
       ...appointmentData,
+      status: "pending", // Pending until professional confirms
       payment: {
         price: appointmentData.price,
         platformFee: appointmentData.platformFee,
         professionalPayout: appointmentData.professionalPayout,
-        status: paymentStatus,
-        stripePaymentIntentId: paymentIntentId,
-        stripePaymentMethodId: paymentMethodId,
-        paidAt: paidAt,
+        status: "pending",
       },
     });
     await appointment.save();
