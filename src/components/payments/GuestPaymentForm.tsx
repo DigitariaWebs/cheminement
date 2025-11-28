@@ -9,7 +9,13 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle, CheckCircle2, CreditCard, Shield } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  CreditCard,
+  Shield,
+} from "lucide-react";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -29,7 +35,11 @@ interface SetupFormProps {
   loading?: boolean;
 }
 
-function SetupForm({ onSuccess, onError, loading: externalLoading }: SetupFormProps) {
+function SetupForm({
+  onSuccess,
+  onError,
+  loading: externalLoading,
+}: SetupFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -61,9 +71,10 @@ function SetupForm({ onSuccess, onError, loading: externalLoading }: SetupFormPr
 
       // Pass the payment method ID back to the parent
       if (setupIntent.payment_method) {
-        const paymentMethodId = typeof setupIntent.payment_method === 'string'
-          ? setupIntent.payment_method
-          : setupIntent.payment_method.id;
+        const paymentMethodId =
+          typeof setupIntent.payment_method === "string"
+            ? setupIntent.payment_method
+            : setupIntent.payment_method.id;
         setTimeout(() => {
           onSuccess(paymentMethodId);
         }, 1000);
@@ -109,7 +120,9 @@ function SetupForm({ onSuccess, onError, loading: externalLoading }: SetupFormPr
         className="w-full"
         size="lg"
       >
-        {(loading || externalLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {(loading || externalLoading) && (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        )}
         {loading ? "Verifying..." : "Verify & Continue"}
       </Button>
     </form>
@@ -185,7 +198,9 @@ export default function GuestPaymentForm({
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Please enter your card details to continue with booking. Your card will only be charged after your appointment is confirmed by the professional.
+          Please enter your card details to continue with booking. Your card
+          will only be charged after your appointment is confirmed by the
+          professional.
         </p>
       </div>
 
@@ -198,7 +213,9 @@ export default function GuestPaymentForm({
       {loading && (
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="text-sm text-muted-foreground">Preparing secure payment form...</p>
+          <p className="text-sm text-muted-foreground">
+            Preparing secure payment form...
+          </p>
         </div>
       )}
 
@@ -206,8 +223,12 @@ export default function GuestPaymentForm({
         <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-800 dark:text-red-200">Error</p>
-            <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
+            <p className="text-sm font-medium text-red-800 dark:text-red-200">
+              Error
+            </p>
+            <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+              {error}
+            </p>
             <Button
               variant="outline"
               size="sm"
