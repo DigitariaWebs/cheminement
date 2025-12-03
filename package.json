@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
+    "test": "tsc --noEmit",
+    "prune": "knip",
     "seed": "tsx src/lib/seed.ts",
     "create-admin": "tsx src/lib/create-admin.ts"
   },
@@ -52,6 +54,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.0.1",
+    "knip": "^5.70.2",
     "prettier": "^3.7.1",
     "tailwindcss": "^4.1.17",
     "tsx": "^4.20.6",

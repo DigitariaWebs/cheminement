@@ -6,6 +6,7 @@
       "whyUs": "Why Us",
       "approaches": "Approaches",
       "services": "Services",
+      "platform": "Platform",
       "contact": "Contact"
     },
     "login": "Login",
@@ -1894,6 +1895,200 @@
         "processing": "Processing",
         "overdue": "Overdue"
       }
+    }
+  },
+  "Platform": {
+    "hero": {
+      "badge": "INTEGRATED HEALTH PLATFORM",
+      "headline": "Our Integrated Health Platform™",
+      "description": "Outdated, fragmented, slow. This should not describe your health and wellness programs. Reimagined to answer the needs of today's organizations, our platform gives you peace of mind knowing that everyone has easy access to the right support, at a time that works for them.",
+      "benefits": {
+        "title": "PLATFORM BENEFITS",
+        "items": [
+          "One unified platform for all health and wellness needs",
+          "24/7/365 access to care when you need it",
+          "Reduced complexity with integrated services",
+          "Real-time progress tracking and insights",
+          "Personalized care pathways for every individual"
+        ]
+      }
+    },
+    "services": {
+      "badge": "OUR SERVICES",
+      "title": "Comprehensive Health Solutions",
+      "subtitle": "Multiple health and wellness programs to support your organization. They work great on their own, but are even stronger together.",
+      "learnMore": "Learn More",
+      "eap": {
+        "title": "Employee Assistance Program",
+        "description": "Outdated, fragmented, slow. This should not describe your EAP. Reimagined to answer the needs of today's organizations, our EAP gives you peace of mind knowing that your employees have easy access to the right support, at a time that works for them."
+      },
+      "mentalHealth": {
+        "title": "Mental Health+",
+        "description": "Outdated, fragmented, slow. This should not describe your mental health support. Reimagined to answer the needs of today's organizations, our Mental Health+ programs give you peace of mind knowing that your employees have easy access to comprehensive support connecting them with qualified professionals for assessments, therapy, and ongoing care, at a time that works for them."
+      },
+      "primaryCare": {
+        "title": "Primary Care",
+        "description": "Outdated, fragmented, slow. This should not describe your primary care access. Reimagined to answer the needs of today's organizations, our primary care services give you peace of mind knowing that your employees have easy access to physicians for general health concerns, preventive care, and medical consultations, at a time that works for them."
+      },
+      "wellness": {
+        "title": "Wellness",
+        "description": "Outdated, fragmented, slow. This should not describe your wellness programs. Reimagined to answer the needs of today's organizations, our wellness programs give you peace of mind knowing that your employees have easy access to holistic support for nutrition, fitness, and lifestyle coaching, at a time that works for them."
+      },
+      "cards": {
+        "eap": {
+          "startConsultation": "Start a consultation",
+          "speakProfessional": "Speak with a professional.",
+          "appointmentConfirmed": "Perfect! Your virtual appointment today at 8:45 AM is confirmed.",
+          "goToChat": "GO TO CHAT",
+          "carePlans": "Care Plans",
+          "noCarePlans": "You don't have any care plans yet",
+          "getCare": "GET CARE"
+        },
+        "mentalHealth": {
+          "videoSessionAvailable": "Video Session Available",
+          "therapistReady": "Dr. Sarah Johnson is ready for your scheduled therapy session.",
+          "onlineNow": "Online now",
+          "yourProgress": "Your Progress",
+          "weekOfTreatment": "Week 6 of treatment",
+          "moodTracking": "Mood tracking",
+          "viewFullReport": "View Full Report",
+          "selfHelpResources": "Self-Help Resources",
+          "newGuides": "12 new guides available",
+          "browseLibrary": "Browse Library"
+        },
+        "primaryCare": {
+          "doctorAvailable": "Doctor Available Now",
+          "doctorReady": "Dr. Michael Chen is ready to discuss your health concerns and medical questions.",
+          "availableForConsultation": "Available for consultation",
+          "appointmentScheduled": "Appointment Scheduled",
+          "tomorrowTime": "Tomorrow at 10:30 AM",
+          "doctorName": "Dr. Emily Roberts",
+          "inPerson": "In-person",
+          "checkupType": "General checkup and health assessment",
+          "viewDetails": "View Details",
+          "prescriptionReady": "Prescription Ready",
+          "availableAtPharmacy": "Available at your pharmacy",
+          "viewPrescription": "View Prescription"
+        },
+        "wellness": {
+          "dailyWellnessGoals": "Daily Wellness Goals",
+          "trackActivities": "Track nutrition, fitness, and mindfulness activities.",
+          "lifestyleCoaching": "Lifestyle Coaching",
+          "personalizedGuidance": "Personalized guidance available",
+          "bookCoachSession": "Book Coach Session",
+          "activityPrograms": "Activity Programs",
+          "yogaFitness": "Yoga, fitness & more",
+          "viewSchedule": "View Schedule"
+        }
+      }
+    },
+    "serviceDetails": {
+      "badge": "SERVICE DETAILS",
+      "title": "What's Included in Each Program",
+      "subtitle": "Explore the comprehensive features and benefits of our integrated health solutions designed to support your workforce.",
+      "eap": {
+        "title": "Employee Assistance Program",
+        "description": "Our modern EAP provides confidential support for personal and work-related challenges. From counseling to legal advice, we ensure your employees get the help they need quickly and discreetly.",
+        "highlight": "Available 24/7/365",
+        "features": [
+          "Short-term counseling for personal and work issues",
+          "Legal and financial consultation services",
+          "Crisis intervention and emergency support",
+          "Work-life balance resources and referrals",
+          "Manager consultation and training",
+          "Critical incident stress management"
+        ]
+      },
+      "mentalHealth": {
+        "title": "Mental Health+",
+        "description": "Go beyond traditional EAP with comprehensive mental health support. Our Mental Health+ program provides extended therapy, psychiatric care, and ongoing treatment for complex conditions.",
+        "highlight": "Extended therapy coverage",
+        "features": [
+          "Extended individual therapy sessions",
+          "Psychiatric assessments and medication management",
+          "Specialized treatment for anxiety and depression",
+          "Group therapy and support programs",
+          "Digital therapeutics and self-guided tools",
+          "Progress tracking and outcome measurement"
+        ]
+      },
+      "primaryCare": {
+        "title": "Primary Care",
+        "description": "Virtual and in-person access to physicians for general health concerns. Reduce absenteeism and improve productivity with convenient primary care that fits into busy schedules.",
+        "highlight": "Same-day appointments",
+        "features": [
+          "Virtual consultations with licensed physicians",
+          "Prescription renewals and management",
+          "Preventive care and health screenings",
+          "Chronic condition management",
+          "Lab requisitions and referrals",
+          "Health coaching and lifestyle guidance"
+        ]
+      },
+      "wellness": {
+        "title": "Wellness Programs",
+        "description": "Holistic wellness programs that address nutrition, fitness, mindfulness, and lifestyle coaching. Help your employees build sustainable healthy habits.",
+        "highlight": "Personalized coaching",
+        "features": [
+          "Nutrition counseling and meal planning",
+          "Fitness programs and activity challenges",
+          "Mindfulness and meditation resources",
+          "Sleep improvement programs",
+          "Stress management workshops",
+          "Financial wellness education"
+        ]
+      }
+    },
+    "integrationBenefits": {
+      "badge": "WHY INTEGRATED",
+      "title": "The Power of Integration",
+      "subtitle": "When all your health programs work together on one platform, everyone wins—you get seamless care and better outcomes.",
+      "benefits": [
+        {
+          "title": "Unified Experience",
+          "description": "One login, one app, one place for employees to access all health and wellness services without confusion or multiple vendor portals."
+        },
+        {
+          "title": "Reduced Costs",
+          "description": "Eliminate redundant contracts and administrative overhead. Our integrated approach typically reduces total benefits costs by 15-25%."
+        },
+        {
+          "title": "Faster Access to Care",
+          "description": "No more waiting weeks for appointments. Employees connect with the right care providers within 24-48 hours on average."
+        },
+        {
+          "title": "Data-Driven Insights",
+          "description": "Aggregate analytics across all programs show you exactly what's working and where to focus your wellness investments."
+        },
+        {
+          "title": "Higher Engagement",
+          "description": "Integrated platforms see 3x higher utilization rates compared to fragmented point solutions, maximizing your benefits ROI."
+        },
+        {
+          "title": "Dedicated Support",
+          "description": "A single account team manages your entire program, providing responsive support and proactive strategic guidance."
+        }
+      ],
+      "cta": {
+        "title": "Built for Everyone",
+        "description": "Our platform scales to meet your needs while maintaining personalized care for every individual.",
+        "points": [
+          "Seamless experience across all services",
+          "Customizable programs to match your needs",
+          "Multilingual support including French and English",
+          "PIPEDA and HIPAA compliant data security"
+        ]
+      }
+    },
+    "cta": {
+      "badge": "GET STARTED",
+      "title": "Experience the Platform",
+      "description": "Discover how our Integrated Health Platform can transform your access to comprehensive health and wellness support.",
+      "contactButton": "Contact Us",
+      "demoButton": "Book a Consultation",
+      "phone": "1-800-XXX-XXXX",
+      "email": "info@jechemine.ca",
+      "helpText": "Our team typically responds within 24 hours. We're here to help you on your wellness journey."
     }
   }
 }

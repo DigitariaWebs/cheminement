@@ -6,6 +6,7 @@
       "whyUs": "Pourquoi nous",
       "approaches": "Approches",
       "services": "Services",
+      "platform": "Plateforme",
       "contact": "Contact"
     },
     "login": "Connexion",
@@ -1884,6 +1885,200 @@
         "processing": "En traitement",
         "overdue": "En retard"
       }
+    }
+  },
+  "Platform": {
+    "hero": {
+      "badge": "PLATEFORME DE SANTÉ INTÉGRÉE",
+      "headline": "Notre plateforme de santé intégrée™",
+      "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire vos programmes de santé et de bien-être. Réinventée pour répondre aux besoins d'aujourd'hui, notre plateforme vous donne la tranquillité d'esprit en sachant que chacun a facilement accès au bon soutien, au moment qui lui convient.",
+      "benefits": {
+        "title": "AVANTAGES DE LA PLATEFORME",
+        "items": [
+          "Une plateforme unifiée pour tous les besoins de santé et de bien-être",
+          "Accès aux soins 24/7/365 quand vous en avez besoin",
+          "Complexité réduite grâce aux services intégrés",
+          "Suivi des progrès et insights en temps réel",
+          "Parcours de soins personnalisés pour chaque individu"
+        ]
+      }
+    },
+    "services": {
+      "badge": "NOS SERVICES",
+      "title": "Solutions de santé complètes",
+      "subtitle": "Plusieurs programmes de santé et de bien-être pour soutenir votre organisation. Ils fonctionnent très bien seuls, mais sont encore plus forts ensemble.",
+      "learnMore": "En savoir plus",
+      "eap": {
+        "title": "Programme d'aide aux employés",
+        "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire votre PAE. Réinventé pour répondre aux besoins des organisations d'aujourd'hui, notre PAE vous donne la tranquillité d'esprit en sachant que vos employés ont facilement accès au bon soutien, au moment qui leur convient."
+      },
+      "mentalHealth": {
+        "title": "Santé mentale+",
+        "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire votre soutien en santé mentale. Réinventés pour répondre aux besoins des organisations d'aujourd'hui, nos programmes Santé mentale+ vous donnent la tranquillité d'esprit en sachant que vos employés ont facilement accès à un soutien complet les mettant en contact avec des professionnels qualifiés pour des évaluations, une thérapie et des soins continus, au moment qui leur convient."
+      },
+      "primaryCare": {
+        "title": "Soins primaires",
+        "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire votre accès aux soins primaires. Réinventés pour répondre aux besoins des organisations d'aujourd'hui, nos services de soins primaires vous donnent la tranquillité d'esprit en sachant que vos employés ont facilement accès à des médecins pour des préoccupations de santé générales, des soins préventifs et des consultations médicales, au moment qui leur convient."
+      },
+      "wellness": {
+        "title": "Bien-être",
+        "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire vos programmes de bien-être. Réinventés pour répondre aux besoins des organisations d'aujourd'hui, nos programmes de bien-être vous donnent la tranquillité d'esprit en sachant que vos employés ont facilement accès à un soutien holistique pour la nutrition, la forme physique et le coaching de style de vie, au moment qui leur convient."
+      },
+      "cards": {
+        "eap": {
+          "startConsultation": "Commencer une consultation",
+          "speakProfessional": "Parlez avec un professionnel.",
+          "appointmentConfirmed": "Parfait! Votre rendez-vous virtuel aujourd'hui à 8h45 est confirmé.",
+          "goToChat": "ALLER AU CHAT",
+          "carePlans": "Plans de soins",
+          "noCarePlans": "Vous n'avez pas encore de plans de soins",
+          "getCare": "OBTENIR DES SOINS"
+        },
+        "mentalHealth": {
+          "videoSessionAvailable": "Session vidéo disponible",
+          "therapistReady": "Dr. Sarah Johnson est prête pour votre session de thérapie prévue.",
+          "onlineNow": "En ligne maintenant",
+          "yourProgress": "Votre progression",
+          "weekOfTreatment": "Semaine 6 du traitement",
+          "moodTracking": "Suivi de l'humeur",
+          "viewFullReport": "Voir le rapport complet",
+          "selfHelpResources": "Ressources d'auto-assistance",
+          "newGuides": "12 nouveaux guides disponibles",
+          "browseLibrary": "Parcourir la bibliothèque"
+        },
+        "primaryCare": {
+          "doctorAvailable": "Médecin disponible maintenant",
+          "doctorReady": "Dr. Michael Chen est prêt à discuter de vos préoccupations de santé et questions médicales.",
+          "availableForConsultation": "Disponible pour consultation",
+          "appointmentScheduled": "Rendez-vous programmé",
+          "tomorrowTime": "Demain à 10h30",
+          "doctorName": "Dr. Emily Roberts",
+          "inPerson": "En personne",
+          "checkupType": "Bilan de santé général et évaluation",
+          "viewDetails": "Voir les détails",
+          "prescriptionReady": "Ordonnance prête",
+          "availableAtPharmacy": "Disponible à votre pharmacie",
+          "viewPrescription": "Voir l'ordonnance"
+        },
+        "wellness": {
+          "dailyWellnessGoals": "Objectifs de bien-être quotidiens",
+          "trackActivities": "Suivez la nutrition, la forme physique et les activités de pleine conscience.",
+          "lifestyleCoaching": "Coaching de style de vie",
+          "personalizedGuidance": "Conseils personnalisés disponibles",
+          "bookCoachSession": "Réserver une session de coaching",
+          "activityPrograms": "Programmes d'activités",
+          "yogaFitness": "Yoga, fitness et plus",
+          "viewSchedule": "Voir l'horaire"
+        }
+      }
+    },
+    "serviceDetails": {
+      "badge": "DÉTAILS DES SERVICES",
+      "title": "Ce qui est inclus dans chaque programme",
+      "subtitle": "Explorez les fonctionnalités et avantages complets de nos solutions de santé intégrées conçues pour soutenir votre personnel.",
+      "eap": {
+        "title": "Programme d'aide aux employés",
+        "description": "Notre PAE moderne offre un soutien confidentiel pour les défis personnels et professionnels. Du counseling aux conseils juridiques, nous veillons à ce que vos employés obtiennent l'aide dont ils ont besoin rapidement et discrètement.",
+        "highlight": "Disponible 24/7/365",
+        "features": [
+          "Counseling à court terme pour les problèmes personnels et professionnels",
+          "Services de consultation juridique et financière",
+          "Intervention de crise et soutien d'urgence",
+          "Ressources et références pour l'équilibre travail-vie",
+          "Consultation et formation des gestionnaires",
+          "Gestion du stress lors d'incidents critiques"
+        ]
+      },
+      "mentalHealth": {
+        "title": "Santé mentale+",
+        "description": "Allez au-delà du PAE traditionnel avec un soutien complet en santé mentale. Notre programme Santé mentale+ offre une thérapie prolongée, des soins psychiatriques et un traitement continu pour les conditions complexes.",
+        "highlight": "Couverture thérapeutique étendue",
+        "features": [
+          "Sessions de thérapie individuelle prolongées",
+          "Évaluations psychiatriques et gestion des médicaments",
+          "Traitement spécialisé pour l'anxiété et la dépression",
+          "Programmes de thérapie de groupe et de soutien",
+          "Thérapies numériques et outils autoguidés",
+          "Suivi des progrès et mesure des résultats"
+        ]
+      },
+      "primaryCare": {
+        "title": "Soins primaires",
+        "description": "Accès virtuel et en personne à des médecins pour les préoccupations de santé générales. Réduisez l'absentéisme et améliorez la productivité avec des soins primaires pratiques qui s'intègrent aux horaires chargés.",
+        "highlight": "Rendez-vous le jour même",
+        "features": [
+          "Consultations virtuelles avec des médecins licenciés",
+          "Renouvellement et gestion des ordonnances",
+          "Soins préventifs et dépistages de santé",
+          "Gestion des conditions chroniques",
+          "Demandes de laboratoire et références",
+          "Coaching santé et conseils de style de vie"
+        ]
+      },
+      "wellness": {
+        "title": "Programmes de bien-être",
+        "description": "Programmes de bien-être holistiques qui abordent la nutrition, la forme physique, la pleine conscience et le coaching de style de vie. Aidez vos employés à développer des habitudes saines durables.",
+        "highlight": "Coaching personnalisé",
+        "features": [
+          "Conseils en nutrition et planification des repas",
+          "Programmes de fitness et défis d'activité",
+          "Ressources de pleine conscience et méditation",
+          "Programmes d'amélioration du sommeil",
+          "Ateliers de gestion du stress",
+          "Éducation au bien-être financier"
+        ]
+      }
+    },
+    "integrationBenefits": {
+      "badge": "POURQUOI L'INTÉGRATION",
+      "title": "La puissance de l'intégration",
+      "subtitle": "Lorsque tous vos programmes de santé fonctionnent ensemble sur une seule plateforme, tout le monde y gagne — vous recevez des soins fluides et obtenez de meilleurs résultats.",
+      "benefits": [
+        {
+          "title": "Expérience unifiée",
+          "description": "Une connexion, une application, un seul endroit pour que les employés accèdent à tous les services de santé et de bien-être sans confusion ni multiples portails de fournisseurs."
+        },
+        {
+          "title": "Réduction des coûts",
+          "description": "Éliminez les contrats redondants et les frais administratifs. Notre approche intégrée réduit généralement les coûts totaux des avantages sociaux de 15 à 25%."
+        },
+        {
+          "title": "Accès plus rapide aux soins",
+          "description": "Fini l'attente de semaines pour les rendez-vous. Les employés se connectent avec les bons prestataires de soins dans les 24 à 48 heures en moyenne."
+        },
+        {
+          "title": "Insights basés sur les données",
+          "description": "Les analyses agrégées de tous les programmes vous montrent exactement ce qui fonctionne et où concentrer vos investissements en bien-être."
+        },
+        {
+          "title": "Engagement supérieur",
+          "description": "Les plateformes intégrées voient des taux d'utilisation 3x plus élevés par rapport aux solutions fragmentées, maximisant le ROI de vos avantages."
+        },
+        {
+          "title": "Support dédié",
+          "description": "Une seule équipe de compte gère l'ensemble de votre programme, offrant un support réactif et des conseils stratégiques proactifs."
+        }
+      ],
+      "cta": {
+        "title": "Conçu pour tous",
+        "description": "Notre plateforme s'adapte à vos besoins tout en maintenant des soins personnalisés pour chaque individu.",
+        "points": [
+          "Expérience fluide à travers tous les services",
+          "Programmes personnalisables selon vos besoins",
+          "Support multilingue incluant le français et l'anglais",
+          "Sécurité des données conforme à la LPRPDE et HIPAA"
+        ]
+      }
+    },
+    "cta": {
+      "badge": "COMMENCER",
+      "title": "Découvrez la plateforme",
+      "description": "Découvrez comment notre plateforme de santé intégrée peut transformer votre accès à un soutien complet en santé et bien-être.",
+      "contactButton": "Nous contacter",
+      "demoButton": "Réserver une consultation",
+      "phone": "1-800-XXX-XXXX",
+      "email": "info@jechemine.ca",
+      "helpText": "Notre équipe répond généralement dans les 24 heures. Nous sommes là pour vous accompagner dans votre parcours de bien-être."
     }
   }
 }

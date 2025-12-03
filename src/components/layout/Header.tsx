@@ -35,7 +35,7 @@ export function Header() {
     { href: "/why-us", label: t("nav.whyUs") },
     { href: "/approaches", label: t("nav.approaches") },
     { href: "/services", label: t("nav.services") },
-
+    { href: "/services/platform", label: t("nav.platform") },
     { href: "/contact", label: t("nav.contact") },
   ];
 
