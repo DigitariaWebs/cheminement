@@ -63,10 +63,60 @@
   "HowItWorksSection": {
     "badge": "Processus simple",
     "title": "Comment ça marche",
-    "subtitle": "Votre parcours vers une meilleure santé et un meilleur bien-être en quatre étapes simples",
+    "subtitle": "Votre parcours vers une meilleure santé mentale en trois étapes simples",
     "cta": {
       "question": "Prêt à commencer votre parcours ?",
       "button": "Commencez aujourd'hui"
+    }
+  },
+  "ClientAdvantagesSection": {
+    "badge": "VOS AVANTAGES",
+    "title": "Une plateforme de santé pensée pour vous",
+    "subtitle": "Accédez rapidement à des professionnels qualifiés et à du contenu éducatif pour prendre soin de votre santé mentale.",
+    "quickAccess": {
+      "title": "Accès rapide",
+      "description": "Obtenez un rendez-vous rapidement avec un professionnel qualifié, sans longues listes d'attente."
+    },
+    "diverseProfessionals": {
+      "title": "Diversité de professionnels",
+      "description": "Choisissez parmi une équipe multidisciplinaire de spécialistes pour trouver celui qui vous convient le mieux."
+    },
+    "educationalContent": {
+      "title": "Contenu éducatif",
+      "description": "Accédez à des vidéos et lectures sur l'anxiété, l'épuisement, le stress et plus encore, avant même de commencer votre suivi."
+    },
+    "confidentiality": {
+      "title": "Confidentialité assurée",
+      "description": "Vos échanges et informations personnelles sont protégés selon les normes les plus strictes."
+    },
+    "educationalHighlight": {
+      "title": "Commencez votre parcours dès maintenant",
+      "description": "Avant même votre premier rendez-vous, explorez notre bibliothèque de ressources éducatives pour mieux comprendre votre situation et vous préparer à votre suivi."
+    },
+    "topics": {
+      "anxiety": "Anxiété",
+      "burnout": "Épuisement",
+      "stress": "Stress",
+      "depression": "Dépression",
+      "selfEsteem": "Estime de soi"
+    },
+    "professionalsSection": {
+      "title": "Nos professionnels à votre service",
+      "subtitle": "Une équipe multidisciplinaire de spécialistes reconnus par leurs ordres professionnels."
+    },
+    "professionals": {
+      "psychologist": "Psychologue",
+      "psychotherapist": "Psychothérapeute",
+      "neuropsychologist": "Neuropsychologue",
+      "socialWorker": "Travailleur social",
+      "psychoeducator": "Psychoéducateur",
+      "mentalHealthCounselor": "Conseiller en santé mentale",
+      "psychiatrist": "Psychiatre"
+    },
+    "trustIndicators": {
+      "licensed": "Professionnels accrédités",
+      "supervised": "Pratique supervisée",
+      "confidential": "100% confidentiel"
     }
   },
   "ServiceSection": {
@@ -818,9 +868,17 @@
   "About": {
     "hero": {
       "badge": "Qui nous sommes",
+      "designedBy": {
+        "label": "Notre différence",
+        "title": "Une plateforme conçue par des psychologues"
+      },
       "headline": "Chez Je chemine, nous croyons que chaque personne mérite un accompagnement humain, sécuritaire et adapté à sa réalité.",
       "description1": "Notre mission est de vous soutenir dans votre bien-être émotionnel et psychologique grâce à un parcours personnalisé, conçu pour répondre à vos besoins uniques et à votre rythme. Nous offrons un accès simple et bienveillant à une équipe d'experts dont la pratique est encadrée, reconnue et conforme aux exigences de leur ordre professionnel.",
-      "description2": "Quelle que soit votre situation, vous êtes accompagné par un professionnel qualifié, prêt à cheminer avec vous vers une vie plus sereine, équilibrée et épanouie."
+      "description2": "Quelle que soit votre situation, vous êtes accompagné par un professionnel qualifié, prêt à cheminer avec vous vers une vie plus sereine, équilibrée et épanouie.",
+      "trustIndicators": {
+        "experts": "Équipe d'experts qualifiés",
+        "certified": "Professionnels certifiés"
+      }
     },
     "commitment": {
       "title": "Notre engagement",
@@ -1339,6 +1397,7 @@
       "title": "Peu importe votre défi, nous avons un professionnel pour vous aider.",
       "description": "Psychothérapie adulte, thérapie familiale, évaluation scolaire, accompagnement pour le TDAH, soutien parental ou psychoéducation : chaque membre de votre famille peut trouver sa place et recevoir l'aide nécessaire.",
       "coordinated": "Une approche coordonnée pour toute la famille.",
+      "imageAlt": "Famille heureuse profitant d'un moment ensemble",
       "services": {
         "adult": {
           "title": "Psychothérapie adulte",

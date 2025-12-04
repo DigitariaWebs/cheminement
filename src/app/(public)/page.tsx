@@ -1,7 +1,7 @@
 import HeroSection from "@/components/sections/HeroSection";
 import ColorTransition from "@/components/ui/ColorTransition";
 import ValueSection from "@/components/sections/ValueSection";
-import ServiceSection from "@/components/sections/ServiceSection";
+import ClientAdvantagesSection from "@/components/sections/ClientAdvantagesSection";
 import HowItWorksSection from "@/components/sections/HowItWorksSection";
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
       <ColorTransition fromColor="accent" toColor="background" />
       <ValueSection />
       <ColorTransition fromColor="accent" toColor="muted" />
-      <ServiceSection />
+      <ClientAdvantagesSection />
       <HowItWorksSection />
     </main>
   );

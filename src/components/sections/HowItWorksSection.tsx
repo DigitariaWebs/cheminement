@@ -2,7 +2,6 @@
 
 import {
   ArrowRight,
-  Search,
   UserPlus,
   CalendarCheck,
   FileText,
@@ -15,41 +14,34 @@ export default function HowItWorksSection() {
 
   const clientJourneySteps = [
     {
-      icon: Search,
-      titleEn: "Explore services",
-      titleFr: "Explorez les services",
+      icon: UserPlus,
+      titleEn: "Create your profile",
+      titleFr: "Créez votre profil",
       descriptionEn:
-        "Discover our services and find the right support for your needs",
+        "Sign up and tell us about your needs. Your information is secure and confidential.",
       descriptionFr:
-        "Découvrez nos services et trouvez le soutien adapté à vos besoins",
+        "Inscrivez-vous et parlez-nous de vos besoins. Vos informations sont sécurisées et confidentielles.",
       step: "01",
     },
     {
-      icon: UserPlus,
-      titleEn: "Create profile",
-      titleFr: "Créez un profil",
-      descriptionEn:
-        "Set up your account with secure, confidential information",
-      descriptionFr:
-        "Configurez votre compte avec des informations sécurisées et confidentielles",
-      step: "02",
-    },
-    {
       icon: CalendarCheck,
-      titleEn: "Get appointment",
+      titleEn: "Get an appointment",
       titleFr: "Obtenez un rendez-vous",
-      descriptionEn: "Book a consultation at a time that works for you",
-      descriptionFr: "Réservez une consultation à un moment qui vous convient",
-      step: "03",
+      descriptionEn:
+        "We match you with the right professional and schedule a session at a time that works for you.",
+      descriptionFr:
+        "Nous vous jumelons avec le bon professionnel et planifions une séance au moment qui vous convient.",
+      step: "02",
     },
     {
       icon: FileText,
       titleEn: "Access content",
       titleFr: "Accédez au contenu",
-      descriptionEn: "Connect with professionals and access resources",
+      descriptionEn:
+        "Explore educational resources on anxiety, stress, burnout and more while you wait for your first session.",
       descriptionFr:
-        "Connectez-vous avec des professionnels et accédez aux ressources",
-      step: "04",
+        "Explorez des ressources éducatives sur l'anxiété, le stress, l'épuisement et plus encore en attendant votre première séance.",
+      step: "03",
     },
   ];
   return (
@@ -93,7 +85,7 @@ export default function HowItWorksSection() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-6">
             {clientJourneySteps.map((step, index) => (
               <div
                 key={index}

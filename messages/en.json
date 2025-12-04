@@ -63,10 +63,60 @@
   "HowItWorksSection": {
     "badge": "Simple Process",
     "title": "How It Works",
-    "subtitle": "Your journey to better health and wellness in four simple steps",
+    "subtitle": "Your journey to better mental health in three simple steps",
     "cta": {
       "question": "Ready to start your journey?",
       "button": "Get Started Today"
+    }
+  },
+  "ClientAdvantagesSection": {
+    "badge": "YOUR BENEFITS",
+    "title": "A Health Platform Designed for You",
+    "subtitle": "Quick access to qualified professionals and educational content to take care of your mental health.",
+    "quickAccess": {
+      "title": "Quick Access",
+      "description": "Get an appointment quickly with a qualified professional, without long waiting lists."
+    },
+    "diverseProfessionals": {
+      "title": "Diverse Professionals",
+      "description": "Choose from a multidisciplinary team of specialists to find the one that suits you best."
+    },
+    "educationalContent": {
+      "title": "Educational Content",
+      "description": "Access videos and readings on anxiety, burnout, stress and more, even before starting your therapy."
+    },
+    "confidentiality": {
+      "title": "Guaranteed Confidentiality",
+      "description": "Your exchanges and personal information are protected according to the strictest standards."
+    },
+    "educationalHighlight": {
+      "title": "Start Your Journey Now",
+      "description": "Before your first appointment, explore our library of educational resources to better understand your situation and prepare for your follow-up."
+    },
+    "topics": {
+      "anxiety": "Anxiety",
+      "burnout": "Burnout",
+      "stress": "Stress",
+      "depression": "Depression",
+      "selfEsteem": "Self-Esteem"
+    },
+    "professionalsSection": {
+      "title": "Our Professionals at Your Service",
+      "subtitle": "A multidisciplinary team of specialists recognized by their professional orders."
+    },
+    "professionals": {
+      "psychologist": "Psychologist",
+      "psychotherapist": "Psychotherapist",
+      "neuropsychologist": "Neuropsychologist",
+      "socialWorker": "Social Worker",
+      "psychoeducator": "Psychoeducator",
+      "mentalHealthCounselor": "Mental Health Counselor",
+      "psychiatrist": "Psychiatrist"
+    },
+    "trustIndicators": {
+      "licensed": "Licensed Professionals",
+      "supervised": "Supervised Practice",
+      "confidential": "100% Confidential"
     }
   },
   "ServiceSection": {
@@ -818,9 +868,17 @@
   "About": {
     "hero": {
       "badge": "Who We Are",
+      "designedBy": {
+        "label": "Our Difference",
+        "title": "A Platform Designed by Psychologists"
+      },
       "headline": "At Je chemine, we believe that everyone deserves human, safe, and personalized support tailored to their reality.",
       "description1": "Our mission is to support your emotional and psychological well-being through a personalized journey designed to meet your unique needs and pace. We offer simple and caring access to a team of experts whose practice is regulated, recognized, and compliant with their professional order requirements.",
-      "description2": "Whatever your situation, you are accompanied by a qualified professional, ready to walk with you towards a more serene, balanced, and fulfilling life."
+      "description2": "Whatever your situation, you are accompanied by a qualified professional, ready to walk with you towards a more serene, balanced, and fulfilling life.",
+      "trustIndicators": {
+        "experts": "Team of Qualified Experts",
+        "certified": "Certified Professionals"
+      }
     },
     "commitment": {
       "title": "Our Commitment",
@@ -1339,6 +1397,7 @@
       "title": "Whatever your challenge, we have a professional to help you.",
       "description": "Adult psychotherapy, family therapy, school assessment, ADHD support, parental support, or psychoeducation: every member of your family can find their place and receive the necessary help.",
       "coordinated": "A coordinated approach for the whole family.",
+      "imageAlt": "Happy family enjoying a moment together",
       "services": {
         "adult": {
           "title": "Adult Psychotherapy",
