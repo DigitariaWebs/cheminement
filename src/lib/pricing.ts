@@ -14,11 +14,13 @@ export interface PricingResult {
  * Uses professional's pricing if available, otherwise falls back to platform defaults
  */
 export async function calculateAppointmentPricing(
-  profileId: string,
+  profileId: string | null,
   therapyType: "solo" | "couple" | "group",
 ): Promise<PricingResult> {
-  // Get professional's profile
-  const profile = await Profile.findOne({ userId: profileId });
+  // Get professional's profile (if profileId is provided)
+  const profile = profileId
+    ? await Profile.findOne({ userId: profileId })
+    : null;
 
   let sessionPrice = 0;
   let source: "professional" | "platform" = "platform";

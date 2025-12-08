@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
+import { sendRefundConfirmation } from "@/lib/notifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -105,6 +106,19 @@ export async function POST(req: NextRequest) {
     appointment.payment.status = "refunded";
     appointment.payment.refundedAt = new Date();
     await appointment.save();
+
+    // Send refund confirmation email
+    const clientInfo = appointment.clientId as unknown as {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    sendRefundConfirmation({
+      name: `${clientInfo.firstName} ${clientInfo.lastName}`,
+      email: clientInfo.email,
+      amount: refund.amount / 100,
+      appointmentDate: appointment.date?.toISOString(),
+    }).catch((err) => console.error("Error sending refund confirmation:", err));
 
     return NextResponse.json({
       message: "Refund processed successfully",

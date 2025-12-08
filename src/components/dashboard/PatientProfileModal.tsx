@@ -30,7 +30,8 @@ export default function AppointmentDetailsModal({
 
   if (!isOpen || !appointment) return null;
 
-  const getTypeBadge = (type: AppointmentResponse["type"]) => {
+  const getTypeBadge = (type: AppointmentResponse["type"] | undefined) => {
+    if (!type) return null;
     const styles = {
       video: "bg-blue-100 text-blue-700",
       "in-person": "bg-green-100 text-green-700",
@@ -54,7 +55,8 @@ export default function AppointmentDetailsModal({
     );
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "To be scheduled";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "long",
@@ -123,7 +125,7 @@ export default function AppointmentDetailsModal({
                         Time
                       </p>
                       <p className="text-sm text-foreground font-light">
-                        {appointment.time}
+                        {appointment.time || "To be scheduled"}
                       </p>
                     </div>
                     <div>
@@ -141,8 +143,10 @@ export default function AppointmentDetailsModal({
                         Type
                       </p>
                       <p className="text-sm text-foreground font-light">
-                        {appointment.type.charAt(0).toUpperCase() +
-                          appointment.type.slice(1)}
+                        {appointment.type
+                          ? appointment.type.charAt(0).toUpperCase() +
+                            appointment.type.slice(1)
+                          : "N/A"}
                       </p>
                     </div>
                     <div>

@@ -34,7 +34,7 @@ interface PaymentModalProps {
   appointmentId: string;
   amount: number;
   professionalName: string;
-  appointmentDate: string;
+  appointmentDate?: string;
   onSuccess?: () => void;
 }
 

@@ -8,6 +8,8 @@ import { authOptions } from "@/lib/auth";
 import {
   sendGuestPaymentConfirmation,
   sendMeetingLinkNotification,
+  sendCancellationNotification,
+  sendRefundConfirmation,
 } from "@/lib/notifications";
 
 import { stripe } from "@/lib/stripe";
@@ -46,7 +48,7 @@ export async function GET(
     const { id } = await params;
 
     const appointment = await Appointment.findById(id)
-      .populate("clientId", "firstName lastName email phone")
+      .populate("clientId", "firstName lastName email phone location")
       .populate("professionalId", "firstName lastName email phone");
 
     if (!appointment) {
@@ -57,11 +59,18 @@ export async function GET(
     }
 
     // Check if user has access to this appointment
-    if (
-      appointment.clientId._id.toString() !== session.user.id &&
-      appointment.professionalId._id.toString() !== session.user.id &&
-      session.user.role !== "admin"
-    ) {
+    const isClient = appointment.clientId._id.toString() === session.user.id;
+    const isProfessional =
+      appointment.professionalId &&
+      appointment.professionalId._id.toString() === session.user.id;
+    const isAdmin = session.user.role === "admin";
+    // Professionals can view unassigned pending appointments
+    const canViewUnassigned =
+      session.user.role === "professional" &&
+      !appointment.professionalId &&
+      appointment.status === "pending";
+
+    if (!isClient && !isProfessional && !isAdmin && !canViewUnassigned) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -97,15 +106,32 @@ export async function PATCH(
     // Get the appointment before update to check for status changes
     const oldAppointment = await Appointment.findById(id);
 
+    // If a professional is accepting an unassigned pending request,
+    // assign themselves as the professional
+    if (
+      session.user.role === "professional" &&
+      oldAppointment &&
+      oldAppointment.status === "pending" &&
+      !oldAppointment.professionalId &&
+      data.status === "scheduled"
+    ) {
+      data.professionalId = session.user.id;
+    }
+
     // If status is being set to ongoing and scheduledStartAt is not provided,
     // derive scheduledStartAt from the existing date/time fields so that
     // timers can consistently count from the scheduled start time.
-    if (data.status === "ongoing" && !data.scheduledStartAt && oldAppointment) {
+    if (
+      data.status === "ongoing" &&
+      !data.scheduledStartAt &&
+      oldAppointment &&
+      oldAppointment.date
+    ) {
       try {
         const baseDate =
           oldAppointment.date instanceof Date
             ? new Date(oldAppointment.date)
-            : new Date(oldAppointment.date);
+            : new Date(oldAppointment.date as Date);
         if (!isNaN(baseDate.getTime())) {
           const [hoursStr, minutesStr] = (oldAppointment.time || "00:00").split(
             ":",
@@ -126,7 +152,10 @@ export async function PATCH(
     const appointment = await Appointment.findByIdAndUpdate(id, data, {
       new: true,
     })
-      .populate("clientId", "firstName lastName email phone stripeCustomerId")
+      .populate(
+        "clientId",
+        "firstName lastName email phone location stripeCustomerId",
+      )
       .populate("professionalId", "firstName lastName email phone");
 
     if (!appointment) {
@@ -175,8 +204,10 @@ export async function PATCH(
           guestName: `${client.firstName} ${client.lastName}`,
           guestEmail: client.email,
           professionalName: `${professional.firstName} ${professional.lastName}`,
-          date: appointment.date.toISOString(),
-          time: appointment.time,
+          date: appointment.date
+            ? appointment.date.toISOString()
+            : "To be scheduled",
+          time: appointment.time || "To be scheduled",
           duration: appointment.duration || 60,
           type: appointment.type,
           therapyType: appointment.therapyType || "solo",
@@ -213,8 +244,10 @@ export async function PATCH(
           guestName: `${client.firstName} ${client.lastName}`,
           guestEmail: client.email,
           professionalName: `${professional.firstName} ${professional.lastName}`,
-          date: appointment.date.toISOString(),
-          time: appointment.time,
+          date: appointment.date
+            ? appointment.date.toISOString()
+            : "To be scheduled",
+          time: appointment.time || "To be scheduled",
           duration: appointment.duration || 60,
           type: appointment.type,
           meetingLink: appointment.meetingLink,
@@ -237,13 +270,34 @@ export async function PATCH(
       appointment.cancelledBy = cancelledBy;
       appointment.cancelledAt = new Date();
 
-      // Send notification without blocking the response
-      // Temporarily disabled for development/testing
-      /*
-      sendCancellationNotification(emailData).catch((err) =>
+      // Get client and professional info for cancellation email
+      const client = appointment.clientId as unknown as {
+        firstName: string;
+        lastName: string;
+        email: string;
+      };
+      const professional = appointment.professionalId as unknown as {
+        firstName: string;
+        lastName: string;
+        email: string;
+      };
+
+      // Send cancellation notification
+      sendCancellationNotification({
+        clientName: `${client.firstName} ${client.lastName}`,
+        clientEmail: client.email,
+        professionalName: professional
+          ? `${professional.firstName} ${professional.lastName}`
+          : undefined,
+        professionalEmail: professional?.email || "",
+        date: appointment.date?.toISOString(),
+        time: appointment.time,
+        duration: appointment.duration || 60,
+        type: appointment.type as "video" | "in-person" | "phone",
+        cancelledBy: cancelledBy,
+      }).catch((err) =>
         console.error("Error sending cancellation notification:", err),
       );
-      */
 
       // Process automatic refund with fee calculation if appointment was paid
       if (
@@ -256,7 +310,9 @@ export async function PATCH(
           );
 
           // Calculate hours until appointment
-          const appointmentDateTime = new Date(appointment.date);
+          const appointmentDateTime = appointment.date
+            ? new Date(appointment.date)
+            : new Date();
           const now = new Date();
           const hoursUntilAppointment =
             (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -295,6 +351,21 @@ export async function PATCH(
 
             console.log(
               `Refund processed successfully: ${refund.id} - Amount: $${refund.amount / 100} (Fee: $${cancellationFee.toFixed(2)})`,
+            );
+
+            // Send refund confirmation email
+            const clientForRefund = appointment.clientId as unknown as {
+              firstName: string;
+              lastName: string;
+              email: string;
+            };
+            sendRefundConfirmation({
+              name: `${clientForRefund.firstName} ${clientForRefund.lastName}`,
+              email: clientForRefund.email,
+              amount: refund.amount / 100,
+              appointmentDate: appointment.date?.toISOString(),
+            }).catch((err) =>
+              console.error("Error sending refund confirmation:", err),
             );
           } else {
             console.log(

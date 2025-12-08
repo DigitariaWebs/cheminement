@@ -26,8 +26,8 @@ interface CancelAppointmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   appointmentId: string;
-  appointmentDate: string;
-  appointmentTime: string;
+  appointmentDate?: string;
+  appointmentTime?: string;
   amount: number;
   isPaid: boolean;
   onSuccess?: () => void;
@@ -59,6 +59,7 @@ export default function CancelAppointmentDialog({
   // Calculate hours until appointment
   const appointmentDateTime = (() => {
     // Parse the date (might be ISO string or date string)
+    if (!appointmentDate || !appointmentTime) return null;
     const dateObj = new Date(appointmentDate);
 
     // Parse time string (format: "HH:MM")
@@ -71,8 +72,9 @@ export default function CancelAppointmentDialog({
   })();
 
   const now = new Date();
-  const hoursUntilAppointment =
-    (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const hoursUntilAppointment = appointmentDateTime
+    ? (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
+    : 0;
 
   const isFreeCancel = hoursUntilAppointment >= HOURS_FOR_FREE_CANCELLATION;
   const cancellationFee = isFreeCancel
@@ -118,16 +120,6 @@ export default function CancelAppointmentDialog({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
@@ -136,7 +128,7 @@ export default function CancelAppointmentDialog({
             {success ? "Appointment Cancelled" : "Cancel Appointment"}
           </DialogTitle>
           <DialogDescription>
-            {formatDate(appointmentDate)} at {appointmentTime}
+            {appointmentDate} at {appointmentTime}
           </DialogDescription>
         </DialogHeader>
 

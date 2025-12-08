@@ -34,8 +34,9 @@ export default function ClientDashboardPage() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const upcoming = data.filter((apt) => {
-          const aptDate = new Date(apt.date);
+          const aptDate = apt.date ? new Date(apt.date) : null;
           return (
+            aptDate &&
             aptDate >= today &&
             ["scheduled", "pending", "ongoing"].includes(apt.status)
           );
@@ -292,7 +293,9 @@ export default function ClientDashboardPage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium text-foreground">
-                                {formatDate(appointment.date)}
+                                {appointment.date
+                                  ? formatDate(appointment.date)
+                                  : "to be scheduled"}
                               </h3>
                               {appointment.status === "ongoing" && (
                                 <span className="rounded-full bg-purple-500 px-2 py-0.5 text-xs font-medium text-white">
@@ -317,8 +320,8 @@ export default function ClientDashboardPage() {
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {t("upcomingAppointments.with")}{" "}
-                          {appointment.professionalId.firstName}{" "}
-                          {appointment.professionalId.lastName}
+                          {appointment.professionalId?.firstName}{" "}
+                          {appointment.professionalId?.lastName}
                         </p>
                       </div>
                       {appointment.status === "ongoing" &&

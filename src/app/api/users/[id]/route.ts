@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
+import {
+  sendProfessionalApprovalEmail,
+  sendProfessionalRejectionEmail,
+} from "@/lib/notifications";
 
 export async function GET(
   _req: NextRequest,
@@ -77,6 +81,12 @@ export async function PATCH(
 
     await connectToDatabase();
 
+    // Get the user before update to check for status changes
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const body = await req.json();
 
     // Validate and sanitize the update data
@@ -91,7 +101,7 @@ export async function PATCH(
       "language",
     ];
 
-    const updates: Record<string, any> = {};
+    const updates: Record<string, string | number | boolean | Date> = {};
     for (const key of Object.keys(body)) {
       if (allowedUpdates.includes(key)) {
         updates[key] = body[key];
@@ -113,6 +123,37 @@ export async function PATCH(
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Send professional approval/rejection emails when status changes
+    if (
+      existingUser.role === "professional" &&
+      updates.status &&
+      existingUser.status !== updates.status
+    ) {
+      const professionalName = `${user.firstName} ${user.lastName}`;
+
+      if (updates.status === "active" && existingUser.status === "pending") {
+        // Professional approved
+        sendProfessionalApprovalEmail({
+          name: professionalName,
+          email: user.email,
+        }).catch((err) =>
+          console.error("Error sending professional approval email:", err),
+        );
+      } else if (
+        updates.status === "rejected" ||
+        (updates.status === "inactive" && existingUser.status === "pending")
+      ) {
+        // Professional rejected
+        sendProfessionalRejectionEmail({
+          name: professionalName,
+          email: user.email,
+          reason: body.rejectionReason,
+        }).catch((err) =>
+          console.error("Error sending professional rejection email:", err),
+        );
+      }
     }
 
     return NextResponse.json(user);

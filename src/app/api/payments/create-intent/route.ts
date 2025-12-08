@@ -142,13 +142,13 @@ export async function POST(req: NextRequest) {
         appointmentId: String(appointment._id),
         clientId: session.user.id,
         professionalId: professional._id.toString(),
-        sessionDate: appointment.date.toISOString(),
-        sessionTime: appointment.time,
+        sessionDate: appointment.date ? appointment.date.toISOString() : "N/A",
+        sessionTime: appointment.time || "N/A",
         platformFee: platformFee.toString(),
         professionalPayout: professionalPayout.toString(),
         paymentMethod: paymentMethod,
       },
-      description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${appointment.date.toLocaleDateString()}`,
+      description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${appointment.date ? appointment.date.toLocaleDateString() : "TBD"}`,
       payment_method_types: paymentMethodTypes,
     };
 

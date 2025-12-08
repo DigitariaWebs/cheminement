@@ -9,7 +9,34 @@ import {
   DollarSign,
   Clock,
   Percent,
+  Mail,
+  Palette,
+  Bell,
+  CheckCircle,
+  XCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
+
+interface EmailTemplateConfig {
+  enabled: boolean;
+  subject: string;
+}
+
+interface EmailBranding {
+  primaryColor: string;
+  secondaryColor: string;
+  logoUrl?: string;
+  companyName: string;
+  footerText: string;
+}
+
+interface EmailSettings {
+  enabled: boolean;
+  smtpConfigured: boolean;
+  branding: EmailBranding;
+  templates: Record<string, EmailTemplateConfig>;
+}
 
 interface PlatformSettings {
   _id: string;
@@ -25,9 +52,100 @@ interface PlatformSettings {
     clientRefundPercentage: number;
     professionalCancellationHours: number;
   };
+  emailSettings: EmailSettings;
   createdAt: string;
   updatedAt: string;
 }
+
+// Email template display names and descriptions
+const EMAIL_TEMPLATE_INFO: Record<
+  string,
+  { name: string; description: string; category: string }
+> = {
+  welcome: {
+    name: "Welcome Email",
+    description: "Sent when a new user creates an account",
+    category: "Authentication",
+  },
+  email_verification: {
+    name: "Email Verification",
+    description: "Sent to verify user email address",
+    category: "Authentication",
+  },
+  password_reset: {
+    name: "Password Reset",
+    description: "Sent when user requests password reset",
+    category: "Authentication",
+  },
+  appointment_confirmation: {
+    name: "Appointment Confirmation",
+    description: "Sent to client when appointment is confirmed",
+    category: "Appointments",
+  },
+  appointment_professional_notification: {
+    name: "Professional Notification",
+    description: "Sent to professional for new appointment requests",
+    category: "Appointments",
+  },
+  appointment_reminder: {
+    name: "Appointment Reminder",
+    description: "Sent before scheduled appointments",
+    category: "Appointments",
+  },
+  appointment_cancellation: {
+    name: "Cancellation Notice",
+    description: "Sent when an appointment is cancelled",
+    category: "Appointments",
+  },
+  guest_booking_confirmation: {
+    name: "Guest Booking Confirmation",
+    description: "Sent to guests when they submit a booking request",
+    category: "Guest Booking",
+  },
+  guest_payment_confirmation: {
+    name: "Guest Payment Request",
+    description: "Sent to guests when payment is required",
+    category: "Guest Booking",
+  },
+  guest_payment_complete: {
+    name: "Guest Payment Complete",
+    description: "Sent to guests after successful payment",
+    category: "Guest Booking",
+  },
+  payment_failed: {
+    name: "Payment Failed",
+    description: "Sent when a payment attempt fails",
+    category: "Payments",
+  },
+  payment_refund: {
+    name: "Refund Confirmation",
+    description: "Sent when a refund is processed",
+    category: "Payments",
+  },
+  meeting_link: {
+    name: "Meeting Link",
+    description: "Sent when meeting link is added to appointment",
+    category: "Appointments",
+  },
+  professional_approval: {
+    name: "Professional Approval",
+    description: "Sent when professional application is approved",
+    category: "Professional",
+  },
+  professional_rejection: {
+    name: "Professional Rejection",
+    description: "Sent when professional application is rejected",
+    category: "Professional",
+  },
+};
+
+const TEMPLATE_CATEGORIES = [
+  "Authentication",
+  "Appointments",
+  "Guest Booking",
+  "Payments",
+  "Professional",
+];
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
@@ -35,6 +153,9 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(["Authentication", "Appointments"]),
+  );
 
   const fetchSettings = async () => {
     try {
@@ -75,6 +196,7 @@ export default function SettingsPage() {
           platformFeePercentage: settings.platformFeePercentage,
           currency: settings.currency,
           cancellationPolicy: settings.cancellationPolicy,
+          emailSettings: settings.emailSettings,
         }),
       });
 
@@ -96,7 +218,7 @@ export default function SettingsPage() {
 
   const updateSettings = (
     field: string,
-    value: number | string,
+    value: number | string | boolean,
     nested?: string,
   ) => {
     if (!settings) return;
@@ -120,6 +242,94 @@ export default function SettingsPage() {
       return {
         ...prev,
         [field]: value,
+      };
+    });
+  };
+
+  const updateEmailBranding = (field: string, value: string) => {
+    if (!settings) return;
+
+    setSettings((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        emailSettings: {
+          ...prev.emailSettings,
+          branding: {
+            ...prev.emailSettings.branding,
+            [field]: value,
+          },
+        },
+      };
+    });
+  };
+
+  const updateEmailTemplate = (
+    templateKey: string,
+    field: "enabled" | "subject",
+    value: boolean | string,
+  ) => {
+    if (!settings) return;
+
+    setSettings((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        emailSettings: {
+          ...prev.emailSettings,
+          templates: {
+            ...prev.emailSettings.templates,
+            [templateKey]: {
+              ...prev.emailSettings.templates[templateKey],
+              [field]: value,
+            },
+          },
+        },
+      };
+    });
+  };
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
+
+  const getTemplatesByCategory = (category: string) => {
+    return Object.entries(EMAIL_TEMPLATE_INFO).filter(
+      ([, info]) => info.category === category,
+    );
+  };
+
+  const toggleAllInCategory = (category: string, enabled: boolean) => {
+    if (!settings) return;
+
+    const templatesInCategory = getTemplatesByCategory(category);
+    setSettings((prev) => {
+      if (!prev) return prev;
+
+      const updatedTemplates = { ...prev.emailSettings.templates };
+      templatesInCategory.forEach(([key]) => {
+        if (updatedTemplates[key]) {
+          updatedTemplates[key] = {
+            ...updatedTemplates[key],
+            enabled,
+          };
+        }
+      });
+
+      return {
+        ...prev,
+        emailSettings: {
+          ...prev.emailSettings,
+          templates: updatedTemplates,
+        },
       };
     });
   };
@@ -223,7 +433,7 @@ export default function SettingsPage() {
       {successMessage && (
         <div className="rounded-lg bg-green-50 border border-green-200 p-4">
           <div className="flex items-center gap-2 text-green-800">
-            <Settings className="h-5 w-5" />
+            <CheckCircle className="h-5 w-5" />
             <p className="font-light">{successMessage}</p>
           </div>
         </div>
@@ -455,9 +665,329 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Email Notifications Section */}
+        <div className="rounded-xl bg-card p-6 border border-border/40">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-serif font-light text-foreground">
+                Email Notifications
+              </h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">
+                {settings.emailSettings?.enabled
+                  ? "Enabled"
+                  : "Disabled Globally"}
+              </span>
+              <button
+                onClick={() =>
+                  setSettings((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          emailSettings: {
+                            ...prev.emailSettings,
+                            enabled: !prev.emailSettings?.enabled,
+                          },
+                        }
+                      : prev,
+                  )
+                }
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  settings.emailSettings?.enabled
+                    ? "bg-primary"
+                    : "bg-muted-foreground/30"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.emailSettings?.enabled
+                      ? "translate-x-6"
+                      : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          {!settings.emailSettings?.enabled && (
+            <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-4 mb-6">
+              <div className="flex items-center gap-2 text-yellow-800">
+                <AlertCircle className="h-5 w-5" />
+                <p className="font-light">
+                  Email notifications are disabled. Users will not receive any
+                  email communications.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Email Branding */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Palette className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-lg font-light text-foreground">Branding</h3>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <label className="block text-sm font-light text-muted-foreground mb-2">
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  value={settings.emailSettings?.branding?.companyName || ""}
+                  onChange={(e) =>
+                    updateEmailBranding("companyName", e.target.value)
+                  }
+                  className="w-full px-4 py-2 rounded-lg border border-border/40 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="JeChemine"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-light text-muted-foreground mb-2">
+                  Primary Color
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={
+                      settings.emailSettings?.branding?.primaryColor ||
+                      "#8B7355"
+                    }
+                    onChange={(e) =>
+                      updateEmailBranding("primaryColor", e.target.value)
+                    }
+                    className="h-10 w-14 rounded-lg border border-border/40 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={
+                      settings.emailSettings?.branding?.primaryColor ||
+                      "#8B7355"
+                    }
+                    onChange={(e) =>
+                      updateEmailBranding("primaryColor", e.target.value)
+                    }
+                    className="flex-1 px-4 py-2 rounded-lg border border-border/40 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="#8B7355"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-light text-muted-foreground mb-2">
+                  Secondary Color
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={
+                      settings.emailSettings?.branding?.secondaryColor ||
+                      "#6B5344"
+                    }
+                    onChange={(e) =>
+                      updateEmailBranding("secondaryColor", e.target.value)
+                    }
+                    className="h-10 w-14 rounded-lg border border-border/40 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={
+                      settings.emailSettings?.branding?.secondaryColor ||
+                      "#6B5344"
+                    }
+                    onChange={(e) =>
+                      updateEmailBranding("secondaryColor", e.target.value)
+                    }
+                    className="flex-1 px-4 py-2 rounded-lg border border-border/40 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="#6B5344"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-light text-muted-foreground mb-2">
+                  Logo URL (optional)
+                </label>
+                <input
+                  type="url"
+                  value={settings.emailSettings?.branding?.logoUrl || ""}
+                  onChange={(e) =>
+                    updateEmailBranding("logoUrl", e.target.value)
+                  }
+                  className="w-full px-4 py-2 rounded-lg border border-border/40 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="https://example.com/logo.png"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-light text-muted-foreground mb-2">
+                  Footer Text
+                </label>
+                <input
+                  type="text"
+                  value={settings.emailSettings?.branding?.footerText || ""}
+                  onChange={(e) =>
+                    updateEmailBranding("footerText", e.target.value)
+                  }
+                  className="w-full px-4 py-2 rounded-lg border border-border/40 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Your journey to wellness starts here."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Email Templates */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Bell className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-lg font-light text-foreground">
+                Email Templates
+              </h3>
+            </div>
+
+            <div className="space-y-4">
+              {TEMPLATE_CATEGORIES.map((category) => {
+                const templates = getTemplatesByCategory(category);
+                const isExpanded = expandedCategories.has(category);
+                const enabledCount = templates.filter(
+                  ([key]) => settings.emailSettings?.templates?.[key]?.enabled,
+                ).length;
+
+                return (
+                  <div
+                    key={category}
+                    className="border border-border/40 rounded-lg overflow-hidden"
+                  >
+                    <button
+                      onClick={() => toggleCategory(category)}
+                      className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-light text-foreground">
+                          {category}
+                        </span>
+                        <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">
+                          {enabledCount}/{templates.length} enabled
+                        </span>
+                      </div>
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </button>
+
+                    {isExpanded && (
+                      <div className="p-4 space-y-4">
+                        <div className="flex gap-2 mb-4">
+                          <button
+                            onClick={() => toggleAllInCategory(category, true)}
+                            className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                          >
+                            Enable All
+                          </button>
+                          <button
+                            onClick={() => toggleAllInCategory(category, false)}
+                            className="text-xs px-3 py-1 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                          >
+                            Disable All
+                          </button>
+                        </div>
+
+                        {templates.map(([key, info]) => {
+                          const template =
+                            settings.emailSettings?.templates?.[key];
+                          const isEnabled = template?.enabled ?? true;
+
+                          return (
+                            <div
+                              key={key}
+                              className={`p-4 rounded-lg border transition-colors ${
+                                isEnabled
+                                  ? "border-border/40 bg-background"
+                                  : "border-border/20 bg-muted/30"
+                              }`}
+                            >
+                              <div className="flex items-start justify-between mb-3">
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    {isEnabled ? (
+                                      <CheckCircle className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                      <XCircle className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                    <span className="font-medium text-foreground">
+                                      {info.name}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {info.description}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={() =>
+                                    updateEmailTemplate(
+                                      key,
+                                      "enabled",
+                                      !isEnabled,
+                                    )
+                                  }
+                                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                    isEnabled
+                                      ? "bg-primary"
+                                      : "bg-muted-foreground/30"
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                      isEnabled
+                                        ? "translate-x-5"
+                                        : "translate-x-1"
+                                    }`}
+                                  />
+                                </button>
+                              </div>
+
+                              {isEnabled && (
+                                <div>
+                                  <label className="block text-xs font-light text-muted-foreground mb-1">
+                                    Subject Line
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={template?.subject || ""}
+                                    onChange={(e) =>
+                                      updateEmailTemplate(
+                                        key,
+                                        "subject",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-border/40 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                    placeholder="Email subject..."
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {/* Metadata */}
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <h2 className="text-xl font-serif font-light text-foreground mb-4">
+            <Settings className="h-5 w-5 inline mr-2" />
             Metadata
           </h2>
           <div className="grid gap-4 md:grid-cols-2 text-sm">

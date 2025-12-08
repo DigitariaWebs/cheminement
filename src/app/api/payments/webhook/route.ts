@@ -4,7 +4,11 @@ import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
 import Stripe from "stripe";
-import { sendGuestPaymentComplete } from "@/lib/notifications";
+import {
+  sendGuestPaymentComplete,
+  sendPaymentFailedNotification,
+  sendRefundConfirmation,
+} from "@/lib/notifications";
 
 // Disable body parsing, need raw body for webhook signature verification
 export const runtime = "nodejs";
@@ -142,7 +146,7 @@ async function handlePaymentIntentSucceeded(
             guestName: `${client.firstName} ${client.lastName}`,
             guestEmail: client.email,
             professionalName: `${professional.firstName} ${professional.lastName}`,
-            date: populatedAppointment.date.toISOString(),
+            date: populatedAppointment.date?.toISOString() || "",
             time: populatedAppointment.time,
             duration: populatedAppointment.duration || 60,
             type: populatedAppointment.type,
@@ -173,7 +177,9 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     return;
   }
 
-  const appointment = await Appointment.findById(appointmentId);
+  const appointment = await Appointment.findById(appointmentId)
+    .populate("clientId", "firstName lastName email")
+    .populate("professionalId", "firstName lastName");
 
   if (!appointment) {
     console.error(`Appointment ${appointmentId} not found`);
@@ -185,8 +191,32 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 
   console.log(`Appointment ${appointmentId} payment failed`);
 
-  // TODO: Send payment failed notification to client
-  // TODO: Optionally cancel appointment if payment required upfront
+  // Send payment failed notification to client
+  try {
+    const client = appointment.clientId as unknown as {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    const professional = appointment.professionalId as unknown as {
+      firstName: string;
+      lastName: string;
+    };
+
+    sendPaymentFailedNotification({
+      name: `${client.firstName} ${client.lastName}`,
+      email: client.email,
+      amount: appointment.payment.price || 0,
+      appointmentDate: appointment.date?.toISOString(),
+      professionalName: professional
+        ? `${professional.firstName} ${professional.lastName}`
+        : undefined,
+    }).catch((err) =>
+      console.error("Error sending payment failed notification:", err),
+    );
+  } catch (emailError) {
+    console.error("Error preparing payment failed email:", emailError);
+  }
 }
 
 async function handlePaymentIntentCanceled(
@@ -238,6 +268,29 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
 
   console.log(`Appointment ${appointment._id} refunded`);
 
-  // TODO: Send refund confirmation to client
-  // TODO: Notify professional about refund
+  // Send refund confirmation to client
+  try {
+    const populatedAppointment = await Appointment.findById(appointment._id)
+      .populate("clientId", "firstName lastName email")
+      .populate("professionalId", "firstName lastName");
+
+    if (populatedAppointment) {
+      const client = populatedAppointment.clientId as unknown as {
+        firstName: string;
+        lastName: string;
+        email: string;
+      };
+
+      sendRefundConfirmation({
+        name: `${client.firstName} ${client.lastName}`,
+        email: client.email,
+        amount: charge.amount_refunded / 100,
+        appointmentDate: populatedAppointment.date?.toISOString(),
+      }).catch((err) =>
+        console.error("Error sending refund confirmation:", err),
+      );
+    }
+  } catch (emailError) {
+    console.error("Error sending refund confirmation email:", emailError);
+  }
 }

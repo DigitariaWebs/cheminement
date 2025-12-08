@@ -154,10 +154,13 @@ export async function GET(req: NextRequest) {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...textColor);
 
-    const appointmentDate = new Date(appointment.date).toLocaleDateString(
-      "en-CA",
-      { year: "numeric", month: "long", day: "numeric" },
-    );
+    const appointmentDate = appointment.date
+      ? new Date(appointment.date).toLocaleDateString("en-CA", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "N/A";
 
     doc.text(`Date: ${appointmentDate}`, 25, 130);
     doc.text(`Time: ${appointment.time}`, 25, 138);

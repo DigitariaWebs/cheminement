@@ -24,9 +24,9 @@ export interface IPayment {
 
 export interface IAppointment extends Document {
   clientId: mongoose.Types.ObjectId;
-  professionalId: mongoose.Types.ObjectId;
-  date: Date;
-  time: string;
+  professionalId?: mongoose.Types.ObjectId;
+  date?: Date;
+  time?: string;
   duration: number;
   type: "video" | "in-person" | "phone";
   therapyType: "solo" | "couple" | "group";
@@ -110,15 +110,15 @@ const AppointmentSchema = new Schema<IAppointment>(
     professionalId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     date: {
       type: Date,
-      required: true,
+      required: false,
     },
     time: {
       type: String,
-      required: true,
+      required: false,
     },
     duration: {
       type: Number,

@@ -4,6 +4,7 @@ interface PersonResponse {
   firstName: string;
   lastName: string;
   phone: string;
+  location?: string;
 }
 
 type AppointmentType = "video" | "in-person" | "phone";
@@ -42,7 +43,7 @@ export interface PaymentInfo {
 export interface AppointmentResponse {
   _id: string;
   clientId: PersonResponse;
-  professionalId: PersonResponse;
+  professionalId?: PersonResponse | null;
   date: string;
   time: string;
   duration: number;

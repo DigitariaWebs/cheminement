@@ -43,20 +43,30 @@ export async function GET() {
           email: client.email,
           phone: client.phone,
           status: "active", // Default, can be updated based on logic
-          lastSession: appointment.date.toISOString().split("T")[0],
+          lastSession: appointment.date
+            ? appointment.date.toISOString().split("T")[0]
+            : "N/A",
           totalSessions: 1,
           issueType: "Not specified", // Placeholder
-          joinedDate: appointment.date.toISOString().split("T")[0],
+          joinedDate: appointment.date
+            ? appointment.date.toISOString().split("T")[0]
+            : "N/A",
         });
       } else {
         const existingClient = clientMap.get(clientId);
         existingClient.totalSessions += 1;
-        if (new Date(appointment.date) > new Date(existingClient.lastSession)) {
+        if (
+          appointment.date &&
+          new Date(appointment.date) > new Date(existingClient.lastSession)
+        ) {
           existingClient.lastSession = appointment.date
             .toISOString()
             .split("T")[0];
         }
-        if (new Date(appointment.date) < new Date(existingClient.joinedDate)) {
+        if (
+          appointment.date &&
+          new Date(appointment.date) < new Date(existingClient.joinedDate)
+        ) {
           existingClient.joinedDate = appointment.date
             .toISOString()
             .split("T")[0];

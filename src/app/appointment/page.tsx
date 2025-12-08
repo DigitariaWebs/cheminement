@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
-  Calendar,
   Clock,
   MapPin,
   Video,
@@ -15,10 +14,10 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
   Mail,
   Home,
   UserPlus,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -30,50 +29,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, medicalProfileAPI } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
-
-interface Professional {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  specialty?: string;
-  license?: string;
-  bio?: string;
-  hasSchedule?: boolean;
-}
-
-interface AvailableSlot {
-  time: string;
-  available: boolean;
-}
-
-interface AvailabilityData {
-  date: string;
-  dayOfWeek: string;
-  available: boolean;
-  slots: AvailableSlot[];
-  professionalInfo: {
-    id: string;
-    name: string;
-    sessionDuration: number;
-    pricing: {
-      individualSession?: number;
-      coupleSession?: number;
-      groupSession?: number;
-    };
-    sessionTypes: string[];
-  };
-  workingHours: {
-    start: string;
-    end: string;
-  };
-  message?: string;
-}
 
 interface GuestInfo {
   firstName: string;
@@ -81,6 +39,14 @@ interface GuestInfo {
   email: string;
   phone: string;
   location: string;
+}
+
+interface MedicalProfileData {
+  primaryIssue?: string;
+  availability?: string[];
+  modality?: "online" | "inPerson" | "both";
+  sessionFrequency?: string;
+  location?: string;
 }
 
 export default function BookAppointmentPage() {
@@ -100,19 +66,15 @@ export default function BookAppointmentPage() {
     location: "",
   });
 
+  // Medical profile data for defaults
+  const [medicalProfile, setMedicalProfile] =
+    useState<MedicalProfileData | null>(null);
+
   // Step management - starts at -1 for auth check
+  // Steps: 0 = Auth Choice, 1 = Who is this for, 2 = Guest Info, 3 = Appointment Details, 4 = Confirmation, 5 = Success
   const [currentStep, setCurrentStep] = useState(-1);
 
-  // Selection method
-  const [selectionMethod, setSelectionMethod] = useState<
-    "best-fit" | "choose" | null
-  >(null);
-
   // Form data
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [selectedProfessional, setSelectedProfessional] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedType, setSelectedType] = useState<
     "video" | "in-person" | "phone"
   >("video");
@@ -121,13 +83,12 @@ export default function BookAppointmentPage() {
   );
   const [issueType, setIssueType] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [preferredAvailability, setPreferredAvailability] = useState<string[]>(
+    [],
+  );
 
   // UI state
   const [loading, setLoading] = useState(false);
-  const [loadingSlots, setLoadingSlots] = useState(false);
-  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
-  const [availabilityData, setAvailabilityData] =
-    useState<AvailabilityData | null>(null);
   const [error, setError] = useState<string>("");
 
   // Booking context
@@ -143,6 +104,41 @@ export default function BookAppointmentPage() {
       setBookingFor(forParam as "self" | "patient" | "loved-one");
     }
   }, [searchParams]);
+
+  // Fetch medical profile for defaults (authenticated users only)
+  useEffect(() => {
+    const fetchMedicalProfile = async () => {
+      if (status === "authenticated") {
+        try {
+          const profile = await medicalProfileAPI.get();
+          if (profile) {
+            setMedicalProfile(profile as MedicalProfileData);
+            // Set defaults from medical profile
+            if ((profile as MedicalProfileData).primaryIssue) {
+              setIssueType((profile as MedicalProfileData).primaryIssue || "");
+            }
+            if ((profile as MedicalProfileData).availability) {
+              setPreferredAvailability(
+                (profile as MedicalProfileData).availability || [],
+              );
+            }
+            if ((profile as MedicalProfileData).modality) {
+              const modality = (profile as MedicalProfileData).modality;
+              if (modality === "online") {
+                setSelectedType("video");
+              } else if (modality === "inPerson") {
+                setSelectedType("in-person");
+              }
+              // "both" keeps default
+            }
+          }
+        } catch {
+          // Medical profile might not exist, that's okay
+        }
+      }
+    };
+    fetchMedicalProfile();
+  }, [status]);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -178,123 +174,10 @@ export default function BookAppointmentPage() {
     router.push("/login?returnUrl=/appointment");
   };
 
-  // Load professionals on mount
-  useEffect(() => {
-    loadProfessionals();
-  }, []);
-
-  const loadProfessionals = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const data = await apiClient.get<Professional[]>(
-        "/users?role=professional",
-      );
-      setProfessionals(data);
-
-      if (data.length === 0) {
-        setError("No professionals available.");
-      }
-    } catch (err: unknown) {
-      console.error("Error loading professionals:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to load professionals",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleWhoChoice = (who: "self" | "patient" | "loved-one") => {
     setBookingFor(who);
-    // If guest, go to Guest Info (2), else go to Selection Method (3)
+    // If guest, go to Guest Info (2), else go to Appointment Details (3)
     setCurrentStep(isGuest ? 2 : 3);
-  };
-
-  const handleSelectionMethodChoice = (method: "best-fit" | "choose") => {
-    setSelectionMethod(method);
-    if (method === "best-fit") {
-      // Auto-select first available professional
-      if (professionals.length > 0) {
-        handleProfessionalSelect(professionals[0]._id);
-      }
-    } else {
-      setCurrentStep(4); // Go to Choose Professional
-    }
-  };
-
-  const getAvailableDates = () => {
-    const dates = [];
-    const today = new Date();
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      dates.push({
-        value: date.toISOString().split("T")[0],
-        label: date.toLocaleDateString("en-US", {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        }),
-      });
-    }
-    return dates;
-  };
-
-  const loadAvailableSlots = useCallback(async () => {
-    if (!selectedProfessional || !selectedDate) return;
-
-    try {
-      setLoadingSlots(true);
-      setError("");
-      const response = await apiClient.get<AvailabilityData>(
-        `/appointments/available-slots?professionalId=${selectedProfessional}&date=${selectedDate}`,
-      );
-
-      if (response.available && response.slots) {
-        setAvailableSlots(response.slots);
-        setAvailabilityData(response);
-      } else {
-        setAvailableSlots([]);
-        setAvailabilityData(response);
-        setError(response.message || "No available slots for this date");
-      }
-    } catch (err: unknown) {
-      console.error("Error fetching slots:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load available time slots",
-      );
-      setAvailableSlots([]);
-    } finally {
-      setLoadingSlots(false);
-    }
-  }, [selectedProfessional, selectedDate]);
-
-  useEffect(() => {
-    if (selectedProfessional && selectedDate) {
-      loadAvailableSlots();
-    }
-  }, [selectedProfessional, selectedDate, loadAvailableSlots]);
-
-  const handleProfessionalSelect = (professionalId: string) => {
-    setSelectedProfessional(professionalId);
-    setSelectedDate("");
-    setSelectedTime("");
-    setAvailableSlots([]);
-    setAvailabilityData(null);
-    setCurrentStep(5); // Go to Date & Time
-  };
-
-  const handleDateSelect = (date: string) => {
-    setSelectedDate(date);
-    setSelectedTime("");
-  };
-
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time);
-    setCurrentStep(6); // Go to Appointment Details
   };
 
   const handleGuestInfoSubmit = () => {
@@ -325,7 +208,7 @@ export default function BookAppointmentPage() {
     }
 
     setError("");
-    setCurrentStep(3); // Move to selection method
+    setCurrentStep(3); // Move to appointment details
   };
 
   // Submit guest appointment without payment
@@ -335,14 +218,12 @@ export default function BookAppointmentPage() {
       setError("");
 
       const appointmentData = {
-        professionalId: selectedProfessional,
-        date: selectedDate,
-        time: selectedTime,
         type: selectedType,
         therapyType,
         issueType,
         notes,
         bookingFor,
+        preferredAvailability,
       };
 
       await apiClient.post<{ appointmentId: string }>("/appointments/guest", {
@@ -350,25 +231,17 @@ export default function BookAppointmentPage() {
         guestInfo,
       });
 
-      setCurrentStep(7); // Success step
+      setCurrentStep(5); // Success step
     } catch (err: unknown) {
       console.error("Error booking appointment:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to book appointment",
-      );
+      setError(err instanceof Error ? err.message : "Failed to submit request");
     } finally {
       setLoading(false);
     }
   };
 
   const handleSubmit = async () => {
-    if (
-      !selectedProfessional ||
-      !selectedDate ||
-      !selectedTime ||
-      !selectedType ||
-      !issueType
-    ) {
+    if (!selectedType || !issueType) {
       setError("Please fill in all required fields");
       return;
     }
@@ -384,14 +257,12 @@ export default function BookAppointmentPage() {
       setError("");
 
       const appointmentData = {
-        professionalId: selectedProfessional,
-        date: selectedDate,
-        time: selectedTime,
         type: selectedType,
         therapyType,
         issueType,
         notes,
         bookingFor,
+        preferredAvailability,
       };
 
       // Use regular endpoint for authenticated users
@@ -400,26 +271,20 @@ export default function BookAppointmentPage() {
         appointmentData,
       );
 
-      setCurrentStep(7); // Success step
+      setCurrentStep(5); // Success step
     } catch (err: unknown) {
-      console.error("Error booking appointment:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to book appointment",
-      );
+      console.error("Error submitting request:", err);
+      setError(err instanceof Error ? err.message : "Failed to submit request");
     } finally {
       setLoading(false);
     }
   };
 
-  const selectedProfessionalData = professionals.find(
-    (p) => p._id === selectedProfessional,
-  );
-
   const renderSummary = () => {
     return (
       <div className="bg-card rounded-xl border border-border/40 p-6 space-y-6 sticky top-8">
         <h3 className="font-serif text-lg font-medium border-b border-border/40 pb-4 mb-4">
-          Booking Summary
+          Request Summary
         </h3>
 
         {/* Who is this for */}
@@ -466,60 +331,13 @@ export default function BookAppointmentPage() {
           </div>
         )}
 
-        {/* Professional */}
-        <div className={`space-y-1 ${currentStep < 5 ? "opacity-50" : ""}`}>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Professional
-          </p>
-          <div className="text-sm">
-            {selectedProfessional &&
-            selectedProfessionalData &&
-            currentStep >= 5 ? (
-              <>
-                <p className="font-medium">
-                  {selectedProfessionalData.firstName}{" "}
-                  {selectedProfessionalData.lastName}
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  {selectedProfessionalData.specialty}
-                </p>
-              </>
-            ) : (
-              <span className="text-muted-foreground italic">Pending...</span>
-            )}
-          </div>
-        </div>
-
-        {/* Date & Time */}
-        <div className={`space-y-1 ${currentStep < 6 ? "opacity-50" : ""}`}>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Date & Time
-          </p>
-          <div className="text-sm">
-            {selectedDate && currentStep >= 6 ? (
-              <>
-                <p>
-                  {new Date(selectedDate).toLocaleDateString("en-US", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </p>
-                {selectedTime && <p>{selectedTime}</p>}
-              </>
-            ) : (
-              <span className="text-muted-foreground italic">Pending...</span>
-            )}
-          </div>
-        </div>
-
         {/* Details */}
-        <div className={`space-y-1 ${currentStep < 7 ? "opacity-50" : ""}`}>
+        <div className={`space-y-1 ${currentStep < 3 ? "opacity-50" : ""}`}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Details
           </p>
           <div className="text-sm space-y-1">
-            {issueType && currentStep >= 7 ? (
+            {currentStep >= 3 ? (
               <>
                 {therapyType && (
                   <div className="flex items-center gap-2">
@@ -549,6 +367,17 @@ export default function BookAppointmentPage() {
             )}
           </div>
         </div>
+
+        {/* Info box about the new flow */}
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-4 border border-blue-200 dark:border-blue-800">
+          <p className="text-xs text-blue-800 dark:text-blue-200">
+            <strong>How it works:</strong>
+          </p>
+          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+            After you submit your request, a qualified professional will review
+            and contact you to schedule your appointment.
+          </p>
+        </div>
       </div>
     );
   };
@@ -576,10 +405,11 @@ export default function BookAppointmentPage() {
             Back
           </Button>
           <h1 className="text-4xl font-serif font-light text-foreground mb-2">
-            Book an Appointment
+            Request an Appointment
           </h1>
           <p className="text-muted-foreground text-lg">
-            Schedule a session with a qualified mental health professional
+            Submit a request to be matched with a qualified mental health
+            professional
             {isGuest && (
               <span className="block text-sm mt-1 text-muted-foreground">
                 Booking as guest
@@ -615,7 +445,7 @@ export default function BookAppointmentPage() {
                     How would you like to proceed?
                   </h2>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Choose how you&apos;d like to book your appointment
+                    Choose how you&apos;d like to submit your request
                   </p>
                 </div>
                 <div className="p-6">
@@ -642,7 +472,7 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Save your preferences</span>
+                          <span>Pre-filled from your profile</span>
                         </div>
                       </div>
                     </div>
@@ -663,7 +493,7 @@ export default function BookAppointmentPage() {
                       <div className="space-y-2 text-sm text-muted-foreground">
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Quick booking process</span>
+                          <span>Quick request process</span>
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -671,7 +501,7 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Receive email confirmation</span>
+                          <span>Professional will contact you</span>
                         </div>
                       </div>
                     </div>
@@ -716,7 +546,7 @@ export default function BookAppointmentPage() {
                             For Myself
                           </Label>
                           <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m booking this appointment for myself and
+                            I&apos;m requesting this appointment for myself and
                             will be the one attending the session.
                           </p>
                         </div>
@@ -742,8 +572,8 @@ export default function BookAppointmentPage() {
                             For a Patient
                           </Label>
                           <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m a healthcare professional booking on behalf
-                            of my patient.
+                            I&apos;m a healthcare professional requesting on
+                            behalf of my patient.
                           </p>
                         </div>
                       </div>
@@ -768,7 +598,7 @@ export default function BookAppointmentPage() {
                             For a Loved One
                           </Label>
                           <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m booking this appointment for a family
+                            I&apos;m requesting this appointment for a family
                             member or loved one who will be attending the
                             session.
                           </p>
@@ -798,8 +628,8 @@ export default function BookAppointmentPage() {
                     Your Information
                   </h2>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Please provide your contact information to proceed with
-                    booking
+                    Please provide your contact information so a professional
+                    can reach out to you
                   </p>
                 </div>
                 <div className="p-6 space-y-6">
@@ -856,7 +686,7 @@ export default function BookAppointmentPage() {
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      We&apos;ll send your appointment confirmation here
+                      A professional will contact you at this email
                     </p>
                   </div>
 
@@ -909,7 +739,7 @@ export default function BookAppointmentPage() {
                       size="lg"
                       className="gap-2"
                     >
-                      Continue to Booking
+                      Continue
                       <ArrowLeft className="h-4 w-4 rotate-180" />
                     </Button>
                   </div>
@@ -917,285 +747,18 @@ export default function BookAppointmentPage() {
               </div>
             )}
 
-            {/* Step 3: Selection Method */}
+            {/* Step 3: Appointment Details */}
             {currentStep === 3 && (
-              <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
-                <div className="p-6 border-b border-border/40">
-                  <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
-                    <Sparkles className="h-5 w-5" />
-                    How would you like to choose your professional?
-                  </h2>
-                </div>
-                <div className="p-6">
-                  {loading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : (
-                    <RadioGroup
-                      value={selectionMethod || ""}
-                      onValueChange={(value) =>
-                        handleSelectionMethodChoice(
-                          value as "best-fit" | "choose",
-                        )
-                      }
-                      className="space-y-4"
-                    >
-                      <div
-                        className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
-                          selectionMethod === "best-fit"
-                            ? "border-primary bg-primary/5"
-                            : "border-border/40 hover:border-border"
-                        }`}
-                        onClick={() => handleSelectionMethodChoice("best-fit")}
-                      >
-                        <div className="flex items-start gap-4">
-                          <RadioGroupItem value="best-fit" id="best-fit" />
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="best-fit"
-                              className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
-                            >
-                              <Sparkles className="h-5 w-5 text-primary" />
-                              Best Fit for Me (Recommended)
-                            </Label>
-                            <p className="text-sm text-muted-foreground mt-2">
-                              Let us match you with the most suitable
-                              professional based on availability and expertise.
-                              This option gets you started quickly with a
-                              qualified professional.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
-                          selectionMethod === "choose"
-                            ? "border-primary bg-primary/5"
-                            : "border-border/40 hover:border-border"
-                        }`}
-                        onClick={() => handleSelectionMethodChoice("choose")}
-                      >
-                        <div className="flex items-start gap-4">
-                          <RadioGroupItem value="choose" id="choose" />
-                          <div className="flex-1">
-                            <Label
-                              htmlFor="choose"
-                              className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
-                            >
-                              <User className="h-5 w-5 text-primary" />
-                              I&apos;ll Choose My Professional
-                            </Label>
-                            <p className="text-sm text-muted-foreground mt-2">
-                              Browse through our active professionals and select
-                              the one that best suits your needs. View their
-                              specialties, experience, and availability.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  )}
-                  <div className="flex justify-between pt-6">
-                    <Button variant="outline" onClick={() => setCurrentStep(3)}>
-                      Back
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Choose Professional */}
-            {currentStep === 4 && (
-              <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
-                <div className="p-6 border-b border-border/40">
-                  <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Choose Your Professional
-                  </h2>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    All professionals shown are active and have availability
-                    schedules configured
-                  </p>
-                </div>
-                <div className="p-6">
-                  {loading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : professionals.length === 0 ? (
-                    <div className="text-center py-12">
-                      <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">
-                        No professionals available at the moment.
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Please check back later or contact support for
-                        assistance.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                      {professionals.map((professional) => (
-                        <div
-                          key={professional._id}
-                          className={`cursor-pointer transition-all hover:shadow-md rounded-xl border border-border/40 p-6 ${
-                            selectedProfessional === professional._id
-                              ? "ring-2 ring-primary"
-                              : ""
-                          }`}
-                          onClick={() =>
-                            handleProfessionalSelect(professional._id)
-                          }
-                        >
-                          <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                              <User className="h-6 w-6 text-primary" />
-                            </div>
-                            <div>
-                              <h3 className="font-medium text-foreground">
-                                {professional.firstName} {professional.lastName}
-                              </h3>
-                              <p className="text-sm text-muted-foreground capitalize">
-                                {professional.specialty ||
-                                  "Mental Health Professional"}
-                              </p>
-                            </div>
-                          </div>
-                          {professional.bio && (
-                            <p className="text-sm text-muted-foreground line-clamp-3">
-                              {professional.bio}
-                            </p>
-                          )}
-                          {professional.license && (
-                            <Badge variant="secondary" className="mt-2">
-                              Licensed: {professional.license}
-                            </Badge>
-                          )}
-                          <Badge variant="outline" className="mt-2 ml-2">
-                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                            Active & Available
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex justify-between pt-6">
-                    <Button
-                      variant="outline"
-                      onClick={() => setCurrentStep(isGuest ? 2 : 1)}
-                    >
-                      Back
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 5: Select Date & Time */}
-            {currentStep === 5 && (
-              <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
-                <div className="p-6 border-b border-border/40">
-                  <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Select Date & Time
-                  </h2>
-                  {selectedProfessionalData && (
-                    <p className="text-muted-foreground mt-2">
-                      Booking with {selectedProfessionalData.firstName}{" "}
-                      {selectedProfessionalData.lastName}
-                    </p>
-                  )}
-                </div>
-                <div className="p-6 space-y-6">
-                  {/* Date Selection */}
-                  <div className="space-y-2">
-                    <Label>Select a Date</Label>
-                    <Select
-                      value={selectedDate}
-                      onValueChange={handleDateSelect}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose a date" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {getAvailableDates().map((date) => (
-                          <SelectItem key={date.value} value={date.value}>
-                            {date.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Available Time Slots */}
-                  {selectedDate && (
-                    <div className="space-y-2">
-                      <Label>Select a Time</Label>
-                      {loadingSlots ? (
-                        <div className="flex items-center justify-center py-8">
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        </div>
-                      ) : availableSlots.length > 0 ? (
-                        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                          {availableSlots.map((slot) => (
-                            <Button
-                              key={slot.time}
-                              variant={
-                                selectedTime === slot.time
-                                  ? "default"
-                                  : "outline"
-                              }
-                              disabled={!slot.available}
-                              onClick={() => handleTimeSelect(slot.time)}
-                              className="w-full"
-                            >
-                              {slot.time}
-                            </Button>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="rounded-lg border border-border/40 bg-muted/30 p-6 text-center">
-                          <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">
-                            No available time slots for this date
-                          </p>
-                        </div>
-                      )}
-                      {availabilityData && (
-                        <p className="text-xs text-muted-foreground">
-                          Working hours: {availabilityData.workingHours?.start}{" "}
-                          - {availabilityData.workingHours?.end}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex justify-between pt-4">
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        setCurrentStep(selectionMethod === "best-fit" ? 3 : 4);
-                        setSelectedDate("");
-                        setSelectedTime("");
-                      }}
-                    >
-                      Back
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 6: Appointment Details */}
-            {currentStep === 6 && (
               <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
                 <div className="p-6 border-b border-border/40">
                   <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                     <Clock className="h-5 w-5" />
                     Appointment Details
                   </h2>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Tell us about your needs so we can match you with the right
+                    professional
+                  </p>
                 </div>
                 <div className="p-6 space-y-6">
                   {/* Session Type */}
@@ -1235,7 +798,7 @@ export default function BookAppointmentPage() {
 
                   {/* Appointment Type */}
                   <div className="space-y-2">
-                    <Label>Appointment Type</Label>
+                    <Label>Preferred Appointment Type</Label>
                     <Select
                       value={selectedType}
                       onValueChange={(value: "video" | "in-person" | "phone") =>
@@ -1270,7 +833,14 @@ export default function BookAppointmentPage() {
 
                   {/* Issue Type */}
                   <div className="space-y-2">
-                    <Label htmlFor="issueType">What brings you here? *</Label>
+                    <Label htmlFor="issueType">
+                      What brings you here? *
+                      {medicalProfile?.primaryIssue && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Pre-filled from your profile)
+                        </span>
+                      )}
+                    </Label>
                     <Select value={issueType} onValueChange={setIssueType}>
                       <SelectTrigger id="issueType">
                         <SelectValue placeholder="Select a topic" />
@@ -1295,13 +865,65 @@ export default function BookAppointmentPage() {
                     </Select>
                   </div>
 
+                  {/* Preferred Availability */}
+                  <div className="space-y-2">
+                    <Label>
+                      Preferred Availability
+                      {medicalProfile?.availability &&
+                        medicalProfile.availability.length > 0 && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            (Pre-filled from your profile)
+                          </span>
+                        )}
+                    </Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {[
+                        "Weekday Mornings",
+                        "Weekday Afternoons",
+                        "Weekday Evenings",
+                        "Weekends",
+                      ].map((option) => (
+                        <Button
+                          key={option}
+                          type="button"
+                          variant={
+                            preferredAvailability.includes(option)
+                              ? "default"
+                              : "outline"
+                          }
+                          size="sm"
+                          onClick={() => {
+                            if (preferredAvailability.includes(option)) {
+                              setPreferredAvailability(
+                                preferredAvailability.filter(
+                                  (a) => a !== option,
+                                ),
+                              );
+                            } else {
+                              setPreferredAvailability([
+                                ...preferredAvailability,
+                                option,
+                              ]);
+                            }
+                          }}
+                          className="text-xs"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Select all time slots that work for you
+                    </p>
+                  </div>
+
                   {/* Notes */}
                   <div className="space-y-2">
                     <Label>Additional Notes (Optional)</Label>
                     <Textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Tell us more about what you'd like to discuss..."
+                      placeholder="Tell us more about what you'd like to discuss, any preferences for your therapist, or anything else you think would be helpful..."
                       rows={4}
                     />
                   </div>
@@ -1310,24 +932,149 @@ export default function BookAppointmentPage() {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setCurrentStep(5);
+                        setCurrentStep(isGuest ? 2 : 1);
                       }}
                     >
                       Back
                     </Button>
                     <Button
-                      onClick={handleSubmit}
-                      disabled={loading || !issueType}
+                      onClick={() => setCurrentStep(4)}
+                      disabled={!issueType}
                     >
+                      Review Request
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Confirmation */}
+            {currentStep === 4 && (
+              <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
+                <div className="p-6 border-b border-border/40">
+                  <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Review Your Request
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Please review your information before submitting
+                  </p>
+                </div>
+                <div className="p-6 space-y-6">
+                  {/* Summary */}
+                  <div className="space-y-4 bg-muted/30 rounded-lg p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Booking For
+                        </p>
+                        <p className="font-medium capitalize">
+                          {bookingFor === "loved-one"
+                            ? "Loved One"
+                            : bookingFor}
+                        </p>
+                      </div>
+                      {isGuest && (
+                        <div>
+                          <p className="text-xs text-muted-foreground mb-1">
+                            Contact
+                          </p>
+                          <p className="font-medium">
+                            {guestInfo.firstName} {guestInfo.lastName}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {guestInfo.email}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {guestInfo.phone}
+                          </p>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Session Type
+                        </p>
+                        <p className="font-medium capitalize">
+                          {therapyType} Session
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Appointment Type
+                        </p>
+                        <div className="flex items-center gap-2">
+                          {selectedType === "video" && (
+                            <Video className="h-4 w-4" />
+                          )}
+                          {selectedType === "in-person" && (
+                            <MapPin className="h-4 w-4" />
+                          )}
+                          {selectedType === "phone" && (
+                            <Phone className="h-4 w-4" />
+                          )}
+                          <span className="font-medium capitalize">
+                            {selectedType}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Topic
+                        </p>
+                        <p className="font-medium">{issueType}</p>
+                      </div>
+                      {preferredAvailability.length > 0 && (
+                        <div className="md:col-span-2">
+                          <p className="text-xs text-muted-foreground mb-1">
+                            Preferred Availability
+                          </p>
+                          <p className="font-medium">
+                            {preferredAvailability.join(", ")}
+                          </p>
+                        </div>
+                      )}
+                      {notes && (
+                        <div className="md:col-span-2">
+                          <p className="text-xs text-muted-foreground mb-1">
+                            Additional Notes
+                          </p>
+                          <p className="text-sm">{notes}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Info about what happens next */}
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4">
+                    <div className="flex items-start gap-3">
+                      <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-blue-800 dark:text-blue-200">
+                          What happens next?
+                        </p>
+                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                          After you submit, a qualified professional will review
+                          your request and contact you via{" "}
+                          {isGuest ? "email or phone" : "your account"} to
+                          schedule your appointment at a time that works for
+                          both of you.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between pt-4">
+                    <Button variant="outline" onClick={() => setCurrentStep(3)}>
+                      Back
+                    </Button>
+                    <Button onClick={handleSubmit} disabled={loading}>
                       {loading ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          {isGuest ? "Booking..." : "Requesting..."}
+                          Submitting...
                         </>
-                      ) : isGuest ? (
-                        "Book Appointment"
                       ) : (
-                        "Continue to Confirmation"
+                        "Submit Request"
                       )}
                     </Button>
                   </div>
@@ -1335,20 +1082,20 @@ export default function BookAppointmentPage() {
               </div>
             )}
 
-            {/* Step 7: Success */}
-            {currentStep === 7 && (
+            {/* Step 5: Success */}
+            {currentStep === 5 && (
               <div className="max-w-2xl mx-auto text-center">
                 <div className="rounded-xl bg-card border border-border/40 p-8">
                   <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
                   </div>
                   <h2 className="text-2xl font-serif font-light text-foreground mb-2">
-                    Appointment Requested!
+                    Request Submitted!
                   </h2>
                   <p className="text-muted-foreground mb-6">
-                    {isGuest
-                      ? "Your appointment request has been submitted. You'll receive an email when the professional confirms your session."
-                      : "Your appointment request has been submitted successfully. You'll receive a confirmation email shortly with all the details."}
+                    Your appointment request has been submitted successfully. A
+                    qualified professional will review your request and contact
+                    you soon to schedule your session.
                   </p>
 
                   <div className="space-y-4 text-left bg-muted/30 rounded-lg p-6 mb-6">
@@ -1356,73 +1103,64 @@ export default function BookAppointmentPage() {
                       <User className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="text-sm text-muted-foreground">
-                          Professional
+                          Session Type
                         </p>
-                        <p className="font-medium text-foreground">
-                          {selectedProfessionalData?.firstName}{" "}
-                          {selectedProfessionalData?.lastName}
+                        <p className="font-medium text-foreground capitalize">
+                          {therapyType} {selectedType} Session
                         </p>
                       </div>
                     </div>
-                    <Separator />
-                    <div className="flex items-start gap-3">
-                      <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Date & Time
-                        </p>
-                        <p className="font-medium text-foreground">
-                          {new Date(selectedDate).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {selectedTime}
-                        </p>
+                    <div className="border-t border-border/40 pt-4">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Topic</p>
+                          <p className="font-medium text-foreground">
+                            {issueType}
+                          </p>
+                        </div>
                       </div>
                     </div>
                     {isGuest && (
-                      <>
-                        <Separator />
+                      <div className="border-t border-border/40 pt-4">
                         <div className="flex items-start gap-3">
                           <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
                           <div>
                             <p className="text-sm text-muted-foreground">
-                              Confirmation will be sent to
+                              We&apos;ll contact you at
                             </p>
                             <p className="font-medium text-foreground">
                               {guestInfo.email}
                             </p>
+                            <p className="text-sm text-muted-foreground">
+                              {guestInfo.phone}
+                            </p>
                           </div>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
 
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4 mb-6">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      <strong>What happens next?</strong>
+                    </p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                      A professional will review your request and reach out to
+                      schedule your appointment. You&apos;ll receive a
+                      confirmation once your session is booked.
+                    </p>
+                  </div>
+
                   {isGuest ? (
-                    <div className="space-y-4">
-                      <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4">
-                        <p className="text-sm text-blue-800 dark:text-blue-200">
-                          <strong>What happens next?</strong>
-                        </p>
-                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                          The professional will review your request. Once
-                          confirmed, you&apos;ll receive an email with a link to
-                          complete your payment and access your session details.
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        onClick={() => router.push("/")}
-                        className="gap-2"
-                      >
-                        <Home className="h-4 w-4" />
-                        Return to Home
-                      </Button>
-                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push("/")}
+                      className="gap-2"
+                    >
+                      <Home className="h-4 w-4" />
+                      Return to Home
+                    </Button>
                   ) : (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button
@@ -1432,7 +1170,7 @@ export default function BookAppointmentPage() {
                         className="gap-2"
                       >
                         <Calendar className="h-4 w-4" />
-                        View My Appointments
+                        View My Requests
                       </Button>
                       <Button
                         variant="outline"

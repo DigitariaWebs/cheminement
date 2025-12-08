@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
 import PlatformSettings from "@/models/PlatformSettings";
+import { authOptions } from "@/lib/auth";
 
 // Helper function to generate time slots
 function generateTimeSlots(
@@ -32,17 +34,20 @@ function generateTimeSlots(
 
 export async function GET(req: NextRequest) {
   try {
-    // Remove authentication requirement to allow guest access
-    // const session = await getServerSession(authOptions);
-    // if (!session?.user?.id) {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
-
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
-    const professionalId = searchParams.get("professionalId");
+    let professionalId = searchParams.get("professionalId");
     const dateStr = searchParams.get("date");
+
+    // If no professionalId provided, check if caller is an authenticated professional
+    // and use their own ID (for scheduling from requests page)
+    if (!professionalId) {
+      const session = await getServerSession(authOptions);
+      if (session?.user?.id && session.user.role === "professional") {
+        professionalId = session.user.id;
+      }
+    }
 
     if (!professionalId || !dateStr) {
       return NextResponse.json(

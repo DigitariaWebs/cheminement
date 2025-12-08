@@ -96,7 +96,9 @@ export async function GET(req: NextRequest) {
         | "overdue" = "pending";
 
       if (appointment.status === "completed") {
-        const appointmentDate = new Date(appointment.date);
+        const appointmentDate = appointment.date
+          ? new Date(appointment.date)
+          : new Date();
         const daysSinceAppointment =
           (Date.now() - appointmentDate.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -108,7 +110,9 @@ export async function GET(req: NextRequest) {
           paymentStatus = "paid";
         }
       } else if (appointment.status === "scheduled") {
-        const appointmentDate = new Date(appointment.date);
+        const appointmentDate = appointment.date
+          ? new Date(appointment.date)
+          : new Date();
         if (appointmentDate > new Date()) {
           paymentStatus = "upcoming";
         } else {
@@ -125,8 +129,10 @@ export async function GET(req: NextRequest) {
         professional: professional
           ? `${professional.firstName} ${professional.lastName}`
           : "Unknown Professional",
-        date: appointment.date.toISOString().split("T")[0],
-        sessionDate: `${appointment.date.toISOString().split("T")[0]} ${appointment.time}`,
+        date: appointment.date
+          ? appointment.date.toISOString().split("T")[0]
+          : "N/A",
+        sessionDate: `${appointment.date ? appointment.date.toISOString().split("T")[0] : "N/A"} ${appointment.time || "N/A"}`,
         amount: 120, // Standard session price
         platformFee: 12, // 10% platform fee
         professionalPayout: 108, // Amount after platform fee
@@ -135,7 +141,9 @@ export async function GET(req: NextRequest) {
         invoiceUrl: paymentStatus === "paid" ? "#" : undefined,
         paidDate:
           paymentStatus === "paid"
-            ? appointment.date.toISOString().split("T")[0]
+            ? appointment.date
+              ? appointment.date.toISOString().split("T")[0]
+              : undefined
             : undefined,
       };
     });
@@ -159,7 +167,8 @@ export async function GET(req: NextRequest) {
       overdueCount: allPayments.filter((p) => {
         if (p.status !== "completed") return false;
         const daysSince =
-          (Date.now() - new Date(p.date).getTime()) / (1000 * 60 * 60 * 24);
+          (Date.now() - new Date(p.date || Date.now()).getTime()) /
+          (1000 * 60 * 60 * 24);
         return daysSince > 30;
       }).length,
     };

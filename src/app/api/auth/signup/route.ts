@@ -4,6 +4,7 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Profile from "@/models/Profile";
 import MedicalProfile from "@/models/MedicalProfile";
+import { sendWelcomeEmail } from "@/lib/notifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -189,6 +190,13 @@ export async function POST(req: NextRequest) {
 
       await medicalProfile.save();
     }
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail({
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      role: user.role as "client" | "professional" | "guest",
+    }).catch((err) => console.error("Error sending welcome email:", err));
 
     return NextResponse.json(
       {

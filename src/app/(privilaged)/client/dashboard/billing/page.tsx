@@ -425,11 +425,11 @@ export default function ClientBillingPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-serif text-xl font-light text-foreground">
-                        {t("session")} - {apt.professionalId.firstName}{" "}
-                        {apt.professionalId.lastName}
+                        {t("session")} - {apt.professionalId?.firstName}{" "}
+                        {apt.professionalId?.lastName}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {formatDate(apt.date)}
+                        {apt.date ? formatDate(apt.date) : "to be scheduled"}
                       </p>
                     </div>
                     <span
@@ -522,7 +522,7 @@ export default function ClientBillingPage() {
           onOpenChange={setShowPaymentModal}
           appointmentId={selectedAppointment._id}
           amount={selectedAppointment.payment.price}
-          professionalName={`${selectedAppointment.professionalId.firstName} ${selectedAppointment.professionalId.lastName}`}
+          professionalName={`${selectedAppointment.professionalId?.firstName} ${selectedAppointment.professionalId?.lastName}`}
           appointmentDate={selectedAppointment.date}
           onSuccess={handlePaymentSuccess}
         />

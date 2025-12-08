@@ -87,7 +87,7 @@ export default function ClientAppointmentsPage() {
   today.setHours(0, 0, 0, 0);
 
   const upcomingAppointments = appointments.filter((apt) => {
-    const aptDate = new Date(apt.date);
+    const aptDate = apt.date ? new Date(apt.date) : today;
     return (
       aptDate >= today &&
       ["scheduled", "pending", "ongoing"].includes(apt.status)
@@ -95,7 +95,7 @@ export default function ClientAppointmentsPage() {
   });
 
   const pastAppointments = appointments.filter((apt) => {
-    const aptDate = new Date(apt.date);
+    const aptDate = apt.date ? new Date(apt.date) : today;
     return (
       aptDate < today ||
       ["completed", "cancelled", "no-show"].includes(apt.status)
@@ -235,7 +235,9 @@ export default function ClientAppointmentsPage() {
                     </div>
                     <div>
                       <h3 className="font-serif text-xl font-light text-foreground">
-                        {formatDate(appointment.date)}
+                        {appointment.date
+                          ? formatDate(appointment.date)
+                          : "to be scheduled"}
                       </h3>
                       <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
@@ -257,20 +259,22 @@ export default function ClientAppointmentsPage() {
                   </div>
 
                   {/* Professional Info */}
-                  <div className="flex items-center gap-3 rounded-2xl bg-muted/30 p-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                      <User className="h-6 w-6 text-primary" />
+                  {appointment.professionalId && (
+                    <div className="flex items-center gap-3 rounded-2xl bg-muted/30 p-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <User className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {appointment.professionalId.firstName}{" "}
+                          {appointment.professionalId.lastName}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {appointment.professionalId.email}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {appointment.professionalId.firstName}{" "}
-                        {appointment.professionalId.lastName}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {appointment.professionalId.email}
-                      </p>
-                    </div>
-                  </div>
+                  )}
 
                   {/* Details Grid */}
                   <div className="grid gap-4 md:grid-cols-2">

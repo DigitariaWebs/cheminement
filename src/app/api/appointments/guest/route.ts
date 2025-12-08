@@ -47,17 +47,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate required appointment fields
-    if (
-      !appointmentData.professionalId ||
-      !appointmentData.date ||
-      !appointmentData.time ||
-      !appointmentData.type
-    ) {
+    // Validate required appointment fields (professionalId is now optional)
+    if (!appointmentData.type) {
       return NextResponse.json(
         {
-          error:
-            "Missing required appointment fields: professionalId, date, time, type",
+          error: "Missing required appointment field: type",
         },
         { status: 400 },
       );
@@ -104,105 +98,121 @@ export async function POST(req: NextRequest) {
       await guestUser.save();
     }
 
-    // Verify professional exists and is active
-    const professional = await User.findOne({
-      _id: appointmentData.professionalId,
-      role: "professional",
-      status: { $in: ["active", "pending"] },
-    });
-
-    if (!professional) {
-      return NextResponse.json(
-        { error: "Professional not found" },
-        { status: 404 },
-      );
-    }
-
-    // Get professional's profile for availability and pricing
-    const profile = await Profile.findOne({
-      userId: appointmentData.professionalId,
-    });
-
-    if (!profile) {
-      return NextResponse.json(
-        { error: "Professional profile not found" },
-        { status: 404 },
-      );
-    }
-
-    // Validate date is not in the past
-    const appointmentDate = new Date(appointmentData.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (appointmentDate < today) {
-      return NextResponse.json(
-        { error: "Cannot book appointments in the past" },
-        { status: 400 },
-      );
-    }
-
-    // Check if professional is available on the requested day
-    if (profile.availability?.days) {
-      const dayOfWeek = appointmentDate.toLocaleDateString("en-US", {
-        weekday: "long",
+    // Only validate professional if one is specified
+    let profile = null;
+    if (appointmentData.professionalId) {
+      // Verify professional exists and is active
+      const professional = await User.findOne({
+        _id: appointmentData.professionalId,
+        role: "professional",
+        status: { $in: ["active", "pending"] },
       });
-      const dayAvailability = profile.availability.days.find(
-        (d) => d.day === dayOfWeek,
-      );
 
-      if (!dayAvailability || !dayAvailability.isWorkDay) {
+      if (!professional) {
         return NextResponse.json(
-          { error: `Professional is not available on ${dayOfWeek}s` },
-          { status: 400 },
+          { error: "Professional not found" },
+          { status: 404 },
         );
       }
 
-      // Validate time is within working hours
-      const requestedTime = appointmentData.time;
-      if (
-        requestedTime < dayAvailability.startTime ||
-        requestedTime >= dayAvailability.endTime
-      ) {
+      // Get professional's profile for availability and pricing
+      profile = await Profile.findOne({
+        userId: appointmentData.professionalId,
+      });
+
+      if (!profile) {
         return NextResponse.json(
-          {
-            error: `Time slot outside of working hours (${dayAvailability.startTime} - ${dayAvailability.endTime})`,
-          },
-          { status: 400 },
+          { error: "Professional profile not found" },
+          { status: 404 },
         );
       }
-    }
 
-    // Check for double-booking
-    const existingAppointment = await Appointment.findOne({
-      professionalId: appointmentData.professionalId,
-      date: appointmentDate,
-      time: appointmentData.time,
-      status: { $in: ["scheduled"] },
-    });
+      // Validate date/time only if provided with a professional
+      if (appointmentData.date && appointmentData.time) {
+        // Validate date is not in the past
+        const appointmentDate = new Date(appointmentData.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    if (existingAppointment) {
-      return NextResponse.json(
-        { error: "This time slot is already booked" },
-        { status: 409 },
+        if (appointmentDate < today) {
+          return NextResponse.json(
+            { error: "Cannot book appointments in the past" },
+            { status: 400 },
+          );
+        }
+
+        // Check if professional is available on the requested day
+        if (profile.availability?.days) {
+          const dayOfWeek = appointmentDate.toLocaleDateString("en-US", {
+            weekday: "long",
+          });
+          const dayAvailability = profile.availability.days.find(
+            (d) => d.day === dayOfWeek,
+          );
+
+          if (!dayAvailability || !dayAvailability.isWorkDay) {
+            return NextResponse.json(
+              { error: `Professional is not available on ${dayOfWeek}s` },
+              { status: 400 },
+            );
+          }
+
+          // Validate time is within working hours
+          const requestedTime = appointmentData.time;
+          if (
+            requestedTime < dayAvailability.startTime ||
+            requestedTime >= dayAvailability.endTime
+          ) {
+            return NextResponse.json(
+              {
+                error: `Time slot outside of working hours (${dayAvailability.startTime} - ${dayAvailability.endTime})`,
+              },
+              { status: 400 },
+            );
+          }
+        }
+
+        // Check for double-booking
+        const existingAppointment = await Appointment.findOne({
+          professionalId: appointmentData.professionalId,
+          date: appointmentDate,
+          time: appointmentData.time,
+          status: { $in: ["scheduled"] },
+        });
+
+        if (existingAppointment) {
+          return NextResponse.json(
+            { error: "This time slot is already booked" },
+            { status: 409 },
+          );
+        }
+      }
+
+      // Calculate pricing based on therapy type using professional or platform defaults
+      const pricingResult = await calculateAppointmentPricing(
+        appointmentData.professionalId,
+        appointmentData.therapyType,
       );
+
+      // Set pricing in appointment data
+      appointmentData.price = pricingResult.sessionPrice;
+      appointmentData.platformFee = pricingResult.platformFee;
+      appointmentData.professionalPayout = pricingResult.professionalPayout;
+    } else {
+      // No professional assigned yet - use platform default pricing
+      const pricingResult = await calculateAppointmentPricing(
+        null,
+        appointmentData.therapyType,
+      );
+      appointmentData.price = pricingResult.sessionPrice;
+      appointmentData.platformFee = pricingResult.platformFee;
+      appointmentData.professionalPayout = pricingResult.professionalPayout;
     }
-
-    // Calculate pricing based on therapy type using professional or platform defaults
-    const pricingResult = await calculateAppointmentPricing(
-      appointmentData.professionalId,
-      appointmentData.therapyType,
-    );
-
-    // Set pricing in appointment data
-    appointmentData.price = pricingResult.sessionPrice;
-    appointmentData.platformFee = pricingResult.platformFee;
-    appointmentData.professionalPayout = pricingResult.professionalPayout;
 
     // Set default duration from profile or default to 60 minutes
     if (!appointmentData.duration) {
       appointmentData.duration =
-        profile.availability?.sessionDurationMinutes || 60;
+        profile?.availability?.sessionDurationMinutes || 60;
     }
 
     // Set the client ID to the guest user
@@ -222,7 +232,7 @@ export async function POST(req: NextRequest) {
     await appointment.save();
 
     const populatedAppointment = await Appointment.findById(appointment._id)
-      .populate("clientId", "firstName lastName email phone")
+      .populate("clientId", "firstName lastName email phone location")
       .populate("professionalId", "firstName lastName email phone");
 
     if (!populatedAppointment) {
@@ -232,41 +242,59 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Send email notifications
-    const professionalDoc = populatedAppointment.professionalId as unknown as {
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
+    // Send email notifications only if professional is assigned
+    if (populatedAppointment.professionalId) {
+      const professionalDoc =
+        populatedAppointment.professionalId as unknown as {
+          firstName: string;
+          lastName: string;
+          email: string;
+        };
 
-    // Send confirmation email to guest
-    sendGuestBookingConfirmation({
-      guestName: `${firstName} ${lastName}`,
-      guestEmail: email,
-      professionalName: `${professionalDoc.firstName} ${professionalDoc.lastName}`,
-      date: appointmentData.date,
-      time: appointmentData.time,
-      duration: appointmentData.duration || 60,
-      type: appointmentData.type,
-      therapyType: appointmentData.therapyType,
-      price: appointmentData.price,
-    }).catch((err) =>
-      console.error("Error sending guest confirmation email:", err),
-    );
+      // Send confirmation email to guest
+      sendGuestBookingConfirmation({
+        guestName: `${firstName} ${lastName}`,
+        guestEmail: email,
+        professionalName: `${professionalDoc.firstName} ${professionalDoc.lastName}`,
+        date: appointmentData.date || "To be scheduled",
+        time: appointmentData.time || "To be scheduled",
+        duration: appointmentData.duration || 60,
+        type: appointmentData.type,
+        therapyType: appointmentData.therapyType,
+        price: appointmentData.price,
+      }).catch((err) =>
+        console.error("Error sending guest confirmation email:", err),
+      );
 
-    // Send notification to professional
-    sendProfessionalNotification({
-      clientName: `${firstName} ${lastName}`,
-      clientEmail: email,
-      professionalName: `${professionalDoc.firstName} ${professionalDoc.lastName}`,
-      professionalEmail: professionalDoc.email,
-      date: appointmentData.date,
-      time: appointmentData.time,
-      duration: appointmentData.duration || 60,
-      type: appointmentData.type,
-    }).catch((err) =>
-      console.error("Error sending professional notification email:", err),
-    );
+      // Send notification to professional
+      sendProfessionalNotification({
+        clientName: `${firstName} ${lastName}`,
+        clientEmail: email,
+        professionalName: `${professionalDoc.firstName} ${professionalDoc.lastName}`,
+        professionalEmail: professionalDoc.email,
+        date: appointmentData.date || "To be scheduled",
+        time: appointmentData.time || "To be scheduled",
+        duration: appointmentData.duration || 60,
+        type: appointmentData.type,
+      }).catch((err) =>
+        console.error("Error sending professional notification email:", err),
+      );
+    } else {
+      // Send confirmation email to guest without professional info
+      sendGuestBookingConfirmation({
+        guestName: `${firstName} ${lastName}`,
+        guestEmail: email,
+        professionalName: "To be assigned",
+        date: appointmentData.date || "To be scheduled",
+        time: appointmentData.time || "To be scheduled",
+        duration: appointmentData.duration || 60,
+        type: appointmentData.type,
+        therapyType: appointmentData.therapyType,
+        price: appointmentData.price,
+      }).catch((err) =>
+        console.error("Error sending guest confirmation email:", err),
+      );
+    }
 
     return NextResponse.json(
       {
