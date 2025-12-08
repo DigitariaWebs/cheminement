@@ -1,12 +1,30 @@
 "use client";
 
-import { Route, Award, Clock, Lock } from "lucide-react";
+import { Route, Award, Clock, Lock, Zap, BookOpen, Users } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
 
 export default function ValueSection() {
   const t = useTranslations("ValueSection");
   const locale = useLocale();
+
+  const clientBenefits = [
+    {
+      icon: Zap,
+      titleKey: "benefits.fastAccess.title",
+      descriptionKey: "benefits.fastAccess.description",
+    },
+    {
+      icon: Users,
+      titleKey: "benefits.varietyProfessionals.title",
+      descriptionKey: "benefits.varietyProfessionals.description",
+    },
+    {
+      icon: BookOpen,
+      titleKey: "benefits.educationalResources.title",
+      descriptionKey: "benefits.educationalResources.description",
+    },
+  ];
 
   const values = [
     {
@@ -53,9 +71,9 @@ export default function ValueSection() {
       subtitleFr:
         "Éthique et confidentialité : La fondation de notre engagement",
       descriptionEn:
-        "Your well-being and your trust are our absolute priorities. This is why our service is based on an unwavering commitment to professional ethics and rigorous protection of your privacy and your information according to current regulations (Bill 25). These two principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
+        "Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
       descriptionFr:
-        "Votre bien-être et votre confiance sont nos priorités absolues. C'est pourquoi notre service repose sur un engagement inébranlable envers l'éthique professionnelle et la protection rigoureuse de votre vie privée et de vos informations selon les règles en vigueur (Loi 25). Ces deux principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux.",
+        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont hébergées exclusivement sur des serveurs canadiens, garantissant une souveraineté complète de vos données. Nous respectons strictement la Loi 25 et appliquons une protection rigoureuse de votre vie privée. Ces principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -89,6 +107,29 @@ export default function ValueSection() {
               integratedPlatform: t("integratedPlatform"),
             })}
           </p>
+        </div>
+
+        {/* Client Benefits */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 max-w-5xl mx-auto">
+          {clientBenefits.map((benefit, index) => {
+            const Icon = benefit.icon;
+            return (
+              <div
+                key={index}
+                className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <div className="inline-flex p-3 bg-foreground rounded-xl mb-4">
+                  <Icon className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {t(benefit.titleKey)}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {t(benefit.descriptionKey)}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Staggered Grid Layout - 4 Column Stairs Pattern */}

@@ -2,7 +2,6 @@
 
 import { HeartHandshake, Users, Baby, Brain } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 
 export default function FamilySupportSection() {
   const t = useTranslations("Why.familySupport");
@@ -31,7 +30,7 @@ export default function FamilySupportSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-linear-to-br from-accent/25 via-muted to-background py-24">
+    <section className="relative overflow-hidden bg-linear-to-b from-accent via-accent to-accent py-24">
       <div className="absolute inset-0 opacity-[0.08]">
         <div className="absolute left-0 top-16 h-80 w-80 -translate-x-1/3 rounded-full bg-primary blur-3xl" />
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/4 translate-y-1/3 rounded-full bg-primary/60 blur-3xl" />
@@ -63,7 +62,10 @@ export default function FamilySupportSection() {
                 {/* Placeholder for family image - replace with actual image */}
                 <div className="absolute inset-0 bg-linear-to-br from-accent/40 via-primary/20 to-muted flex items-center justify-center">
                   <div className="text-center p-8">
-                    <Users className="h-20 w-20 text-foreground/30 mx-auto mb-4" strokeWidth={1} />
+                    <Users
+                      className="h-20 w-20 text-foreground/30 mx-auto mb-4"
+                      strokeWidth={1}
+                    />
                     <p className="text-sm text-foreground/50 font-medium">
                       {t("imageAlt")}
                     </p>

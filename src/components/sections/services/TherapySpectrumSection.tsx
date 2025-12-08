@@ -1,7 +1,16 @@
 "use client";
 
-import { HeartPulse, Baby, Users, HeartHandshake, Compass } from "lucide-react";
+import {
+  HeartPulse,
+  Baby,
+  Users,
+  HeartHandshake,
+  Compass,
+  Briefcase,
+  GraduationCap,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function TherapySpectrumSection() {
   const t = useTranslations("Services.therapySpectrum");
@@ -32,6 +41,16 @@ export default function TherapySpectrumSection() {
       title: t("services.parenting.title"),
       description: t("services.parenting.description"),
     },
+    {
+      icon: Briefcase,
+      title: t("services.workplace.title"),
+      description: t("services.workplace.description"),
+    },
+    {
+      icon: GraduationCap,
+      title: t("services.schoolAnxiety.title"),
+      description: t("services.schoolAnxiety.description"),
+    },
   ];
   return (
     <section className="relative overflow-hidden bg-background py-24">
@@ -48,9 +67,38 @@ export default function TherapySpectrumSection() {
           <h2 className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
             {t("title")}
           </h2>
+          <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+            {t("description")}
+          </p>
         </div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-2">
+        {/* Image placeholder for services */}
+        <div className="mt-12 mx-auto max-w-4xl">
+          <div className="relative aspect-[21/9] rounded-3xl overflow-hidden shadow-xl">
+            {/* Placeholder - replace with actual image */}
+            <div className="absolute inset-0 bg-linear-to-br from-accent/30 via-primary/20 to-muted flex items-center justify-center">
+              <div className="text-center p-8">
+                <Users
+                  className="h-16 w-16 text-foreground/30 mx-auto mb-4"
+                  strokeWidth={1}
+                />
+                <p className="text-sm text-foreground/50 font-medium">
+                  {t("imageAlt")}
+                </p>
+              </div>
+            </div>
+            {/* Uncomment when image is available:
+            <Image
+              src="/images/services-therapy.jpg"
+              alt={t("imageAlt")}
+              fill
+              className="object-cover"
+            />
+            */}
+          </div>
+        </div>
+
+        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {services.map(({ icon: Icon, title, description }) => (
             <article
               key={title}

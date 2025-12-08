@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  UserPlus,
-  CalendarCheck,
-  FileText,
-} from "lucide-react";
+import { ArrowRight, UserPlus, CalendarCheck, FileText } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 
 export default function HowItWorksSection() {

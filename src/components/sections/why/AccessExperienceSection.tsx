@@ -3,6 +3,7 @@
 import {
   Video,
   Building2,
+  TreePine,
   LayoutDashboard,
   Compass,
   Headset,
@@ -25,6 +26,12 @@ export default function AccessExperienceSection() {
       description: t("modes.office.description"),
       highlight: t("modes.office.highlight"),
     },
+    {
+      icon: TreePine,
+      title: t("modes.walk.title"),
+      description: t("modes.walk.description"),
+      highlight: t("modes.walk.highlight"),
+    },
   ];
 
   const experienceHighlights = [
@@ -45,14 +52,14 @@ export default function AccessExperienceSection() {
     },
   ];
   return (
-    <section className="relative overflow-hidden bg-linear-to-b from-muted via-background to-muted py-24">
+    <section className="relative overflow-hidden bg-linear-to-b from-muted via-muted to-muted py-24">
       <div className="absolute inset-0 opacity-[0.06]">
         <div className="absolute left-0 top-24 h-80 w-80 -translate-x-1/3 rounded-full bg-primary blur-3xl" />
         <div className="absolute right-0 bottom-0 h-96 w-96 translate-x-1/3 translate-y-1/4 rounded-full bg-accent blur-3xl" />
       </div>
 
       <div className="container relative z-10 mx-auto px-6">
-        <div className="mx-auto max-w-6xl space-y-16">
+        <div className="mx-auto max-w-7xl space-y-16">
           <header className="text-center">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
               {t("badge")}
@@ -65,8 +72,8 @@ export default function AccessExperienceSection() {
             </p>
           </header>
 
-          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-12">
+            <div className="grid gap-6 md:grid-cols-3">
               {modes.map(({ icon: Icon, title, description, highlight }) => (
                 <div
                   key={title}
@@ -91,8 +98,8 @@ export default function AccessExperienceSection() {
               ))}
             </div>
 
-            <div className="flex h-full flex-col justify-between gap-6 rounded-4xl bg-card/80 p-8 shadow-xl backdrop-blur">
-              <div>
+            <div className="rounded-4xl bg-card/80 p-8 shadow-xl backdrop-blur">
+              <div className="text-center mb-8">
                 <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground/70">
                   {t("platform.badge")}
                 </p>
@@ -100,7 +107,7 @@ export default function AccessExperienceSection() {
                   {t("platform.title")}
                 </h3>
               </div>
-              <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-3">
                 {experienceHighlights.map(
                   ({ icon: Icon, title, description }) => (
                     <div

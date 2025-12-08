@@ -1,7 +1,6 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
-import Image from "next/image";
+import { useTranslations } from "next-intl";
 import {
   Clock,
   Users,
@@ -13,7 +12,6 @@ import {
 
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
-  const locale = useLocale();
 
   const advantages = [
     {
@@ -120,9 +118,12 @@ export default function ClientAdvantagesSection() {
         {/* Educational Content Highlight */}
         <div className="bg-linear-to-br from-accent/20 via-accent/10 to-transparent rounded-3xl p-8 md:p-12 mb-24 max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <div className="p-6 bg-foreground rounded-3xl">
-                <Video className="w-12 h-12 text-background" strokeWidth={1.5} />
+                <Video
+                  className="w-12 h-12 text-background"
+                  strokeWidth={1.5}
+                />
               </div>
             </div>
             <div className="text-center md:text-left">
@@ -133,16 +134,20 @@ export default function ClientAdvantagesSection() {
                 {t("educationalHighlight.description")}
               </p>
               <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                {["anxiety", "burnout", "stress", "depression", "selfEsteem"].map(
-                  (topic) => (
-                    <span
-                      key={topic}
-                      className="px-4 py-2 bg-card rounded-full text-sm font-medium text-foreground border border-border"
-                    >
-                      {t(`topics.${topic}`)}
-                    </span>
-                  )
-                )}
+                {[
+                  "anxiety",
+                  "burnout",
+                  "stress",
+                  "depression",
+                  "selfEsteem",
+                ].map((topic) => (
+                  <span
+                    key={topic}
+                    className="px-4 py-2 bg-card rounded-full text-sm font-medium text-foreground border border-border"
+                  >
+                    {t(`topics.${topic}`)}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -166,10 +171,13 @@ export default function ClientAdvantagesSection() {
               className="group relative animate-fade-in-up"
               style={{ animationDelay: `${index * 0.08}s` }}
             >
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-muted shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
+              <div className="relative aspect-3/4 rounded-2xl overflow-hidden bg-muted shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
                 {/* Placeholder image - replace with actual professional photos */}
                 <div className="absolute inset-0 bg-linear-to-br from-accent/30 via-primary/20 to-muted flex items-center justify-center">
-                  <Users className="w-12 h-12 text-foreground/30" strokeWidth={1} />
+                  <Users
+                    className="w-12 h-12 text-foreground/30"
+                    strokeWidth={1}
+                  />
                 </div>
                 {/* Gradient overlay at bottom */}
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-foreground/90 to-transparent"></div>
@@ -203,4 +211,3 @@ export default function ClientAdvantagesSection() {
     </section>
   );
 }
-

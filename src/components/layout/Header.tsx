@@ -34,9 +34,17 @@ export function Header() {
     { href: "/who-we-are", label: t("nav.whoWeAre") },
     { href: "/why-us", label: t("nav.whyUs") },
     { href: "/approaches", label: t("nav.approaches") },
-    { href: "/services", label: t("nav.services") },
-    { href: "/services/platform", label: t("nav.platform") },
     { href: "/contact", label: t("nav.contact") },
+    { href: "/professional", label: t("nav.professional") },
+  ];
+
+  const servicesDropdownItems = [
+    { href: "/services", label: t("nav.servicesOverview") },
+    {
+      href: "/services#sentiers",
+      label: t("nav.schoolServices"),
+      highlight: true,
+    },
   ];
 
   return (
@@ -62,7 +70,49 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
+            {navLinks.slice(0, 4).map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-base font-semibold transition-all duration-300 ease-in-out ${
+                  pathname === link.href
+                    ? "text-primary font-semibold underline underline-offset-4"
+                    : "text-foreground hover:text-primary"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {/* Services Dropdown */}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger
+                className={`inline-flex items-center gap-1 text-base font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none ${
+                  pathname.startsWith("/services")
+                    ? "text-primary underline underline-offset-4"
+                    : "text-foreground hover:text-primary"
+                }`}
+              >
+                {t("nav.services")}
+                <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-48">
+                {servicesDropdownItems.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2 cursor-pointer ${
+                        item.highlight ? "text-primary font-medium" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {navLinks.slice(4).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

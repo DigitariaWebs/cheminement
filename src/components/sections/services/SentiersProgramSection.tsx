@@ -25,7 +25,10 @@ export default function SentiersProgramSection() {
     },
   ];
   return (
-    <section className="relative overflow-hidden bg-linear-to-b from-muted via-background to-muted py-24">
+    <section
+      id="sentiers"
+      className="relative overflow-hidden bg-linear-to-b from-muted via-muted to-muted py-24 scroll-mt-20"
+    >
       <div className="absolute inset-0 opacity-[0.06]">
         <div className="absolute left-0 top-24 h-80 w-80 -translate-x-1/3 rounded-full bg-primary blur-3xl" />
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/4 translate-y-1/4 rounded-full bg-accent blur-3xl" />

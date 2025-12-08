@@ -6,8 +6,11 @@
       "whyUs": "Pourquoi nous",
       "approaches": "Approches",
       "services": "Services",
+      "servicesOverview": "Tous les services",
       "platform": "Plateforme",
-      "contact": "Contact"
+      "contact": "Contact",
+      "professional": "Je suis un professionnel",
+      "schoolServices": "Services scolaires"
     },
     "login": "Connexion",
     "getStarted": "Commencer",
@@ -46,19 +49,40 @@
   },
   "HeroSection": {
     "tagline": "VOTRE PARCOURS VERS LE BIEN-ÊTRE COMMENCE ICI",
-    "headline": "Trouvez votre professionnel de santé mentale idéal",
+    "designedByPsychologists": "Une plateforme conçue par des psychologues",
+    "headline": "Trouvez votre professionnel de santé mentale",
     "description": "Faites le premier pas vers une meilleure santé mentale. Notre plateforme vous met en relation avec des professionnels qualifiés qui comprennent votre parcours unique et vous apportent le soutien dont vous avez besoin, quand vous en avez le plus besoin.",
-    "bookAppointment": "Prendre rendez-vous",
-    "professionalLink": "Je suis un professionnel",
+    "bookNow": "Prendre rendez-vous",
+    "forSelf": "Pour moi",
+    "forPatient": "Pour un patient",
+    "forLovedOne": "Pour un proche",
+    "bookForSelfHint": "Cherchez-vous un soutien professionnel pour votre propre bien-être mental?",
+    "bookForPatientHint": "Êtes-vous un médecin ou professionnel souhaitant référer un patient?",
+    "bookForLovedOneHint": "Souhaitez-vous aider un membre de votre famille ou un proche à trouver du soutien?",
+    "learnMore": "En savoir plus",
     "personalizedCare": "Soins personnalisés",
     "flexibleScheduling": "Planification flexible",
     "confidentialSupport": "Soutien confidentiel"
   },
   "ValueSection": {
-    "title": "Guérissez votre enfant intérieur",
-    "subtitle": "Trouvez la paix et le bien-être grâce à des soins personnalisés.",
-    "description": "Vous dépensez trop pour des programmes d'avantages sociaux avec un réseau de fournisseurs ? Vous avez du mal à améliorer la productivité de l'équipe et à mesurer le retour sur investissement ? Vous êtes au bon endroit. Notre {integratedPlatform} est un centre de soins unique qui centralise nos programmes dans une seule application, offrant un accès aux services 24h/24, 7j/7, 365j/an.",
-    "integratedPlatform": "Plateforme de santé intégrée™"
+    "title": "Plateforme de santé intégrée",
+    "subtitle": "Votre portail vers des soins de santé mentale complets.",
+    "description": "Notre {integratedPlatform} offre un accès rapide à une variété de professionnels qualifiés, le tout en un seul endroit. Commencez votre parcours vers le bien-être avec un soutien personnalisé adapté à vos besoins—disponible quand et où vous en avez besoin.",
+    "integratedPlatform": "Plateforme de santé intégrée™",
+    "benefits": {
+      "fastAccess": {
+        "title": "Accès rapide",
+        "description": "Connectez-vous rapidement avec un professionnel de la santé mentale. Pas de longues listes d'attente—commencez votre parcours vers le bien-être plus tôt."
+      },
+      "varietyProfessionals": {
+        "title": "Variété de professionnels",
+        "description": "Accédez à une équipe diversifiée de spécialistes qualifiés, chacun avec une expertise unique pour répondre à vos besoins et préférences spécifiques."
+      },
+      "educationalResources": {
+        "title": "Ressources éducatives",
+        "description": "Explorez notre bibliothèque de vidéos et de lectures sur l'anxiété, l'épuisement professionnel, la gestion du stress et plus encore—disponible même avant votre première séance."
+      }
+    }
   },
   "HowItWorksSection": {
     "badge": "Processus simple",
@@ -953,6 +977,8 @@
     "therapySpectrum": {
       "badge": "1 · Une couverture complète des besoins thérapeutiques",
       "title": "Des services dédiés aux adultes, enfants, couples et familles.",
+      "description": "Nous offrons une gamme complète de services de santé mentale conçus pour soutenir chaque membre de votre famille. Chaque service est dispensé par des professionnels qualifiés qui adaptent leur approche à vos besoins uniques.",
+      "imageAlt": "Groupe diversifié de personnes recevant un soutien en santé mentale",
       "services": {
         "adult": {
           "title": "Psychothérapie adulte",
@@ -973,7 +999,86 @@
         "parenting": {
           "title": "Coaching parental",
           "description": "Un accompagnement pour mieux comprendre le développement de votre enfant, gérer les défis comportementaux, les émotions, l'encadrement positif et la continuité entre école et maison."
+        },
+        "workplace": {
+          "title": "Santé mentale au travail",
+          "description": "Soutien spécialisé pour l'épuisement professionnel, les transitions de retour au travail et les difficultés professionnelles. Nous vous aidons à naviguer le stress lié au travail, à reconstruire votre confiance après un congé et à développer des stratégies durables pour un meilleur équilibre vie-travail."
+        },
+        "schoolAnxiety": {
+          "title": "Soutien pour l'anxiété scolaire",
+          "description": "Interventions ciblées pour les enfants et adolescents vivant de l'anxiété liée à l'école, incluant l'anxiété de performance, les peurs sociales, le refus scolaire et les difficultés de transition. Nous travaillons avec l'enfant, la famille et l'école pour créer un environnement de soutien."
         }
+      }
+    },
+    "programs": {
+      "badge": "CE QUI EST INCLUS",
+      "title": "Programmes complets de santé mentale",
+      "subtitle": "Explorez les caractéristiques et avantages de chaque programme. Notre approche intégrée vous assure des soins personnalisés adaptés à vos besoins uniques.",
+      "imageAlt": "Séance de soutien professionnel en santé mentale",
+      "adult": {
+        "title": "Psychothérapie adulte",
+        "description": "Soutien complet en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels qualifiés offrent des soins thérapeutiques personnalisés.",
+        "highlight": "Plans de traitement personnalisés",
+        "features": [
+          "Séances de thérapie individuelle avec des psychologues agréés",
+          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste)",
+          "Gestion de l'anxiété, de la dépression et du stress",
+          "Évaluation du TDAH et soutien continu",
+          "Counseling relationnel et estime de soi",
+          "Soutien aux transitions et à l'adaptation de vie"
+        ]
+      },
+      "child": {
+        "title": "Psychothérapie enfant & adolescent",
+        "description": "Soutien thérapeutique spécialisé conçu pour les besoins développementaux uniques des enfants et des adolescents. Nous aidons les jeunes à naviguer les défis émotionnels, les difficultés comportementales et les transitions développementales.",
+        "highlight": "Interventions adaptées à l'âge",
+        "features": [
+          "Thérapie par le jeu et techniques adaptées à l'âge",
+          "Évaluation du TDAH et stratégies comportementales",
+          "Soutien à l'anxiété et à la régulation émotionnelle",
+          "Développement des habiletés sociales",
+          "Difficultés scolaires et soutien à l'apprentissage",
+          "Collaboration et guidance parentale"
+        ]
+      },
+      "family": {
+        "title": "Thérapie familiale & de couple",
+        "description": "Renforcez les liens familiaux et améliorez la communication grâce à des séances thérapeutiques guidées. Nous aidons les familles et les couples à naviguer les conflits, à reconstruire la confiance et à créer des dynamiques relationnelles plus saines.",
+        "highlight": "Communication améliorée",
+        "features": [
+          "Thérapie de couple et counseling relationnel",
+          "Évaluation et intervention sur les dynamiques familiales",
+          "Stratégies de résolution de conflits",
+          "Développement des compétences en communication",
+          "Soutien aux familles recomposées",
+          "Coaching parental et guidance en coparentalité"
+        ]
+      },
+      "workplace": {
+        "title": "Santé mentale au travail",
+        "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les professionnels à naviguer l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel.",
+        "highlight": "Soutien au retour au travail",
+        "features": [
+          "Évaluation de l'épuisement et planification du rétablissement",
+          "Soutien à la transition de retour au travail",
+          "Gestion du stress et de la charge de travail",
+          "Reconstruction de l'identité professionnelle et de la confiance",
+          "Stratégies d'équilibre vie-travail",
+          "Counseling de transition de carrière"
+        ]
+      },
+      "schoolAnxiety": {
+        "title": "Soutien pour l'anxiété scolaire",
+        "description": "Interventions ciblées pour les enfants et adolescents vivant de l'anxiété liée à l'école. Nous travaillons en collaboration avec l'enfant, la famille et l'école pour créer un environnement favorable à la réussite académique et émotionnelle.",
+        "highlight": "Collaboration école-famille",
+        "features": [
+          "Gestion de l'anxiété de performance",
+          "Soutien à l'anxiété sociale et aux relations entre pairs",
+          "Intervention en cas de refus scolaire",
+          "Gestion de l'anxiété aux examens et du stress académique",
+          "Soutien aux transitions (nouvelle école, changements de niveau)",
+          "Collaboration avec les enseignants et l'école"
+        ]
       }
     },
     "sentiersProgram": {
@@ -1093,6 +1198,7 @@
       "badge": "2 · Approches reconnues et encadrées",
       "title": "Des modèles cliniques validés, portés par des experts reconnus.",
       "description": "Nos professionnels pratiquent selon des approches scientifiquement reconnues et encadrées par leurs ordres professionnels. Chaque méthode est choisie spécifiquement pour votre situation.",
+      "imageAlt": "Thérapeute et client dans un cadre de consultation professionnelle",
       "approaches": {
         "cbt": {
           "title": "Thérapies cognitivo-comportementales (TCC)",
@@ -1149,6 +1255,16 @@
         "confidentiality": {
           "title": "Confidentialité absolue",
           "description": "Votre démarche est protégée : échanges, documents et suivis sont strictement confidentiels."
+        }
+      },
+      "securityHighlights": {
+        "canadianHosting": {
+          "title": "Données hébergées au Canada",
+          "description": "Vos données sont stockées exclusivement sur des serveurs canadiens, garantissant une souveraineté complète et la conformité aux lois canadiennes sur la vie privée."
+        },
+        "encryption": {
+          "title": "Sécurité de bout en bout",
+          "description": "Un chiffrement de niveau bancaire protège toutes vos communications et informations personnelles à chaque étape."
         }
       }
     },
@@ -1332,7 +1448,7 @@
           "chips": [
             "Votre problématique",
             "Vos besoins cliniques",
-            "Vos préférences d'approche"
+            "Préférence d'approche (clinique ou axée sur le problème)"
           ]
         },
         "qualified": {
@@ -1371,6 +1487,11 @@
           "title": "En bureau",
           "description": "Profitez d'un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
           "highlight": "Un espace accueillant, confidentiel et serein."
+        },
+        "walk": {
+          "title": "Thérapie par la marche",
+          "description": "Vivez la thérapie en mouvement — des séances de marche en nature qui combinent activité physique, air frais et conversation significative.",
+          "highlight": "Une alternative rafraîchissante pour les esprits actifs."
         }
       },
       "platform": {

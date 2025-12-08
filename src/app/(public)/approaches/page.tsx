@@ -6,15 +6,21 @@ import {
   MatchingSection,
   PersonCenteredSection,
 } from "@/components/sections/approaches";
+import ColorTransition from "@/components/ui/ColorTransition";
 
 export default function ApproachesPage() {
   return (
-    <main className="bg-background">
+    <main>
       <ApproachesHeroSection />
+      <ColorTransition fromColor="accent" toColor="background" />
       <PersonCenteredSection />
+      <ColorTransition fromColor="background" toColor="muted" />
       <ClinicalApproachesSection />
+      <ColorTransition fromColor="muted" toColor="background" />
       <EthicsSection />
+      <ColorTransition fromColor="background" toColor="muted" />
       <FlexibilitySection />
+      <ColorTransition fromColor="muted" toColor="background" />
       <MatchingSection />
     </main>
   );

@@ -30,7 +30,7 @@ export default function ReasonsTimelineSection() {
     },
   ];
   return (
-    <section className="relative overflow-hidden bg-background py-24">
+    <section className="relative overflow-hidden bg-linear-to-b from-background to-background py-24">
       <div className="absolute inset-0 opacity-[0.06]">
         <div className="absolute left-10 top-0 h-72 w-72 rounded-full bg-primary blur-3xl" />
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/3 translate-y-1/4 rounded-full bg-accent blur-3xl" />

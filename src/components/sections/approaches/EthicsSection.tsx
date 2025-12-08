@@ -1,6 +1,13 @@
 "use client";
 
-import { ShieldCheck, LockKeyhole, ClipboardCheck, Scale } from "lucide-react";
+import {
+  ShieldCheck,
+  LockKeyhole,
+  ClipboardCheck,
+  Scale,
+  Server,
+  MapPin,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function EthicsSection() {
@@ -29,6 +36,19 @@ export default function EthicsSection() {
     },
   ];
 
+  const securityHighlights = [
+    {
+      icon: MapPin,
+      title: t("securityHighlights.canadianHosting.title"),
+      description: t("securityHighlights.canadianHosting.description"),
+    },
+    {
+      icon: Server,
+      title: t("securityHighlights.encryption.title"),
+      description: t("securityHighlights.encryption.description"),
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden bg-background py-24">
       <div className="absolute inset-0 opacity-[0.06]">
@@ -50,6 +70,28 @@ export default function EthicsSection() {
             </p>
             <div className="rounded-3xl bg-muted/40 p-6 text-sm leading-relaxed text-muted-foreground">
               {t("note")}
+            </div>
+
+            {/* Canadian Hosting & Security Highlights */}
+            <div className="space-y-4 pt-4">
+              {securityHighlights.map(({ icon: Icon, title, description }) => (
+                <div
+                  key={title}
+                  className="flex items-start gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-4"
+                >
+                  <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif text-base font-medium text-foreground">
+                      {title}
+                    </h4>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

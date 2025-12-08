@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState } from "react";
+import { Award } from "lucide-react";
 
 export default function HeroSection() {
   const t = useTranslations("HeroSection");
+  const [showBookingOptions, setShowBookingOptions] = useState(false);
+  const [activeHint, setActiveHint] = useState<string>("self");
 
   return (
     <section className="relative h-screen flex items-center justify-center bg-accent overflow-hidden">
@@ -25,6 +29,18 @@ export default function HeroSection() {
               <div className="w-32 h-0.5 bg-muted-foreground mx-auto lg:mx-0"></div>
             </div>
 
+            {/* Designed by Psychologists Badge */}
+            <div className="mb-6 animate-fade-in animation-delay-100">
+              <div className="inline-flex items-center gap-3 rounded-full bg-primary/10 border border-primary/20 px-4 py-2">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary">
+                  <Award className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <span className="text-sm font-medium text-foreground">
+                  {t("designedByPsychologists")}
+                </span>
+              </div>
+            </div>
+
             {/* Main Headline */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-6xl font-serif font-light text-foreground mb-8 leading-tight animate-fade-in-up text-left lg:text-left">
               {t("headline")}
@@ -36,21 +52,67 @@ export default function HeroSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-start justify-start gap-4 animate-fade-in-up animation-delay-400">
-              <Link
-                href="/book"
-                className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-              >
-                <span className="relative z-10">{t("bookAppointment")}</span>
-                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Link>
+            <div className="flex flex-col gap-4 animate-fade-in-up animation-delay-400">
+              {/* Main Buttons */}
+              <div className="flex flex-col sm:flex-row items-start justify-start gap-4">
+                <button
+                  onClick={() => setShowBookingOptions(!showBookingOptions)}
+                  className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                >
+                  <span className="relative z-10">{t("bookNow")}</span>
+                  <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                </button>
 
-              <Link
-                href="/professional"
-                className="group flex items-center gap-3 px-8 py-5 text-foreground text-lg font-light tracking-wide transition-all duration-300 hover:gap-4 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
-              >
-                <span>{t("professionalLink")}</span>
-              </Link>
+                <Link
+                  href="/book"
+                  className="group flex items-center gap-2 px-10 py-5 text-foreground text-lg font-light tracking-wide transition-all duration-300 hover:gap-3 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
+                >
+                  <span>{t("learnMore")}</span>
+                </Link>
+              </div>
+
+              {/* Expandable Booking Options */}
+              {showBookingOptions && (
+                <div className="flex flex-col gap-4 animate-fade-in">
+                  <div className="flex flex-col sm:flex-row items-start justify-start gap-3">
+                    <Link
+                      href="/appointment?for=self"
+                      className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                      onMouseEnter={() => setActiveHint("self")}
+                    >
+                      <span className="relative z-10">{t("forSelf")}</span>
+                      <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                    </Link>
+
+                    <Link
+                      href="/appointment?for=patient"
+                      className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                      onMouseEnter={() => setActiveHint("patient")}
+                    >
+                      <span className="relative z-10">{t("forPatient")}</span>
+                      <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                    </Link>
+
+                    <Link
+                      href="/appointment?for=loved-one"
+                      className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                      onMouseEnter={() => setActiveHint("loved-one")}
+                    >
+                      <span className="relative z-10">{t("forLovedOne")}</span>
+                      <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                    </Link>
+                  </div>
+
+                  {/* Hover Context Text */}
+                  <div className="h-10">
+                    <p className="text-base md:text-lg text-muted-foreground italic transition-opacity duration-300">
+                      {activeHint === "self" && t("bookForSelfHint")}
+                      {activeHint === "patient" && t("bookForPatientHint")}
+                      {activeHint === "loved-one" && t("bookForLovedOneHint")}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Additional Info Tags */}

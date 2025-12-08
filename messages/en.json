@@ -6,8 +6,11 @@
       "whyUs": "Why Us",
       "approaches": "Approaches",
       "services": "Services",
+      "servicesOverview": "All Services",
+      "schoolServices": "School Services",
       "platform": "Platform",
-      "contact": "Contact"
+      "contact": "Contact",
+      "professional": "I am a Professional"
     },
     "login": "Login",
     "getStarted": "Get Started",
@@ -46,19 +49,40 @@
   },
   "HeroSection": {
     "tagline": "YOUR JOURNEY TO WELLNESS STARTS HERE",
-    "headline": "Find Your Perfect Mental Health Professional",
+    "designedByPsychologists": "A Platform Designed by Psychologists",
+    "headline": "Find Your Mental Health Professional",
     "description": "Take the first step towards better mental health. Our platform connects you with qualified professionals who understand your unique journey and provide the support you need, when you need it most.",
-    "bookAppointment": "Book an Appointment",
-    "professionalLink": "I am a Professional",
+    "bookNow": "Book now",
+    "forSelf": "For yourself",
+    "forPatient": "For a patient",
+    "forLovedOne": "For a loved one",
+    "bookForSelfHint": "Are you looking for support for your own mental health journey?",
+    "bookForPatientHint": "Are you a physician or professional referring a patient for care?",
+    "bookForLovedOneHint": "Are you seeking help for a family member, partner, or child?",
+    "learnMore": "Learn more",
     "personalizedCare": "Personalized Care",
     "flexibleScheduling": "Flexible Scheduling",
     "confidentialSupport": "Confidential Support"
   },
   "ValueSection": {
-    "title": "Heal Your Inner Child",
-    "subtitle": "Find peace and well-being through personalized care.",
-    "description": "Overspending on benefits programs with a web of providers? Struggling to boost team productivity and measure ROI? You've come to the right place. Our {integratedPlatform} is a one-stop care hub that centralizes our programs in a single application, providing access to services 24/7/365.",
-    "integratedPlatform": "Integrated Health Platform™"
+    "title": "Integrated Health Platform",
+    "subtitle": "Your gateway to comprehensive mental health care.",
+    "description": "Our {integratedPlatform} offers fast access to a variety of qualified professionals, all in one place. Start your journey to well-being with personalized support tailored to your needs—available when and where you need it.",
+    "integratedPlatform": "Integrated Health Platform™",
+    "benefits": {
+      "fastAccess": {
+        "title": "Fast Access",
+        "description": "Get connected with a mental health professional quickly. No long waiting lists—start your journey to well-being sooner."
+      },
+      "varietyProfessionals": {
+        "title": "Variety of Professionals",
+        "description": "Access a diverse team of qualified specialists, each with unique expertise to address your specific needs and preferences."
+      },
+      "educationalResources": {
+        "title": "Educational Resources",
+        "description": "Explore our library of videos and readings about anxiety, burnout, stress management, and more—available even before your first session."
+      }
+    }
   },
   "HowItWorksSection": {
     "badge": "Simple Process",
@@ -953,6 +977,8 @@
     "therapySpectrum": {
       "badge": "1 · Complete Coverage of Therapeutic Needs",
       "title": "Services dedicated to adults, children, couples, and families.",
+      "description": "We offer a comprehensive range of mental health services designed to support every member of your family. Each service is delivered by qualified professionals who tailor their approach to your unique needs.",
+      "imageAlt": "Diverse group of people receiving mental health support",
       "services": {
         "adult": {
           "title": "Adult Psychotherapy",
@@ -973,7 +999,86 @@
         "parenting": {
           "title": "Parental Coaching",
           "description": "Support to better understand your child's development, manage behavioral challenges, emotions, positive guidance, and continuity between school and home."
+        },
+        "workplace": {
+          "title": "Workplace Mental Health",
+          "description": "Specialized support for burnout, return-to-work transitions, and professional difficulties. We help you navigate work-related stress, rebuild confidence after leave, and develop sustainable strategies for a healthier work-life balance."
+        },
+        "schoolAnxiety": {
+          "title": "School Anxiety Support",
+          "description": "Targeted interventions for children and adolescents experiencing school-related anxiety, including performance anxiety, social fears, school refusal, and transition difficulties. We work with the child, family, and school to create a supportive environment."
         }
+      }
+    },
+    "programs": {
+      "badge": "WHAT'S INCLUDED",
+      "title": "Comprehensive Mental Health Programs",
+      "subtitle": "Explore the features and benefits of each program. Our integrated approach ensures you receive personalized care tailored to your unique needs.",
+      "imageAlt": "Professional mental health support session",
+      "adult": {
+        "title": "Adult Psychotherapy",
+        "description": "Comprehensive mental health support for adults facing life's challenges. From anxiety and depression to relationship issues and life transitions, our qualified professionals provide personalized therapeutic care.",
+        "highlight": "Personalized treatment plans",
+        "features": [
+          "Individual therapy sessions with licensed psychologists",
+          "Evidence-based treatments (CBT, psychodynamic, humanistic)",
+          "Anxiety, depression, and stress management",
+          "ADHD assessment and ongoing support",
+          "Relationship and self-esteem counseling",
+          "Life transition and adaptation support"
+        ]
+      },
+      "child": {
+        "title": "Child & Adolescent Psychotherapy",
+        "description": "Specialized therapeutic support designed for the unique developmental needs of children and teenagers. We help young people navigate emotional challenges, behavioral difficulties, and developmental transitions.",
+        "highlight": "Age-appropriate interventions",
+        "features": [
+          "Play therapy and age-appropriate techniques",
+          "ADHD evaluation and behavioral strategies",
+          "Anxiety and emotional regulation support",
+          "Social skills development",
+          "School-related difficulties and learning support",
+          "Parent collaboration and guidance"
+        ]
+      },
+      "family": {
+        "title": "Family & Couple Therapy",
+        "description": "Strengthen family bonds and improve communication through guided therapeutic sessions. We help families and couples navigate conflicts, rebuild trust, and create healthier relationship dynamics.",
+        "highlight": "Improved communication",
+        "features": [
+          "Couple therapy and relationship counseling",
+          "Family dynamics assessment and intervention",
+          "Conflict resolution strategies",
+          "Communication skills development",
+          "Blended family support",
+          "Parental coaching and co-parenting guidance"
+        ]
+      },
+      "workplace": {
+        "title": "Workplace Mental Health",
+        "description": "Specialized support for work-related mental health challenges. We help professionals navigate burnout, manage return-to-work transitions, and develop sustainable strategies for career well-being.",
+        "highlight": "Return-to-work support",
+        "features": [
+          "Burnout assessment and recovery planning",
+          "Return-to-work transition support",
+          "Stress and workload management",
+          "Professional identity and confidence rebuilding",
+          "Work-life balance strategies",
+          "Career transition counseling"
+        ]
+      },
+      "schoolAnxiety": {
+        "title": "School Anxiety Support",
+        "description": "Targeted interventions for children and adolescents experiencing school-related anxiety. We work collaboratively with the child, family, and school to create a supportive environment for academic and emotional success.",
+        "highlight": "School-family collaboration",
+        "features": [
+          "Performance anxiety management",
+          "Social anxiety and peer relationship support",
+          "School refusal intervention",
+          "Test anxiety and academic stress coping",
+          "Transition support (new school, grade changes)",
+          "Teacher and school collaboration"
+        ]
       }
     },
     "sentiersProgram": {
@@ -1093,6 +1198,7 @@
       "badge": "2 · Recognized and Regulated Approaches",
       "title": "Validated clinical models, carried by recognized experts.",
       "description": "Our professionals practice according to scientifically recognized approaches regulated by their professional orders. Each method is specifically chosen for your situation.",
+      "imageAlt": "Therapist and client in a professional consultation setting",
       "approaches": {
         "cbt": {
           "title": "Cognitive-Behavioral Therapies (CBT)",
@@ -1149,6 +1255,16 @@
         "confidentiality": {
           "title": "Absolute Confidentiality",
           "description": "Your journey is protected: exchanges, documents, and follow-ups are strictly confidential."
+        }
+      },
+      "securityHighlights": {
+        "canadianHosting": {
+          "title": "Data Hosted in Canada",
+          "description": "Your data is stored exclusively on Canadian servers, ensuring full data sovereignty and compliance with Canadian privacy laws."
+        },
+        "encryption": {
+          "title": "End-to-End Security",
+          "description": "Bank-level encryption protects all your communications and personal information at every step."
         }
       }
     },
@@ -1332,7 +1448,7 @@
           "chips": [
             "Your issue",
             "Your clinical needs",
-            "Your approach preferences"
+            "Approach preference (clinical or problem-based)"
           ]
         },
         "qualified": {
@@ -1371,6 +1487,11 @@
           "title": "In Office",
           "description": "Enjoy a warm and professional environment for direct contact, if you prefer an in-person approach.",
           "highlight": "A welcoming, confidential, and serene space."
+        },
+        "walk": {
+          "title": "Walk Therapy",
+          "description": "Experience therapy in motion — walking sessions in nature that combine movement, fresh air, and meaningful conversation.",
+          "highlight": "A refreshing alternative for active minds."
         }
       },
       "platform": {

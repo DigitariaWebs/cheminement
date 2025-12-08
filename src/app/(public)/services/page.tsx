@@ -3,16 +3,21 @@ import {
   ModelWorksSection,
   SentiersProgramSection,
   ServicesHeroSection,
-  TherapySpectrumSection,
+  ServiceProgramsSection,
 } from "@/components/sections/services";
+import ColorTransition from "@/components/ui/ColorTransition";
 
 export default function ServicesPage() {
   return (
-    <main className="bg-background">
+    <main>
       <ServicesHeroSection />
-      <TherapySpectrumSection />
+      <ColorTransition fromColor="accent" toColor="background" />
+      <ServiceProgramsSection />
+      <ColorTransition fromColor="background" toColor="muted" />
       <SentiersProgramSection />
+      <ColorTransition fromColor="muted" toColor="background" />
       <ComplementaryServicesSection />
+      <ColorTransition fromColor="background" toColor="muted" />
       <ModelWorksSection />
     </main>
   );
