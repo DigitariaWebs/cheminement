@@ -31,11 +31,13 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: t("nav.home") },
-    { href: "/who-we-are", label: t("nav.whoWeAre") },
-    { href: "/why-us", label: t("nav.whyUs") },
     { href: "/approaches", label: t("nav.approaches") },
     { href: "/contact", label: t("nav.contact") },
-    { href: "/professional", label: t("nav.professional") },
+  ];
+
+  const aboutDropdownItems = [
+    { href: "/who-we-are", label: t("nav.whoWeAre") },
+    { href: "/why-us", label: t("nav.whyUs") },
   ];
 
   const servicesDropdownItems = [
@@ -49,8 +51,8 @@ export function Header() {
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/20 bg-card">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="flex h-14 items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center">
             <Link
@@ -63,45 +65,71 @@ export function Header() {
                 height={256}
                 src="/Logo.png"
                 alt="Je Chemine"
-                className="h-10 w-auto"
+                className="h-8 w-auto"
               />
             </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.slice(0, 4).map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-base font-semibold transition-all duration-300 ease-in-out ${
-                  pathname === link.href
-                    ? "text-primary font-semibold underline underline-offset-4"
+          <nav className="hidden md:flex items-center gap-5">
+            {/* Home link */}
+            <Link
+              href="/"
+              className={`text-sm font-semibold transition-all duration-300 ease-in-out ${
+                pathname === "/"
+                  ? "text-primary font-semibold underline underline-offset-4"
+                  : "text-foreground hover:text-primary"
+              }`}
+            >
+              {t("nav.home")}
+            </Link>
+
+            {/* About Us Dropdown */}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger
+                className={`inline-flex items-center gap-1 text-sm font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none ${
+                  pathname === "/who-we-are" || pathname === "/why-us"
+                    ? "text-primary underline underline-offset-4"
                     : "text-foreground hover:text-primary"
                 }`}
               >
-                {link.label}
-              </Link>
-            ))}
+                {t("nav.aboutUs")}
+                <ChevronDown className="w-3.5 h-3.5 transition-transform duration-300 data-[state=open]:rotate-180" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-44">
+                {aboutDropdownItems.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2 cursor-pointer text-sm ${
+                        pathname === item.href ? "text-primary font-medium" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Services Dropdown */}
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger
-                className={`inline-flex items-center gap-1 text-base font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none ${
+                className={`inline-flex items-center gap-1 text-sm font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none ${
                   pathname.startsWith("/services")
                     ? "text-primary underline underline-offset-4"
                     : "text-foreground hover:text-primary"
                 }`}
               >
                 {t("nav.services")}
-                <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
+                <ChevronDown className="w-3.5 h-3.5 transition-transform duration-300 data-[state=open]:rotate-180" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-48">
+              <DropdownMenuContent align="center" className="w-44">
                 {servicesDropdownItems.map((item) => (
                   <DropdownMenuItem key={item.href} asChild>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-2 cursor-pointer ${
+                      className={`flex items-center gap-2 cursor-pointer text-sm ${
                         item.highlight ? "text-primary font-medium" : ""
                       }`}
                     >
@@ -112,40 +140,50 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {navLinks.slice(4).map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-base font-semibold transition-all duration-300 ease-in-out ${
-                  pathname === link.href
-                    ? "text-primary font-semibold underline underline-offset-4"
-                    : "text-foreground hover:text-primary"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* Approaches link */}
+            <Link
+              href="/approaches"
+              className={`text-sm font-semibold transition-all duration-300 ease-in-out ${
+                pathname === "/approaches"
+                  ? "text-primary font-semibold underline underline-offset-4"
+                  : "text-foreground hover:text-primary"
+              }`}
+            >
+              {t("nav.approaches")}
+            </Link>
+
+            {/* Contact link */}
+            <Link
+              href="/contact"
+              className={`text-sm font-semibold transition-all duration-300 ease-in-out ${
+                pathname === "/contact"
+                  ? "text-primary font-semibold underline underline-offset-4"
+                  : "text-foreground hover:text-primary"
+              }`}
+            >
+              {t("nav.contact")}
+            </Link>
           </nav>
 
           {/* CTA Buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <LocaleSwitcher currentLocale={locale} />
 
             {status === "loading" ? (
               // Loading state
               <div className="hidden sm:flex items-center gap-2">
-                <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
+                <div className="w-18 h-7 bg-muted animate-pulse rounded"></div>
               </div>
             ) : session?.user ? (
               // Authenticated user
               <>
                 <DropdownMenu modal={false}>
-                  <DropdownMenuTrigger className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-base font-semibold text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <User className="w-4 h-4" />
+                  <DropdownMenuTrigger className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <User className="w-3.5 h-3.5" />
                     {session.user.name || session.user.email}
-                    <ChevronDown className="w-4 h-4 transition-transform duration-300 data-[state=open]:rotate-180" />
+                    <ChevronDown className="w-3.5 h-3.5 transition-transform duration-300 data-[state=open]:rotate-180" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-52">
                     <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
                       Signed in as {session.user.email}
                     </div>
@@ -156,9 +194,9 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link
                           href="/admin/dashboard"
-                          className="flex items-center gap-3 cursor-pointer"
+                          className="flex items-center gap-2 cursor-pointer text-sm"
                         >
-                          <Settings className="w-4 h-4" />
+                          <Settings className="w-3.5 h-3.5" />
                           Admin Dashboard
                         </Link>
                       </DropdownMenuItem>
@@ -168,9 +206,9 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link
                           href="/professional/dashboard"
-                          className="flex items-center gap-3 cursor-pointer"
+                          className="flex items-center gap-2 cursor-pointer text-sm"
                         >
-                          <Briefcase className="w-4 h-4" />
+                          <Briefcase className="w-3.5 h-3.5" />
                           Professional Dashboard
                         </Link>
                       </DropdownMenuItem>
@@ -180,9 +218,9 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link
                           href="/client/dashboard"
-                          className="flex items-center gap-3 cursor-pointer"
+                          className="flex items-center gap-2 cursor-pointer text-sm"
                         >
-                          <UserCircle className="w-4 h-4" />
+                          <UserCircle className="w-3.5 h-3.5" />
                           Client Dashboard
                         </Link>
                       </DropdownMenuItem>
@@ -193,18 +231,18 @@ export function Header() {
                         <DropdownMenuItem asChild>
                           <Link
                             href="/appointment"
-                            className="flex items-center gap-3 cursor-pointer"
+                            className="flex items-center gap-2 cursor-pointer text-sm"
                           >
-                            <UserCircle className="w-4 h-4" />
+                            <UserCircle className="w-3.5 h-3.5" />
                             Book Appointment
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link
                             href="/signup"
-                            className="flex items-center gap-3 cursor-pointer text-primary"
+                            className="flex items-center gap-2 cursor-pointer text-sm text-primary"
                           >
-                            <UserCircle className="w-4 h-4" />
+                            <UserCircle className="w-3.5 h-3.5" />
                             Create Full Account
                           </Link>
                         </DropdownMenuItem>
@@ -214,9 +252,9 @@ export function Header() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => signOut({ callbackUrl: "/" })}
-                      className="flex items-center gap-3 cursor-pointer text-red-600 focus:text-red-600"
+                      className="flex items-center gap-2 cursor-pointer text-sm text-red-600 focus:text-red-600"
                     >
-                      <LogOut className="w-4 h-4" />
+                      <LogOut className="w-3.5 h-3.5" />
                       Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -227,13 +265,13 @@ export function Header() {
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-flex items-center justify-center rounded-md px-5 py-2.5 text-base font-semibold text-primary transition-all duration-300 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="hidden sm:inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold text-primary transition-all duration-300 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {t("login")}
                 </Link>
                 <Link
                   href="/signup"
-                  className="hidden sm:inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-base font-semibold text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="hidden sm:inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {t("getStarted")}
                 </Link>
@@ -245,7 +283,7 @@ export function Header() {
               className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Menu"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -253,3 +291,4 @@ export function Header() {
     </header>
   );
 }
+
