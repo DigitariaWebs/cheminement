@@ -10,6 +10,7 @@ import {
   sendAppointmentConfirmation,
   sendProfessionalNotification,
 } from "@/lib/notifications";
+import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
 
 export async function GET(req: NextRequest) {
   try {
@@ -243,10 +244,24 @@ export async function POST(req: NextRequest) {
     // Set status to pending if no professional assigned (request flow)
     if (!data.professionalId) {
       data.status = "pending";
+      data.routingStatus = "pending"; // Will be routed after creation
+    }
+
+    // Set booking context defaults
+    if (!data.bookingFor) {
+      data.bookingFor = "self";
     }
 
     const appointment = new Appointment(data);
     await appointment.save();
+
+    // Route the appointment to professionals if no professional is assigned
+    if (!data.professionalId) {
+      // Route in background (non-blocking)
+      routeAppointmentToProfessionals(appointment._id.toString()).catch((err) =>
+        console.error("Error routing appointment:", err)
+      );
+    }
 
     const populatedAppointment = await Appointment.findById(appointment._id)
       .populate("clientId", "firstName lastName email phone location")

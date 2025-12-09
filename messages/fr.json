@@ -61,6 +61,7 @@
     "bookForPatientHint": "Êtes-vous un médecin ou professionnel souhaitant référer un patient?",
     "bookForLovedOneHint": "Souhaitez-vous aider un membre de votre famille ou un proche à trouver du soutien?",
     "learnMore": "En savoir plus",
+    "back": "Retour",
     "personalizedCare": "Soins personnalisés",
     "flexibleScheduling": "Planification flexible",
     "confidentialSupport": "Soutien confidentiel"
@@ -521,6 +522,7 @@
       "schedule": "Horaire",
       "billing": "Facturation et paiements",
       "clientManagement": "Gestion des clients",
+      "proposals": "Propositions de clients",
       "myRequests": "Mes demandes",
       "myClients": "Mes clients",
       "sessions": "Séances",

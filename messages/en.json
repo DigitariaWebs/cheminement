@@ -61,6 +61,7 @@
     "bookForPatientHint": "Are you a physician or professional referring a patient for care?",
     "bookForLovedOneHint": "Are you seeking help for a family member, partner, or child?",
     "learnMore": "Learn more",
+    "back": "Back",
     "personalizedCare": "Personalized Care",
     "flexibleScheduling": "Flexible Scheduling",
     "confidentialSupport": "Confidential Support"
@@ -521,6 +522,7 @@
       "schedule": "Schedule",
       "billing": "Billing & Payments",
       "clientManagement": "Client Management",
+      "proposals": "Client Proposals",
       "myRequests": "My Requests",
       "myClients": "My Clients",
       "sessions": "Sessions",

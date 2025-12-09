@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -18,6 +18,11 @@ import {
   Home,
   UserPlus,
   Calendar,
+  Upload,
+  FileText,
+  X,
+  Heart,
+  Stethoscope,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -39,6 +44,27 @@ interface GuestInfo {
   email: string;
   phone: string;
   location: string;
+}
+
+interface LovedOneInfo {
+  firstName: string;
+  lastName: string;
+  relationship: string;
+  dateOfBirth: string;
+  phone: string;
+  email: string;
+  notes: string;
+}
+
+interface ReferralInfo {
+  referrerType: "doctor" | "specialist" | "other_professional";
+  referrerName: string;
+  referrerLicense: string;
+  referrerPhone: string;
+  referrerEmail: string;
+  referralReason: string;
+  documentUrl: string;
+  documentName: string;
 }
 
 interface MedicalProfileData {
@@ -96,6 +122,33 @@ export default function BookAppointmentPage() {
     "self" | "patient" | "loved-one" | null
   >(null);
 
+  // Loved one info (for booking for a loved one)
+  const [lovedOneInfo, setLovedOneInfo] = useState<LovedOneInfo>({
+    firstName: "",
+    lastName: "",
+    relationship: "",
+    dateOfBirth: "",
+    phone: "",
+    email: "",
+    notes: "",
+  });
+
+  // Referral info (for booking for a patient - medical professional referral)
+  const [referralInfo, setReferralInfo] = useState<ReferralInfo>({
+    referrerType: "doctor",
+    referrerName: "",
+    referrerLicense: "",
+    referrerPhone: "",
+    referrerEmail: "",
+    referralReason: "",
+    documentUrl: "",
+    documentName: "",
+  });
+
+  // File upload state
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Check for 'for' query param
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -150,7 +203,13 @@ export default function BookAppointmentPage() {
       setAuthCheckDone(true);
       // Skip Auth Choice (0)
       if (bookingFor) {
-        setCurrentStep(3); // Skip Who is this for (1) and Guest Info (2)
+        // If booking for patient or loved-one, go to specific info step (2.5)
+        // Otherwise skip directly to appointment details (3)
+        if (bookingFor === "patient" || bookingFor === "loved-one") {
+          setCurrentStep(2.5);
+        } else {
+          setCurrentStep(3);
+        }
       } else {
         setCurrentStep(1); // Start at Who is this for
       }
@@ -176,8 +235,110 @@ export default function BookAppointmentPage() {
 
   const handleWhoChoice = (who: "self" | "patient" | "loved-one") => {
     setBookingFor(who);
-    // If guest, go to Guest Info (2), else go to Appointment Details (3)
-    setCurrentStep(isGuest ? 2 : 3);
+    // For patient or loved-one, we need an extra step for their specific info
+    // Steps: 0 = Auth Choice, 1 = Who is this for, 2 = Guest Info (if guest), 
+    //        2.5 = Loved One/Patient Info (new), 3 = Appointment Details, 4 = Confirmation, 5 = Success
+    if (who === "self") {
+      // For self: if guest -> Guest Info, else -> Appointment Details
+      setCurrentStep(isGuest ? 2 : 3);
+    } else {
+      // For patient or loved-one: if guest -> Guest Info first, else -> specific info form (2.5)
+      // We'll use step 2 for guest info and add a check in step 3 for loved-one/patient info
+      if (isGuest) {
+        setCurrentStep(2); // Guest info first, then specific info
+      } else {
+        setCurrentStep(2.5); // Go directly to specific info form
+      }
+    }
+  };
+
+  // File upload handler for referral documents
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Please upload a PDF, JPEG, or PNG file");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File size must be less than 10MB");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setError("");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload/referral", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to upload file");
+      }
+
+      setReferralInfo({
+        ...referralInfo,
+        documentUrl: data.url,
+        documentName: data.fileName,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to upload file");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveDocument = () => {
+    setReferralInfo({
+      ...referralInfo,
+      documentUrl: "",
+      documentName: "",
+    });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Validate loved one info
+  const validateLovedOneInfo = (): boolean => {
+    if (!lovedOneInfo.firstName.trim() || !lovedOneInfo.lastName.trim()) {
+      setError("Please provide the first and last name of your loved one");
+      return false;
+    }
+    if (!lovedOneInfo.relationship) {
+      setError("Please select the relationship");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  // Validate referral info
+  const validateReferralInfo = (): boolean => {
+    if (!referralInfo.referrerName.trim()) {
+      setError("Please provide the referring professional's name");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  const handleSpecificInfoSubmit = () => {
+    if (bookingFor === "loved-one" && !validateLovedOneInfo()) return;
+    if (bookingFor === "patient" && !validateReferralInfo()) return;
+    setCurrentStep(3); // Move to appointment details
   };
 
   const handleGuestInfoSubmit = () => {
@@ -208,7 +369,16 @@ export default function BookAppointmentPage() {
     }
 
     setError("");
-    setCurrentStep(3); // Move to appointment details
+    // If booking for patient or loved-one, go to specific info form (2.5)
+    // Otherwise go directly to appointment details (3)
+    console.log("handleGuestInfoSubmit - bookingFor:", bookingFor);
+    if (bookingFor === "patient" || bookingFor === "loved-one") {
+      console.log("Going to step 2.5");
+      setCurrentStep(2.5);
+    } else {
+      console.log("Going to step 3");
+      setCurrentStep(3);
+    }
   };
 
   // Submit guest appointment without payment
@@ -217,7 +387,7 @@ export default function BookAppointmentPage() {
       setLoading(true);
       setError("");
 
-      const appointmentData = {
+      const appointmentData: Record<string, unknown> = {
         type: selectedType,
         therapyType,
         issueType,
@@ -225,6 +395,16 @@ export default function BookAppointmentPage() {
         bookingFor,
         preferredAvailability,
       };
+
+      // Include loved one info if booking for a loved one
+      if (bookingFor === "loved-one" && lovedOneInfo.firstName) {
+        appointmentData.lovedOneInfo = lovedOneInfo;
+      }
+
+      // Include referral info if booking for a patient
+      if (bookingFor === "patient" && referralInfo.referrerName) {
+        appointmentData.referralInfo = referralInfo;
+      }
 
       await apiClient.post<{ appointmentId: string }>("/appointments/guest", {
         ...appointmentData,
@@ -256,7 +436,7 @@ export default function BookAppointmentPage() {
       setLoading(true);
       setError("");
 
-      const appointmentData = {
+      const appointmentData: Record<string, unknown> = {
         type: selectedType,
         therapyType,
         issueType,
@@ -264,6 +444,16 @@ export default function BookAppointmentPage() {
         bookingFor,
         preferredAvailability,
       };
+
+      // Include loved one info if booking for a loved one
+      if (bookingFor === "loved-one" && lovedOneInfo.firstName) {
+        appointmentData.lovedOneInfo = lovedOneInfo;
+      }
+
+      // Include referral info if booking for a patient
+      if (bookingFor === "patient" && referralInfo.referrerName) {
+        appointmentData.referralInfo = referralInfo;
+      }
 
       // Use regular endpoint for authenticated users
       await apiClient.post<{ appointmentId: string }>(
@@ -747,6 +937,350 @@ export default function BookAppointmentPage() {
               </div>
             )}
 
+            {/* Step 2.5: Loved One / Patient Specific Info */}
+            {currentStep === 2.5 && (
+              <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
+                {/* Loved One Form */}
+                {bookingFor === "loved-one" && (
+                  <>
+                    <div className="p-6 border-b border-border/40">
+                      <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-pink-500" />
+                        Loved One Information
+                      </h2>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Please provide information about the person who will be attending the session
+                      </p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="lovedOneFirstName">
+                            First Name <span className="text-red-500">*</span>
+                          </Label>
+                          <Input
+                            id="lovedOneFirstName"
+                            value={lovedOneInfo.firstName}
+                            onChange={(e) =>
+                              setLovedOneInfo({
+                                ...lovedOneInfo,
+                                firstName: e.target.value,
+                              })
+                            }
+                            placeholder="Enter their first name"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lovedOneLastName">
+                            Last Name <span className="text-red-500">*</span>
+                          </Label>
+                          <Input
+                            id="lovedOneLastName"
+                            value={lovedOneInfo.lastName}
+                            onChange={(e) =>
+                              setLovedOneInfo({
+                                ...lovedOneInfo,
+                                lastName: e.target.value,
+                              })
+                            }
+                            placeholder="Enter their last name"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="relationship">
+                          Relationship <span className="text-red-500">*</span>
+                        </Label>
+                        <Select
+                          value={lovedOneInfo.relationship}
+                          onValueChange={(value) =>
+                            setLovedOneInfo({ ...lovedOneInfo, relationship: value })
+                          }
+                        >
+                          <SelectTrigger id="relationship">
+                            <SelectValue placeholder="Select relationship" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="spouse">Spouse / Partner</SelectItem>
+                            <SelectItem value="child">Child</SelectItem>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="sibling">Sibling</SelectItem>
+                            <SelectItem value="friend">Friend</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="lovedOneDob">Date of Birth</Label>
+                          <Input
+                            id="lovedOneDob"
+                            type="date"
+                            value={lovedOneInfo.dateOfBirth}
+                            onChange={(e) =>
+                              setLovedOneInfo({
+                                ...lovedOneInfo,
+                                dateOfBirth: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lovedOnePhone">Phone (Optional)</Label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="lovedOnePhone"
+                              type="tel"
+                              value={lovedOneInfo.phone}
+                              onChange={(e) =>
+                                setLovedOneInfo({ ...lovedOneInfo, phone: e.target.value })
+                              }
+                              placeholder="+1 (555) 123-4567"
+                              className="pl-10"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="lovedOneEmail">Email (Optional)</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="lovedOneEmail"
+                            type="email"
+                            value={lovedOneInfo.email}
+                            onChange={(e) =>
+                              setLovedOneInfo({ ...lovedOneInfo, email: e.target.value })
+                            }
+                            placeholder="their.email@example.com"
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="lovedOneNotes">Additional Notes (Optional)</Label>
+                        <Textarea
+                          id="lovedOneNotes"
+                          value={lovedOneInfo.notes}
+                          onChange={(e) =>
+                            setLovedOneInfo({ ...lovedOneInfo, notes: e.target.value })
+                          }
+                          placeholder="Any relevant information about your loved one that might help the professional..."
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="flex justify-between pt-4">
+                        <Button
+                          variant="outline"
+                          onClick={() => setCurrentStep(isGuest ? 2 : 1)}
+                        >
+                          Back
+                        </Button>
+                        <Button onClick={handleSpecificInfoSubmit} size="lg" className="gap-2">
+                          Continue
+                          <ArrowLeft className="h-4 w-4 rotate-180" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Patient Referral Form */}
+                {bookingFor === "patient" && (
+                  <>
+                    <div className="p-6 border-b border-border/40">
+                      <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
+                        <Stethoscope className="h-5 w-5 text-blue-500" />
+                        Patient Referral Information
+                      </h2>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Please provide your professional information and optionally upload a referral document
+                      </p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                      {/* Referrer Type */}
+                      <div className="space-y-2">
+                        <Label>Your Professional Role <span className="text-red-500">*</span></Label>
+                        <Select
+                          value={referralInfo.referrerType}
+                          onValueChange={(value: "doctor" | "specialist" | "other_professional") =>
+                            setReferralInfo({ ...referralInfo, referrerType: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="doctor">Doctor / Physician</SelectItem>
+                            <SelectItem value="specialist">Specialist</SelectItem>
+                            <SelectItem value="other_professional">Other Healthcare Professional</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="referrerName">
+                            Your Name <span className="text-red-500">*</span>
+                          </Label>
+                          <Input
+                            id="referrerName"
+                            value={referralInfo.referrerName}
+                            onChange={(e) =>
+                              setReferralInfo({
+                                ...referralInfo,
+                                referrerName: e.target.value,
+                              })
+                            }
+                            placeholder="Dr. John Smith"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="referrerLicense">License Number (Optional)</Label>
+                          <Input
+                            id="referrerLicense"
+                            value={referralInfo.referrerLicense}
+                            onChange={(e) =>
+                              setReferralInfo({
+                                ...referralInfo,
+                                referrerLicense: e.target.value,
+                              })
+                            }
+                            placeholder="License #"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="referrerPhone">Contact Phone (Optional)</Label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="referrerPhone"
+                              type="tel"
+                              value={referralInfo.referrerPhone}
+                              onChange={(e) =>
+                                setReferralInfo({ ...referralInfo, referrerPhone: e.target.value })
+                              }
+                              placeholder="+1 (555) 123-4567"
+                              className="pl-10"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="referrerEmail">Contact Email (Optional)</Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="referrerEmail"
+                              type="email"
+                              value={referralInfo.referrerEmail}
+                              onChange={(e) =>
+                                setReferralInfo({ ...referralInfo, referrerEmail: e.target.value })
+                              }
+                              placeholder="doctor@clinic.com"
+                              className="pl-10"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="referralReason">Reason for Referral (Optional)</Label>
+                        <Textarea
+                          id="referralReason"
+                          value={referralInfo.referralReason}
+                          onChange={(e) =>
+                            setReferralInfo({ ...referralInfo, referralReason: e.target.value })
+                          }
+                          placeholder="Brief description of why you are referring this patient..."
+                          rows={3}
+                        />
+                      </div>
+
+                      {/* Document Upload Section */}
+                      <div className="space-y-3">
+                        <Label>Upload Referral/Prescription Document (Optional)</Label>
+                        <div className="border-2 border-dashed border-border/60 rounded-xl p-6">
+                          {referralInfo.documentUrl ? (
+                            <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
+                              <div className="flex items-center gap-3">
+                                <FileText className="h-8 w-8 text-primary" />
+                                <div>
+                                  <p className="font-medium text-sm">{referralInfo.documentName}</p>
+                                  <p className="text-xs text-muted-foreground">Document uploaded successfully</p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleRemoveDocument}
+                                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="referral-upload"
+                              />
+                              <label
+                                htmlFor="referral-upload"
+                                className="cursor-pointer flex flex-col items-center"
+                              >
+                                {uploading ? (
+                                  <Loader2 className="h-10 w-10 text-muted-foreground animate-spin" />
+                                ) : (
+                                  <Upload className="h-10 w-10 text-muted-foreground" />
+                                )}
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                  {uploading ? "Uploading..." : "Click to upload or drag and drop"}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  PDF, JPG, PNG up to 10MB
+                                </p>
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between pt-4">
+                        <Button
+                          variant="outline"
+                          onClick={() => setCurrentStep(isGuest ? 2 : 1)}
+                        >
+                          Back
+                        </Button>
+                        <Button 
+                          onClick={handleSpecificInfoSubmit} 
+                          size="lg" 
+                          className="gap-2"
+                          disabled={uploading}
+                        >
+                          Continue
+                          <ArrowLeft className="h-4 w-4 rotate-180" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
             {/* Step 3: Appointment Details */}
             {currentStep === 3 && (
               <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
@@ -932,7 +1466,14 @@ export default function BookAppointmentPage() {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setCurrentStep(isGuest ? 2 : 1);
+                        // Go back to specific info form if patient/loved-one, otherwise to guest info or step 1
+                        if (bookingFor === "patient" || bookingFor === "loved-one") {
+                          setCurrentStep(2.5);
+                        } else if (isGuest) {
+                          setCurrentStep(2);
+                        } else {
+                          setCurrentStep(1);
+                        }
                       }}
                     >
                       Back

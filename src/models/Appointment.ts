@@ -22,6 +22,30 @@ export interface IPayment {
   paymentTokenExpiry?: Date;
 }
 
+// Loved one information for third-party bookings
+export interface ILovedOneInfo {
+  firstName: string;
+  lastName: string;
+  relationship: string; // e.g., "spouse", "child", "parent", "sibling", "other"
+  dateOfBirth?: Date;
+  phone?: string;
+  email?: string;
+  notes?: string;
+}
+
+// Referral information for patient bookings (by healthcare professionals)
+export interface IReferralInfo {
+  referrerType: "doctor" | "specialist" | "other_professional";
+  referrerName: string;
+  referrerLicense?: string;
+  referrerPhone?: string;
+  referrerEmail?: string;
+  referralReason?: string;
+  documentUrl?: string; // URL to uploaded prescription/referral PDF
+  documentName?: string;
+  uploadedAt?: Date;
+}
+
 export interface IAppointment extends Document {
   clientId: mongoose.Types.ObjectId;
   professionalId?: mongoose.Types.ObjectId;
@@ -47,6 +71,28 @@ export interface IAppointment extends Document {
   scheduledStartAt?: Date;
   reminderSent: boolean;
   payment: IPayment;
+  
+  // Booking context - who is this appointment for
+  bookingFor: "self" | "patient" | "loved-one";
+  
+  // Loved one information (when bookingFor === "loved-one")
+  lovedOneInfo?: ILovedOneInfo;
+  
+  // Referral information (when bookingFor === "patient")
+  referralInfo?: IReferralInfo;
+  
+  // Routing status for professional assignment workflow
+  routingStatus: "pending" | "proposed" | "accepted" | "refused" | "general";
+  
+  // Array of professional IDs this appointment has been proposed to
+  proposedTo?: mongoose.Types.ObjectId[];
+  
+  // Array of professional IDs who refused this appointment
+  refusedBy?: mongoose.Types.ObjectId[];
+  
+  // Preferred availability slots provided by client
+  preferredAvailability?: string[];
+  
   createdAt: Date;
   updatedAt: Date;
 }
@@ -96,6 +142,42 @@ const PaymentSchema = new Schema<IPayment>(
       index: true,
     },
     paymentTokenExpiry: Date,
+  },
+  { _id: false },
+);
+
+const LovedOneInfoSchema = new Schema<ILovedOneInfo>(
+  {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    relationship: {
+      type: String,
+      required: true,
+      enum: ["spouse", "child", "parent", "sibling", "friend", "other"],
+    },
+    dateOfBirth: Date,
+    phone: String,
+    email: String,
+    notes: String,
+  },
+  { _id: false },
+);
+
+const ReferralInfoSchema = new Schema<IReferralInfo>(
+  {
+    referrerType: {
+      type: String,
+      required: true,
+      enum: ["doctor", "specialist", "other_professional"],
+    },
+    referrerName: { type: String, required: true },
+    referrerLicense: String,
+    referrerPhone: String,
+    referrerEmail: String,
+    referralReason: String,
+    documentUrl: String,
+    documentName: String,
+    uploadedAt: Date,
   },
   { _id: false },
 );
@@ -169,6 +251,40 @@ const AppointmentSchema = new Schema<IAppointment>(
       required: true,
       default: () => ({}),
     },
+    // Booking context - who is this appointment for
+    bookingFor: {
+      type: String,
+      enum: ["self", "patient", "loved-one"],
+      default: "self",
+    },
+    // Loved one information (when bookingFor === "loved-one")
+    lovedOneInfo: {
+      type: LovedOneInfoSchema,
+      required: false,
+    },
+    // Referral information (when bookingFor === "patient")
+    referralInfo: {
+      type: ReferralInfoSchema,
+      required: false,
+    },
+    // Routing status for professional assignment workflow
+    routingStatus: {
+      type: String,
+      enum: ["pending", "proposed", "accepted", "refused", "general"],
+      default: "pending",
+    },
+    // Array of professional IDs this appointment has been proposed to
+    proposedTo: [{
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    }],
+    // Array of professional IDs who refused this appointment
+    refusedBy: [{
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    }],
+    // Preferred availability slots provided by client
+    preferredAvailability: [String],
   },
   {
     timestamps: true,
@@ -178,6 +294,8 @@ const AppointmentSchema = new Schema<IAppointment>(
 AppointmentSchema.index({ clientId: 1, date: 1 });
 AppointmentSchema.index({ professionalId: 1, date: 1 });
 AppointmentSchema.index({ status: 1, date: 1 });
+AppointmentSchema.index({ routingStatus: 1 });
+AppointmentSchema.index({ proposedTo: 1, routingStatus: 1 });
 
 const Appointment: Model<IAppointment> =
   mongoose.models.Appointment ||

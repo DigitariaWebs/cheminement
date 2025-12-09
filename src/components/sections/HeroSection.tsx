@@ -52,27 +52,27 @@ export default function HeroSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col gap-4 animate-fade-in-up animation-delay-400">
-              {/* Main Buttons */}
-              <div className="flex flex-col sm:flex-row items-start justify-start gap-3">
-                <button
-                  onClick={() => setShowBookingOptions(!showBookingOptions)}
-                  className="group relative px-7 py-3.5 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-                >
-                  <span className="relative z-10">{t("bookNow")}</span>
-                  <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                </button>
+            <div className="flex flex-col gap-4 animate-fade-in-up animation-delay-400 min-h-[100px]">
+              {!showBookingOptions ? (
+                // Main Buttons
+                <div className="flex flex-col sm:flex-row items-start justify-start gap-3">
+                  <button
+                    onClick={() => setShowBookingOptions(true)}
+                    className="group relative px-7 py-3.5 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                  >
+                    <span className="relative z-10">{t("bookNow")}</span>
+                    <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </button>
 
-                <Link
-                  href="/book"
-                  className="group flex items-center gap-2 px-7 py-3.5 text-foreground text-base font-light tracking-wide transition-all duration-300 hover:gap-3 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
-                >
-                  <span>{t("learnMore")}</span>
-                </Link>
-              </div>
-
-              {/* Expandable Booking Options */}
-              {showBookingOptions && (
+                  <Link
+                    href="/book"
+                    className="group flex items-center gap-2 px-7 py-3.5 text-foreground text-base font-light tracking-wide transition-all duration-300 hover:gap-3 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
+                  >
+                    <span>{t("learnMore")}</span>
+                  </Link>
+                </div>
+              ) : (
+                // Booking Options
                 <div className="flex flex-col gap-3 animate-fade-in">
                   <div className="flex flex-col sm:flex-row items-start justify-start gap-2.5">
                     <Link
@@ -103,20 +103,26 @@ export default function HeroSection() {
                     </Link>
                   </div>
 
-                  {/* Hover Context Text */}
-                  <div className="h-7">
-                    <p className="text-sm text-muted-foreground italic transition-opacity duration-300">
+                  {/* Hover Context Text with Back button */}
+                  <div className="flex items-center justify-between gap-4 min-h-8">
+                    <p className="text-sm text-muted-foreground italic transition-opacity duration-300 flex-1">
                       {activeHint === "self" && t("bookForSelfHint")}
                       {activeHint === "patient" && t("bookForPatientHint")}
                       {activeHint === "loved-one" && t("bookForLovedOneHint")}
                     </p>
+                    <button
+                      onClick={() => setShowBookingOptions(false)}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors underline whitespace-nowrap"
+                    >
+                      {t("back")}
+                    </button>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Additional Info Tags */}
-            <div className="mt-6 flex flex-wrap items-center justify-start gap-5 text-sm text-muted-foreground animate-fade-in animation-delay-600">
+            <div className="flex flex-wrap items-center justify-start gap-4 text-sm text-muted-foreground animate-fade-in animation-delay-600 mt-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary/60"></div>
                 <span>{t("personalizedCare")}</span>
@@ -144,7 +150,7 @@ export default function HeroSection() {
                 priority
               />
               {/* Fading effect at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-gradient-to-t from-accent to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-linear-to-t from-accent to-transparent"></div>
             </div>
           </div>
         </div>

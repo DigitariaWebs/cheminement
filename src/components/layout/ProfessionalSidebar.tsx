@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Inbox,
   Wallet,
+  Star,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -70,6 +71,11 @@ export function ProfessionalSidebar() {
     {
       title: t("clientManagement"),
       items: [
+        {
+          title: t("proposals"),
+          url: "/professional/dashboard/proposals",
+          icon: Star,
+        },
         {
           title: t("myRequests"),
           url: "/professional/dashboard/requests",

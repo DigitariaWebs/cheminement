@@ -8,6 +8,7 @@ import {
   sendGuestBookingConfirmation,
   sendProfessionalNotification,
 } from "@/lib/notifications";
+import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
 
 export async function POST(req: NextRequest) {
   try {
@@ -218,10 +219,16 @@ export async function POST(req: NextRequest) {
     // Set the client ID to the guest user
     appointmentData.clientId = guestUser._id;
 
+    // Set booking context defaults
+    if (!appointmentData.bookingFor) {
+      appointmentData.bookingFor = "self";
+    }
+
     // Create the appointment with pending payment status (payment after professional confirmation)
     const appointment = new Appointment({
       ...appointmentData,
       status: "pending", // Pending until professional confirms
+      routingStatus: appointmentData.professionalId ? "accepted" : "pending", // Will be routed if no professional
       payment: {
         price: appointmentData.price,
         platformFee: appointmentData.platformFee,
@@ -230,6 +237,14 @@ export async function POST(req: NextRequest) {
       },
     });
     await appointment.save();
+
+    // Route the appointment to professionals if no professional is assigned
+    if (!appointmentData.professionalId) {
+      // Route in background (non-blocking)
+      routeAppointmentToProfessionals(appointment._id.toString()).catch((err) =>
+        console.error("Error routing appointment:", err)
+      );
+    }
 
     const populatedAppointment = await Appointment.findById(appointment._id)
       .populate("clientId", "firstName lastName email phone location")
