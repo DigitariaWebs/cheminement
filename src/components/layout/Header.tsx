@@ -163,6 +163,18 @@ export function Header() {
             >
               {t("nav.contact")}
             </Link>
+
+            {/* I'm a Professional link */}
+            <Link
+              href="/professional"
+              className={`text-sm font-semibold transition-all duration-300 ease-in-out ${
+                pathname === "/professional"
+                  ? "text-primary font-semibold underline underline-offset-4"
+                  : "text-foreground hover:text-primary"
+              }`}
+            >
+              {t("nav.professional")}
+            </Link>
           </nav>
 
           {/* CTA Buttons */}

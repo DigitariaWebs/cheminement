@@ -15,7 +15,6 @@ import {
   HelpCircle,
   LogOut,
   ChevronRight,
-  Inbox,
   Wallet,
   Star,
 } from "lucide-react";
@@ -75,11 +74,6 @@ export function ProfessionalSidebar() {
           title: t("proposals"),
           url: "/professional/dashboard/proposals",
           icon: Star,
-        },
-        {
-          title: t("myRequests"),
-          url: "/professional/dashboard/requests",
-          icon: Inbox,
         },
         {
           title: t("myClients"),
