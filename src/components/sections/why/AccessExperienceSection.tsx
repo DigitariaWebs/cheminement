@@ -9,6 +9,7 @@ import {
   Headset,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function AccessExperienceSection() {
   const t = useTranslations("Why.access");
@@ -72,6 +73,17 @@ export default function AccessExperienceSection() {
             </p>
           </header>
 
+          <div className="mx-auto max-w-4xl">
+            <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
+              <Image
+                src="/PsychologistOfficeWelcoming.jpg"
+                alt="Welcoming psychologist office"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+
           <div className="space-y-12">
             <div className="grid gap-6 md:grid-cols-3">
               {modes.map(({ icon: Icon, title, description, highlight }) => (
@@ -126,7 +138,7 @@ export default function AccessExperienceSection() {
                         </p>
                       </div>
                     </div>
-                  ),
+                  )
                 )}
               </div>
             </div>

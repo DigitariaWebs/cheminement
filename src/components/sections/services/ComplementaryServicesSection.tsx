@@ -2,6 +2,7 @@
 
 import { Brain, BookOpenCheck, Sparkle, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function ComplementaryServicesSection() {
   const t = useTranslations("Services.complementaryServices");
@@ -38,6 +39,17 @@ export default function ComplementaryServicesSection() {
           <h2 className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
             {t("title")}
           </h2>
+        </div>
+
+        <div className="mt-12 mx-auto max-w-4xl">
+          <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
+            <Image
+              src="/TherapyMethodsCalming.jpg"
+              alt="Complementary therapeutic services"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">

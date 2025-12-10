@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import {
   Clock,
   Users,
@@ -87,6 +88,18 @@ export default function ClientAdvantagesSection() {
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             {t("subtitle")}
           </p>
+        </div>
+
+        {/* Hero Image */}
+        <div className="mb-16 mx-auto max-w-4xl">
+          <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
+            <Image
+              src="/PatientTestimonialHappy.jpg"
+              alt="Happy patient using health platform"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
 
         {/* Advantages Grid */}

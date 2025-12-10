@@ -63,7 +63,7 @@ export default function ClinicalApproachesSection() {
     <section className="relative overflow-hidden bg-linear-to-b from-muted via-muted to-muted py-24">
       <div className="absolute inset-0 opacity-[0.08]">
         <div className="absolute left-0 top-24 h-72 w-72 -translate-x-1/3 rounded-full bg-primary blur-3xl" />
-        <div className="absolute right-0 bottom-0 h-[26rem] w-[26rem] translate-x-1/3 translate-y-1/3 rounded-full bg-accent blur-3xl" />
+        <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/3 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
       <div className="container relative z-10 mx-auto px-6">
@@ -81,27 +81,13 @@ export default function ClinicalApproachesSection() {
 
         {/* Image placeholder for approaches */}
         <div className="mt-12 mx-auto max-w-4xl">
-          <div className="relative aspect-[21/9] rounded-3xl overflow-hidden shadow-xl">
-            {/* Placeholder - replace with actual image */}
-            <div className="absolute inset-0 bg-linear-to-br from-accent/30 via-primary/20 to-muted flex items-center justify-center">
-              <div className="text-center p-8">
-                <BookOpen
-                  className="h-16 w-16 text-foreground/30 mx-auto mb-4"
-                  strokeWidth={1}
-                />
-                <p className="text-sm text-foreground/50 font-medium">
-                  {t("imageAlt")}
-                </p>
-              </div>
-            </div>
-            {/* Uncomment when image is available:
+          <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
             <Image
-              src="/images/clinical-approaches.jpg"
+              src="/CognitiveBehavioralTherapy.jpg"
               alt={t("imageAlt")}
               fill
               className="object-cover"
             />
-            */}
           </div>
         </div>
 

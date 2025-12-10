@@ -3,6 +3,7 @@
 import { ShieldCheck, LibraryBig } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function ExpertiseSection() {
   const t = useTranslations("About.expertise");
@@ -31,17 +32,37 @@ export default function ExpertiseSection() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <ExpertiseCard
-              icon={<ShieldCheck className="h-6 w-6 text-card" />}
-              title={t("cards.confidentiality.title")}
-              description={t("cards.confidentiality.description")}
-            />
-            <ExpertiseCard
-              icon={<LibraryBig className="h-6 w-6 text-card" />}
-              title={t("cards.quality.title")}
-              description={t("cards.quality.description")}
-            />
+          <div className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
+                <Image
+                  src="/ProfessionalTherapistPortraitWoman.jpg"
+                  alt="Professional therapist"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
+                <Image
+                  src="/ProfessionalTherapistPortraitMan.jpg"
+                  alt="Professional therapist"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <ExpertiseCard
+                icon={<ShieldCheck className="h-6 w-6 text-card" />}
+                title={t("cards.confidentiality.title")}
+                description={t("cards.confidentiality.description")}
+              />
+              <ExpertiseCard
+                icon={<LibraryBig className="h-6 w-6 text-card" />}
+                title={t("cards.quality.title")}
+                description={t("cards.quality.description")}
+              />
+            </div>
           </div>
         </div>
       </div>

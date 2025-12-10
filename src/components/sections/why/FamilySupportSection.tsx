@@ -2,6 +2,7 @@
 
 import { HeartHandshake, Users, Baby, Brain } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function FamilySupportSection() {
   const t = useTranslations("Why.familySupport");
@@ -59,26 +60,12 @@ export default function FamilySupportSection() {
             {/* Right: Family Image */}
             <div className="relative">
               <div className="relative aspect-4/3 rounded-3xl overflow-hidden shadow-2xl">
-                {/* Placeholder for family image - replace with actual image */}
-                <div className="absolute inset-0 bg-linear-to-br from-accent/40 via-primary/20 to-muted flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <Users
-                      className="h-20 w-20 text-foreground/30 mx-auto mb-4"
-                      strokeWidth={1}
-                    />
-                    <p className="text-sm text-foreground/50 font-medium">
-                      {t("imageAlt")}
-                    </p>
-                  </div>
-                </div>
-                {/* Uncomment and use when actual image is available:
                 <Image
-                  src="/images/family-support.jpg"
+                  src="/HappyFamilyEnjoyingAMomentTogether.jpg"
                   alt={t("imageAlt")}
                   fill
                   className="object-cover"
                 />
-                */}
               </div>
               {/* Decorative element */}
               <div className="absolute -bottom-4 -right-4 h-24 w-24 rounded-2xl bg-foreground/10 -z-10"></div>
