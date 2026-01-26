@@ -1,7 +1,6 @@
 import {
   ApproachesHeroSection,
   ClinicalApproachesSection,
-  EthicsSection,
   FlexibilitySection,
   MatchingSection,
   PersonCenteredSection,
@@ -16,9 +15,7 @@ export default function ApproachesPage() {
       <PersonCenteredSection />
       <ColorTransition fromColor="background" toColor="muted" />
       <ClinicalApproachesSection />
-      <ColorTransition fromColor="muted" toColor="background" />
-      <EthicsSection />
-      <ColorTransition fromColor="background" toColor="muted" />
+      <ColorTransition fromColor="muted" toColor="muted" />
       <FlexibilitySection />
       <ColorTransition fromColor="muted" toColor="background" />
       <MatchingSection />

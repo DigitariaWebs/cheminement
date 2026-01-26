@@ -14,6 +14,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ServiceSection() {
   const t = useTranslations("ServiceSection");
@@ -78,72 +80,92 @@ export default function ServiceSection() {
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-24">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
-            {t("title")}
-          </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            {t("subtitle")}
-            <br />
-            {t("subtitleLine2")}
-          </p>
+          <ScrollReveal variant="blur-in" duration={700}>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
+              {t("title")}
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal variant="fade-up" delayMs={150} duration={600}>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              {t("subtitle")}
+              <br />
+              {t("subtitleLine2")}
+            </p>
+          </ScrollReveal>
         </div>
 
         {/* Service Cards Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto mb-32">
-          {services.map((service, index) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              index={index}
-              isSelected={selectedService.id === service.id}
-              onClick={() => setSelectedService(service)}
-            />
-          ))}
+          {services.map((service, index) => {
+            const cardAnimations: AnimationVariant[] = [
+              "fade-right",
+              "zoom-in",
+              "fade-left",
+              "slide-up",
+            ];
+            return (
+              <ScrollReveal
+                key={service.id}
+                variant={cardAnimations[index % cardAnimations.length]}
+                delayMs={250 + index * 100}
+                duration={700}
+              >
+                <ServiceCard
+                  service={service}
+                  index={index}
+                  isSelected={selectedService.id === service.id}
+                  onClick={() => setSelectedService(service)}
+                />
+              </ScrollReveal>
+            );
+          })}
         </div>
 
         {/* Selected Service Detail Section */}
-        <div className="max-w-7xl mx-auto mb-20">
-          <div
-            key={selectedService.id}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center animate-fade-in-up"
-          >
-            {/* Visual Design */}
-            <div className="relative order-2 lg:order-1">
-              {selectedService.id === "eap" && <EAPDesign t={t} />}
-              {selectedService.id === "mental-health" && (
-                <MentalHealthDesign t={t} />
-              )}
-              {selectedService.id === "primary-care" && (
-                <PrimaryCareDesign t={t} />
-              )}
-              {selectedService.id === "wellness" && <WellnessDesign t={t} />}
-            </div>
-
-            {/* Content */}
-            <div className="order-1 lg:order-2">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-foreground rounded-lg">
-                  <selectedService.icon
-                    className="w-8 h-8 text-background"
-                    strokeWidth={2}
-                  />
-                </div>
+        <ScrollReveal variant="slide-up" delayMs={650} duration={800}>
+          <div className="max-w-7xl mx-auto mb-20">
+            <div
+              key={selectedService.id}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center animate-fade-in-up"
+            >
+              {/* Visual Design */}
+              <div className="relative order-2 lg:order-1">
+                {selectedService.id === "eap" && <EAPDesign t={t} />}
+                {selectedService.id === "mental-health" && (
+                  <MentalHealthDesign t={t} />
+                )}
+                {selectedService.id === "primary-care" && (
+                  <PrimaryCareDesign t={t} />
+                )}
+                {selectedService.id === "wellness" && <WellnessDesign t={t} />}
               </div>
 
-              <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-8">
-                {locale === "fr"
-                  ? selectedService.titleFr
-                  : selectedService.titleEn}
-              </h3>
+              {/* Content */}
+              <div className="order-1 lg:order-2">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="p-3 bg-foreground rounded-lg">
+                    <selectedService.icon
+                      className="w-8 h-8 text-background"
+                      strokeWidth={2}
+                    />
+                  </div>
+                </div>
 
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                {locale === "fr"
-                  ? selectedService.descriptionFr
-                  : selectedService.descriptionEn}
-              </p>
+                <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-8">
+                  {locale === "fr"
+                    ? selectedService.titleFr
+                    : selectedService.titleEn}
+                </h3>
+
+                <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                  {locale === "fr"
+                    ? selectedService.descriptionFr
+                    : selectedService.descriptionEn}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

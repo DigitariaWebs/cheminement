@@ -52,7 +52,7 @@ export default function MatchingSystemSection() {
       descriptionEn:
         "Connect with clients who prefer your therapeutic methods and techniques",
       descriptionFr:
-        "Connectez-vous avec des clients qui préfèrent vos méthodes et techniques thérapeutiques",
+        "Connectez-vous avec des clients qui préfèrent votre approche et vision thérapeutique",
     },
     {
       icon: Users,

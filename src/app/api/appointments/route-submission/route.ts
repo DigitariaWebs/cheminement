@@ -30,7 +30,7 @@ function calculateRelevancyScore(
     type: string;
     therapyType: string;
     preferredAvailability?: string[];
-  }
+  },
 ): { score: number; reasons: string[] } {
   let score = 0;
   const reasons: string[] = [];
@@ -38,8 +38,9 @@ function calculateRelevancyScore(
   // Match by issue type / problematics (highest weight)
   if (appointment.issueType && profile.problematics) {
     const issueMatch = profile.problematics.some(
-      (p) => p.toLowerCase().includes(appointment.issueType!.toLowerCase()) ||
-             appointment.issueType!.toLowerCase().includes(p.toLowerCase())
+      (p) =>
+        p.toLowerCase().includes(appointment.issueType!.toLowerCase()) ||
+        appointment.issueType!.toLowerCase().includes(p.toLowerCase()),
     );
     if (issueMatch) {
       score += 40;
@@ -50,12 +51,15 @@ function calculateRelevancyScore(
   // Match by modality (video, in-person, phone)
   if (profile.modalities) {
     const modalityMap: Record<string, string> = {
-      "video": "online",
+      video: "online",
       "in-person": "inPerson",
-      "phone": "phone",
+      phone: "phone",
     };
     const requiredModality = modalityMap[appointment.type];
-    if (profile.modalities.includes(requiredModality) || profile.modalities.includes("both")) {
+    if (
+      profile.modalities.includes(requiredModality) ||
+      profile.modalities.includes("both")
+    ) {
       score += 20;
       reasons.push("Offers required session modality");
     }
@@ -64,12 +68,14 @@ function calculateRelevancyScore(
   // Match by session type (solo, couple, group)
   if (profile.sessionTypes) {
     const sessionTypeMap: Record<string, string> = {
-      "solo": "individual",
-      "couple": "couple",
-      "group": "group",
+      solo: "individual",
+      couple: "couple",
+      group: "group",
     };
     const requiredType = sessionTypeMap[appointment.therapyType];
-    if (profile.sessionTypes.some((t) => t.toLowerCase().includes(requiredType))) {
+    if (
+      profile.sessionTypes.some((t) => t.toLowerCase().includes(requiredType))
+    ) {
       score += 15;
       reasons.push("Offers required session type");
     }
@@ -77,21 +83,27 @@ function calculateRelevancyScore(
 
   // Match by availability
   if (appointment.preferredAvailability && profile.availability?.days) {
-    const availableDays = profile.availability.days.filter((d) => d.isWorkDay).map((d) => d.day);
-    
+    const availableDays = profile.availability.days
+      .filter((d) => d.isWorkDay)
+      .map((d) => d.day);
+
     // Check if professional has any availability matching client preferences
-    const availabilityMatches = appointment.preferredAvailability.some((pref) => {
-      const prefLower = pref.toLowerCase();
-      if (prefLower.includes("weekday")) {
-        return availableDays.some((d) => 
-          ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(d)
-        );
-      }
-      if (prefLower.includes("weekend")) {
-        return availableDays.some((d) => ["Saturday", "Sunday"].includes(d));
-      }
-      return true;
-    });
+    const availabilityMatches = appointment.preferredAvailability.some(
+      (pref) => {
+        const prefLower = pref.toLowerCase();
+        if (prefLower.includes("weekday")) {
+          return availableDays.some((d) =>
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(
+              d,
+            ),
+          );
+        }
+        if (prefLower.includes("weekend")) {
+          return availableDays.some((d) => ["Saturday", "Sunday"].includes(d));
+        }
+        return true;
+      },
+    );
 
     if (availabilityMatches) {
       score += 15;
@@ -131,7 +143,7 @@ export async function POST(req: NextRequest) {
     if (!appointmentId) {
       return NextResponse.json(
         { error: "Appointment ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -140,7 +152,7 @@ export async function POST(req: NextRequest) {
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -148,7 +160,7 @@ export async function POST(req: NextRequest) {
     if (appointment.routingStatus !== "pending" || appointment.professionalId) {
       return NextResponse.json(
         { error: "Appointment already routed or assigned" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -170,15 +182,12 @@ export async function POST(req: NextRequest) {
     const matches: ProfessionalMatch[] = [];
 
     for (const profile of profiles) {
-      const { score, reasons } = calculateRelevancyScore(
-        profile,
-        {
-          issueType: appointment.issueType,
-          type: appointment.type,
-          therapyType: appointment.therapyType,
-          preferredAvailability: appointment.preferredAvailability,
-        }
-      );
+      const { score, reasons } = calculateRelevancyScore(profile, {
+        issueType: appointment.issueType,
+        type: appointment.type,
+        therapyType: appointment.therapyType,
+        preferredAvailability: appointment.preferredAvailability,
+      });
 
       // Only include professionals with a minimum relevancy score
       if (score >= 20) {
@@ -225,7 +234,7 @@ export async function POST(req: NextRequest) {
     console.error("Route submission error:", error);
     return NextResponse.json(
       { error: "Failed to route appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

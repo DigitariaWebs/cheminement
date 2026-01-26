@@ -70,21 +70,7 @@
     "title": "Integrated Health Platform",
     "subtitle": "Your gateway to comprehensive mental health care.",
     "description": "Our {integratedPlatform} offers fast access to a variety of qualified professionals, all in one place. Start your journey to well-being with personalized support tailored to your needs—available when and where you need it.",
-    "integratedPlatform": "Integrated Health Platform™",
-    "benefits": {
-      "fastAccess": {
-        "title": "Fast Access",
-        "description": "Get connected with a mental health professional quickly. No long waiting lists—start your journey to well-being sooner."
-      },
-      "varietyProfessionals": {
-        "title": "Variety of Professionals",
-        "description": "Access a diverse team of qualified specialists, each with unique expertise to address your specific needs and preferences."
-      },
-      "educationalResources": {
-        "title": "Educational Resources",
-        "description": "Explore our library of videos and readings about anxiety, burnout, stress management, and more—available even before your first session."
-      }
-    }
+    "integratedPlatform": "Integrated Health Platform™"
   },
   "HowItWorksSection": {
     "badge": "Simple Process",
@@ -117,14 +103,10 @@
     },
     "educationalHighlight": {
       "title": "Start Your Journey Now",
-      "description": "Before your first appointment, explore our library of educational resources to better understand your situation and prepare for your follow-up."
-    },
-    "topics": {
-      "anxiety": "Anxiety",
-      "burnout": "Burnout",
-      "stress": "Stress",
-      "depression": "Depression",
-      "selfEsteem": "Self-Esteem"
+      "description": "Our professionals can support you in better managing multiple issues.",
+      "topics": "Anxiety, Burnout, Stress, Depression, Self-esteem, ADHD, High Intellectual Potential, parenting role, learning difficulties, emotion management, other issues",
+      "note": "This is not an exhaustive list",
+      "programDescription": "Even before your first appointment, benefit from our pre-therapy program and educational resources to better understand your situation and prepare for your follow-up."
     },
     "professionalsSection": {
       "title": "Our Professionals at Your Service",
@@ -132,12 +114,12 @@
     },
     "professionals": {
       "psychologist": "Psychologist",
-      "psychotherapist": "Psychotherapist",
       "neuropsychologist": "Neuropsychologist",
-      "socialWorker": "Social Worker",
+      "psychotherapist": "Psychotherapist",
       "psychoeducator": "Psychoeducator",
-      "mentalHealthCounselor": "Mental Health Counselor",
-      "psychiatrist": "Psychiatrist"
+      "occupationalTherapistMentalHealth": "Occupational Therapist in Mental Health",
+      "psychiatrist": "Psychiatrist",
+      "otherProfessionals": "Other Professionals"
     },
     "trustIndicators": {
       "licensed": "Licensed Professionals",
@@ -1013,6 +995,11 @@
         }
       }
     },
+    "workplaceSection": {
+      "badge": "2 · Workplace Mental Health",
+      "title": "Specialized support for work-related challenges",
+      "description": "We support employees in managing burnout, return-to-work transitions, and developing sustainable strategies to maintain a healthy work-life balance."
+    },
     "programs": {
       "badge": "WHAT'S INCLUDED",
       "title": "Comprehensive Mental Health Programs",
@@ -1088,6 +1075,15 @@
       "badge": "2 · School Component — Sentiers Program",
       "title": "A space dedicated to children, adolescents, families, and schools.",
       "description": "The Sentiers program offers comprehensive support that combines clinical expertise, educational tools, and close collaboration with the school environment.",
+      "focusTitle": "What We Cover",
+      "focusAreas": [
+        "Sentiers Program",
+        "School anxiety",
+        "School avoidance (refusal)",
+        "Academic stress",
+        "Performance management"
+      ],
+      "studentTrack": "Student Track (CEGEP & University): support adapted to the pace, academic requirements, and mental health of students.",
       "pillarsTitle": "The Program's Pillars",
       "pillars": {
         "assessment": {
@@ -1110,13 +1106,19 @@
       "professionalsTitle": "We Work With",
       "professionals": [
         "School Psychologists",
+        "Neuropsychologists",
         "Psychoeducators",
         "Special Education Technicians (SET)",
         "Specialized Practitioners"
       ],
       "customSupport": "Tailored support to promote success, self-esteem, and well-being for young people, in partnership with their school and family environment.",
       "networkTitle": "A Coordinated Network",
-      "networkDescription": "School teams, practitioners, family: we work together to implement the best strategies."
+      "networkDescription": "School teams, practitioners, family: we work together to implement the best strategies.",
+      "cta": {
+        "parent": "Parent / For my child",
+        "student": "Student",
+        "manager": "School Manager"
+      }
     },
     "complementaryServices": {
       "badge": "3 · Complementary Services",
@@ -1235,6 +1237,10 @@
           "title": "Parental Coaching & Specialized Guidance",
           "description": "Concrete support for ADHD, anxiety, emotional management, oppositional behaviors, etc."
         }
+      },
+      "otherApproaches": {
+        "title": "Other Approaches and Techniques",
+        "items": ["Hypnosis", "EMDR", "IMO"]
       }
     },
     "ethics": {
@@ -1351,6 +1357,8 @@
       "title": "An email is enough to start the conversation.",
       "emailLabel": "Write to Us",
       "email": "contact@monimpression.com",
+      "phoneLabel": "Phone",
+      "phone": "Coming soon",
       "inquiries": {
         "services": {
           "title": "Services and Approaches",
@@ -1375,6 +1383,11 @@
       "badge": "Contact Form",
       "title": "Do you prefer to write to us differently? Fill out our form.",
       "description": "Share your needs, questions, and availability. A manager will contact you as soon as possible to ensure personalized follow-up.",
+      "cta": {
+        "title": "Book an Appointment",
+        "forSelf": "For Myself",
+        "forLovedOne": "For a Loved One"
+      },
       "reasons": [
         "Request an appointment or schedule a first meeting.",
         "Get detailed information about our approaches and services.",

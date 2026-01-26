@@ -74,16 +74,16 @@ export default function PlatformBenefitsSection() {
       descriptionEn:
         "Concentrate on clinical aspects of your practice and free up time for your personal life. We handle the business side.",
       descriptionFr:
-        "Concentrez-vous sur les aspects cliniques de votre pratique et libérez du temps pour votre vie personnelle. Nous gérons le côté commercial.",
+        "Concentrez-vous sur les aspects cliniques de votre pratique et libérez du temps pour votre vie personnelle.",
     },
     {
       icon: Calendar,
       titleEn: "Practice Management Tools",
-      titleFr: "Outils de gestion de pratique",
+      titleFr: "Outils de gestion de la pratique",
       descriptionEn:
         "Access OWL Practice-style features including record keeping, scheduling, billing, and payroll management—all in one place.",
       descriptionFr:
-        "Accédez aux fonctionnalités de style OWL Practice, y compris la tenue de dossiers, la planification, la facturation et la gestion de la paie—le tout en un seul endroit.",
+        "Accédez à des outils pour faciliter la tenue de dossiers et la planification.",
     },
     {
       icon: FileText,
@@ -92,7 +92,7 @@ export default function PlatformBenefitsSection() {
       descriptionEn:
         "Unlimited access to PDF books, research articles, psychological tests, and test correction platforms when needed.",
       descriptionFr:
-        "Accès illimité aux livres PDF, articles de recherche, tests psychologiques et plateformes de correction de tests au besoin.",
+        "Accès à des articles de recherche et du contenu. Accès à des tests psychologiques et plateformes de correction de tests au besoin.",
     },
     {
       icon: Video,
@@ -161,20 +161,16 @@ export default function PlatformBenefitsSection() {
 
   const additionalPerks = [
     {
+      en: "Social mission: priority support for remote-region clients and reduced rates for family/child cases with platform support",
+      fr: "Mission sociale : soutien prioritaire pour les clients des régions éloignées et tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
+    },
+    {
       en: "Become a shareholder and collectively benefit from our success",
       fr: "Devenez actionnaire et bénéficiez collectivement de notre succès",
     },
     {
-      en: "Social mission: Priority support for clients in remote regions",
-      fr: "Mission sociale : soutien prioritaire pour les clients des régions éloignées",
-    },
-    {
-      en: "Reduced rates for family/child cases with joint platform support",
-      fr: "Tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
-    },
-    {
-      en: "$1 per session contribution to an investment fund",
-      fr: "Contribution de 1 $ par séance à un fonds d'investissement",
+      en: "Optional contribution to a group RRSP",
+      fr: "Possibilité de contribution à un REER collectif",
     },
   ];
 

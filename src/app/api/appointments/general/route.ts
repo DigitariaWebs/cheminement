@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     if (session.user.role !== "professional") {
       return NextResponse.json(
         { error: "Only professionals can access this endpoint" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     console.error("Get general appointments error:", error);
     return NextResponse.json(
       { error: "Failed to fetch general appointments" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

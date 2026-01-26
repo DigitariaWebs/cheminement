@@ -9,7 +9,7 @@ export default function ColorTransition({
 }: ColorTransitionProps) {
   return (
     <div
-      className={`h-34 bg-linear-to-b from-${fromColor} to-${toColor}`}
+      className={`h-12 bg-linear-to-b from-${fromColor} to-${toColor}`}
     ></div>
   );
 }

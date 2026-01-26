@@ -10,7 +10,7 @@ import { authOptions } from "@/lib/auth";
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -22,7 +22,7 @@ export async function POST(
     if (session.user.role !== "professional") {
       return NextResponse.json(
         { error: "Only professionals can refuse appointments" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function POST(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -44,38 +44,38 @@ export async function POST(
     if (appointment.status !== "pending") {
       return NextResponse.json(
         { error: "Appointment is no longer pending" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (appointment.professionalId) {
       return NextResponse.json(
         { error: "Appointment already assigned to a professional" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if this professional was proposed this appointment
     const isProposed = appointment.proposedTo?.some(
-      (pId: { toString: () => string }) => pId.toString() === session.user.id
+      (pId: { toString: () => string }) => pId.toString() === session.user.id,
     );
 
     if (!isProposed) {
       return NextResponse.json(
         { error: "You were not proposed this appointment" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // Check if already refused
     const alreadyRefused = appointment.refusedBy?.some(
-      (pId: { toString: () => string }) => pId.toString() === session.user.id
+      (pId: { toString: () => string }) => pId.toString() === session.user.id,
     );
 
     if (alreadyRefused) {
       return NextResponse.json(
         { error: "You have already refused this appointment" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,7 +88,10 @@ export async function POST(
     // Check if all proposed professionals have refused
     const allRefused = appointment.proposedTo?.every(
       (pId: { toString: () => string }) =>
-        updatedRefusedBy.some((rId: { toString: () => string }) => rId.toString() === pId.toString())
+        updatedRefusedBy.some(
+          (rId: { toString: () => string }) =>
+            rId.toString() === pId.toString(),
+        ),
     );
 
     // Update appointment
@@ -104,9 +107,8 @@ export async function POST(
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       updateData,
-      { new: true }
-    )
-      .populate("clientId", "firstName lastName email phone location");
+      { new: true },
+    ).populate("clientId", "firstName lastName email phone location");
 
     return NextResponse.json({
       message: allRefused
@@ -119,7 +121,7 @@ export async function POST(
     console.error("Refuse appointment error:", error);
     return NextResponse.json(
       { error: "Failed to refuse appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

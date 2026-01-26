@@ -6,6 +6,7 @@ import {
   ExpertiseSection,
   PersonalizedJourneySection,
 } from "@/components/sections/about";
+import { EthicsSection } from "@/components/sections/approaches";
 
 export default function WhoWeArePage() {
   return (
@@ -16,6 +17,8 @@ export default function WhoWeArePage() {
       <ColorTransition fromColor="background" toColor="muted" />
       <ExpertiseSection />
       <ColorTransition fromColor="muted" toColor="background" />
+      <EthicsSection />
+      <ColorTransition fromColor="background" toColor="background" />
       <AccessibilitySection />
       <ColorTransition fromColor="background" toColor="accent" />
       <CommitmentSection />

@@ -30,7 +30,7 @@
     "culture": "Culture, soins et communauté",
     "brandGuidelines": "Directives de marque",
     "platform": "Plateforme",
-    "integratedHealthPlatform": "Plateforme de santé intégrée",
+    "integratedHealthPlatform": "Plateforme de santé mentale",
     "eap": "Programme d'aide aux employés (PAE)",
     "mentalHealthPlus": "Santé mentale+",
     "primaryCareWellness": "Soins primaires et bien-être",
@@ -58,33 +58,19 @@
     "forPatient": "Pour un patient",
     "forLovedOne": "Pour un proche",
     "bookForSelfHint": "Cherchez-vous un soutien professionnel pour votre propre bien-être mental?",
-    "bookForPatientHint": "Êtes-vous un médecin ou professionnel souhaitant référer un patient?",
+    "bookForPatientHint": "Êtes-vous un médecin ou un professionnel souhaitant référer un patient?",
     "bookForLovedOneHint": "Souhaitez-vous aider un membre de votre famille ou un proche à trouver du soutien?",
     "learnMore": "En savoir plus",
     "back": "Retour",
-    "personalizedCare": "Soins personnalisés",
+    "personalizedCare": "Démarche personnalisée",
     "flexibleScheduling": "Planification flexible",
     "confidentialSupport": "Soutien confidentiel"
   },
   "ValueSection": {
-    "title": "Plateforme de santé intégrée",
-    "subtitle": "Votre portail vers des soins de santé mentale complets.",
-    "description": "Notre {integratedPlatform} offre un accès rapide à une variété de professionnels qualifiés, le tout en un seul endroit. Commencez votre parcours vers le bien-être avec un soutien personnalisé adapté à vos besoins—disponible quand et où vous en avez besoin.",
-    "integratedPlatform": "Plateforme de santé intégrée™",
-    "benefits": {
-      "fastAccess": {
-        "title": "Accès rapide",
-        "description": "Connectez-vous rapidement avec un professionnel de la santé mentale. Pas de longues listes d'attente—commencez votre parcours vers le bien-être plus tôt."
-      },
-      "varietyProfessionals": {
-        "title": "Variété de professionnels",
-        "description": "Accédez à une équipe diversifiée de spécialistes qualifiés, chacun avec une expertise unique pour répondre à vos besoins et préférences spécifiques."
-      },
-      "educationalResources": {
-        "title": "Ressources éducatives",
-        "description": "Explorez notre bibliothèque de vidéos et de lectures sur l'anxiété, l'épuisement professionnel, la gestion du stress et plus encore—disponible même avant votre première séance."
-      }
-    }
+    "title": "Plateforme spécialisée en santé mentale",
+    "subtitle": "Un jumelage intelligent",
+    "description": "Notre Plateforme offre un accès rapide à des professionnels de la santé mentale. Cheminez vers l'équilibre plus tôt.",
+    "integratedPlatform": "Plateforme de santé mentale™"
   },
   "HowItWorksSection": {
     "badge": "Processus simple",
@@ -97,7 +83,7 @@
   },
   "ClientAdvantagesSection": {
     "badge": "VOS AVANTAGES",
-    "title": "Une plateforme de santé pensée pour vous",
+    "title": "Une plateforme pensée pour vous",
     "subtitle": "Accédez rapidement à des professionnels qualifiés et à du contenu éducatif pour prendre soin de votre santé mentale.",
     "quickAccess": {
       "title": "Accès rapide",
@@ -105,7 +91,7 @@
     },
     "diverseProfessionals": {
       "title": "Diversité de professionnels",
-      "description": "Choisissez parmi une équipe multidisciplinaire de spécialistes pour trouver celui qui vous convient le mieux."
+      "description": "Un système de jumelage intelligent pour vous aiguiller vers le professionnel qui vous convient le mieux."
     },
     "educationalContent": {
       "title": "Contenu éducatif",
@@ -117,14 +103,10 @@
     },
     "educationalHighlight": {
       "title": "Commencez votre parcours dès maintenant",
-      "description": "Avant même votre premier rendez-vous, explorez notre bibliothèque de ressources éducatives pour mieux comprendre votre situation et vous préparer à votre suivi."
-    },
-    "topics": {
-      "anxiety": "Anxiété",
-      "burnout": "Épuisement",
-      "stress": "Stress",
-      "depression": "Dépression",
-      "selfEsteem": "Estime de soi"
+      "description": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques.",
+      "topics": "Anxiété, Épuisement, Stress, Dépression, Estime de soi, TDAH, HPI, rôle parental, difficultés d’apprentissage, gestion des émotions, autres problématiques",
+      "note": "Ceci n’est pas une liste exhaustive",
+      "programDescription": "Avant même votre premier rendez-vous, bénéficiez de notre programme de pré-thérapie et des ressources éducatives pour mieux comprendre votre situation et vous préparer à votre suivi."
     },
     "professionalsSection": {
       "title": "Nos professionnels à votre service",
@@ -132,12 +114,12 @@
     },
     "professionals": {
       "psychologist": "Psychologue",
-      "psychotherapist": "Psychothérapeute",
       "neuropsychologist": "Neuropsychologue",
-      "socialWorker": "Travailleur social",
+      "psychotherapist": "Psychothérapeute",
       "psychoeducator": "Psychoéducateur",
-      "mentalHealthCounselor": "Conseiller en santé mentale",
-      "psychiatrist": "Psychiatre"
+      "occupationalTherapistMentalHealth": "Ergothérapeute en santé mentale",
+      "psychiatrist": "Psychiatre",
+      "otherProfessionals": "Autres professionnels"
     },
     "trustIndicators": {
       "licensed": "Professionnels accrédités",
@@ -146,7 +128,7 @@
     }
   },
   "ServiceSection": {
-    "title": "Notre Plateforme de santé intégrée™",
+    "title": "Notre Plateforme de santé mentale™",
     "subtitle": "Plusieurs programmes de santé et de bien-être pour soutenir votre organisation.",
     "subtitleLine2": "Ils fonctionnent très bien seuls, mais sont encore plus performants ensemble.",
     "services": {
@@ -202,10 +184,7 @@
     "headline": "Concentrez-vous sur ce que vous faites de mieux : aider les gens",
     "description": "Rejoignez notre plateforme et laissez-nous gérer le travail administratif. Connectez-vous avec des clients qui correspondent à votre expertise, optimisez votre pratique et augmentez votre impact.",
     "joinPlatform": "Rejoindre notre plateforme",
-    "learnMore": "En savoir plus",
-    "activeProfessionals": "1000+ professionnels actifs",
-    "satisfactionRate": "95% de taux de satisfaction",
-    "platformSupport": "Support de la plateforme 24h/24 et 7j/7"
+    "learnMore": "En savoir plus"
   },
   "MatchingSystem": {
     "badge": "SYSTÈME DE JUMELAGE INTELLIGENT",
@@ -259,11 +238,11 @@
   "ProfessionalCTA": {
     "badge": "PRÊT À COMMENCER ?",
     "title": "Rejoignez notre communauté aujourd'hui",
-    "description": "Franchissez la prochaine étape de votre parcours professionnel. Rejoignez des milliers de professionnels de la santé mentale qui ont transformé leur pratique avec notre plateforme.",
+    "description": "Franchissez la prochaine étape de votre parcours professionnel. Rejoignez notre équipe de professionnels de la santé mentale qui ont transformé leur pratique avec notre plateforme.",
     "fact1": "Aucun coût initial",
     "fact2": "Horaire flexible",
     "fact3": "Équipe de soutien dédiée",
-    "fact4": "Rejoignez 1000+ professionnels",
+    "fact4": "Rejoignez plusieurs professionnels actifs",
     "startApplication": "Commencer votre candidature",
     "contactUs": "Nous contacter",
     "helpText": "Vous avez des questions ? Notre équipe est là pour vous aider à chaque étape."
@@ -903,8 +882,8 @@
       "description1": "Notre mission est de vous soutenir dans votre bien-être émotionnel et psychologique grâce à un parcours personnalisé, conçu pour répondre à vos besoins uniques et à votre rythme. Nous offrons un accès simple et bienveillant à une équipe d'experts dont la pratique est encadrée, reconnue et conforme aux exigences de leur ordre professionnel.",
       "description2": "Quelle que soit votre situation, vous êtes accompagné par un professionnel qualifié, prêt à cheminer avec vous vers une vie plus sereine, équilibrée et épanouie.",
       "trustIndicators": {
-        "experts": "Équipe d'experts qualifiés",
-        "certified": "Professionnels certifiés"
+        "experts": "Équipe de soutien dédiée",
+        "certified": "Professionnels membres d'un ordre professionnel"
       }
     },
     "commitment": {
@@ -931,7 +910,7 @@
     "personalizedJourney": {
       "badge": "Un parcours entièrement personnalisé",
       "title": "Votre démarche est unique, votre accompagnement aussi.",
-      "description": "Notre processus de jumelage vise à vous connecter avec le professionnel qui correspond le mieux à votre réalité. Chaque rencontre est pensée pour faciliter un engagement durable et pour favoriser la réussite de votre parcours thérapeutique.",
+      "description": "Notre processus de jumelage vise à vous connecter avec le professionnel qui correspond le mieux à votre réalité. Chaque étape est pensée pour faciliter un engagement durable et pour favoriser la réussite de votre parcours thérapeutique.",
       "matchingTitle": "Nous tenons compte",
       "matchingPoints": [
         "À votre problématique",
@@ -957,8 +936,8 @@
         },
         "choice": {
           "title": "Choix du professionnel",
-          "description": "Vous gardez le contrôle : trouvez le spécialiste qui vous convient et construisez une relation thérapeutique solide.",
-          "details": "Notre plateforme vous offre des profils transparents et un accompagnement pour faire le bon choix."
+          "description": "Vous gardez le contrôle : cheminez uniquement avec le spécialiste qui vous convient et tissez une alliance thérapeutique solide.",
+          "details": "Notre plateforme vous offre des profils transparents et un accompagnement pour faire le bon choix. Vous pouvez toujours demander un changement du professionnel proposé."
         }
       }
     }
@@ -967,13 +946,13 @@
     "hero": {
       "badge": "Nos services",
       "headline": "Un écosystème complet de services en santé mentale pour les adultes, les enfants, les familles et les écoles.",
-      "description": "Nous réunissons des professionnels qualifiés et des programmes spécialisés pour soutenir chaque personne, à toutes les étapes de son parcours. Découvrez comment nous pouvons vous accompagner, vous et votre famille.",
+      "description": "Des professionnels qualifiés pour soutenir chaque personne. Découvrez comment nous pouvons vous accompagner, vous et votre famille.",
       "foundations": {
         "title": "Nos fondations",
         "items": [
           "Des experts qualifiés pour chaque problématique.",
           "Un jumelage intelligent pour un accompagnement rapide.",
-          "Une plateforme simple et rassurante pour suivre votre parcours."
+          "Une plateforme simple pour amorcer rapidement votre cheminement"
         ]
       }
     },
@@ -985,11 +964,11 @@
       "services": {
         "adult": {
           "title": "Psychothérapie adulte",
-          "description": "Accompagnement pour la dépression, l'anxiété, le stress post-traumatique, les troubles obsessionnels-compulsifs, le trouble panique, le TDAH (évaluation & suivi), la gestion des émotions, l'estime de soi, les défis relationnels et l'adaptation aux transitions de vie."
+          "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés."
         },
         "child": {
           "title": "Psychothérapie enfant & adolescent",
-          "description": "Interventions ciblées pour les difficultés d'apprentissage, les troubles du comportement, le TDAH, l'anxiété, le trouble oppositionnel avec provocation, la gestion des émotions, les relations sociales et l'estime de soi."
+          "description": "Soutien thérapeutique spécialisé conçu pour les besoins développementaux uniques des enfants et des adolescents. Nous aidons les jeunes à mieux composer avec les défis émotionnels, les difficultés comportementales, les transitions développementales, la cyberdépendance et les dépendances aux substances."
         },
         "family": {
           "title": "Thérapie familiale",
@@ -1005,51 +984,57 @@
         },
         "workplace": {
           "title": "Santé mentale au travail",
-          "description": "Soutien spécialisé pour l'épuisement professionnel, les transitions de retour au travail et les difficultés professionnelles. Nous vous aidons à naviguer le stress lié au travail, à reconstruire votre confiance après un congé et à développer des stratégies durables pour un meilleur équilibre vie-travail."
+          "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les employés à naviguer à travers l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel."
         },
         "schoolAnxiety": {
-          "title": "Soutien pour l'anxiété scolaire",
+          "title": "Soutien pour mieux composer avec l'anxiété liée à l'école",
           "description": "Interventions ciblées pour les enfants et adolescents vivant de l'anxiété liée à l'école, incluant l'anxiété de performance, les peurs sociales, le refus scolaire et les difficultés de transition. Nous travaillons avec l'enfant, la famille et l'école pour créer un environnement de soutien."
         }
       }
     },
+    "workplaceSection": {
+      "badge": "2 · Santé mentale au travail",
+      "title": "Soutien spécialisé pour les défis liés au travail",
+      "description": "Nous accompagnons les employés dans la gestion de l'épuisement professionnel, les transitions de retour au travail et le développement de stratégies durables pour maintenir un équilibre sain entre vie professionnelle et personnelle."
+    },
     "programs": {
-      "badge": "CE QUI EST INCLUS",
-      "title": "Programmes complets de santé mentale",
-      "subtitle": "Explorez les caractéristiques et avantages de chaque programme. Notre approche intégrée vous assure des soins personnalisés adaptés à vos besoins uniques.",
+      "badge": "1 · Psychothérapie & Évaluation",
+      "title": "Psychothérapie et Évaluation",
+      "subtitle": "",
       "imageAlt": "Séance de soutien professionnel en santé mentale",
       "adult": {
         "title": "Psychothérapie adulte",
-        "description": "Soutien complet en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels qualifiés offrent des soins thérapeutiques personnalisés.",
+        "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
         "highlight": "Plans de traitement personnalisés",
         "features": [
-          "Séances de thérapie individuelle avec des psychologues agréés",
+          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes",
           "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste)",
           "Gestion de l'anxiété, de la dépression et du stress",
           "Évaluation du TDAH et soutien continu",
-          "Counseling relationnel et estime de soi",
+          "Consultations en lien avec les défis relationnels et l’estime de soi",
           "Soutien aux transitions et à l'adaptation de vie"
         ]
       },
       "child": {
         "title": "Psychothérapie enfant & adolescent",
-        "description": "Soutien thérapeutique spécialisé conçu pour les besoins développementaux uniques des enfants et des adolescents. Nous aidons les jeunes à naviguer les défis émotionnels, les difficultés comportementales et les transitions développementales.",
+        "description": "Soutien thérapeutique spécialisé conçu pour les besoins développementaux uniques des enfants et des adolescents. Nous aidons les jeunes à naviguer à travers les défis émotionnels, les difficultés comportementales et les transitions développementales.",
         "highlight": "Interventions adaptées à l'âge",
         "features": [
           "Thérapie par le jeu et techniques adaptées à l'âge",
           "Évaluation du TDAH et stratégies comportementales",
-          "Soutien à l'anxiété et à la régulation émotionnelle",
+          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle",
           "Développement des habiletés sociales",
           "Difficultés scolaires et soutien à l'apprentissage",
+          "Cyberdépendance et dépendances aux substances",
           "Collaboration et guidance parentale"
         ]
       },
       "family": {
         "title": "Thérapie familiale & de couple",
-        "description": "Renforcez les liens familiaux et améliorez la communication grâce à des séances thérapeutiques guidées. Nous aidons les familles et les couples à naviguer les conflits, à reconstruire la confiance et à créer des dynamiques relationnelles plus saines.",
+        "description": "Renforcez les liens familiaux et améliorez la communication grâce à des séances thérapeutiques guidées. Nous aidons les familles et les couples à naviguer à travers les conflits, à reconstruire la confiance et à créer des dynamiques relationnelles plus saines.",
         "highlight": "Communication améliorée",
         "features": [
-          "Thérapie de couple et counseling relationnel",
+          "Thérapie de couple",
           "Évaluation et intervention sur les dynamiques familiales",
           "Stratégies de résolution de conflits",
           "Développement des compétences en communication",
@@ -1059,7 +1044,7 @@
       },
       "workplace": {
         "title": "Santé mentale au travail",
-        "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les professionnels à naviguer l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel.",
+        "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les employés à naviguer à travers l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel.",
         "highlight": "Soutien au retour au travail",
         "features": [
           "Évaluation de l'épuisement et planification du rétablissement",
@@ -1067,11 +1052,11 @@
           "Gestion du stress et de la charge de travail",
           "Reconstruction de l'identité professionnelle et de la confiance",
           "Stratégies d'équilibre vie-travail",
-          "Counseling de transition de carrière"
+          "Consultations en lien avec une transition de carrière"
         ]
       },
       "schoolAnxiety": {
-        "title": "Soutien pour l'anxiété scolaire",
+        "title": "Soutien pour mieux composer avec l’anxiété liée à l’école",
         "description": "Interventions ciblées pour les enfants et adolescents vivant de l'anxiété liée à l'école. Nous travaillons en collaboration avec l'enfant, la famille et l'école pour créer un environnement favorable à la réussite académique et émotionnelle.",
         "highlight": "Collaboration école-famille",
         "features": [
@@ -1084,15 +1069,29 @@
         ]
       }
     },
+    "workplaceSection": {
+      "badge": "2 · Santé mentale au travail",
+      "title": "Section dédiée aux entreprises",
+      "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre."
+    },
     "sentiersProgram": {
-      "badge": "2 · Volet scolaire — Programme Sentiers",
-      "title": "Un espace dédié aux enfants, adolescents, familles et écoles.",
-      "description": "Le programme Sentiers offre un accompagnement global qui allie expertise clinique, outils éducatifs et collaboration étroite avec le milieu scolaire.",
+      "badge": "3 · Parcours scolaire et académique",
+      "title": "Primaire, secondaire, CÉGEP et université.",
+      "description": "Le programme Sentiers regroupe l’accompagnement pour l’anxiété scolaire, l’évitement scolaire (refus), le stress académique et la gestion de performance.",
+      "focusTitle": "Ce que nous couvrons",
+      "focusAreas": [
+        "Programme Sentiers",
+        "Anxiété scolaire",
+        "Évitement scolaire (refus)",
+        "Stress académique",
+        "Gestion de performance"
+      ],
+      "studentTrack": "Volet Étudiants (Cégep & Université) : accompagnement adapté au rythme, aux exigences académiques et à la santé mentale des étudiants.",
       "pillarsTitle": "Les piliers du programme",
       "pillars": {
         "assessment": {
           "title": "Évaluation scolaire complète",
-          "description": "Tests, observations et analyses pour comprendre le profil d'apprentissage et les besoins spécifiques."
+          "description": "Évaluation complète pour mieux comprendre le profil de l’enfant et mieux répondre à ses besoins spécifiques."
         },
         "iep": {
           "title": "Plans d'intervention (PI)",
@@ -1110,13 +1109,19 @@
       "professionalsTitle": "Nous travaillons avec",
       "professionals": [
         "Psychologues scolaires",
+        "Neuropsychologues",
         "Psychoéducateurs",
         "Techniciens en éducation spécialisée (TES)",
         "Intervenants spécialisés"
       ],
       "customSupport": "Un accompagnement sur mesure pour soutenir la réussite, l'estime de soi et le bien-être des jeunes, en partenariat avec leur entourage scolaire et familial.",
       "networkTitle": "Un réseau coordonné",
-      "networkDescription": "Équipes-écoles, intervenants, famille : nous travaillons ensemble pour mettre en place les meilleures stratégies."
+      "networkDescription": "Équipes-écoles, intervenants, famille : nous travaillons ensemble pour mettre en place les meilleures stratégies.",
+      "cta": {
+        "parent": "Parent / Pour mon jeune",
+        "student": "Étudiant",
+        "manager": "Gestionnaire scolaire"
+      }
     },
     "complementaryServices": {
       "badge": "3 · Services complémentaires",
@@ -1228,13 +1233,17 @@
           "description": "Un accompagnement structuré pour comprendre, s'outiller et mettre en place des stratégies adaptées."
         },
         "neuropsych": {
-          "title": "Interventions scolaires et neuropsychologiques",
-          "description": "Évaluations, plans d'intervention et suivis spécialisés pour soutenir la réussite éducative."
+          "title": "Interventions scolaires",
+          "description": "Évaluations, plans d'intervention et suivis spécialisés pour soutenir la réussite."
         },
         "coaching": {
           "title": "Coaching parental & Guidance spécialisée",
           "description": "Un soutien concret pour le TDAH, l'anxiété, la gestion des émotions, les comportements opposants, etc."
         }
+      },
+      "otherApproaches": {
+        "title": "Autres approches et techniques",
+        "items": ["Hypnose", "EMDR", "IMO"]
       }
     },
     "ethics": {
@@ -1351,6 +1360,8 @@
       "title": "Un courriel suffit pour amorcer la conversation.",
       "emailLabel": "Écrivez-nous",
       "email": "contact@monimpression.com",
+      "phoneLabel": "Téléphone",
+      "phone": "À venir",
       "inquiries": {
         "services": {
           "title": "Services et approches",
@@ -1375,6 +1386,11 @@
       "badge": "Formulaire de contact",
       "title": "Vous préférez nous écrire autrement ? Remplissez notre formulaire.",
       "description": "Partagez vos besoins, vos questions et votre disponibilité. Un gestionnaire vous contactera dès que possible pour assurer un suivi personnalisé.",
+      "cta": {
+        "title": "Prise de rendez-vous",
+        "forSelf": "Pour moi",
+        "forLovedOne": "Pour un proche"
+      },
       "reasons": [
         "Demander un rendez-vous ou planifier une première rencontre.",
         "Obtenir des informations détaillées sur nos approches et services.",
@@ -1490,11 +1506,6 @@
           "title": "En bureau",
           "description": "Profitez d'un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
           "highlight": "Un espace accueillant, confidentiel et serein."
-        },
-        "walk": {
-          "title": "Thérapie par la marche",
-          "description": "Vivez la thérapie en mouvement — des séances de marche en nature qui combinent activité physique, air frais et conversation significative.",
-          "highlight": "Une alternative rafraîchissante pour les esprits actifs."
         }
       },
       "platform": {
@@ -2073,7 +2084,7 @@
   "Platform": {
     "hero": {
       "badge": "PLATEFORME DE SANTÉ INTÉGRÉE",
-      "headline": "Notre plateforme de santé intégrée™",
+      "headline": "Notre plateforme de santé mentale™",
       "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire vos programmes de santé et de bien-être. Réinventée pour répondre aux besoins d'aujourd'hui, notre plateforme vous donne la tranquillité d'esprit en sachant que chacun a facilement accès au bon soutien, au moment qui lui convient.",
       "benefits": {
         "title": "AVANTAGES DE LA PLATEFORME",
@@ -2158,7 +2169,7 @@
     "serviceDetails": {
       "badge": "DÉTAILS DES SERVICES",
       "title": "Ce qui est inclus dans chaque programme",
-      "subtitle": "Explorez les fonctionnalités et avantages complets de nos solutions de santé intégrées conçues pour soutenir votre personnel.",
+      "subtitle": "Explorez les fonctionnalités et avantages complets de nos solutions de santé mentale conçues pour soutenir votre personnel.",
       "eap": {
         "title": "Programme d'aide aux employés",
         "description": "Notre PAE moderne offre un soutien confidentiel pour les défis personnels et professionnels. Du counseling aux conseils juridiques, nous veillons à ce que vos employés obtiennent l'aide dont ils ont besoin rapidement et discrètement.",
@@ -2256,12 +2267,29 @@
     "cta": {
       "badge": "COMMENCER",
       "title": "Découvrez la plateforme",
-      "description": "Découvrez comment notre plateforme de santé intégrée peut transformer votre accès à un soutien complet en santé et bien-être.",
+      "description": "Découvrez comment notre plateforme de santé mentale peut transformer votre accès à un soutien complet en santé et bien-être.",
       "contactButton": "Nous contacter",
       "demoButton": "Réserver une consultation",
       "phone": "1-800-XXX-XXXX",
       "email": "info@jechemine.ca",
       "helpText": "Notre équipe répond généralement dans les 24 heures. Nous sommes là pour vous accompagner dans votre parcours de bien-être."
     }
+  },
+  "SchoolManagerForm": {
+    "badge": "Gestionnaire scolaire",
+    "title": "Demande de service scolaire",
+    "description": "Un court formulaire pour amorcer une demande d’évaluation, de TDAH ou de plan d’intervention.",
+    "fields": {
+      "name": "Nom",
+      "school": "École",
+      "serviceType": "Type de service"
+    },
+    "placeholders": {
+      "name": "Nom complet",
+      "school": "Nom de l’école",
+      "serviceType": "Sélectionnez un type de service"
+    },
+    "serviceTypes": ["Évaluation", "TDAH", "Plan d’intervention", "Autre"],
+    "submit": "Envoyer la demande"
   }
 }

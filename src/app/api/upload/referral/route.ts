@@ -48,7 +48,12 @@ export async function POST(req: NextRequest) {
     const uniqueFilename = `${uniqueId}.${fileExtension}`;
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "referrals");
+    const uploadsDir = path.join(
+      process.cwd(),
+      "public",
+      "uploads",
+      "referrals",
+    );
     await mkdir(uploadsDir, { recursive: true });
 
     // Write file to disk

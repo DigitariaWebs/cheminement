@@ -106,13 +106,20 @@ interface AvailabilityData {
 }
 
 export default function ProposalsPage() {
-  const [activeTab, setActiveTab] = useState<"proposed" | "general">("proposed");
-  const [proposedAppointments, setProposedAppointments] = useState<ProposedAppointment[]>([]);
-  const [generalAppointments, setGeneralAppointments] = useState<ProposedAppointment[]>([]);
+  const [activeTab, setActiveTab] = useState<"proposed" | "general">(
+    "proposed",
+  );
+  const [proposedAppointments, setProposedAppointments] = useState<
+    ProposedAppointment[]
+  >([]);
+  const [generalAppointments, setGeneralAppointments] = useState<
+    ProposedAppointment[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedAppointment, setSelectedAppointment] = useState<ProposedAppointment | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<ProposedAppointment | null>(null);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
 
   // Filters
@@ -125,7 +132,8 @@ export default function ProposalsPage() {
 
   // Scheduling modal state
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-  const [schedulingAppointment, setSchedulingAppointment] = useState<ProposedAppointment | null>(null);
+  const [schedulingAppointment, setSchedulingAppointment] =
+    useState<ProposedAppointment | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
@@ -134,7 +142,9 @@ export default function ProposalsPage() {
 
   const fetchProposedAppointments = useCallback(async () => {
     try {
-      const data = await apiClient.get<ProposedAppointment[]>("/appointments/proposed");
+      const data = await apiClient.get<ProposedAppointment[]>(
+        "/appointments/proposed",
+      );
       setProposedAppointments(data);
     } catch (err) {
       console.error("Error fetching proposed appointments:", err);
@@ -143,7 +153,9 @@ export default function ProposalsPage() {
 
   const fetchGeneralAppointments = useCallback(async () => {
     try {
-      const data = await apiClient.get<ProposedAppointment[]>("/appointments/general");
+      const data = await apiClient.get<ProposedAppointment[]>(
+        "/appointments/general",
+      );
       setGeneralAppointments(data);
     } catch (err) {
       console.error("Error fetching general appointments:", err);
@@ -153,9 +165,14 @@ export default function ProposalsPage() {
   const fetchAllAppointments = useCallback(async () => {
     try {
       setLoading(true);
-      await Promise.all([fetchProposedAppointments(), fetchGeneralAppointments()]);
+      await Promise.all([
+        fetchProposedAppointments(),
+        fetchGeneralAppointments(),
+      ]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load appointments");
+      setError(
+        err instanceof Error ? err.message : "Failed to load appointments",
+      );
     } finally {
       setLoading(false);
     }
@@ -176,21 +193,28 @@ export default function ProposalsPage() {
   }, [proposedAppointments, generalAppointments]);
 
   // Filter appointments based on current tab
-  const currentAppointments = activeTab === "proposed" ? proposedAppointments : generalAppointments;
+  const currentAppointments =
+    activeTab === "proposed" ? proposedAppointments : generalAppointments;
 
   const filteredAppointments = useMemo(() => {
     return currentAppointments.filter((appointment) => {
       const clientName = `${appointment.clientId.firstName} ${appointment.clientId.lastName}`;
       const matchesSearch =
         clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        appointment.clientId.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (appointment.issueType?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+        appointment.clientId.email
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (appointment.issueType
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ??
+          false);
 
       const matchesIssueType =
         issueTypeFilter === "all" || appointment.issueType === issueTypeFilter;
 
       const matchesBookingFor =
-        bookingForFilter === "all" || appointment.bookingFor === bookingForFilter;
+        bookingForFilter === "all" ||
+        appointment.bookingFor === bookingForFilter;
 
       return matchesSearch && matchesIssueType && matchesBookingFor;
     });
@@ -204,7 +228,9 @@ export default function ProposalsPage() {
       await fetchAllAppointments();
     } catch (err) {
       console.error("Error accepting appointment:", err);
-      setError(err instanceof Error ? err.message : "Failed to accept appointment");
+      setError(
+        err instanceof Error ? err.message : "Failed to accept appointment",
+      );
     } finally {
       setAcceptingId(null);
     }
@@ -218,7 +244,9 @@ export default function ProposalsPage() {
       await fetchAllAppointments();
     } catch (err) {
       console.error("Error refusing appointment:", err);
-      setError(err instanceof Error ? err.message : "Failed to refuse appointment");
+      setError(
+        err instanceof Error ? err.message : "Failed to refuse appointment",
+      );
     } finally {
       setRefusingId(null);
     }
@@ -232,7 +260,9 @@ export default function ProposalsPage() {
     };
 
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-light ${styles[type]}`}>
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-light ${styles[type]}`}
+      >
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </span>
     );
@@ -246,22 +276,40 @@ export default function ProposalsPage() {
     };
 
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs font-light ${styles[type]}`}>
+      <span
+        className={`px-2 py-0.5 rounded-full text-xs font-light ${styles[type]}`}
+      >
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </span>
     );
   };
 
-  const getBookingForBadge = (bookingFor: ProposedAppointment["bookingFor"]) => {
+  const getBookingForBadge = (
+    bookingFor: ProposedAppointment["bookingFor"],
+  ) => {
     const config = {
-      self: { icon: User, label: "For Self", color: "bg-gray-100 text-gray-700" },
-      patient: { icon: Stethoscope, label: "Patient Referral", color: "bg-blue-100 text-blue-700" },
-      "loved-one": { icon: Heart, label: "For Loved One", color: "bg-pink-100 text-pink-700" },
+      self: {
+        icon: User,
+        label: "For Self",
+        color: "bg-gray-100 text-gray-700",
+      },
+      patient: {
+        icon: Stethoscope,
+        label: "Patient Referral",
+        color: "bg-blue-100 text-blue-700",
+      },
+      "loved-one": {
+        icon: Heart,
+        label: "For Loved One",
+        color: "bg-pink-100 text-pink-700",
+      },
     };
     const { icon: Icon, label, color } = config[bookingFor];
 
     return (
-      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-light ${color}`}>
+      <span
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-light ${color}`}
+      >
         <Icon className="h-3 w-3" />
         {label}
       </span>
@@ -312,7 +360,7 @@ export default function ProposalsPage() {
     try {
       setLoadingSlots(true);
       const response = await apiClient.get<AvailabilityData>(
-        `/appointments/available-slots?date=${date}`
+        `/appointments/available-slots?date=${date}`,
       );
       if (response.available && response.slots) {
         setAvailableSlots(response.slots);
@@ -343,7 +391,10 @@ export default function ProposalsPage() {
     try {
       setScheduling(true);
       // First accept the appointment
-      await apiClient.post(`/appointments/${schedulingAppointment._id}/accept`, {});
+      await apiClient.post(
+        `/appointments/${schedulingAppointment._id}/accept`,
+        {},
+      );
       // Then update with schedule
       await apiClient.patch(`/appointments/${schedulingAppointment._id}`, {
         status: "scheduled",
@@ -376,7 +427,8 @@ export default function ProposalsPage() {
           Client Proposals
         </h1>
         <p className="text-muted-foreground font-light mt-1">
-          Review client requests that have been matched to you or browse the general list
+          Review client requests that have been matched to you or browse the
+          general list
         </p>
       </div>
 
@@ -387,7 +439,10 @@ export default function ProposalsPage() {
       )}
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "proposed" | "general")}>
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as "proposed" | "general")}
+      >
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="proposed" className="gap-2">
             <Star className="h-4 w-4" />
@@ -429,7 +484,9 @@ export default function ProposalsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Search</Label>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">
+                Search
+              </Label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -443,8 +500,13 @@ export default function ProposalsPage() {
 
             {/* Issue Type Filter */}
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Issue Type</Label>
-              <Select value={issueTypeFilter} onValueChange={setIssueTypeFilter}>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">
+                Issue Type
+              </Label>
+              <Select
+                value={issueTypeFilter}
+                onValueChange={setIssueTypeFilter}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All Issues" />
                 </SelectTrigger>
@@ -461,8 +523,13 @@ export default function ProposalsPage() {
 
             {/* Booking For Filter */}
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Booking For</Label>
-              <Select value={bookingForFilter} onValueChange={setBookingForFilter}>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">
+                Booking For
+              </Label>
+              <Select
+                value={bookingForFilter}
+                onValueChange={setBookingForFilter}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
@@ -502,7 +569,9 @@ export default function ProposalsPage() {
                     <TableHead className="font-light">Issue</TableHead>
                     <TableHead className="font-light">Booking For</TableHead>
                     <TableHead className="font-light">Availability</TableHead>
-                    <TableHead className="font-light text-right">Actions</TableHead>
+                    <TableHead className="font-light text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -511,7 +580,8 @@ export default function ProposalsPage() {
                       <TableCell>
                         <div>
                           <p className="font-medium">
-                            {appointment.clientId.firstName} {appointment.clientId.lastName}
+                            {appointment.clientId.firstName}{" "}
+                            {appointment.clientId.lastName}
                           </p>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                             <span className="flex items-center gap-1">
@@ -534,32 +604,43 @@ export default function ProposalsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">{appointment.issueType || "-"}</span>
+                        <span className="text-sm">
+                          {appointment.issueType || "-"}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1">
                           {getBookingForBadge(appointment.bookingFor)}
-                          {appointment.bookingFor === "loved-one" && appointment.lovedOneInfo && (
-                            <span className="text-xs text-muted-foreground">
-                              {appointment.lovedOneInfo.firstName} ({appointment.lovedOneInfo.relationship})
-                            </span>
-                          )}
-                          {appointment.bookingFor === "patient" && appointment.referralInfo && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <FileText className="h-3 w-3" />
-                              {appointment.referralInfo.referrerName}
-                            </span>
-                          )}
+                          {appointment.bookingFor === "loved-one" &&
+                            appointment.lovedOneInfo && (
+                              <span className="text-xs text-muted-foreground">
+                                {appointment.lovedOneInfo.firstName} (
+                                {appointment.lovedOneInfo.relationship})
+                              </span>
+                            )}
+                          {appointment.bookingFor === "patient" &&
+                            appointment.referralInfo && (
+                              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                <FileText className="h-3 w-3" />
+                                {appointment.referralInfo.referrerName}
+                              </span>
+                            )}
                         </div>
                       </TableCell>
                       <TableCell>
                         {appointment.preferredAvailability?.length ? (
                           <div className="flex flex-wrap gap-1">
-                            {appointment.preferredAvailability.slice(0, 2).map((slot, i) => (
-                              <Badge key={i} variant="outline" className="text-xs">
-                                {slot}
-                              </Badge>
-                            ))}
+                            {appointment.preferredAvailability
+                              .slice(0, 2)
+                              .map((slot, i) => (
+                                <Badge
+                                  key={i}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {slot}
+                                </Badge>
+                              ))}
                             {appointment.preferredAvailability.length > 2 && (
                               <Badge variant="outline" className="text-xs">
                                 +{appointment.preferredAvailability.length - 2}
@@ -567,7 +648,9 @@ export default function ProposalsPage() {
                             )}
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground">Flexible</span>
+                          <span className="text-xs text-muted-foreground">
+                            Flexible
+                          </span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -629,7 +712,8 @@ export default function ProposalsPage() {
                 No appointments in general list
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Appointments that haven&apos;t been matched or were declined will appear here
+                Appointments that haven&apos;t been matched or were declined
+                will appear here
               </p>
             </div>
           ) : (
@@ -642,7 +726,9 @@ export default function ProposalsPage() {
                     <TableHead className="font-light">Issue</TableHead>
                     <TableHead className="font-light">Booking For</TableHead>
                     <TableHead className="font-light">Availability</TableHead>
-                    <TableHead className="font-light text-right">Actions</TableHead>
+                    <TableHead className="font-light text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -651,7 +737,8 @@ export default function ProposalsPage() {
                       <TableCell>
                         <div>
                           <p className="font-medium">
-                            {appointment.clientId.firstName} {appointment.clientId.lastName}
+                            {appointment.clientId.firstName}{" "}
+                            {appointment.clientId.lastName}
                           </p>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                             <span className="flex items-center gap-1">
@@ -674,32 +761,43 @@ export default function ProposalsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">{appointment.issueType || "-"}</span>
+                        <span className="text-sm">
+                          {appointment.issueType || "-"}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1">
                           {getBookingForBadge(appointment.bookingFor)}
-                          {appointment.bookingFor === "loved-one" && appointment.lovedOneInfo && (
-                            <span className="text-xs text-muted-foreground">
-                              {appointment.lovedOneInfo.firstName} ({appointment.lovedOneInfo.relationship})
-                            </span>
-                          )}
-                          {appointment.bookingFor === "patient" && appointment.referralInfo && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <FileText className="h-3 w-3" />
-                              {appointment.referralInfo.referrerName}
-                            </span>
-                          )}
+                          {appointment.bookingFor === "loved-one" &&
+                            appointment.lovedOneInfo && (
+                              <span className="text-xs text-muted-foreground">
+                                {appointment.lovedOneInfo.firstName} (
+                                {appointment.lovedOneInfo.relationship})
+                              </span>
+                            )}
+                          {appointment.bookingFor === "patient" &&
+                            appointment.referralInfo && (
+                              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                <FileText className="h-3 w-3" />
+                                {appointment.referralInfo.referrerName}
+                              </span>
+                            )}
                         </div>
                       </TableCell>
                       <TableCell>
                         {appointment.preferredAvailability?.length ? (
                           <div className="flex flex-wrap gap-1">
-                            {appointment.preferredAvailability.slice(0, 2).map((slot, i) => (
-                              <Badge key={i} variant="outline" className="text-xs">
-                                {slot}
-                              </Badge>
-                            ))}
+                            {appointment.preferredAvailability
+                              .slice(0, 2)
+                              .map((slot, i) => (
+                                <Badge
+                                  key={i}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {slot}
+                                </Badge>
+                              ))}
                             {appointment.preferredAvailability.length > 2 && (
                               <Badge variant="outline" className="text-xs">
                                 +{appointment.preferredAvailability.length - 2}
@@ -707,7 +805,9 @@ export default function ProposalsPage() {
                             )}
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground">Flexible</span>
+                          <span className="text-xs text-muted-foreground">
+                            Flexible
+                          </span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -755,7 +855,11 @@ export default function ProposalsPage() {
           <div className="relative bg-card rounded-xl border border-border/40 p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-medium">Accept & Schedule</h3>
-              <Button variant="ghost" size="sm" onClick={handleCloseScheduleModal}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCloseScheduleModal}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -768,7 +872,8 @@ export default function ProposalsPage() {
                   {schedulingAppointment.clientId.lastName}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {schedulingAppointment.issueType} • {schedulingAppointment.type} •{" "}
+                  {schedulingAppointment.issueType} •{" "}
+                  {schedulingAppointment.type} •{" "}
                   {schedulingAppointment.therapyType}
                 </p>
               </div>
@@ -809,7 +914,9 @@ export default function ProposalsPage() {
                         .map((slot) => (
                           <Button
                             key={slot.time}
-                            variant={selectedTime === slot.time ? "default" : "outline"}
+                            variant={
+                              selectedTime === slot.time ? "default" : "outline"
+                            }
                             size="sm"
                             onClick={() => setSelectedTime(slot.time)}
                           >
@@ -858,7 +965,11 @@ export default function ProposalsPage() {
             setIsAppointmentModalOpen(false);
             setSelectedAppointment(null);
           }}
-          appointment={selectedAppointment as unknown as Parameters<typeof AppointmentDetailsModal>[0]["appointment"]}
+          appointment={
+            selectedAppointment as unknown as Parameters<
+              typeof AppointmentDetailsModal
+            >[0]["appointment"]
+          }
         />
       )}
     </div>

@@ -1,30 +1,14 @@
 "use client";
 
-import { Route, Award, Clock, Lock, Zap, BookOpen, Users } from "lucide-react";
+import { Route, Award, Clock, Lock } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ValueSection() {
   const t = useTranslations("ValueSection");
   const locale = useLocale();
-
-  const clientBenefits = [
-    {
-      icon: Zap,
-      titleKey: "benefits.fastAccess.title",
-      descriptionKey: "benefits.fastAccess.description",
-    },
-    {
-      icon: Users,
-      titleKey: "benefits.varietyProfessionals.title",
-      descriptionKey: "benefits.varietyProfessionals.description",
-    },
-    {
-      icon: BookOpen,
-      titleKey: "benefits.educationalResources.title",
-      descriptionKey: "benefits.educationalResources.description",
-    },
-  ];
 
   const values = [
     {
@@ -34,7 +18,7 @@ export default function ValueSection() {
       descriptionEn:
         "Our service is designed to create a fully personalized pathway, because we believe that your need and your journey do not follow a single path.",
       descriptionFr:
-        "Notre service est conçu pour créer un parcours entièrement personnalisé, car nous croyons que votre besoin et votre démarche ne suivent pas un chemin unique.",
+        "Notre service est conçu pour créer un parcours entièrement personnalisé, car\nnous croyons que votre besoin et votre démarche ne suivent pas un chemin\nunique.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -45,7 +29,7 @@ export default function ValueSection() {
       descriptionEn:
         "Whether it's a psychologist, psychotherapist or another professional, you will always work with an expert whose practice is regulated and recognized by their professional order.",
       descriptionFr:
-        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel, vous allez toujours travaillez avec un expert dont la pratique est encadrée et reconnue par son ordre professionnel.",
+        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel,\nvous allez toujours travaillez avec un expert dont la pratique est encadrée et\nreconnue par son ordre professionnel.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -58,7 +42,7 @@ export default function ValueSection() {
       descriptionEn:
         "We offer flexible support tailored to your needs: remote consultations via secure video calls for accessibility from anywhere, or in-person appointments in our welcoming offices. Our matching process helps you find the right professional for your specific needs and preferences, strengthening engagement and ensuring a successful therapeutic journey.",
       descriptionFr:
-        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance via appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en personne dans nos bureaux accueillants. Notre processus de jumelage vous aide à trouver le bon professionnel pour vos besoins spécifiques et vos préférences, renforçant l'engagement et assurant un parcours thérapeutique réussi.",
+        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance\nvia appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en\npersonne dans nos bureaux accueillants. Notre processus de jumelage vous\naide à trouver le bon professionnel pour vos besoins spécifiques et vos\npréférences, renforçant l'engagement et assurant un parcours thérapeutique\nréussi.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -73,20 +57,27 @@ export default function ValueSection() {
       descriptionEn:
         "Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
       descriptionFr:
-        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont hébergées exclusivement sur des serveurs canadiens, garantissant une souveraineté complète de vos données. Nous respectons strictement la Loi 25 et appliquons une protection rigoureuse de votre vie privée. Ces principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux.",
+        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont\nhébergées exclusivement sur des serveurs canadiens, garantissant une\nsouveraineté complète de vos données. Nous respectons strictement la Loi 25 et\nappliquons une protection rigoureuse de votre vie privée. Ces principes sont les\nfondations de notre service, garantissant que vous évoluiez dans un\nenvironnement sécuritaire et respectueux.",
       featuresEn: [],
       featuresFr: [],
     },
   ];
+  const cardAnimations: AnimationVariant[] = [
+    "slide-right",
+    "zoom-in",
+    "slide-left",
+    "fade-up",
+  ];
+
   return (
     <section className="relative py-24 bg-linear-to-b from-background via-muted to-accent overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-[#8b7355] rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-10 w-64 h-64 bg-[#8b7355] rounded-full blur-3xl animate-float"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#d4a574] rounded-full blur-3xl"></div>
       </div>
       <div
-        className="absolute top-0 left-1/3 w-[1200px] h-[1200px] rounded-full animate-fade-in"
+        className="absolute top-0 left-1/3 w-[1200px] h-[1200px] rounded-full"
         style={{
           background:
             "radial-gradient(circle, oklch(0.92 0.015 75) 0%, oklch(0.92 0.015 75 / 0) 70%)",
@@ -95,74 +86,79 @@ export default function ValueSection() {
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16 max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
-            {t("title")}
-          </h2>
-          <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
-            {t("subtitle")}
-          </p>
-          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed">
-            {t("description", {
-              integratedPlatform: t("integratedPlatform"),
-            })}
-          </p>
-        </div>
-
-        {/* Client Benefits */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 max-w-5xl mx-auto">
-          {clientBenefits.map((benefit, index) => {
-            const Icon = benefit.icon;
-            return (
-              <div
-                key={index}
-                className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                <div className="inline-flex p-3 bg-foreground rounded-xl mb-4">
-                  <Icon className="w-6 h-6 text-card" strokeWidth={2} />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {t(benefit.titleKey)}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(benefit.descriptionKey)}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        <ScrollReveal variant="blur-in" duration={800}>
+          <div className="text-center mb-16 max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
+              {t("title")}
+            </h2>
+            <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
+              {t("subtitle")}
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed">
+              {t("description", {
+                integratedPlatform: t("integratedPlatform"),
+              })}
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Staggered Grid Layout - 4 Column Stairs Pattern */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 max-w-[1600px] mx-auto">
           {/* First Column - Starts at top */}
           <div className="lg:mt-0">
-            <ValueCard value={values[0]} index={0} locale={locale} />
-            <div className="-mt-1 relative ">
-              <Image
-                src="/ValueSection.png"
-                alt="Inner Child Healing"
-                width={500}
-                height={500}
-                className="w-full h-auto transform scale-x-[-1] scale-110"
-              />
-              {/* Fading effect at bottom */}
-              <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
-            </div>
+            <ScrollReveal
+              variant={cardAnimations[0]}
+              delayMs={100}
+              duration={700}
+            >
+              <ValueCard value={values[0]} index={0} locale={locale} />
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={300} duration={800}>
+              <div className="-mt-1 relative">
+                <Image
+                  src="/ValueSection.png"
+                  alt="Inner Child Healing"
+                  width={500}
+                  height={500}
+                  className="w-full h-auto transform scale-x-[-1] scale-110"
+                />
+                {/* Fading effect at bottom */}
+                <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
+              </div>
+            </ScrollReveal>
           </div>
 
           {/* Second Column - Staggered down */}
           <div className="lg:mt-32">
-            <ValueCard value={values[1]} index={1} locale={locale} />
+            <ScrollReveal
+              variant={cardAnimations[1]}
+              delayMs={200}
+              duration={700}
+            >
+              <ValueCard value={values[1]} index={1} locale={locale} />
+            </ScrollReveal>
           </div>
 
           {/* Third Column - Staggered down more */}
           <div className="lg:mt-64">
-            <ValueCard value={values[2]} index={2} locale={locale} />
+            <ScrollReveal
+              variant={cardAnimations[2]}
+              delayMs={300}
+              duration={700}
+            >
+              <ValueCard value={values[2]} index={2} locale={locale} />
+            </ScrollReveal>
           </div>
 
           {/* Fourth Column - Staggered down most */}
           <div className="lg:mt-96">
-            <ValueCard value={values[3]} index={3} locale={locale} />
+            <ScrollReveal
+              variant={cardAnimations[3]}
+              delayMs={400}
+              duration={700}
+            >
+              <ValueCard value={values[3]} index={3} locale={locale} />
+            </ScrollReveal>
           </div>
         </div>
       </div>
@@ -197,10 +193,7 @@ function ValueCard({
   const features = locale === "fr" ? value.featuresFr : value.featuresEn;
 
   return (
-    <div
-      className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
-      style={{ animationDelay: `${index * 0.15}s` }}
-    >
+    <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       {/* Icon and Title */}
       <div className="flex items-center gap-3 mb-6">
         <div className="p-3 bg-foreground rounded-2xl shrink-0">

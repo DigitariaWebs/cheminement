@@ -15,6 +15,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 type Service = {
   id: string;
@@ -73,15 +75,21 @@ export default function ServiceCardsSection() {
 
       <div className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-5xl text-center">
-          <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-            {t("badge")}
-          </p>
-          <h2 className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-            {t("title")}
-          </h2>
-          <p className="mt-6 mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
-            {t("subtitle")}
-          </p>
+          <ScrollReveal variant="swing-in" duration={600}>
+            <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
+              {t("badge")}
+            </p>
+          </ScrollReveal>
+          <ScrollReveal variant="blur-in" delayMs={150} duration={700}>
+            <h2 className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
+              {t("title")}
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal variant="fade-up" delayMs={300} duration={600}>
+            <p className="mt-6 mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
+              {t("subtitle")}
+            </p>
+          </ScrollReveal>
         </div>
 
         {/* Service Cards Grid */}
@@ -89,73 +97,86 @@ export default function ServiceCardsSection() {
           {services.map((service, index) => {
             const Icon = service.icon;
             const isSelected = selectedService.id === service.id;
+            const cardAnimations: AnimationVariant[] = [
+              "fade-right",
+              "zoom-in",
+              "fade-left",
+              "slide-up",
+            ];
             return (
-              <button
+              <ScrollReveal
                 key={service.id}
-                onClick={() => setSelectedService(service)}
-                className={`
-                  relative p-6 rounded-4xl transition-all duration-300 text-center
-                  ${
-                    isSelected
-                      ? "bg-foreground text-primary-foreground shadow-xl scale-105"
-                      : "bg-card border-2 border-border/15 hover:border-foreground hover:shadow-lg"
-                  }
-                `}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                variant={cardAnimations[index % cardAnimations.length]}
+                delayMs={400 + index * 100}
+                duration={700}
               >
-                <div className="mb-4 flex justify-center">
-                  <Icon
-                    className={`w-8 h-8 ${isSelected ? "text-primary-foreground" : "text-foreground"}`}
-                    strokeWidth={2}
-                  />
-                </div>
-                <h3
-                  className={`text-base md:text-lg font-serif font-bold leading-snug ${isSelected ? "text-primary-foreground" : "text-foreground"}`}
+                <button
+                  onClick={() => setSelectedService(service)}
+                  className={`
+                    relative p-6 rounded-4xl transition-all duration-300 text-center w-full
+                    ${
+                      isSelected
+                        ? "bg-foreground text-primary-foreground shadow-xl scale-105"
+                        : "bg-card border-2 border-border/15 hover:border-foreground hover:shadow-lg"
+                    }
+                  `}
                 >
-                  {t(service.titleKey)}
-                </h3>
-              </button>
+                  <div className="mb-4 flex justify-center">
+                    <Icon
+                      className={`w-8 h-8 ${isSelected ? "text-primary-foreground" : "text-foreground"}`}
+                      strokeWidth={2}
+                    />
+                  </div>
+                  <h3
+                    className={`text-base md:text-lg font-serif font-bold leading-snug ${isSelected ? "text-primary-foreground" : "text-foreground"}`}
+                  >
+                    {t(service.titleKey)}
+                  </h3>
+                </button>
+              </ScrollReveal>
             );
           })}
         </div>
 
         {/* Selected Service Detail */}
-        <div className="max-w-7xl mx-auto">
-          <div
-            key={selectedService.id}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center animate-fade-in-up"
-          >
-            {/* Visual Design */}
-            <div className="relative order-2 lg:order-1">
-              <ServiceVisual service={selectedService} t={t} />
-            </div>
-
-            {/* Content */}
-            <div className="order-1 lg:order-2">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-foreground rounded-2xl">
-                  <selectedService.icon
-                    className="w-8 h-8 text-background"
-                    strokeWidth={2}
-                  />
-                </div>
+        <ScrollReveal variant="slide-up" delayMs={800} duration={800}>
+          <div className="max-w-7xl mx-auto">
+            <div
+              key={selectedService.id}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center animate-fade-in-up"
+            >
+              {/* Visual Design */}
+              <div className="relative order-2 lg:order-1">
+                <ServiceVisual service={selectedService} t={t} />
               </div>
 
-              <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-8">
-                {t(selectedService.titleKey)}
-              </h3>
+              {/* Content */}
+              <div className="order-1 lg:order-2">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="p-3 bg-foreground rounded-2xl">
+                    <selectedService.icon
+                      className="w-8 h-8 text-background"
+                      strokeWidth={2}
+                    />
+                  </div>
+                </div>
 
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                {t(selectedService.descriptionKey)}
-              </p>
+                <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-8">
+                  {t(selectedService.titleKey)}
+                </h3>
 
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-foreground cursor-pointer hover:gap-4 transition-all">
-                <span>{t("learnMore")}</span>
-                <ArrowRight className="h-4 w-4" />
+                <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                  {t(selectedService.descriptionKey)}
+                </p>
+
+                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-foreground cursor-pointer hover:gap-4 transition-all">
+                  <span>{t("learnMore")}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

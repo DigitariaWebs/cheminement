@@ -2,6 +2,8 @@
 
 import { HeartHandshake, Award, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function AboutHeroSection() {
   const t = useTranslations("About.hero");
@@ -15,49 +17,59 @@ export default function AboutHeroSection() {
 
       <div className="container relative z-10 mx-auto px-6 py-24 md:py-32">
         <div className="mx-auto flex max-w-5xl flex-col gap-10">
-          <div className="flex items-center gap-3 text-sm uppercase tracking-[0.4em] text-muted-foreground/70">
-            <HeartHandshake className="h-5 w-5 text-foreground" />
-            <span>{t("badge")}</span>
-          </div>
+          <ScrollReveal variant="fade-down" duration={700}>
+            <div className="flex items-center gap-3 text-sm uppercase tracking-[0.4em] text-muted-foreground/70">
+              <HeartHandshake className="h-5 w-5 text-foreground" />
+              <span>{t("badge")}</span>
+            </div>
+          </ScrollReveal>
 
           {/* Highlighted: Designed by Psychologists */}
-          <div className="inline-flex items-center gap-4 rounded-2xl bg-foreground/10 border border-foreground/20 px-6 py-4 w-fit backdrop-blur-sm">
-            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-foreground">
-              <Award className="h-6 w-6 text-accent" />
+          <ScrollReveal variant="zoom-in" delayMs={100} duration={600}>
+            <div className="inline-flex items-center gap-4 rounded-2xl bg-foreground/10 border border-foreground/20 px-6 py-4 w-fit backdrop-blur-sm">
+              <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-foreground">
+                <Award className="h-6 w-6 text-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-medium uppercase tracking-wider text-foreground/70">
+                  {t("designedBy.label")}
+                </p>
+                <p className="text-lg font-serif font-semibold text-foreground">
+                  {t("designedBy.title")}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium uppercase tracking-wider text-foreground/70">
-                {t("designedBy.label")}
-              </p>
-              <p className="text-lg font-serif font-semibold text-foreground">
-                {t("designedBy.title")}
-              </p>
-            </div>
-          </div>
+          </ScrollReveal>
 
-          <div className="space-y-8 text-left">
-            <h1 className="font-serif text-4xl font-light leading-tight md:text-5xl lg:text-6xl">
-              {t("headline")}
-            </h1>
-            <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
-              {t("description1")}
-            </p>
-            <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
-              {t("description2")}
-            </p>
-          </div>
+          <ScrollReveal variant="slide-up" delayMs={200} duration={800}>
+            <div className="space-y-8 text-left">
+              <h1 className="font-serif text-4xl font-light leading-tight md:text-5xl lg:text-6xl">
+                {t("headline")}
+              </h1>
+              <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+                {t("description1")}
+              </p>
+              <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+                {t("description2")}
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap gap-6 pt-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Users className="h-5 w-5 text-foreground" />
-              <span className="text-sm">{t("trustIndicators.experts")}</span>
+          <ScrollReveal variant="blur-in" delayMs={400} duration={600}>
+            <div className="flex flex-wrap gap-6 pt-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Users className="h-5 w-5 text-foreground" />
+                <span className="text-sm">{t("trustIndicators.experts")}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Award className="h-5 w-5 text-foreground" />
+                <span className="text-sm">
+                  {t("trustIndicators.certified")}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Award className="h-5 w-5 text-foreground" />
-              <span className="text-sm">{t("trustIndicators.certified")}</span>
-            </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

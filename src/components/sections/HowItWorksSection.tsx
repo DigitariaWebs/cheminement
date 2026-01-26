@@ -2,6 +2,8 @@
 
 import { ArrowRight, UserPlus, CalendarCheck, FileText } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function HowItWorksSection() {
   const t = useTranslations("HowItWorksSection");
@@ -39,28 +41,36 @@ export default function HowItWorksSection() {
       step: "03",
     },
   ];
+  const cardAnimations: AnimationVariant[] = [
+    "fade-right",
+    "zoom-in",
+    "fade-left",
+  ];
+
   return (
     <section className="relative py-24 bg-linear-to-b from-background to-muted overflow-hidden">
-      <div className="relative max-w-7xl mx-auto">
+      <div className="relative max-w-7xl mx-auto px-6">
         {/* Background decorative elements */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-accent rounded-full opacity-5 blur-3xl"></div>
+          <div className="absolute top-0 left-1/4 w-72 h-72 bg-accent rounded-full opacity-5 blur-3xl animate-float"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary rounded-full opacity-5 blur-3xl"></div>
         </div>
 
-        <div className="text-center mb-20">
-          <div className="inline-block mb-6">
-            <span className="text-sm font-bold text-primary uppercase tracking-widest">
-              {t("badge")}
-            </span>
+        <ScrollReveal variant="fade-down" duration={700}>
+          <div className="text-center mb-20">
+            <div className="inline-block mb-6">
+              <span className="text-sm font-bold text-primary uppercase tracking-widest">
+                {t("badge")}
+              </span>
+            </div>
+            <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
+              {t("title")}
+            </h3>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              {t("subtitle")}
+            </p>
           </div>
-          <h3 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
-            {t("title")}
-          </h3>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {t("subtitle")}
-          </p>
-        </div>
+        </ScrollReveal>
 
         <div className="relative">
           {/* Animated flowing line for desktop */}
@@ -82,67 +92,70 @@ export default function HowItWorksSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-6">
             {clientJourneySteps.map((step, index) => (
-              <div
+              <ScrollReveal
                 key={index}
-                className="relative group"
-                style={{
-                  animation: `fadeInUp 0.6s ease-out ${index * 0.15}s backwards`,
-                }}
+                variant={cardAnimations[index % cardAnimations.length]}
+                delayMs={index * 150}
+                duration={700}
               >
-                {/* Card */}
-                <div className="relative bg-card rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-border overflow-hidden group-hover:border-accent/30">
-                  {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-linear-to-br from-accent/0 to-accent/0 group-hover:from-accent/5 group-hover:to-transparent transition-all duration-500 rounded-3xl"></div>
+                <div className="relative group">
+                  {/* Card */}
+                  <div className="relative bg-card rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-border overflow-hidden group-hover:border-accent/30">
+                    {/* Gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-linear-to-br from-accent/0 to-accent/0 group-hover:from-accent/5 group-hover:to-transparent transition-all duration-500 rounded-3xl"></div>
 
-                  {/* Step Number - Large Background */}
-                  <div className="absolute -top-6 -right-6 text-[120px] font-bold text-muted group-hover:text-accent transition-colors duration-500 select-none">
-                    {step.step}
-                  </div>
-
-                  {/* Icon with no background */}
-                  <div className="relative mb-6">
-                    <div className="relative inline-flex">
-                      <step.icon
-                        className="w-16 h-16 text-primary group-hover:text-primary/80 group-hover:scale-110 transition-all duration-500"
-                        strokeWidth={1.5}
-                      />
+                    {/* Step Number - Large Background */}
+                    <div className="absolute -top-6 -right-6 text-[120px] font-bold text-muted group-hover:text-accent transition-colors duration-500 select-none">
+                      {step.step}
                     </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="relative">
-                    <h4 className="text-xl md:text-2xl font-serif font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
-                      {locale === "fr" ? step.titleFr : step.titleEn}
-                    </h4>
-                    <p className="text-base text-muted-foreground leading-relaxed">
-                      {locale === "fr"
-                        ? step.descriptionFr
-                        : step.descriptionEn}
-                    </p>
-                  </div>
-
-                  {/* Arrow indicator for next step */}
-                  {index < clientJourneySteps.length - 1 && (
-                    <div className="hidden lg:flex absolute -right-8 top-1/2 -translate-y-1/2 z-20">
-                      <div className="w-6 h-6 text-primary group-hover:translate-x-1 transition-transform duration-300">
-                        <ArrowRight className="w-6 h-6" strokeWidth={2.5} />
+                    {/* Icon with no background */}
+                    <div className="relative mb-6">
+                      <div className="relative inline-flex">
+                        <step.icon
+                          className="w-16 h-16 text-primary group-hover:text-primary/80 group-hover:scale-110 transition-all duration-500"
+                          strokeWidth={1.5}
+                        />
                       </div>
                     </div>
-                  )}
+
+                    {/* Content */}
+                    <div className="relative">
+                      <h4 className="text-xl md:text-2xl font-serif font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
+                        {locale === "fr" ? step.titleFr : step.titleEn}
+                      </h4>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        {locale === "fr"
+                          ? step.descriptionFr
+                          : step.descriptionEn}
+                      </p>
+                    </div>
+
+                    {/* Arrow indicator for next step */}
+                    {index < clientJourneySteps.length - 1 && (
+                      <div className="hidden lg:flex absolute -right-8 top-1/2 -translate-y-1/2 z-20">
+                        <div className="w-6 h-6 text-primary group-hover:translate-x-1 transition-transform duration-300">
+                          <ArrowRight className="w-6 h-6" strokeWidth={2.5} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <p className="text-muted-foreground mb-6">{t("cta.question")}</p>
-          <button className="inline-flex items-center gap-3 bg-foreground text-primary-foreground px-8 py-4 rounded-full font-semibold hover:bg-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group">
-            <span>{t("cta.button")}</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+        <ScrollReveal variant="bounce-in" delayMs={600} duration={700}>
+          <div className="text-center mt-16">
+            <p className="text-muted-foreground mb-6">{t("cta.question")}</p>
+            <button className="inline-flex items-center gap-3 bg-foreground text-primary-foreground px-8 py-4 rounded-full font-semibold hover:bg-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group">
+              <span>{t("cta.button")}</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
