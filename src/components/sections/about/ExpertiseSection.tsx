@@ -4,6 +4,7 @@ import { ShieldCheck, LibraryBig } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ExpertiseSection() {
   const t = useTranslations("About.expertise");
@@ -14,7 +15,7 @@ export default function ExpertiseSection() {
         <div className="absolute right-10 top-1/3 h-80 w-80 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
           <div className="space-y-6">
             <div className="flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
@@ -65,7 +66,7 @@ export default function ExpertiseSection() {
             </div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

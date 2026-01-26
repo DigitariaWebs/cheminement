@@ -2,6 +2,7 @@
 
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function CommitmentSection() {
   const t = useTranslations("About.commitment");
@@ -12,7 +13,7 @@ export default function CommitmentSection() {
         <div className="absolute bottom-0 right-10 h-80 w-80 translate-y-1/4 rounded-full bg-primary/60 blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-4xl rounded-[3rem] bg-card/80 p-12 text-center shadow-xl backdrop-blur">
           <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-card">
             <Heart className="h-7 w-7" />
@@ -27,7 +28,7 @@ export default function CommitmentSection() {
             {t("description2")}
           </p>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

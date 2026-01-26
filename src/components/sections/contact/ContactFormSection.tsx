@@ -2,6 +2,7 @@
 
 import { CalendarCheck, Info, ClipboardPen } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export default function ContactFormSection() {
   const t = useTranslations("Contact.form");
@@ -25,9 +26,28 @@ export default function ContactFormSection() {
             <p className="text-base leading-relaxed text-muted-foreground">
               {t("description")}
             </p>
+            <div className="space-y-3">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+                {t("cta.title")}
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/appointment?for=self"
+                  className="inline-flex items-center justify-center rounded-full bg-foreground px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+                >
+                  {t("cta.forSelf")}
+                </Link>
+                <Link
+                  href="/appointment?for=loved-one"
+                  className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
+                >
+                  {t("cta.forLovedOne")}
+                </Link>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-5 animate-fade-in-up">
             {t.raw("reasons").map((reason: string, index: number) => (
               <div
                 key={reason}

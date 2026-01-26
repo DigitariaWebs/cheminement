@@ -2,6 +2,7 @@
 
 import { ArrowRight, UserPlus, CalendarCheck, FileText } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function HowItWorksSection() {
   const t = useTranslations("HowItWorksSection");
@@ -41,7 +42,7 @@ export default function HowItWorksSection() {
   ];
   return (
     <section className="relative py-24 bg-linear-to-b from-background to-muted overflow-hidden">
-      <div className="relative max-w-7xl mx-auto">
+      <ScrollReveal className="relative max-w-7xl mx-auto">
         {/* Background decorative elements */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-72 h-72 bg-accent rounded-full opacity-5 blur-3xl"></div>
@@ -143,7 +144,7 @@ export default function HowItWorksSection() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

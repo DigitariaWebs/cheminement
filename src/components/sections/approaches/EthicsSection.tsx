@@ -9,6 +9,8 @@ import {
   MapPin,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function EthicsSection() {
   const t = useTranslations("Approaches.ethics");
@@ -56,7 +58,7 @@ export default function EthicsSection() {
         <div className="absolute right-0 bottom-0 h-112 w-md translate-x-1/4 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="space-y-6">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
@@ -114,7 +116,21 @@ export default function EthicsSection() {
             ))}
           </div>
         </div>
-      </div>
+        <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
+          <Link
+            href="/book"
+            className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+          >
+            Prendre rendez-vous
+          </Link>
+          <Link
+            href="/professional"
+            className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
+          >
+            Rejoindre la plateforme
+          </Link>
+        </div>
+      </ScrollReveal>
     </section>
   );
 }

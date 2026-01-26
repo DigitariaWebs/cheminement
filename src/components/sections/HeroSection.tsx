@@ -12,12 +12,12 @@ export default function HeroSection() {
   const [activeHint, setActiveHint] = useState<string>("self");
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-accent overflow-hidden">
+    <section className="relative bg-accent overflow-hidden">
       {/* Background Pattern/Decoration */}
       <div className="absolute inset-0 opacity-5"></div>
 
       {/* Scale wrapper - scaled to ~110% */}
-      <div className="container mx-auto px-5 sm:px-7 pt-20 pb-8 relative z-10 max-w-7xl">
+      <div className="container mx-auto px-5 sm:px-7 py-24 md:py-32 relative z-10 max-w-7xl">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
           {/* Left Side: Content */}
           <div className="flex-1 w-full lg:max-w-[55%]">

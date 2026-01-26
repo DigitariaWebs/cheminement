@@ -2,6 +2,7 @@
 
 import { Compass, Feather, HeartHandshake } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function PersonCenteredSection() {
   const t = useTranslations("Approaches.personCentered");
@@ -30,7 +31,7 @@ export default function PersonCenteredSection() {
         <div className="absolute right-0 bottom-0 h-[26rem] w-[26rem] translate-x-1/3 translate-y-1/4 rounded-full bg-primary/40 blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
           <div className="space-y-6">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
@@ -48,10 +49,11 @@ export default function PersonCenteredSection() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            {focusItems.map(({ icon: Icon, title, description }) => (
+            {focusItems.map(({ icon: Icon, title, description }, index) => (
               <div
                 key={title}
-                className="group relative overflow-hidden rounded-4xl border border-border/10 bg-card/85 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+                className="group relative overflow-hidden rounded-4xl border border-border/10 bg-card/85 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fade-in-up"
+                style={{ animationDelay: `${index * 0.12}s` }}
               >
                 <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 <div className="relative z-10 space-y-4">
@@ -78,7 +80,7 @@ export default function PersonCenteredSection() {
             </div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

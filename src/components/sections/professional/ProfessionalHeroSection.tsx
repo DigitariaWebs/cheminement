@@ -49,21 +49,6 @@ export default function ProfessionalHeroSection() {
             </Link>
           </div>
 
-          {/* Additional Info Tags */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground animate-fade-in animation-delay-600">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-accent"></div>
-              <span>{t("activeProfessionals")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-accent"></div>
-              <span>{t("satisfactionRate")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-accent"></div>
-              <span>{t("platformSupport")}</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>

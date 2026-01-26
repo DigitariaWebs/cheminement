@@ -4,8 +4,6 @@ import {
   HeartPulse,
   Baby,
   Users,
-  Briefcase,
-  GraduationCap,
   CheckCircle2,
   Clock,
   Shield,
@@ -18,6 +16,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type ServiceProgram = {
   id: string;
@@ -49,20 +48,6 @@ const servicePrograms: ServiceProgram[] = [
     bgClass: "bg-violet-50",
     borderClass: "border-violet-200",
   },
-  {
-    id: "workplace",
-    icon: Briefcase,
-    colorClass: "text-amber-700",
-    bgClass: "bg-amber-50",
-    borderClass: "border-amber-200",
-  },
-  {
-    id: "schoolAnxiety",
-    icon: GraduationCap,
-    colorClass: "text-emerald-700",
-    bgClass: "bg-emerald-50",
-    borderClass: "border-emerald-200",
-  },
 ];
 
 const featureIcons = [
@@ -87,7 +72,7 @@ export default function ServiceProgramsSection() {
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/4 translate-y-1/4 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-5xl text-center mb-16">
           <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
             {t("badge")}
@@ -171,7 +156,7 @@ export default function ServiceProgramsSection() {
             );
           })}
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

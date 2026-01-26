@@ -1,30 +1,13 @@
 "use client";
 
-import { Route, Award, Clock, Lock, Zap, BookOpen, Users } from "lucide-react";
+import { Route, Award, Clock, Lock } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ValueSection() {
   const t = useTranslations("ValueSection");
   const locale = useLocale();
-
-  const clientBenefits = [
-    {
-      icon: Zap,
-      titleKey: "benefits.fastAccess.title",
-      descriptionKey: "benefits.fastAccess.description",
-    },
-    {
-      icon: Users,
-      titleKey: "benefits.varietyProfessionals.title",
-      descriptionKey: "benefits.varietyProfessionals.description",
-    },
-    {
-      icon: BookOpen,
-      titleKey: "benefits.educationalResources.title",
-      descriptionKey: "benefits.educationalResources.description",
-    },
-  ];
 
   const values = [
     {
@@ -34,7 +17,7 @@ export default function ValueSection() {
       descriptionEn:
         "Our service is designed to create a fully personalized pathway, because we believe that your need and your journey do not follow a single path.",
       descriptionFr:
-        "Notre service est conçu pour créer un parcours entièrement personnalisé, car nous croyons que votre besoin et votre démarche ne suivent pas un chemin unique.",
+        "Notre service est conçu pour créer un parcours entièrement personnalisé, car\nnous croyons que votre besoin et votre démarche ne suivent pas un chemin\nunique.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -45,7 +28,7 @@ export default function ValueSection() {
       descriptionEn:
         "Whether it's a psychologist, psychotherapist or another professional, you will always work with an expert whose practice is regulated and recognized by their professional order.",
       descriptionFr:
-        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel, vous allez toujours travaillez avec un expert dont la pratique est encadrée et reconnue par son ordre professionnel.",
+        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel,\nvous allez toujours travaillez avec un expert dont la pratique est encadrée et\nreconnue par son ordre professionnel.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -58,7 +41,7 @@ export default function ValueSection() {
       descriptionEn:
         "We offer flexible support tailored to your needs: remote consultations via secure video calls for accessibility from anywhere, or in-person appointments in our welcoming offices. Our matching process helps you find the right professional for your specific needs and preferences, strengthening engagement and ensuring a successful therapeutic journey.",
       descriptionFr:
-        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance via appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en personne dans nos bureaux accueillants. Notre processus de jumelage vous aide à trouver le bon professionnel pour vos besoins spécifiques et vos préférences, renforçant l'engagement et assurant un parcours thérapeutique réussi.",
+        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance\nvia appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en\npersonne dans nos bureaux accueillants. Notre processus de jumelage vous\naide à trouver le bon professionnel pour vos besoins spécifiques et vos\npréférences, renforçant l'engagement et assurant un parcours thérapeutique\nréussi.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -73,7 +56,7 @@ export default function ValueSection() {
       descriptionEn:
         "Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
       descriptionFr:
-        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont hébergées exclusivement sur des serveurs canadiens, garantissant une souveraineté complète de vos données. Nous respectons strictement la Loi 25 et appliquons une protection rigoureuse de votre vie privée. Ces principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux.",
+        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont\nhébergées exclusivement sur des serveurs canadiens, garantissant une\nsouveraineté complète de vos données. Nous respectons strictement la Loi 25 et\nappliquons une protection rigoureuse de votre vie privée. Ces principes sont les\nfondations de notre service, garantissant que vous évoluiez dans un\nenvironnement sécuritaire et respectueux.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -93,7 +76,7 @@ export default function ValueSection() {
         }}
       ></div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <ScrollReveal className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
@@ -107,29 +90,6 @@ export default function ValueSection() {
               integratedPlatform: t("integratedPlatform"),
             })}
           </p>
-        </div>
-
-        {/* Client Benefits */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 max-w-5xl mx-auto">
-          {clientBenefits.map((benefit, index) => {
-            const Icon = benefit.icon;
-            return (
-              <div
-                key={index}
-                className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                <div className="inline-flex p-3 bg-foreground rounded-xl mb-4">
-                  <Icon className="w-6 h-6 text-card" strokeWidth={2} />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {t(benefit.titleKey)}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(benefit.descriptionKey)}
-                </p>
-              </div>
-            );
-          })}
         </div>
 
         {/* Staggered Grid Layout - 4 Column Stairs Pattern */}
@@ -165,7 +125,7 @@ export default function ValueSection() {
             <ValueCard value={values[3]} index={3} locale={locale} />
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

@@ -3,13 +3,20 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import {
-  Clock,
-  Users,
-  BookOpen,
-  Shield,
-  Video,
+  Brain,
   CheckCircle,
+  Clock,
+  BookOpen,
+  GraduationCap,
+  HandHeart,
+  HeartPulse,
+  Shield,
+  Stethoscope,
+  UserRound,
+  Users,
+  Video,
 } from "lucide-react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
@@ -40,31 +47,38 @@ export default function ClientAdvantagesSection() {
   const professionals = [
     {
       titleKey: "professionals.psychologist",
+      icon: UserRound,
       image: "/professionals/psychologist.jpg",
     },
     {
-      titleKey: "professionals.psychotherapist",
-      image: "/professionals/psychotherapist.jpg",
-    },
-    {
       titleKey: "professionals.neuropsychologist",
+      icon: Brain,
       image: "/professionals/neuropsychologist.jpg",
     },
     {
-      titleKey: "professionals.socialWorker",
-      image: "/professionals/social-worker.jpg",
+      titleKey: "professionals.psychotherapist",
+      icon: HeartPulse,
+      image: "/professionals/psychotherapist.jpg",
     },
     {
       titleKey: "professionals.psychoeducator",
+      icon: GraduationCap,
       image: "/professionals/psychoeducator.jpg",
     },
     {
-      titleKey: "professionals.mentalHealthCounselor",
-      image: "/professionals/counselor.jpg",
+      titleKey: "professionals.occupationalTherapistMentalHealth",
+      icon: HandHeart,
+      image: "/professionals/occupational-therapist.jpg",
     },
     {
       titleKey: "professionals.psychiatrist",
+      icon: Stethoscope,
       image: "/professionals/psychiatrist.jpg",
+    },
+    {
+      titleKey: "professionals.otherProfessionals",
+      icon: Users,
+      image: "/professionals/other-professionals.jpg",
     },
   ];
 
@@ -76,7 +90,7 @@ export default function ClientAdvantagesSection() {
         <div className="absolute bottom-20 left-10 w-64 h-64 bg-primary rounded-full blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <ScrollReveal className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
           <span className="inline-block text-sm font-bold text-primary uppercase tracking-widest mb-4">
@@ -143,25 +157,18 @@ export default function ClientAdvantagesSection() {
               <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-4">
                 {t("educationalHighlight.title")}
               </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+              <p className="text-lg text-muted-foreground leading-relaxed mb-4">
                 {t("educationalHighlight.description")}
               </p>
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                {[
-                  "anxiety",
-                  "burnout",
-                  "stress",
-                  "depression",
-                  "selfEsteem",
-                ].map((topic) => (
-                  <span
-                    key={topic}
-                    className="px-4 py-2 bg-card rounded-full text-sm font-medium text-foreground border border-border"
-                  >
-                    {t(`topics.${topic}`)}
-                  </span>
-                ))}
-              </div>
+              <p className="text-base text-muted-foreground leading-relaxed mb-2">
+                {t("educationalHighlight.topics")}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                {t("educationalHighlight.note")}
+              </p>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                {t("educationalHighlight.programDescription")}
+              </p>
             </div>
           </div>
         </div>
@@ -187,7 +194,7 @@ export default function ClientAdvantagesSection() {
               <div className="relative aspect-3/4 rounded-2xl overflow-hidden bg-muted shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
                 {/* Placeholder image - replace with actual professional photos */}
                 <div className="absolute inset-0 bg-linear-to-br from-accent/30 via-primary/20 to-muted flex items-center justify-center">
-                  <Users
+                  <professional.icon
                     className="w-12 h-12 text-foreground/30"
                     strokeWidth={1}
                   />
@@ -220,7 +227,7 @@ export default function ClientAdvantagesSection() {
             <span className="text-sm">{t("trustIndicators.confidential")}</span>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

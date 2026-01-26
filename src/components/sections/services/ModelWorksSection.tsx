@@ -2,6 +2,7 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ModelWorksSection() {
   const t = useTranslations("Services.modelWorks");
@@ -12,7 +13,7 @@ export default function ModelWorksSection() {
         <div className="absolute right-10 bottom-0 h-72 w-72 translate-y-1/4 rounded-full bg-primary/60 blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-4xl rounded-[3rem] bg-card/80 p-12 text-center shadow-xl backdrop-blur">
           <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
             {t("title")}
@@ -32,7 +33,7 @@ export default function ModelWorksSection() {
             ))}
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

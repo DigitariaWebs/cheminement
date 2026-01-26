@@ -3,7 +3,6 @@
 import {
   Video,
   Building2,
-  TreePine,
   LayoutDashboard,
   Compass,
   Headset,
@@ -26,12 +25,6 @@ export default function AccessExperienceSection() {
       title: t("modes.office.title"),
       description: t("modes.office.description"),
       highlight: t("modes.office.highlight"),
-    },
-    {
-      icon: TreePine,
-      title: t("modes.walk.title"),
-      description: t("modes.walk.description"),
-      highlight: t("modes.walk.highlight"),
     },
   ];
 

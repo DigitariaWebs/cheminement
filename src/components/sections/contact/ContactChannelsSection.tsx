@@ -46,13 +46,24 @@ export default function ContactChannelsSection() {
                 {t("title")}
               </h2>
             </div>
-            <div className="flex items-center gap-4 rounded-3xl border border-primary/30 bg-muted/40 px-6 py-4 text-sm font-medium text-muted-foreground">
-              <Mail className="h-5 w-5 text-primary" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  {t("emailLabel")}
-                </p>
-                <p className="text-base text-foreground">{t("email")}</p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 rounded-3xl border border-primary/30 bg-muted/40 px-6 py-4 text-sm font-medium text-muted-foreground">
+                <Mail className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                    {t("emailLabel")}
+                  </p>
+                  <p className="text-base text-foreground">{t("email")}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 rounded-3xl border border-border/20 bg-card/70 px-6 py-4 text-sm font-medium text-muted-foreground">
+                <Mail className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                    {t("phoneLabel")}
+                  </p>
+                  <p className="text-base text-foreground">{t("phone")}</p>
+                </div>
               </div>
             </div>
           </header>

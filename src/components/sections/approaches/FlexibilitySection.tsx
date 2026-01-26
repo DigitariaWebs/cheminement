@@ -2,6 +2,7 @@
 
 import { Video, Building2, Clock, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function FlexibilitySection() {
   const t = useTranslations("Approaches.flexibility");
@@ -26,7 +27,7 @@ export default function FlexibilitySection() {
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/4 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
             {t("badge")}
@@ -76,7 +77,7 @@ export default function FlexibilitySection() {
             {t("extras.description")}
           </p>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

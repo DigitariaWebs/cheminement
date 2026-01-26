@@ -2,6 +2,7 @@
 
 import { Compass, ListChecks, Sparkle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function PersonalizedJourneySection() {
   const t = useTranslations("About.personalizedJourney");
@@ -12,7 +13,7 @@ export default function PersonalizedJourneySection() {
         <div className="absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 rounded-full bg-primary/40 blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto grid max-w-6xl gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-6">
             <div className="flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
@@ -55,7 +56,7 @@ export default function PersonalizedJourneySection() {
             </div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ClinicalApproachesSection() {
   const t = useTranslations("Approaches.clinicalApproaches");
@@ -66,7 +67,7 @@ export default function ClinicalApproachesSection() {
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/3 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
             {t("badge")}
@@ -112,7 +113,23 @@ export default function ClinicalApproachesSection() {
             </div>
           ))}
         </div>
-      </div>
+
+        <div className="mx-auto mt-10 max-w-4xl rounded-4xl border border-dashed border-primary/30 bg-card/70 p-8 text-center shadow-inner">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            {t("otherApproaches.title")}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
+            {t.raw("otherApproaches.items").map((item: string) => (
+              <span
+                key={item}
+                className="rounded-full border border-border/30 bg-muted/40 px-4 py-2"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </ScrollReveal>
     </section>
   );
 }

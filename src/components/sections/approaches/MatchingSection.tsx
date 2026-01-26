@@ -2,6 +2,7 @@
 
 import { ArrowRight, Sparkles, Target, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function MatchingSection() {
   const t = useTranslations("Approaches.matching");
@@ -13,7 +14,7 @@ export default function MatchingSection() {
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/4 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto flex max-w-6xl flex-col gap-12">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div className="space-y-6">
@@ -81,7 +82,7 @@ export default function MatchingSection() {
               )}
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

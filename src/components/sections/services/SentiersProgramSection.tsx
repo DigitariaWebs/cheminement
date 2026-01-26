@@ -2,6 +2,7 @@
 
 import { GraduationCap, School, ClipboardList, Users2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function SentiersProgramSection() {
   const t = useTranslations("Services.sentiersProgram");
@@ -34,7 +35,7 @@ export default function SentiersProgramSection() {
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/4 translate-y-1/4 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <ScrollReveal className="container relative z-10 mx-auto px-6">
         <div className="mx-auto max-w-6xl space-y-12">
           <header className="text-center">
             <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
@@ -47,6 +48,25 @@ export default function SentiersProgramSection() {
               {t("description")}
             </p>
           </header>
+
+          <div className="mx-auto max-w-5xl rounded-4xl border border-border/15 bg-card/80 p-8 text-center shadow-lg backdrop-blur">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+              {t("focusTitle")}
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
+              {t.raw("focusAreas").map((area: string) => (
+                <span
+                  key={area}
+                  className="rounded-full border border-border/30 bg-muted/40 px-4 py-2"
+                >
+                  {area}
+                </span>
+              ))}
+            </div>
+            <p className="mt-6 text-sm text-muted-foreground">
+              {t("studentTrack")}
+            </p>
+          </div>
 
           <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
             <div className="space-y-6 rounded-4xl bg-card/80 p-10 shadow-xl backdrop-blur">
@@ -100,8 +120,29 @@ export default function SentiersProgramSection() {
               </div>
             </div>
           </div>
+
+          <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
+            <a
+              href="/book"
+              className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+            >
+              {t("cta.parent")}
+            </a>
+            <a
+              href="/book"
+              className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
+            >
+              {t("cta.student")}
+            </a>
+            <a
+              href="/school-manager"
+              className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
+            >
+              {t("cta.manager")}
+            </a>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }
