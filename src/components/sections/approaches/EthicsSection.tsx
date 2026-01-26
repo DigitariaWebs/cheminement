@@ -11,6 +11,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function EthicsSection() {
   const t = useTranslations("Approaches.ethics");
@@ -58,79 +59,101 @@ export default function EthicsSection() {
         <div className="absolute right-0 bottom-0 h-112 w-md translate-x-1/4 translate-y-1/3 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <ScrollReveal className="container relative z-10 mx-auto px-6">
+      <div className="container relative z-10 mx-auto px-6">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div className="space-y-6">
-            <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-              {t("badge")}
-            </p>
-            <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-              {t("title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("description")}
-            </p>
-            <div className="rounded-3xl bg-muted/40 p-6 text-sm leading-relaxed text-muted-foreground">
-              {t("note")}
-            </div>
+          <ScrollReveal variant="slide-right" duration={800}>
+            <div className="space-y-6">
+              <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
+                {t("badge")}
+              </p>
+              <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
+                {t("title")}
+              </h2>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                {t("description")}
+              </p>
+              <div className="rounded-3xl bg-muted/40 p-6 text-sm leading-relaxed text-muted-foreground">
+                {t("note")}
+              </div>
 
-            {/* Canadian Hosting & Security Highlights */}
-            <div className="space-y-4 pt-4">
-              {securityHighlights.map(({ icon: Icon, title, description }) => (
-                <div
+              {/* Canadian Hosting & Security Highlights */}
+              <div className="space-y-4 pt-4">
+                {securityHighlights.map(
+                  ({ icon: Icon, title, description }, index) => (
+                    <ScrollReveal
+                      key={title}
+                      variant="zoom-in"
+                      delayMs={200 + index * 100}
+                      duration={600}
+                    >
+                      <div className="flex items-start gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                        <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-serif text-base font-medium text-foreground">
+                            {title}
+                          </h4>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            {description}
+                          </p>
+                        </div>
+                      </div>
+                    </ScrollReveal>
+                  ),
+                )}
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            {commitments.map(({ icon: Icon, title, description }, index) => {
+              const cardAnimations: AnimationVariant[] = [
+                "fade-right",
+                "zoom-in",
+                "fade-left",
+                "slide-up",
+              ];
+              return (
+                <ScrollReveal
                   key={title}
-                  className="flex items-start gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-4"
+                  variant={cardAnimations[index % cardAnimations.length]}
+                  delayMs={400 + index * 100}
+                  duration={700}
                 >
-                  <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif text-base font-medium text-foreground">
+                  <div className="rounded-4xl border border-border/15 bg-card/85 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-card">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="mt-4 font-serif text-lg font-medium text-foreground">
                       {title}
-                    </h4>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                       {description}
                     </p>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2">
-            {commitments.map(({ icon: Icon, title, description }) => (
-              <div
-                key={title}
-                className="rounded-4xl border border-border/15 bg-card/85 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-              >
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-card">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 font-serif text-lg font-medium text-foreground">
-                  {title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {description}
-                </p>
-              </div>
-            ))}
+                </ScrollReveal>
+              );
+            })}
           </div>
         </div>
-        <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
-          <Link
-            href="/book"
-            className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
-          >
-            Prendre rendez-vous
-          </Link>
-          <Link
-            href="/professional"
-            className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
-          >
-            Rejoindre la plateforme
-          </Link>
-        </div>
-      </ScrollReveal>
+        <ScrollReveal variant="bounce-in" delayMs={800} duration={700}>
+          <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
+            <Link
+              href="/book"
+              className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+            >
+              Prendre rendez-vous
+            </Link>
+            <Link
+              href="/professional"
+              className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
+            >
+              Rejoindre la plateforme
+            </Link>
+          </div>
+        </ScrollReveal>
+      </div>
     </section>
   );
 }

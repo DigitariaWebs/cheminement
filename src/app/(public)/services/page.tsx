@@ -14,7 +14,7 @@ export default function ServicesPage() {
       <ServiceProgramsSection />
       <ColorTransition fromColor="background" toColor="muted" />
       <WorkplaceSection />
-      <ColorTransition fromColor="muted" toColor="background" />
+      <ColorTransition fromColor="muted" toColor="muted" />
       <SentiersProgramSection />
     </main>
   );

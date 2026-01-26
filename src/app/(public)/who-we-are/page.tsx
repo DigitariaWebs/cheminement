@@ -18,6 +18,7 @@ export default function WhoWeArePage() {
       <ExpertiseSection />
       <ColorTransition fromColor="muted" toColor="background" />
       <EthicsSection />
+      <ColorTransition fromColor="background" toColor="background" />
       <AccessibilitySection />
       <ColorTransition fromColor="background" toColor="accent" />
       <CommitmentSection />

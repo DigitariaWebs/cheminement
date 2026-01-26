@@ -69,22 +69,8 @@
   "ValueSection": {
     "title": "Plateforme spécialisée en santé mentale",
     "subtitle": "Un jumelage intelligent",
-    "description": "Notre Plateforme offre un accès rapide à des professionnels de la santé mentale. Cheminez vers l’équilibre plus tôt.",
-    "integratedPlatform": "Plateforme de santé mentale™",
-    "benefits": {
-      "fastAccess": {
-        "title": "Accès rapide",
-        "description": "Connectez-vous rapidement avec un professionnel de la santé mentale. Pas de longues listes d'attente—commencez votre parcours vers le bien-être plus tôt."
-      },
-      "varietyProfessionals": {
-        "title": "Variété de professionnels",
-        "description": "Accédez à une équipe diversifiée de spécialistes qualifiés, chacun avec une expertise unique pour répondre à vos besoins et préférences spécifiques."
-      },
-      "educationalResources": {
-        "title": "Ressources éducatives",
-        "description": "Explorez notre bibliothèque de vidéos et de lectures sur l'anxiété, l'épuisement professionnel, la gestion du stress et plus encore—disponible même avant votre première séance."
-      }
-    }
+    "description": "Notre Plateforme offre un accès rapide à des professionnels de la santé mentale. Cheminez vers l'équilibre plus tôt.",
+    "integratedPlatform": "Plateforme de santé mentale™"
   },
   "HowItWorksSection": {
     "badge": "Processus simple",
@@ -1001,10 +987,15 @@
           "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les employés à naviguer à travers l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel."
         },
         "schoolAnxiety": {
-          "title": "Soutien pour mieux composer avec l’anxiété liée à l’école",
+          "title": "Soutien pour mieux composer avec l'anxiété liée à l'école",
           "description": "Interventions ciblées pour les enfants et adolescents vivant de l'anxiété liée à l'école, incluant l'anxiété de performance, les peurs sociales, le refus scolaire et les difficultés de transition. Nous travaillons avec l'enfant, la famille et l'école pour créer un environnement de soutien."
         }
       }
+    },
+    "workplaceSection": {
+      "badge": "2 · Santé mentale au travail",
+      "title": "Soutien spécialisé pour les défis liés au travail",
+      "description": "Nous accompagnons les employés dans la gestion de l'épuisement professionnel, les transitions de retour au travail et le développement de stratégies durables pour maintenir un équilibre sain entre vie professionnelle et personnelle."
     },
     "programs": {
       "badge": "1 · Psychothérapie & Évaluation",
@@ -2093,7 +2084,7 @@
   "Platform": {
     "hero": {
       "badge": "PLATEFORME DE SANTÉ INTÉGRÉE",
-    "headline": "Notre plateforme de santé mentale™",
+      "headline": "Notre plateforme de santé mentale™",
       "description": "Dépassé, fragmenté, lent. Cela ne devrait pas décrire vos programmes de santé et de bien-être. Réinventée pour répondre aux besoins d'aujourd'hui, notre plateforme vous donne la tranquillité d'esprit en sachant que chacun a facilement accès au bon soutien, au moment qui lui convient.",
       "benefits": {
         "title": "AVANTAGES DE LA PLATEFORME",
@@ -2298,12 +2289,7 @@
       "school": "Nom de l’école",
       "serviceType": "Sélectionnez un type de service"
     },
-    "serviceTypes": [
-      "Évaluation",
-      "TDAH",
-      "Plan d’intervention",
-      "Autre"
-    ],
+    "serviceTypes": ["Évaluation", "TDAH", "Plan d’intervention", "Autre"],
     "submit": "Envoyer la demande"
   }
 }

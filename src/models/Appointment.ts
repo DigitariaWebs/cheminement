@@ -71,28 +71,28 @@ export interface IAppointment extends Document {
   scheduledStartAt?: Date;
   reminderSent: boolean;
   payment: IPayment;
-  
+
   // Booking context - who is this appointment for
   bookingFor: "self" | "patient" | "loved-one";
-  
+
   // Loved one information (when bookingFor === "loved-one")
   lovedOneInfo?: ILovedOneInfo;
-  
+
   // Referral information (when bookingFor === "patient")
   referralInfo?: IReferralInfo;
-  
+
   // Routing status for professional assignment workflow
   routingStatus: "pending" | "proposed" | "accepted" | "refused" | "general";
-  
+
   // Array of professional IDs this appointment has been proposed to
   proposedTo?: mongoose.Types.ObjectId[];
-  
+
   // Array of professional IDs who refused this appointment
   refusedBy?: mongoose.Types.ObjectId[];
-  
+
   // Preferred availability slots provided by client
   preferredAvailability?: string[];
-  
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -274,15 +274,19 @@ const AppointmentSchema = new Schema<IAppointment>(
       default: "pending",
     },
     // Array of professional IDs this appointment has been proposed to
-    proposedTo: [{
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    }],
+    proposedTo: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     // Array of professional IDs who refused this appointment
-    refusedBy: [{
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    }],
+    refusedBy: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     // Preferred availability slots provided by client
     preferredAvailability: [String],
   },

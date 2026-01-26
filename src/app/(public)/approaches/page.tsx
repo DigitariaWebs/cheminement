@@ -15,6 +15,7 @@ export default function ApproachesPage() {
       <PersonCenteredSection />
       <ColorTransition fromColor="background" toColor="muted" />
       <ClinicalApproachesSection />
+      <ColorTransition fromColor="muted" toColor="muted" />
       <FlexibilitySection />
       <ColorTransition fromColor="muted" toColor="background" />
       <MatchingSection />

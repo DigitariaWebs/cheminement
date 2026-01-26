@@ -10,7 +10,7 @@ import { authOptions } from "@/lib/auth";
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -22,7 +22,7 @@ export async function POST(
     if (session.user.role !== "professional") {
       return NextResponse.json(
         { error: "Only professionals can accept appointments" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -42,28 +42,30 @@ export async function POST(
     if (appointment.status !== "pending") {
       return NextResponse.json(
         { error: "Appointment is no longer pending" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (appointment.professionalId) {
       return NextResponse.json(
         { error: "Appointment already assigned to a professional" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if this professional is allowed to accept
     // (either proposed to them, or in general list)
     const isProposed = appointment.proposedTo?.some(
-      (pId: { toString: () => string }) => pId.toString() === session.user.id
+      (pId: { toString: () => string }) => pId.toString() === session.user.id,
     );
-    const isGeneral = appointment.routingStatus === "general" || appointment.routingStatus === "refused";
+    const isGeneral =
+      appointment.routingStatus === "general" ||
+      appointment.routingStatus === "refused";
 
     if (!isProposed && !isGeneral) {
       return NextResponse.json(
         { error: "You are not authorized to accept this appointment" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -74,7 +76,7 @@ export async function POST(
         professionalId: session.user.id,
         routingStatus: "accepted",
       },
-      { new: true }
+      { new: true },
     )
       .populate("clientId", "firstName lastName email phone location")
       .populate("professionalId", "firstName lastName email phone");
@@ -90,7 +92,7 @@ export async function POST(
     console.error("Accept appointment error:", error);
     return NextResponse.json(
       { error: "Failed to accept appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

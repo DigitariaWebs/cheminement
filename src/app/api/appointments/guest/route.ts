@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
     if (!appointmentData.professionalId) {
       // Route in background (non-blocking)
       routeAppointmentToProfessionals(appointment._id.toString()).catch((err) =>
-        console.error("Error routing appointment:", err)
+        console.error("Error routing appointment:", err),
       );
     }
 

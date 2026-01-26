@@ -12,6 +12,7 @@ export default function Home() {
       <ValueSection />
       <ColorTransition fromColor="accent" toColor="muted" />
       <ClientAdvantagesSection />
+      <ColorTransition fromColor="background" toColor="background" />
       <HowItWorksSection />
     </main>
   );

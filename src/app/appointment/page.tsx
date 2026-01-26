@@ -236,7 +236,7 @@ export default function BookAppointmentPage() {
   const handleWhoChoice = (who: "self" | "patient" | "loved-one") => {
     setBookingFor(who);
     // For patient or loved-one, we need an extra step for their specific info
-    // Steps: 0 = Auth Choice, 1 = Who is this for, 2 = Guest Info (if guest), 
+    // Steps: 0 = Auth Choice, 1 = Who is this for, 2 = Guest Info (if guest),
     //        2.5 = Loved One/Patient Info (new), 3 = Appointment Details, 4 = Confirmation, 5 = Success
     if (who === "self") {
       // For self: if guest -> Guest Info, else -> Appointment Details
@@ -253,12 +253,19 @@ export default function BookAppointmentPage() {
   };
 
   // File upload handler for referral documents
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+    ];
     if (!allowedTypes.includes(file.type)) {
       setError("Please upload a PDF, JPEG, or PNG file");
       return;
@@ -949,7 +956,8 @@ export default function BookAppointmentPage() {
                         Loved One Information
                       </h2>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Please provide information about the person who will be attending the session
+                        Please provide information about the person who will be
+                        attending the session
                       </p>
                     </div>
                     <div className="p-6 space-y-6">
@@ -995,14 +1003,19 @@ export default function BookAppointmentPage() {
                         <Select
                           value={lovedOneInfo.relationship}
                           onValueChange={(value) =>
-                            setLovedOneInfo({ ...lovedOneInfo, relationship: value })
+                            setLovedOneInfo({
+                              ...lovedOneInfo,
+                              relationship: value,
+                            })
                           }
                         >
                           <SelectTrigger id="relationship">
                             <SelectValue placeholder="Select relationship" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="spouse">Spouse / Partner</SelectItem>
+                            <SelectItem value="spouse">
+                              Spouse / Partner
+                            </SelectItem>
                             <SelectItem value="child">Child</SelectItem>
                             <SelectItem value="parent">Parent</SelectItem>
                             <SelectItem value="sibling">Sibling</SelectItem>
@@ -1028,7 +1041,9 @@ export default function BookAppointmentPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lovedOnePhone">Phone (Optional)</Label>
+                          <Label htmlFor="lovedOnePhone">
+                            Phone (Optional)
+                          </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -1036,7 +1051,10 @@ export default function BookAppointmentPage() {
                               type="tel"
                               value={lovedOneInfo.phone}
                               onChange={(e) =>
-                                setLovedOneInfo({ ...lovedOneInfo, phone: e.target.value })
+                                setLovedOneInfo({
+                                  ...lovedOneInfo,
+                                  phone: e.target.value,
+                                })
                               }
                               placeholder="+1 (555) 123-4567"
                               className="pl-10"
@@ -1054,7 +1072,10 @@ export default function BookAppointmentPage() {
                             type="email"
                             value={lovedOneInfo.email}
                             onChange={(e) =>
-                              setLovedOneInfo({ ...lovedOneInfo, email: e.target.value })
+                              setLovedOneInfo({
+                                ...lovedOneInfo,
+                                email: e.target.value,
+                              })
                             }
                             placeholder="their.email@example.com"
                             className="pl-10"
@@ -1063,12 +1084,17 @@ export default function BookAppointmentPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="lovedOneNotes">Additional Notes (Optional)</Label>
+                        <Label htmlFor="lovedOneNotes">
+                          Additional Notes (Optional)
+                        </Label>
                         <Textarea
                           id="lovedOneNotes"
                           value={lovedOneInfo.notes}
                           onChange={(e) =>
-                            setLovedOneInfo({ ...lovedOneInfo, notes: e.target.value })
+                            setLovedOneInfo({
+                              ...lovedOneInfo,
+                              notes: e.target.value,
+                            })
                           }
                           placeholder="Any relevant information about your loved one that might help the professional..."
                           rows={3}
@@ -1082,7 +1108,11 @@ export default function BookAppointmentPage() {
                         >
                           Back
                         </Button>
-                        <Button onClick={handleSpecificInfoSubmit} size="lg" className="gap-2">
+                        <Button
+                          onClick={handleSpecificInfoSubmit}
+                          size="lg"
+                          className="gap-2"
+                        >
                           Continue
                           <ArrowLeft className="h-4 w-4 rotate-180" />
                         </Button>
@@ -1100,26 +1130,44 @@ export default function BookAppointmentPage() {
                         Patient Referral Information
                       </h2>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Please provide your professional information and optionally upload a referral document
+                        Please provide your professional information and
+                        optionally upload a referral document
                       </p>
                     </div>
                     <div className="p-6 space-y-6">
                       {/* Referrer Type */}
                       <div className="space-y-2">
-                        <Label>Your Professional Role <span className="text-red-500">*</span></Label>
+                        <Label>
+                          Your Professional Role{" "}
+                          <span className="text-red-500">*</span>
+                        </Label>
                         <Select
                           value={referralInfo.referrerType}
-                          onValueChange={(value: "doctor" | "specialist" | "other_professional") =>
-                            setReferralInfo({ ...referralInfo, referrerType: value })
+                          onValueChange={(
+                            value:
+                              | "doctor"
+                              | "specialist"
+                              | "other_professional",
+                          ) =>
+                            setReferralInfo({
+                              ...referralInfo,
+                              referrerType: value,
+                            })
                           }
                         >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="doctor">Doctor / Physician</SelectItem>
-                            <SelectItem value="specialist">Specialist</SelectItem>
-                            <SelectItem value="other_professional">Other Healthcare Professional</SelectItem>
+                            <SelectItem value="doctor">
+                              Doctor / Physician
+                            </SelectItem>
+                            <SelectItem value="specialist">
+                              Specialist
+                            </SelectItem>
+                            <SelectItem value="other_professional">
+                              Other Healthcare Professional
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1142,7 +1190,9 @@ export default function BookAppointmentPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="referrerLicense">License Number (Optional)</Label>
+                          <Label htmlFor="referrerLicense">
+                            License Number (Optional)
+                          </Label>
                           <Input
                             id="referrerLicense"
                             value={referralInfo.referrerLicense}
@@ -1159,7 +1209,9 @@ export default function BookAppointmentPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="referrerPhone">Contact Phone (Optional)</Label>
+                          <Label htmlFor="referrerPhone">
+                            Contact Phone (Optional)
+                          </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -1167,7 +1219,10 @@ export default function BookAppointmentPage() {
                               type="tel"
                               value={referralInfo.referrerPhone}
                               onChange={(e) =>
-                                setReferralInfo({ ...referralInfo, referrerPhone: e.target.value })
+                                setReferralInfo({
+                                  ...referralInfo,
+                                  referrerPhone: e.target.value,
+                                })
                               }
                               placeholder="+1 (555) 123-4567"
                               className="pl-10"
@@ -1175,7 +1230,9 @@ export default function BookAppointmentPage() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="referrerEmail">Contact Email (Optional)</Label>
+                          <Label htmlFor="referrerEmail">
+                            Contact Email (Optional)
+                          </Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -1183,7 +1240,10 @@ export default function BookAppointmentPage() {
                               type="email"
                               value={referralInfo.referrerEmail}
                               onChange={(e) =>
-                                setReferralInfo({ ...referralInfo, referrerEmail: e.target.value })
+                                setReferralInfo({
+                                  ...referralInfo,
+                                  referrerEmail: e.target.value,
+                                })
                               }
                               placeholder="doctor@clinic.com"
                               className="pl-10"
@@ -1193,12 +1253,17 @@ export default function BookAppointmentPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="referralReason">Reason for Referral (Optional)</Label>
+                        <Label htmlFor="referralReason">
+                          Reason for Referral (Optional)
+                        </Label>
                         <Textarea
                           id="referralReason"
                           value={referralInfo.referralReason}
                           onChange={(e) =>
-                            setReferralInfo({ ...referralInfo, referralReason: e.target.value })
+                            setReferralInfo({
+                              ...referralInfo,
+                              referralReason: e.target.value,
+                            })
                           }
                           placeholder="Brief description of why you are referring this patient..."
                           rows={3}
@@ -1207,15 +1272,21 @@ export default function BookAppointmentPage() {
 
                       {/* Document Upload Section */}
                       <div className="space-y-3">
-                        <Label>Upload Referral/Prescription Document (Optional)</Label>
+                        <Label>
+                          Upload Referral/Prescription Document (Optional)
+                        </Label>
                         <div className="border-2 border-dashed border-border/60 rounded-xl p-6">
                           {referralInfo.documentUrl ? (
                             <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
                               <div className="flex items-center gap-3">
                                 <FileText className="h-8 w-8 text-primary" />
                                 <div>
-                                  <p className="font-medium text-sm">{referralInfo.documentName}</p>
-                                  <p className="text-xs text-muted-foreground">Document uploaded successfully</p>
+                                  <p className="font-medium text-sm">
+                                    {referralInfo.documentName}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Document uploaded successfully
+                                  </p>
                                 </div>
                               </div>
                               <Button
@@ -1247,7 +1318,9 @@ export default function BookAppointmentPage() {
                                   <Upload className="h-10 w-10 text-muted-foreground" />
                                 )}
                                 <p className="mt-2 text-sm text-muted-foreground">
-                                  {uploading ? "Uploading..." : "Click to upload or drag and drop"}
+                                  {uploading
+                                    ? "Uploading..."
+                                    : "Click to upload or drag and drop"}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
                                   PDF, JPG, PNG up to 10MB
@@ -1265,9 +1338,9 @@ export default function BookAppointmentPage() {
                         >
                           Back
                         </Button>
-                        <Button 
-                          onClick={handleSpecificInfoSubmit} 
-                          size="lg" 
+                        <Button
+                          onClick={handleSpecificInfoSubmit}
+                          size="lg"
                           className="gap-2"
                           disabled={uploading}
                         >
@@ -1467,7 +1540,10 @@ export default function BookAppointmentPage() {
                       variant="outline"
                       onClick={() => {
                         // Go back to specific info form if patient/loved-one, otherwise to guest info or step 1
-                        if (bookingFor === "patient" || bookingFor === "loved-one") {
+                        if (
+                          bookingFor === "patient" ||
+                          bookingFor === "loved-one"
+                        ) {
                           setCurrentStep(2.5);
                         } else if (isGuest) {
                           setCurrentStep(2);

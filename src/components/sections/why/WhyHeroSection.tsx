@@ -2,6 +2,8 @@
 
 import { Sparkle, ShieldPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function WhyHeroSection() {
   const t = useTranslations("Why.hero");
@@ -14,23 +16,31 @@ export default function WhyHeroSection() {
 
       <div className="container relative z-10 mx-auto px-6 py-24 md:py-32">
         <div className="mx-auto flex max-w-5xl flex-col gap-12">
-          <div className="flex items-center gap-3 text-sm uppercase tracking-[0.4em] text-muted-foreground/70">
-            <ShieldPlus className="h-5 w-5 text-foreground" />
-            <span>{t("badge")}</span>
-          </div>
+          <ScrollReveal variant="fade-down" duration={700}>
+            <div className="flex items-center gap-3 text-sm uppercase tracking-[0.4em] text-muted-foreground/70">
+              <ShieldPlus className="h-5 w-5 text-foreground" />
+              <span>{t("badge")}</span>
+            </div>
+          </ScrollReveal>
 
-          <div className="space-y-8 text-left">
+          <ScrollReveal variant="blur-in" delayMs={150} duration={800}>
             <h1 className="font-serif text-4xl font-light leading-tight md:text-5xl lg:text-6xl">
               {t("headline")}
             </h1>
+          </ScrollReveal>
+
+          <ScrollReveal variant="slide-up" delayMs={300} duration={700}>
             <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
               {t("description")}
             </p>
+          </ScrollReveal>
+
+          <ScrollReveal variant="swing-in" delayMs={450} duration={600}>
             <div className="flex items-center gap-3 text-base font-medium uppercase tracking-[0.3em] text-muted-foreground">
               <Sparkle className="h-4 w-4" />
               <span>{t("subtitle")}</span>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
