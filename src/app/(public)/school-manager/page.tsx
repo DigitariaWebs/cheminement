@@ -43,6 +43,11 @@ export default function SchoolManagerPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="function">{t("fields.function")}</Label>
+              <Input id="function" placeholder={t("placeholders.function")} />
+            </div>
+
+            <div className="space-y-2">
               <Label>{t("fields.serviceType")}</Label>
               <Select>
                 <SelectTrigger>

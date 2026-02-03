@@ -14,6 +14,7 @@ import {
   Lightbulb,
   Calendar,
   FileText,
+  MapPin,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -157,13 +158,18 @@ export default function PlatformBenefitsSection() {
       descriptionFr:
         "Tarifs préférentiels avec les comptables, soutien des frais d'adhésion à l'OPQ selon les séances et opportunités de fonds d'investissement.",
     },
+    {
+      icon: MapPin,
+      titleEn: "Social Mission",
+      titleFr: "Mission sociale",
+      descriptionEn:
+        "Priority support for remote-region clients and reduced rates for family/child cases with platform support.",
+      descriptionFr:
+        "Soutien prioritaire pour les clients des régions éloignées et tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
+    },
   ];
 
   const additionalPerks = [
-    {
-      en: "Social mission: priority support for remote-region clients and reduced rates for family/child cases with platform support",
-      fr: "Mission sociale : soutien prioritaire pour les clients des régions éloignées et tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
-    },
     {
       en: "Become a shareholder and collectively benefit from our success",
       fr: "Devenez actionnaire et bénéficiez collectivement de notre succès",
