@@ -47,7 +47,6 @@ export default function ClientAdvantagesSection() {
     // Anglais
     "Anxiety": AlertCircle,
     "Burnout": Flame,
-    "Stress": Zap,
     "Depression": Heart,
     "Self-esteem": Sparkles,
     "ADHD": Brain,
