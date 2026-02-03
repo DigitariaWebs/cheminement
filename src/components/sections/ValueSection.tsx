@@ -18,7 +18,7 @@ export default function ValueSection() {
       descriptionEn:
         "Our service is designed to create a fully personalized pathway, because we believe that your need and your journey do not follow a single path.",
       descriptionFr:
-        "Notre service est conçu pour créer un parcours entièrement personnalisé, car\nnous croyons que votre besoin et votre démarche ne suivent pas un chemin\nunique.",
+        "Notre service est conçu pour créer un parcours entièrement personnalisé, car nous croyons que votre besoin et votre démarche ne suivent pas un chemin unique.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -29,7 +29,7 @@ export default function ValueSection() {
       descriptionEn:
         "Whether it's a psychologist, psychotherapist or another professional, you will always work with an expert whose practice is regulated and recognized by their professional order.",
       descriptionFr:
-        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel,\nvous allez toujours travaillez avec un expert dont la pratique est encadrée et\nreconnue par son ordre professionnel.",
+        "Que ce soit un psychologue, un psychothérapeute ou un autre professionnel, vous allez toujours travaillez avec un expert dont la pratique est encadrée et reconnue par son ordre professionnel.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -42,7 +42,7 @@ export default function ValueSection() {
       descriptionEn:
         "We offer flexible support tailored to your needs: remote consultations via secure video calls for accessibility from anywhere, or in-person appointments in our welcoming offices. Our matching process helps you find the right professional for your specific needs and preferences, strengthening engagement and ensuring a successful therapeutic journey.",
       descriptionFr:
-        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance\nvia appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en\npersonne dans nos bureaux accueillants. Notre processus de jumelage vous\naide à trouver le bon professionnel pour vos besoins spécifiques et vos\npréférences, renforçant l'engagement et assurant un parcours thérapeutique\nréussi.",
+        "Nous offrons un soutien flexible adapté à vos besoins : consultations à distance via appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en personne dans nos bureaux accueillants. Notre processus de jumelage vous aide à trouver le bon professionnel pour vos besoins spécifiques et vos préférences, renforçant l'engagement et assurant un parcours thérapeutique réussi.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -57,7 +57,7 @@ export default function ValueSection() {
       descriptionEn:
         "Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
       descriptionFr:
-        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont\nhébergées exclusivement sur des serveurs canadiens, garantissant une\nsouveraineté complète de vos données. Nous respectons strictement la Loi 25 et\nappliquons une protection rigoureuse de votre vie privée. Ces principes sont les\nfondations de notre service, garantissant que vous évoluiez dans un\nenvironnement sécuritaire et respectueux.",
+        "Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont hébergées exclusivement sur des serveurs canadiens, garantissant une souveraineté complète de vos données. Nous respectons strictement la Loi 25 et appliquons une protection rigoureuse de votre vie privée. Ces principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux.",
       featuresEn: [],
       featuresFr: [],
     },
@@ -212,7 +212,7 @@ function ValueCard({
       )}
 
       {/* Description */}
-      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed text-justify whitespace-pre-line">
+      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed text-left">
         {description}
       </p>
 

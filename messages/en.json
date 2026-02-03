@@ -234,9 +234,7 @@
     "financialDesc": "Preferential rates with accountants, OPQ membership fee support based on sessions, and investment fund opportunities.",
     "additionalPerksTitle": "Additional Perks & Opportunities",
     "perk1": "Become a shareholder and collectively benefit from our success",
-    "perk2": "Social mission: Priority support for clients in remote regions",
-    "perk3": "Reduced rates for family/child cases with joint platform support",
-    "perk4": "$1 per session contribution to an investment fund"
+    "perk2": "$1 per session contribution to an investment fund"
   },
   "ProfessionalCTA": {
     "badge": "READY TO GET STARTED?",
@@ -2286,5 +2284,24 @@
       "email": "info@jechemine.ca",
       "helpText": "Our team typically responds within 24 hours. We're here to help you on your wellness journey."
     }
+  },
+  "SchoolManagerForm": {
+    "badge": "School Manager",
+    "title": "School Service Request",
+    "description": "A short form to initiate a request for evaluation, ADHD assessment, or intervention plan.",
+    "fields": {
+      "name": "Name",
+      "school": "School",
+      "function": "Function",
+      "serviceType": "Service Type"
+    },
+    "placeholders": {
+      "name": "Full name",
+      "school": "School name",
+      "function": "Your function",
+      "serviceType": "Select a service type"
+    },
+    "serviceTypes": ["Evaluation", "ADHD", "Intervention Plan", "Other"],
+    "submit": "Submit Request"
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
 import {
   Brain,
@@ -13,12 +13,50 @@ import {
   UserRound,
   Users,
   Video,
+  AlertCircle,
+  Flame,
+  Zap,
+  Heart,
+  Sparkles,
+  BookOpen,
+  Baby,
+  Smile,
+  MoreHorizontal,
 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
+  const locale = useLocale();
+
+  // Mapping des topics aux icônes
+  const topicIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+    // Français
+    "Anxiété": AlertCircle,
+    "Épuisement": Flame,
+    "Stress": Zap,
+    "Dépression": Heart,
+    "Estime de soi": Sparkles,
+    "TDAH": Brain,
+    "HPI": Sparkles,
+    "rôle parental": Baby,
+    "difficultés d'apprentissage": BookOpen,
+    "gestion des émotions": Smile,
+    "autres problématiques": MoreHorizontal,
+    // Anglais
+    "Anxiety": AlertCircle,
+    "Burnout": Flame,
+    "Stress": Zap,
+    "Depression": Heart,
+    "Self-esteem": Sparkles,
+    "ADHD": Brain,
+    "High Intellectual Potential": Sparkles,
+    "parenting role": Baby,
+    "learning difficulties": BookOpen,
+    "emotion management": Smile,
+    "other issues": MoreHorizontal,
+  };
 
   const advantages = [
     {
@@ -162,9 +200,32 @@ export default function ClientAdvantagesSection() {
                 <p className="text-lg text-muted-foreground leading-relaxed mb-4">
                   {t("educationalHighlight.description")}
                 </p>
-                <p className="text-base text-muted-foreground leading-relaxed mb-2">
-                  {t("educationalHighlight.topics")}
-                </p>
+                {/* Topics List with Icons */}
+                <div className="mb-4">
+                  <ul className="flex flex-wrap gap-3 mb-2">
+                    {t("educationalHighlight.topics")
+                      .split(",")
+                      .map((topic: string) => topic.trim())
+                      .filter((topic: string) => topic.length > 0)
+                      .map((topic: string, index: number) => {
+                        const IconComponent =
+                          topicIcons[topic] || MoreHorizontal;
+                        return (
+                          <li
+                            key={index}
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 rounded-full border border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all duration-200"
+                          >
+                            <div className="p-1 bg-primary/10 rounded-full">
+                              <IconComponent className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                            </div>
+                            <span className="text-sm text-foreground/80 font-medium">
+                              {topic}
+                            </span>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                   {t("educationalHighlight.note")}
                 </p>
@@ -200,17 +261,19 @@ export default function ClientAdvantagesSection() {
               <div className="group relative">
                 <div className="relative aspect-3/4 rounded-2xl overflow-hidden bg-muted shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
                   {/* Placeholder image - replace with actual professional photos */}
-                  <div className="absolute inset-0 bg-linear-to-br from-accent/30 via-primary/20 to-muted flex items-center justify-center">
-                    <professional.icon
-                      className="w-12 h-12 text-foreground/30"
-                      strokeWidth={1}
-                    />
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/20 via-accent/40 to-primary/10 flex items-center justify-center">
+                    <div className="p-4 bg-primary/10 rounded-2xl backdrop-blur-sm border border-primary/20">
+                      <professional.icon
+                        className="w-10 h-10 text-primary"
+                        strokeWidth={2}
+                      />
+                    </div>
                   </div>
                   {/* Gradient overlay at bottom */}
-                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-foreground/90 to-transparent"></div>
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-primary/95 via-primary/80 to-transparent"></div>
                   {/* Title */}
                   <div className="absolute inset-x-0 bottom-0 p-3 md:p-4">
-                    <h4 className="text-xs md:text-sm font-semibold text-white text-center leading-tight">
+                    <h4 className="text-xs md:text-sm font-semibold text-white text-center leading-tight drop-shadow-lg">
                       {t(professional.titleKey)}
                     </h4>
                   </div>

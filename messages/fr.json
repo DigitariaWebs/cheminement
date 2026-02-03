@@ -91,7 +91,7 @@
     },
     "diverseProfessionals": {
       "title": "Diversité de professionnels",
-      "description": "Un système de jumelage intelligent pour vous aiguiller vers le professionnel qui vous convient le mieux."
+      "description": "Un système de jumelage intelligent pour vous aiguillez vers le\nprofessionnel qui vous convient le mieux."
     },
     "educationalContent": {
       "title": "Contenu éducatif",
@@ -104,9 +104,9 @@
     "educationalHighlight": {
       "title": "Commencez votre parcours dès maintenant",
       "description": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques.",
-      "topics": "Anxiété, Épuisement, Stress, Dépression, Estime de soi, TDAH, HPI, rôle parental, difficultés d’apprentissage, gestion des émotions, autres problématiques",
+      "topics": "Anxiété, Épuisement, Stress, Dépression, Estime de soi, TDAH, HPI, rôle parental, difficultés d'apprentissage, gestion des émotions, autres problématiques",
       "note": "Ceci n’est pas une liste exhaustive",
-      "programDescription": "Avant même votre premier rendez-vous, bénéficiez de notre programme de pré-thérapie et des ressources éducatives pour mieux comprendre votre situation et vous préparer à votre suivi."
+      "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques"
     },
     "professionalsSection": {
       "title": "Nos professionnels à votre service",
@@ -231,9 +231,7 @@
     "financialDesc": "Tarifs préférentiels avec les comptables, soutien des frais d'adhésion à l'OPQ selon les séances et opportunités de fonds d'investissement.",
     "additionalPerksTitle": "Avantages et opportunités supplémentaires",
     "perk1": "Devenez actionnaire et bénéficiez collectivement de notre succès",
-    "perk2": "Mission sociale : soutien prioritaire pour les clients des régions éloignées",
-    "perk3": "Tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
-    "perk4": "Contribution de 1 $ par séance à un fonds d'investissement"
+    "perk2": "Contribution de 1 $ par séance à un fonds d'investissement"
   },
   "ProfessionalCTA": {
     "badge": "PRÊT À COMMENCER ?",
@@ -913,9 +911,9 @@
       "description": "Notre processus de jumelage vise à vous connecter avec le professionnel qui correspond le mieux à votre réalité. Chaque étape est pensée pour faciliter un engagement durable et pour favoriser la réussite de votre parcours thérapeutique.",
       "matchingTitle": "Nous tenons compte",
       "matchingPoints": [
-        "À votre problématique",
-        "À vos préférences d'approche",
-        "À votre style de communication"
+        "De votre problématique",
+        "De vos préférences d'approche",
+        "De votre style de communication"
       ],
       "goal": "L'objectif : bâtir une relation thérapeutique forte et adaptée à vos besoins."
     },
@@ -1017,7 +1015,7 @@
       },
       "child": {
         "title": "Psychothérapie enfant & adolescent",
-        "description": "Soutien thérapeutique spécialisé conçu pour les besoins développementaux uniques des enfants et des adolescents. Nous aidons les jeunes à naviguer à travers les défis émotionnels, les difficultés comportementales et les transitions développementales.",
+        "description": "Soutien thérapeutique spécialisé conçu pour les besoins développement aux uniques des enfants et des adolescents. Nous aidons les jeunes à mieux composer avec les défis émotionnels, les difficultés comportementales et les transitions développementales.",
         "highlight": "Interventions adaptées à l'âge",
         "features": [
           "Thérapie par le jeu et techniques adaptées à l'âge",
@@ -1051,7 +1049,7 @@
           "Soutien à la transition de retour au travail",
           "Gestion du stress et de la charge de travail",
           "Reconstruction de l'identité professionnelle et de la confiance",
-          "Stratégies d'équilibre vie-travail",
+          "Stratégies d'équilibre vie personnelle-travail",
           "Consultations en lien avec une transition de carrière"
         ]
       },
@@ -2282,11 +2280,13 @@
     "fields": {
       "name": "Nom",
       "school": "École",
+      "function": "Fonction",
       "serviceType": "Type de service"
     },
     "placeholders": {
       "name": "Nom complet",
-      "school": "Nom de l’école",
+      "school": "Nom de l'école",
+      "function": "Votre fonction",
       "serviceType": "Sélectionnez un type de service"
     },
     "serviceTypes": ["Évaluation", "TDAH", "Plan d’intervention", "Autre"],
