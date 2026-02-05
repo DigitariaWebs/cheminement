@@ -165,7 +165,7 @@ export default function PlatformBenefitsSection() {
       descriptionEn:
         "Priority support for remote-region clients and reduced rates for family/child cases with platform support.",
       descriptionFr:
-        "Soutien prioritaire pour les clients des régions éloignées et tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme",
+        "Soutien prioritaire pour les clients des régions éloignées et tarifs réduits pour les cas famille/enfant avec soutien conjoint de la plateforme.",
     },
   ];
 
