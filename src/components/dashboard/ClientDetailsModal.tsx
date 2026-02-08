@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   X,
   Mail,
@@ -9,10 +9,16 @@ import {
   Calendar,
   Clock,
   FileText,
+  Upload,
+  Trash2,
+  Download,
+  Loader2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 interface Client {
   id: string;
@@ -44,6 +50,12 @@ export default function ClientDetailsModal({
   const t = useTranslations("Dashboard.clientModal");
   const [sessions, setSessions] = useState<AppointmentResponse[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState<
+    { url: string; fileName: string; uploadedAt: string }[]
+  >([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (client) {
@@ -131,6 +143,60 @@ export default function ClientDetailsModal({
       day: "numeric",
       year: "numeric",
     });
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload/patient-document", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to upload file");
+      }
+
+      const data = await response.json();
+      setUploadedDocuments((prev) => [
+        ...prev,
+        {
+          url: data.url,
+          fileName: data.fileName,
+          uploadedAt: new Date().toISOString(),
+        },
+      ]);
+      // TODO: Associate this document with the client in the backend
+      // await apiClient.post(`/clients/${client.id}/documents`, {
+      //   url: data.url,
+      //   fileName: data.fileName,
+      // });
+    } catch (error: any) {
+      setUploadError(error.message);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""; // Clear the input
+      }
+    }
+  };
+
+  const handleRemoveDocument = async (index: number) => {
+    const documentToRemove = uploadedDocuments[index];
+    // TODO: Implement actual API call to delete file from storage and backend
+    // await apiClient.delete(`/clients/${client.id}/documents/${documentToRemove.id}`);
+    setUploadedDocuments((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -274,6 +340,93 @@ export default function ClientDetailsModal({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Patient Documents */}
+          <div className="rounded-xl bg-card p-6">
+            <h3 className="text-lg font-serif font-light text-foreground mb-4">
+              Documents du patient
+            </h3>
+            <div className="space-y-4">
+              <div
+                className="border-2 border-dashed border-border/60 rounded-xl p-6 text-center cursor-pointer hover:border-primary/80 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  accept="application/pdf,image/jpeg,image/png"
+                  disabled={isUploading}
+                />
+                {isUploading ? (
+                  <div className="flex items-center justify-center gap-2 text-primary">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Upload en cours...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Upload className="h-8 w-8 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Cliquez pour téléverser un document PDF
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      PDF, JPEG, PNG (max 10MB)
+                    </p>
+                  </div>
+                )}
+              </div>
+              {uploadError && (
+                <p className="text-red-500 text-sm text-center">{uploadError}</p>
+              )}
+
+              {uploadedDocuments.length > 0 && (
+                <div className="space-y-3 mt-6">
+                  <p className="text-sm font-light text-muted-foreground">
+                    Documents téléversés
+                  </p>
+                  {uploadedDocuments.map((doc, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between bg-muted/30 rounded-lg p-3"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {doc.fileName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatShortDate(doc.uploadedAt)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-full hover:bg-muted transition-colors text-primary"
+                          title="Télécharger"
+                        >
+                          <Download className="h-4 w-4" />
+                        </a>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveDocument(index)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Recent Sessions */}

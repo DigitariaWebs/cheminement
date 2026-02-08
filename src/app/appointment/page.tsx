@@ -23,6 +23,9 @@ import {
   X,
   Heart,
   Stethoscope,
+  CreditCard,
+  Building2,
+  Handshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,6 +40,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiClient, medicalProfileAPI } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface GuestInfo {
   firstName: string;
@@ -149,6 +153,14 @@ export default function BookAppointmentPage() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Payment method state
+  const [paymentMethod, setPaymentMethod] = useState<
+    "card" | "interac" | "payment_plan"
+  >("card");
+  const [isFirstAppointment, setIsFirstAppointment] = useState<boolean | null>(
+    null,
+  );
+
   // Check for 'for' query param
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -192,6 +204,25 @@ export default function BookAppointmentPage() {
     };
     fetchMedicalProfile();
   }, [status]);
+
+  // Check if this is the first appointment (authenticated users only)
+  useEffect(() => {
+    const checkFirstAppointment = async () => {
+      if (status === "authenticated" && !isGuest) {
+        try {
+          const appointments = await apiClient.get<any[]>("/appointments");
+          setIsFirstAppointment(appointments.length === 0);
+        } catch {
+          // If error, assume it's not the first appointment to be safe
+          setIsFirstAppointment(false);
+        }
+      } else {
+        // For guests, always assume it's the first appointment
+        setIsFirstAppointment(true);
+      }
+    };
+    checkFirstAppointment();
+  }, [status, isGuest]);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -401,6 +432,7 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
+        paymentMethod: paymentMethod === "interac" ? "transfer" : paymentMethod === "payment_plan" ? "direct_debit" : "card",
       };
 
       // Include loved one info if booking for a loved one
@@ -450,6 +482,7 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
+        paymentMethod: paymentMethod === "interac" ? "transfer" : paymentMethod === "payment_plan" ? "direct_debit" : "card",
       };
 
       // Include loved one info if booking for a loved one
@@ -1452,22 +1485,190 @@ export default function BookAppointmentPage() {
                       <SelectTrigger id="issueType">
                         <SelectValue placeholder="Select a topic" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Anxiety">Anxiety</SelectItem>
-                        <SelectItem value="Depression">Depression</SelectItem>
-                        <SelectItem value="Stress">
-                          Stress Management
-                        </SelectItem>
-                        <SelectItem value="Relationships">
-                          Relationship Issues
-                        </SelectItem>
-                        <SelectItem value="Trauma">Trauma</SelectItem>
-                        <SelectItem value="Self-Esteem">Self-Esteem</SelectItem>
-                        <SelectItem value="Career">
-                          Career Counseling
-                        </SelectItem>
-                        <SelectItem value="Family">Family Issues</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                      <SelectContent className="max-h-[300px]">
+                        {[
+                          "Intervention auprès des employés des services d'urgence (ambulanciers, policiers, pompiers…)",
+                          "Estime/affirmation de soi",
+                          "Oncologie",
+                          "Accident de la route",
+                          "Accident de travail",
+                          "Adaptation à l'école",
+                          "Adoption internationale",
+                          "Alcoolisme / toxicomanies",
+                          "Aliénation mentale",
+                          "Abus sexuel",
+                          "Anxiété",
+                          "Anxiété de performance",
+                          "Arrêt de travail",
+                          "Retour progressif au travail",
+                          "Approche intégrative",
+                          "Approche humaniste",
+                          "Approche TCC",
+                          "ACT",
+                          "Psychodynamique",
+                          "Pleine conscience",
+                          "Changement organisationnel",
+                          "Changements sociaux",
+                          "Charge mentale",
+                          "Climat de travail",
+                          "Conflits interpersonnels",
+                          "Communication",
+                          "Curatelle publique",
+                          "Déficit de l'attention/hyperactivité",
+                          "Déficience intellectuelle",
+                          "Dépendance affective",
+                          "Dépendance aux jeux de hasard et d'argent (en ligne)",
+                          "Dépendance aux jeux vidéo",
+                          "Dépendance aux contenus pornographiques",
+                          "Difficultés académiques",
+                          "Recherche de sens",
+                          "Relations amoureuses",
+                          "Relations au travail",
+                          "Intervention en milieu de travail",
+                          "Santé psychologique au travail",
+                          "Deuil",
+                          "Diversité culturelle",
+                          "Douance",
+                          "Douleur chronique / fibromyalgie",
+                          "Dynamique organisationnelle",
+                          "EMDR",
+                          "Épuisement professionnel/burnout",
+                          "Estime de soi",
+                          "Étape de la vie",
+                          "Évaluation neuropsychologique",
+                          "Évaluation psychologique",
+                          "Évaluation psychologique milieu scolaire",
+                          "Fertilité / Procréation assistée",
+                          "Garde d'enfants (expertise psychosociale)",
+                          "Gestion de carrière",
+                          "Gestion du stress",
+                          "Gestion de la colère",
+                          "Gestion des émotions",
+                          "Guerre / conflits armés (vétérans)",
+                          "Guerre / conflits armés (victimes)",
+                          "Habiletés de gestion",
+                          "Harcèlement au travail",
+                          "HPI-adulte",
+                          "TSA",
+                          "TSA adulte évaluation",
+                          "TSA adulte intervention",
+                          "Hypnose thérapeutique",
+                          "IMO",
+                          "Immigration",
+                          "Vieillissement",
+                          "Intérêts / Aptitudes au travail",
+                          "Intimidation",
+                          "Violence (agresseurs)",
+                          "Violence (victimes)",
+                          "Maladie dégénératives / sida",
+                          "Maladies physiques / handicaps",
+                          "Médiation familiale",
+                          "Monoparentalité / famille recomposée",
+                          "Orientation scolaire et professionnelle",
+                          "Orientation sexuelle",
+                          "Peur de vomir",
+                          "Peur d'avoir peur",
+                          "Peur de mourir",
+                          "Périnatalité",
+                          "Problématiques propres aux autochtones",
+                          "Problématiques propres aux agriculteurs",
+                          "Problématiques propres aux réfugiés",
+                          "Problèmes relationnels",
+                          "Proche aidant",
+                          "Psychosomatique",
+                          "Psychologie du sport",
+                          "La psychologie gériatrique",
+                          "Relations familiales",
+                          "Sectes",
+                          "Sélection de personnel/réaffectation",
+                          "Séparation/divorce",
+                          "Situations de crise",
+                          "Soins palliatifs",
+                          "Spiritualité",
+                          "Stress post-traumatique",
+                          "Stress financier",
+                          "Transexualité",
+                          "Troubles alimentaires",
+                          "Troubles anxieux, phobies, panique",
+                          "Troubles d'apprentissages",
+                          "Troubles de la personnalité",
+                          "TPL",
+                          "Troubles de l'humeur",
+                          "Troubles du langage",
+                          "Troubles du sommeil",
+                          "Troubles mentaux sévères et persistants",
+                          "Troubles neuropsychologiques",
+                          "Troubles obsessifs-compulsifs",
+                          "Identité de genre / LGBTQ+",
+                          "Addiction sexuelle et hypersexualité",
+                          "Affirmation de soi",
+                          "Anxiété de séparation",
+                          "Anxiété post-partum",
+                          "Asexualité et aromantisme",
+                          "Attachement chez les adultes",
+                          "Autosabotage",
+                          "Blessure morale",
+                          "Boulimie",
+                          "Leadership",
+                          "Gestion d'équipe",
+                          "Rôle de gestionnaire",
+                          "Compétences en matière de résolution de problèmes",
+                          "Compétences parentales",
+                          "Étape ou transition de vie",
+                          "Difficultés masculines",
+                          "Famille recomposée",
+                          "Fugue",
+                          "Gestion de la colère ordonnée par le tribunal",
+                          "Gestion de la douleur chronique",
+                          "Gestion du temps et organisation",
+                          "Grossesse et maternité",
+                          "Identité de genre",
+                          "Insomnie",
+                          "Le mensonge",
+                          "Motivation",
+                          "Perfectionnisme",
+                          "Procrastination",
+                          "Racisme, soutien à la discrimination",
+                          "Relations interpersonnelles",
+                          "Séparation ou divorce",
+                          "Problèmes professionnels",
+                          "Soutien aux réfugiés et aux immigrants",
+                          "Survivre à la maltraitance",
+                          "Fatigue chronique",
+                          "L'agoraphobie",
+                          "L'anxiété liée à la santé",
+                          "Dysrégulation émotionnelle",
+                          "Phobie",
+                          "Colère",
+                          "Personnalité dépendante",
+                          "Traitement du jeu pathologique",
+                          "Interventions/moyens TDAH",
+                          "Accumulation compulsive",
+                          "Traitement du trouble obsessionnel compulsif (TOC)",
+                          "Traitement du trouble panique",
+                          "Traitement pour l'anxiété sociale",
+                          "Trouble affectif saisonnier (TAS)",
+                          "Trouble de l'adaptation",
+                          "Trouble de la dépersonnalisation-déréalisation",
+                          "Troubles de l'attachement",
+                          "Psychose",
+                          "État dépressif",
+                          "Bipolarité",
+                          "Peur de vieillir",
+                          "Exposition mentale",
+                          "Anxiété chez les personnes âgées",
+                          "Fatigabilité",
+                          "Irritabilité",
+                          "Problèmes de sommeil",
+                          "Difficultés de concentration",
+                          "Difficultés à prendre des décisions",
+                          "Déficits des fonctions exécutives",
+                          "Médiation en milieu de travail lorsqu'une personne a un problème de santé mentale",
+                        ].map((motif) => (
+                          <SelectItem key={motif} value={motif}>
+                            {motif}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -1522,6 +1723,161 @@ export default function BookAppointmentPage() {
                     <p className="text-xs text-muted-foreground">
                       Select all time slots that work for you
                     </p>
+                  </div>
+
+                  {/* Payment Method */}
+                  <div className="space-y-2">
+                    <Label>
+                      Mode de paiement *
+                      {isFirstAppointment && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Carte de crédit obligatoire pour le 1er rendez-vous)
+                        </span>
+                      )}
+                    </Label>
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("card")}
+                        disabled={isFirstAppointment === true}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          paymentMethod === "card"
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                          isFirstAppointment === true && "opacity-100 cursor-default",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            paymentMethod === "card"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          <CreditCard className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            Carte de crédit
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {isFirstAppointment === true
+                              ? "Obligatoire pour valider le 1er rendez-vous"
+                              : "Paiement instantané par carte"}
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            paymentMethod === "card"
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {paymentMethod === "card" && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("interac")}
+                        disabled={isFirstAppointment === true}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          paymentMethod === "interac"
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                          isFirstAppointment === true &&
+                            "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            paymentMethod === "interac"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          <Building2 className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            Virement Interac
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Transfert bancaire via Interac
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            paymentMethod === "interac"
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {paymentMethod === "interac" && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("payment_plan")}
+                        disabled={isFirstAppointment === true}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          paymentMethod === "payment_plan"
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                          isFirstAppointment === true &&
+                            "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            paymentMethod === "payment_plan"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          <Handshake className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            Entente de paiement
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Plan de paiement personnalisé
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            paymentMethod === "payment_plan"
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {paymentMethod === "payment_plan" && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+                    </div>
+                    {isFirstAppointment === true && (
+                      <p className="text-xs text-muted-foreground">
+                        Pour le premier rendez-vous, la carte de crédit est
+                        obligatoire pour valider votre réservation.
+                      </p>
+                    )}
                   </div>
 
                   {/* Notes */}
@@ -1658,6 +2014,29 @@ export default function BookAppointmentPage() {
                           <p className="text-sm">{notes}</p>
                         </div>
                       )}
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Mode de paiement
+                        </p>
+                        <div className="flex items-center gap-2">
+                          {paymentMethod === "card" && (
+                            <CreditCard className="h-4 w-4" />
+                          )}
+                          {paymentMethod === "interac" && (
+                            <Building2 className="h-4 w-4" />
+                          )}
+                          {paymentMethod === "payment_plan" && (
+                            <Handshake className="h-4 w-4" />
+                          )}
+                          <span className="font-medium">
+                            {paymentMethod === "card"
+                              ? "Carte de crédit"
+                              : paymentMethod === "interac"
+                                ? "Virement Interac"
+                                : "Entente de paiement"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 

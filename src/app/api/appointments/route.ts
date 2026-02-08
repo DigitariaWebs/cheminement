@@ -252,6 +252,14 @@ export async function POST(req: NextRequest) {
       data.bookingFor = "self";
     }
 
+    // Set payment method if provided
+    if (data.paymentMethod) {
+      if (!data.payment) {
+        data.payment = {};
+      }
+      data.payment.method = data.paymentMethod;
+    }
+
     const appointment = new Appointment(data);
     await appointment.save();
 

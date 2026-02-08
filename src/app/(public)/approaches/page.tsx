@@ -1,5 +1,6 @@
 import {
   ApproachesHeroSection,
+  ApproachesCTASection,
   ClinicalApproachesSection,
   FlexibilitySection,
   MatchingSection,
@@ -19,6 +20,8 @@ export default function ApproachesPage() {
       <FlexibilitySection />
       <ColorTransition fromColor="muted" toColor="background" />
       <MatchingSection />
+      <ColorTransition fromColor="background" toColor="muted" />
+      <ApproachesCTASection />
     </main>
   );
 }

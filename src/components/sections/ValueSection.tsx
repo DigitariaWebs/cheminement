@@ -102,64 +102,28 @@ export default function ValueSection() {
           </div>
         </ScrollReveal>
 
-        {/* Staggered Grid Layout - 4 Column Stairs Pattern */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 max-w-[1600px] mx-auto">
-          {/* First Column - Starts at top */}
-          <div className="lg:mt-0">
-            <ScrollReveal
-              variant={cardAnimations[0]}
-              delayMs={100}
-              duration={700}
-            >
-              <ValueCard value={values[0]} index={0} locale={locale} />
-            </ScrollReveal>
-            <ScrollReveal variant="fade-up" delayMs={300} duration={800}>
-              <div className="-mt-1 relative">
-                <Image
-                  src="/ValueSection.png"
-                  alt="Inner Child Healing"
-                  width={500}
-                  height={500}
-                  className="w-full h-auto transform scale-x-[-1] scale-110"
-                />
-                {/* Fading effect at bottom */}
-                <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Second Column - Staggered down */}
-          <div className="lg:mt-32">
-            <ScrollReveal
-              variant={cardAnimations[1]}
-              delayMs={200}
-              duration={700}
-            >
-              <ValueCard value={values[1]} index={1} locale={locale} />
-            </ScrollReveal>
-          </div>
-
-          {/* Third Column - Staggered down more */}
-          <div className="lg:mt-64">
-            <ScrollReveal
-              variant={cardAnimations[2]}
-              delayMs={300}
-              duration={700}
-            >
-              <ValueCard value={values[2]} index={2} locale={locale} />
-            </ScrollReveal>
-          </div>
-
-          {/* Fourth Column - Staggered down most */}
-          <div className="lg:mt-96">
-            <ScrollReveal
-              variant={cardAnimations[3]}
-              delayMs={400}
-              duration={700}
-            >
-              <ValueCard value={values[3]} index={3} locale={locale} />
-            </ScrollReveal>
-          </div>
+        {/* Single Column Layout - Only first card */}
+        <div className="max-w-md mx-auto">
+          <ScrollReveal
+            variant={cardAnimations[0]}
+            delayMs={100}
+            duration={700}
+          >
+            <ValueCard value={values[0]} index={0} locale={locale} />
+          </ScrollReveal>
+          <ScrollReveal variant="fade-up" delayMs={300} duration={800}>
+            <div className="mt-8 relative">
+              <Image
+                src="/ValueSection.png"
+                alt="Inner Child Healing"
+                width={500}
+                height={500}
+                className="w-full h-auto transform scale-x-[-1] scale-110"
+              />
+              {/* Fading effect at bottom */}
+              <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
+            </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

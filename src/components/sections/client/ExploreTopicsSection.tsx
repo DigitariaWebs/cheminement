@@ -170,7 +170,7 @@ export default function ExploreTopicsSection() {
                   {locale === "fr" ? topic.descriptionFr : topic.descriptionEn}
                 </p>
                 <Link
-                  href={`/${locale}/explore/${topic.slug}`}
+                  href={`/explore/${topic.slug}`}
                   className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors font-light"
                 >
                   {t("learnMore")}

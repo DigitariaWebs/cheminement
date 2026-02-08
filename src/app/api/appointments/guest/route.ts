@@ -224,6 +224,9 @@ export async function POST(req: NextRequest) {
       appointmentData.bookingFor = "self";
     }
 
+    // Set payment method if provided
+    const paymentMethod = appointmentData.paymentMethod || "card";
+
     // Create the appointment with pending payment status (payment after professional confirmation)
     const appointment = new Appointment({
       ...appointmentData,
@@ -234,6 +237,7 @@ export async function POST(req: NextRequest) {
         platformFee: appointmentData.platformFee,
         professionalPayout: appointmentData.professionalPayout,
         status: "pending",
+        method: paymentMethod,
       },
     });
     await appointment.save();

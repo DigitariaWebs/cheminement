@@ -65,7 +65,7 @@ export default function WorkplaceSection() {
                         key={`${feature}-${index}`}
                         className="flex items-start gap-3 rounded-3xl bg-muted/30 p-5 text-sm leading-relaxed text-muted-foreground"
                       >
-                        <span className="mt-2 h-2 w-2 rounded-full bg-primary" />
+                        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
                         <span>{feature}</span>
                       </div>
                     ))}
