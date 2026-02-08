@@ -23,6 +23,9 @@ import {
   X,
   Heart,
   Stethoscope,
+  CreditCard,
+  Building2,
+  Handshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,6 +40,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiClient, medicalProfileAPI } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface GuestInfo {
   firstName: string;
@@ -149,6 +153,14 @@ export default function BookAppointmentPage() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Payment method state
+  const [paymentMethod, setPaymentMethod] = useState<
+    "card" | "interac" | "payment_plan"
+  >("card");
+  const [isFirstAppointment, setIsFirstAppointment] = useState<boolean | null>(
+    null,
+  );
+
   // Check for 'for' query param
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -192,6 +204,25 @@ export default function BookAppointmentPage() {
     };
     fetchMedicalProfile();
   }, [status]);
+
+  // Check if this is the first appointment (authenticated users only)
+  useEffect(() => {
+    const checkFirstAppointment = async () => {
+      if (status === "authenticated" && !isGuest) {
+        try {
+          const appointments = await apiClient.get<any[]>("/appointments");
+          setIsFirstAppointment(appointments.length === 0);
+        } catch {
+          // If error, assume it's not the first appointment to be safe
+          setIsFirstAppointment(false);
+        }
+      } else {
+        // For guests, always assume it's the first appointment
+        setIsFirstAppointment(true);
+      }
+    };
+    checkFirstAppointment();
+  }, [status, isGuest]);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -401,6 +432,7 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
+        paymentMethod: paymentMethod === "interac" ? "transfer" : paymentMethod === "payment_plan" ? "direct_debit" : "card",
       };
 
       // Include loved one info if booking for a loved one
@@ -450,6 +482,7 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
+        paymentMethod: paymentMethod === "interac" ? "transfer" : paymentMethod === "payment_plan" ? "direct_debit" : "card",
       };
 
       // Include loved one info if booking for a loved one
@@ -1692,6 +1725,161 @@ export default function BookAppointmentPage() {
                     </p>
                   </div>
 
+                  {/* Payment Method */}
+                  <div className="space-y-2">
+                    <Label>
+                      Mode de paiement *
+                      {isFirstAppointment && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Carte de crédit obligatoire pour le 1er rendez-vous)
+                        </span>
+                      )}
+                    </Label>
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("card")}
+                        disabled={isFirstAppointment === true}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          paymentMethod === "card"
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                          isFirstAppointment === true && "opacity-100 cursor-default",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            paymentMethod === "card"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          <CreditCard className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            Carte de crédit
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {isFirstAppointment === true
+                              ? "Obligatoire pour valider le 1er rendez-vous"
+                              : "Paiement instantané par carte"}
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            paymentMethod === "card"
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {paymentMethod === "card" && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("interac")}
+                        disabled={isFirstAppointment === true}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          paymentMethod === "interac"
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                          isFirstAppointment === true &&
+                            "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            paymentMethod === "interac"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          <Building2 className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            Virement Interac
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Transfert bancaire via Interac
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            paymentMethod === "interac"
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {paymentMethod === "interac" && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("payment_plan")}
+                        disabled={isFirstAppointment === true}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                          paymentMethod === "payment_plan"
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border/40 bg-card/50 hover:bg-accent/50",
+                          isFirstAppointment === true &&
+                            "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "rounded-full p-2.5",
+                            paymentMethod === "payment_plan"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          <Handshake className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            Entente de paiement
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Plan de paiement personnalisé
+                          </p>
+                        </div>
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                            paymentMethod === "payment_plan"
+                              ? "border-primary"
+                              : "border-muted-foreground/30",
+                          )}
+                        >
+                          {paymentMethod === "payment_plan" && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                      </button>
+                    </div>
+                    {isFirstAppointment === true && (
+                      <p className="text-xs text-muted-foreground">
+                        Pour le premier rendez-vous, la carte de crédit est
+                        obligatoire pour valider votre réservation.
+                      </p>
+                    )}
+                  </div>
+
                   {/* Notes */}
                   <div className="space-y-2">
                     <Label>Additional Notes (Optional)</Label>
@@ -1826,6 +2014,29 @@ export default function BookAppointmentPage() {
                           <p className="text-sm">{notes}</p>
                         </div>
                       )}
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Mode de paiement
+                        </p>
+                        <div className="flex items-center gap-2">
+                          {paymentMethod === "card" && (
+                            <CreditCard className="h-4 w-4" />
+                          )}
+                          {paymentMethod === "interac" && (
+                            <Building2 className="h-4 w-4" />
+                          )}
+                          {paymentMethod === "payment_plan" && (
+                            <Handshake className="h-4 w-4" />
+                          )}
+                          <span className="font-medium">
+                            {paymentMethod === "card"
+                              ? "Carte de crédit"
+                              : paymentMethod === "interac"
+                                ? "Virement Interac"
+                                : "Entente de paiement"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
