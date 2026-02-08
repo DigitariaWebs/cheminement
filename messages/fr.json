@@ -1995,6 +1995,8 @@
       "addPaymentMethodNote": "Les méthodes de paiement peuvent être ajoutées lors du paiement",
       "noPaymentMethods": "Aucune méthode de paiement ajoutée",
       "confirmDeletePaymentMethod": "Êtes-vous sûr de vouloir supprimer cette méthode de paiement?",
+      "waitingProfessionalConfirmation": "En attente de la confirmation du professionnel avant le paiement",
+      "awaitingConfirmation": "En attente de la confirmation du professionnel avant le paiement",
       "status": {
         "paid": "Payé",
         "pending": "En attente",
