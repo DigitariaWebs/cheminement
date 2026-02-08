@@ -68,18 +68,49 @@ function calculateStringSimilarity(str1: string, str2: string): number {
 }
 
 /**
+ * Check for exact match (same string) between client preference and professional list
+ * Returns true if exact match found, false otherwise
+ */
+function hasExactMatch(
+  clientPreference: string,
+  professionalList: string[],
+): boolean {
+  if (!clientPreference || !professionalList || professionalList.length === 0) {
+    return false;
+  }
+
+  const normalizedClient = normalizeString(clientPreference);
+  
+  return professionalList.some((professionalItem) => {
+    const normalizedProfessional = normalizeString(professionalItem);
+    return normalizedClient === normalizedProfessional;
+  });
+}
+
+/**
  * Find the best match between a client preference and a list of professional specialties
  * Returns the best similarity score and the matched item
+ * Priority: exact match first, then similarity
  */
 function findBestMatch(
   clientPreference: string,
   professionalList: string[],
   threshold: number = 0.3,
-): { score: number; matchedItem?: string } {
+): { score: number; matchedItem?: string; isExactMatch?: boolean } {
   if (!clientPreference || !professionalList || professionalList.length === 0) {
     return { score: 0 };
   }
 
+  // First, check for exact match (normalized)
+  const normalizedClient = normalizeString(clientPreference);
+  for (const professionalItem of professionalList) {
+    const normalizedProfessional = normalizeString(professionalItem);
+    if (normalizedClient === normalizedProfessional) {
+      return { score: 1.0, matchedItem: professionalItem, isExactMatch: true };
+    }
+  }
+
+  // If no exact match, use similarity as fallback
   let bestScore = 0;
   let bestMatch: string | undefined;
 
@@ -96,7 +127,7 @@ function findBestMatch(
 
   // Only return if above threshold
   if (bestScore >= threshold) {
-    return { score: bestScore, matchedItem: bestMatch };
+    return { score: bestScore, matchedItem: bestMatch, isExactMatch: false };
   }
 
   return { score: 0 };
@@ -138,26 +169,34 @@ function calculateRelevancyScore(
   // ===== MATCHING BASED ON CLIENT PREFERENCES vs PROFESSIONAL SPECIALTIES =====
 
   // 1. Match primary issue with problematics/specialty (highest weight)
+  // PRIORITY: Exact match required for problematics
   if (medicalProfile?.primaryIssue) {
     const primaryIssue = medicalProfile.primaryIssue;
 
-    // Check against problematics
+    // Check against problematics - EXACT MATCH REQUIRED
     if (profile.problematics && profile.problematics.length > 0) {
       const match = findBestMatch(primaryIssue, profile.problematics, 0.3);
-      if (match.score > 0) {
-        const points = Math.round(match.score * 50); // Up to 50 points
+      if (match.isExactMatch) {
+        // Exact match gets maximum points
+        score += 100;
+        reasons.push(
+          "Correspondance exacte avec votre problématique principale",
+        );
+      } else if (match.score > 0) {
+        // Similarity match gets lower points (fallback)
+        const points = Math.round(match.score * 20); // Reduced from 50
         score += points;
         reasons.push(
-          `Correspondance forte avec votre problématique principale (${Math.round(match.score * 100)}%)`,
+          `Correspondance partielle avec votre problématique principale (${Math.round(match.score * 100)}%)`,
         );
       }
     }
 
-    // Check against specialty
+    // Check against specialty (similarity allowed)
     if (profile.specialty) {
       const match = findBestMatch(primaryIssue, [profile.specialty], 0.3);
       if (match.score > 0) {
-        const points = Math.round(match.score * 30); // Up to 30 points
+        const points = Math.round(match.score * 15); // Reduced from 30
         score += points;
         reasons.push(
           `Spécialité correspondante (${Math.round(match.score * 100)}%)`,
@@ -167,21 +206,29 @@ function calculateRelevancyScore(
   }
 
   // 2. Match issueType from appointment (fallback if no medical profile)
+  // PRIORITY: Exact match required for problematics
   if (!medicalProfile?.primaryIssue && appointment.issueType) {
     if (profile.problematics && profile.problematics.length > 0) {
       const match = findBestMatch(appointment.issueType, profile.problematics, 0.3);
-      if (match.score > 0) {
-        const points = Math.round(match.score * 40);
+      if (match.isExactMatch) {
+        // Exact match gets maximum points
+        score += 100;
+        reasons.push(
+          "Correspondance exacte avec le motif de consultation",
+        );
+      } else if (match.score > 0) {
+        // Similarity match gets lower points (fallback)
+        const points = Math.round(match.score * 20); // Reduced from 40
         score += points;
         reasons.push(
-          `Spécialisé dans ce type de problématique (${Math.round(match.score * 100)}%)`,
+          `Correspondance partielle avec le motif de consultation (${Math.round(match.score * 100)}%)`,
         );
       }
     }
     if (profile.specialty) {
       const match = findBestMatch(appointment.issueType, [profile.specialty], 0.3);
       if (match.score > 0) {
-        const points = Math.round(match.score * 25);
+        const points = Math.round(match.score * 15); // Reduced from 25
         score += points;
         reasons.push(
           `Spécialité pertinente (${Math.round(match.score * 100)}%)`,
@@ -191,26 +238,35 @@ function calculateRelevancyScore(
   }
 
   // 3. Match secondary issues with problematics
+  // PRIORITY: Exact match required
   if (medicalProfile?.secondaryIssues && medicalProfile.secondaryIssues.length > 0) {
-    let secondaryMatches = 0;
-    let totalSecondaryScore = 0;
+    let exactSecondaryMatches = 0;
+    let partialSecondaryMatches = 0;
 
     for (const secondaryIssue of medicalProfile.secondaryIssues) {
       if (profile.problematics && profile.problematics.length > 0) {
         const match = findBestMatch(secondaryIssue, profile.problematics, 0.25);
-        if (match.score > 0) {
-          secondaryMatches++;
-          totalSecondaryScore += match.score;
+        if (match.isExactMatch) {
+          exactSecondaryMatches++;
+        } else if (match.score > 0) {
+          partialSecondaryMatches++;
         }
       }
     }
 
-    if (secondaryMatches > 0) {
-      const avgScore = totalSecondaryScore / medicalProfile.secondaryIssues.length;
-      const points = Math.round(avgScore * 20 * secondaryMatches); // Up to 20 points per match
-      score += Math.min(points, 40); // Cap at 40 points total
+    // Exact matches get more points
+    if (exactSecondaryMatches > 0) {
+      score += exactSecondaryMatches * 30; // 30 points per exact match
       reasons.push(
-        `${secondaryMatches} problématique(s) secondaire(s) correspondante(s)`,
+        `${exactSecondaryMatches} problématique(s) secondaire(s) correspondante(s) exactement`,
+      );
+    }
+    
+    // Partial matches get fewer points
+    if (partialSecondaryMatches > 0) {
+      score += Math.min(partialSecondaryMatches * 10, 20); // Max 20 points for partial matches
+      reasons.push(
+        `${partialSecondaryMatches} problématique(s) secondaire(s) partiellement correspondante(s)`,
       );
     }
   }
@@ -409,8 +465,9 @@ export async function routeAppointmentToProfessionals(
       );
 
       // Only include professionals with a minimum relevancy score
-      // Lowered threshold to 15 to allow more matches with the new scoring system
-      if (score >= 15) {
+      // Priority: professionals with exact matches (score >= 100) or good matches (score >= 20)
+      // Exact match on primary issue or appointment issueType gives 100 points
+      if (score >= 20 || score >= 100) {
         matches.push({
           professionalId: profile.userId.toString(),
           score,

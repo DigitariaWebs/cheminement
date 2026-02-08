@@ -1108,17 +1108,43 @@ function MedicalProfileModal({
                   <p className="text-sm text-muted-foreground font-light mb-4">
                     Select any diagnosed mental health conditions
                   </p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
                     {[
-                      "Depression",
-                      "Anxiety",
-                      "Bipolar Disorder",
-                      "Schizophrenia",
-                      "PTSD",
-                      "OCD",
-                      "Eating Disorders",
-                      "ADHD",
-                      "Other",
+                      "Trouble de la personnalité",
+                      "Trouble délirant",
+                      "Trouble psychotique bref (moins d'un mois)",
+                      "Schizophrénie",
+                      "Trouble schizo-affectif",
+                      "Trouble bipolaire",
+                      "Trouble dépressif majeur (épisode unique ou récurrent)",
+                      "Trouble dépressif persistant (Dysthymie)",
+                      "Trouble dysphorique prémenstruel",
+                      "Trouble de deuil prolongé",
+                      "Trouble d'anxiété généralisée (TAG)",
+                      "Trouble d'anxiété sociale (Phobie sociale)",
+                      "Trouble panique (avec ou sans agoraphobie)",
+                      "Agoraphobie",
+                      "Trouble d'adaptation avec humeur anxiodépressive",
+                      "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
+                      "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
+                      "Thésaurisation pathologique (accumulation)",
+                      "Trouble de stress post-traumatique (TSPT)",
+                      "Trouble de stress aigu (immédiatement après le choc)",
+                      "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                      "Pica (ingestion de substances non comestibles)",
+                      "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                      "Boulimie",
+                      "Accès hyperphagiques",
+                      "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
+                      "Jeu d'argent pathologique",
+                      "Maladie d'Alzheimer",
+                      "Maladie de Parkinson",
+                      "Douance",
+                      "TSA",
+                      "TDAH",
+                      "Traumatisme crânien (TCC)",
+                      "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
+                      "Tumeurs cérébrales",
                     ].map((item) => (
                       <button
                         key={item}
