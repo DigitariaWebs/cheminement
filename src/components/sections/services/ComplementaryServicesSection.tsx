@@ -3,9 +3,21 @@
 import { Brain, BookOpenCheck, Sparkle, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
+
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 
 export default function ComplementaryServicesSection() {
   const t = useTranslations("Services.complementaryServices");
@@ -58,17 +70,7 @@ export default function ComplementaryServicesSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          variants={{
-            hidden: { opacity: 0, y: 30 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: {
-                duration: 0.6,
-                ease: "easeOut",
-              },
-            },
-          }}
+          variants={fadeInUp}
           className="mt-12 mx-auto max-w-6xl"
         >
           <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border border-primary/20 shadow-xl">
