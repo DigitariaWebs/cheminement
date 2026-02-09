@@ -158,12 +158,13 @@ export default function HeroSection() {
             <ScrollReveal variant="fade-left" delayMs={400} duration={900}>
               <div className="relative w-full h-[55vh] sm:h-[60vh] md:h-[65vh] lg:h-[75vh] max-h-[680px] flex items-center justify-center">
                 <Image
-                  src="/HeroSection.png"
+                  src="/HeroSection.png?v=2"
                   alt="Mental Health Professional"
                   width={720}
                   height={720}
                   className="w-auto h-full max-w-full object-contain"
                   priority
+                  unoptimized
                 />
                 {/* Fading effect at bottom */}
                 <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-linear-to-t from-accent to-transparent"></div>

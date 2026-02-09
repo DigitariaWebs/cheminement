@@ -114,11 +114,12 @@ export default function ValueSection() {
           <ScrollReveal variant="fade-up" delayMs={300} duration={800}>
             <div className="mt-8 relative">
               <Image
-                src="/ValueSection.png"
+                src="/ValueSection.png?v=2"
                 alt="Inner Child Healing"
                 width={500}
                 height={500}
                 className="w-full h-auto transform scale-x-[-1] scale-110"
+                unoptimized
               />
               {/* Fading effect at bottom */}
               <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>

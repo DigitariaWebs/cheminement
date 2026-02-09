@@ -3,8 +3,21 @@
 import { Brain, BookOpenCheck, Sparkle, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { motion, Variants } from "framer-motion";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
+
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 
 export default function ComplementaryServicesSection() {
   const t = useTranslations("Services.complementaryServices");
@@ -52,18 +65,56 @@ export default function ComplementaryServicesSection() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal variant="zoom-in" delayMs={200} duration={800}>
-          <div className="mt-12 mx-auto max-w-4xl">
-            <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
+        {/* Collaboration Image Section */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="mt-12 mx-auto max-w-6xl"
+        >
+          <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border border-primary/20 shadow-xl">
+            <div className="relative h-[400px] md:h-[500px] lg:h-[600px] w-full">
               <Image
-                src="/TherapyMethodsCalming.jpg"
-                alt="Complementary therapeutic services"
+                src="/complementary-services-collaboration.jpg?v=2"
+                alt="Collaboration et accompagnement dans les services complémentaires"
                 fill
                 className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+                unoptimized
               />
+              {/* Gradient overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
+              
+              {/* Content overlay */}
+              <div className="absolute inset-0 flex items-end">
+                <div className="w-full p-8 md:p-12 lg:p-16">
+                  <div className="max-w-3xl">
+                    <motion.h3
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                      className="text-2xl md:text-3xl lg:text-4xl font-serif font-light text-foreground mb-4 leading-tight"
+                    >
+                      Un accompagnement personnalisé pour votre bien-être
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3, duration: 0.6 }}
+                      className="text-base md:text-lg lg:text-xl text-muted-foreground font-light leading-relaxed"
+                    >
+                      Nos services complémentaires vous offrent des ressources adaptées à vos besoins, avec un soutien professionnel pour vous guider dans votre parcours de santé mentale.
+                    </motion.p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </ScrollReveal>
+        </motion.div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
           {complementary.map(({ icon: Icon, title, description }, index) => (
