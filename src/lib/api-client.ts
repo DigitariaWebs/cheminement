@@ -149,6 +149,7 @@ export const authAPI = {
       problematics?: string[];
       approaches?: string[];
       ageCategories?: string[];
+      diagnosedConditions?: string[];
       skills?: string[];
       bio?: string;
       yearsOfExperience?: number;

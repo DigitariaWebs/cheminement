@@ -111,6 +111,7 @@ export async function POST(req: NextRequest) {
         problematics: professionalProfile?.problematics,
         approaches: professionalProfile?.approaches,
         ageCategories: professionalProfile?.ageCategories,
+        diagnosedConditions: professionalProfile?.diagnosedConditions,
         skills: professionalProfile?.skills,
         bio: professionalProfile?.bio,
         yearsOfExperience: professionalProfile?.yearsOfExperience,
