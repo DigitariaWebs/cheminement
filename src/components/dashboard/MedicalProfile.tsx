@@ -1109,74 +1109,124 @@ function MedicalProfileModal({
                     Select any diagnosed mental health conditions
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
-                    {[
-                      "Trouble de la personnalité",
-                      "Trouble délirant",
-                      "Trouble psychotique bref (moins d'un mois)",
-                      "Schizophrénie",
-                      "Trouble schizo-affectif",
-                      "Trouble bipolaire",
-                      "Trouble dépressif majeur (épisode unique ou récurrent)",
-                      "Trouble dépressif persistant (Dysthymie)",
-                      "Trouble dysphorique prémenstruel",
-                      "Trouble de deuil prolongé",
-                      "Trouble d'anxiété généralisée (TAG)",
-                      "Trouble d'anxiété sociale (Phobie sociale)",
-                      "Trouble panique (avec ou sans agoraphobie)",
-                      "Agoraphobie",
-                      "Trouble d'adaptation avec humeur anxiodépressive",
-                      "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
-                      "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
-                      "Thésaurisation pathologique (accumulation)",
-                      "Trouble de stress post-traumatique (TSPT)",
-                      "Trouble de stress aigu (immédiatement après le choc)",
-                      "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
-                      "Pica (ingestion de substances non comestibles)",
-                      "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
-                      "Boulimie",
-                      "Accès hyperphagiques",
-                      "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
-                      "Jeu d'argent pathologique",
-                      "Maladie d'Alzheimer",
-                      "Maladie de Parkinson",
-                      "Douance",
-                      "TSA",
-                      "TDAH",
-                      "Traumatisme crânien (TCC)",
-                      "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
-                      "Tumeurs cérébrales",
-                    ].map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          const current =
-                            mentalHealthHistoryData.diagnosedConditions;
-                          if (current.includes(item)) {
-                            setMentalHealthHistoryData((prev) => ({
-                              ...prev,
-                              diagnosedConditions: current.filter(
-                                (v) => v !== item,
-                              ),
-                            }));
-                          } else {
-                            setMentalHealthHistoryData((prev) => ({
-                              ...prev,
-                              diagnosedConditions: [...current, item],
-                            }));
-                          }
-                        }}
-                        className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                          mentalHealthHistoryData.diagnosedConditions.includes(
-                            item,
-                          )
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        {item}
-                      </button>
-                    ))}
+                    {(() => {
+                      // Determine if child based on concernedPerson field
+                      const isChild = healthBackgroundData.concernedPerson?.toLowerCase().includes("enfant") || 
+                                     healthBackgroundData.concernedPerson?.toLowerCase().includes("child");
+
+                      // Child diagnosed conditions list
+                      const childDiagnosedConditions = [
+                        "Trouble du langage",
+                        "Handicaps intellectuels",
+                        "Trouble du spectre de l'autisme (TSA)",
+                        "Trouble de l'acquisition de la coordination",
+                        "Tics",
+                        "Syndrome de la Tourette",
+                        "TDAH",
+                        "Dyslexie",
+                        "Dysorthographie",
+                        "Dyscalculie",
+                        "Trouble de la communication sociale (pragmatique)",
+                        "Douance",
+                        "Trouble de dérèglement disruptif de l'humeur",
+                        "Trouble de l'opposition",
+                        "Trouble grave du comportement",
+                        "Trouble d'anxiété de séparation",
+                        "Mutisme sélectif",
+                        "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
+                        "Trouble d'anxiété sociale (Phobie sociale)",
+                        "Trouble panique (avec ou sans agoraphobie)",
+                        "Agoraphobie",
+                        "Trouble d'anxiété généralisée (TAG)",
+                        "Trichotillomanie (arrachage des cheveux)",
+                        "Dermatillomanie (triturage répété de la peau)",
+                        "Trouble réactionnel de l'attachement",
+                        "Trouble de stress post-traumatique (TSPT)",
+                        "Trouble de stress aigu (immédiatement après le choc)",
+                        "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                        "Pica (ingestion de substances non comestibles)",
+                        "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                        "Boulimie",
+                        "Accès hyperphagiques",
+                        "Encoprésie",
+                        "Énurésie",
+                        "Attachement",
+                      ];
+
+                      // Adult diagnosed conditions list
+                      const adultDiagnosedConditions = [
+                        "Trouble de la personnalité",
+                        "Trouble délirant",
+                        "Trouble psychotique bref (moins d'un mois)",
+                        "Schizophrénie",
+                        "Trouble schizo-affectif",
+                        "Trouble bipolaire",
+                        "Trouble dépressif majeur (épisode unique ou récurrent)",
+                        "Trouble dépressif persistant (Dysthymie)",
+                        "Trouble dysphorique prémenstruel",
+                        "Trouble de deuil prolongé",
+                        "Trouble d'anxiété généralisée (TAG)",
+                        "Trouble d'anxiété sociale (Phobie sociale)",
+                        "Trouble panique (avec ou sans agoraphobie)",
+                        "Agoraphobie",
+                        "Trouble d'adaptation avec humeur anxiodépressive",
+                        "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
+                        "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
+                        "Thésaurisation pathologique (accumulation)",
+                        "Trouble de stress post-traumatique (TSPT)",
+                        "Trouble de stress aigu (immédiatement après le choc)",
+                        "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                        "Pica (ingestion de substances non comestibles)",
+                        "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                        "Boulimie",
+                        "Accès hyperphagiques",
+                        "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
+                        "Jeu d'argent pathologique",
+                        "Maladie d'Alzheimer",
+                        "Maladie de Parkinson",
+                        "Douance",
+                        "TSA",
+                        "TDAH",
+                        "Traumatisme crânien (TCC)",
+                        "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
+                        "Tumeurs cérébrales",
+                      ];
+
+                      const conditionsList = isChild ? childDiagnosedConditions : adultDiagnosedConditions;
+
+                      return conditionsList.map((item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => {
+                            const current =
+                              mentalHealthHistoryData.diagnosedConditions;
+                            if (current.includes(item)) {
+                              setMentalHealthHistoryData((prev) => ({
+                                ...prev,
+                                diagnosedConditions: current.filter(
+                                  (v) => v !== item,
+                                ),
+                              }));
+                            } else {
+                              setMentalHealthHistoryData((prev) => ({
+                                ...prev,
+                                diagnosedConditions: [...current, item],
+                              }));
+                            }
+                          }}
+                          className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
+                            mentalHealthHistoryData.diagnosedConditions.includes(
+                              item,
+                            )
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted/50 text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      ));
+                    })()}
                   </div>
                 </div>
               </div>

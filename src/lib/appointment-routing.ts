@@ -3,6 +3,77 @@ import User from "@/models/User";
 import Appointment from "@/models/Appointment";
 import MedicalProfile from "@/models/MedicalProfile";
 
+/**
+ * Calculate age from date of birth
+ */
+function calculateAge(dateOfBirth: Date | string | undefined): number | null {
+  if (!dateOfBirth) return null;
+  
+  const birthDate = typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth;
+  if (isNaN(birthDate.getTime())) return null;
+  
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+/**
+ * Determine if patient is a child (< 18 years) or adult (>= 18 years)
+ */
+function isChild(age: number | null): boolean {
+  if (age === null) return false; // Default to adult if age unknown
+  return age < 18;
+}
+
+/**
+ * Check if professional treats the patient's age category
+ */
+function professionalTreatsAgeCategory(
+  professionalAgeCategories: string[] | undefined,
+  isPatientChild: boolean,
+): boolean {
+  if (!professionalAgeCategories || professionalAgeCategories.length === 0) {
+    // If no age categories specified, assume they treat all ages
+    return true;
+  }
+
+  if (isPatientChild) {
+    // Child (< 18): must have one of these categories
+    return professionalAgeCategories.some((cat) => {
+      const catLower = cat.toLowerCase();
+      return (
+        catLower.includes("child") ||
+        catLower.includes("adolescent") ||
+        catLower.includes("0-12") ||
+        catLower.includes("13-17")
+      );
+    });
+  } else {
+    // Adult (>= 18): must have one of these categories (but NOT child/adolescent)
+    return professionalAgeCategories.some((cat) => {
+      const catLower = cat.toLowerCase();
+      // Exclude child/adolescent categories
+      const isChildCategory =
+        catLower.includes("child") || catLower.includes("adolescent");
+      if (isChildCategory) return false;
+      // Include adult/senior categories
+      return (
+        catLower.includes("adult") ||
+        catLower.includes("senior") ||
+        catLower.includes("18-") ||
+        catLower.includes("26-") ||
+        catLower.includes("65+")
+      );
+    });
+  }
+}
+
 interface ProfessionalMatch {
   professionalId: string;
   score: number;
@@ -442,10 +513,51 @@ export async function routeAppointmentToProfessionals(
       // Continue without medical profile
     }
 
-    // Calculate relevancy scores
+    // Determine patient age and if they are a child or adult
+    let patientAge: number | null = null;
+    let isPatientChild = false;
+
+    // Get client user to access dateOfBirth
+    const clientUser = await User.findById(appointment.clientId);
+    
+    if (appointment.bookingFor === "loved-one" && appointment.lovedOneInfo?.dateOfBirth) {
+      // For loved-one bookings, use lovedOneInfo dateOfBirth
+      patientAge = calculateAge(appointment.lovedOneInfo.dateOfBirth);
+      isPatientChild = isChild(patientAge);
+    } else if (appointment.bookingFor === "self" && clientUser?.dateOfBirth) {
+      // For self bookings, use client's dateOfBirth
+      patientAge = calculateAge(clientUser.dateOfBirth);
+      isPatientChild = isChild(patientAge);
+    } else if (appointment.bookingFor === "patient") {
+      // For patient bookings (medical referral), we don't have dateOfBirth
+      // Default to adult, but this could be enhanced with additional data
+      isPatientChild = false;
+    } else if (clientUser?.dateOfBirth) {
+      // Fallback: use client's dateOfBirth if available
+      patientAge = calculateAge(clientUser.dateOfBirth);
+      isPatientChild = isChild(patientAge);
+    }
+
+    // Filter professionals by age category BEFORE calculating relevancy scores
+    const ageFilteredProfiles = profiles.filter((profile) =>
+      professionalTreatsAgeCategory(profile.ageCategories, isPatientChild),
+    );
+
+    if (ageFilteredProfiles.length === 0) {
+      // No professionals match the age category
+      console.log(
+        `No professionals found for ${isPatientChild ? "child" : "adult"} patients`,
+      );
+      await Appointment.findByIdAndUpdate(appointmentId, {
+        routingStatus: "general",
+      });
+      return { success: true, matches: [], routingStatus: "general" };
+    }
+
+    // Calculate relevancy scores only for age-filtered professionals
     const matches: ProfessionalMatch[] = [];
 
-    for (const profile of profiles) {
+    for (const profile of ageFilteredProfiles) {
       const { score, reasons } = calculateRelevancyScore(
         profile,
         {

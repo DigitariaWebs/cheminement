@@ -154,7 +154,51 @@ export default function MedicalProfileCompletionModal({
     "Other",
   ];
 
-  const diagnosedConditions = [
+  // Determine if child based on concernedPerson field
+  const isChild = formData.concernedPerson?.toLowerCase().includes("enfant") || 
+                 formData.concernedPerson?.toLowerCase().includes("child");
+
+  // Child diagnosed conditions list
+  const childDiagnosedConditions = [
+    "Trouble du langage",
+    "Handicaps intellectuels",
+    "Trouble du spectre de l'autisme (TSA)",
+    "Trouble de l'acquisition de la coordination",
+    "Tics",
+    "Syndrome de la Tourette",
+    "TDAH",
+    "Dyslexie",
+    "Dysorthographie",
+    "Dyscalculie",
+    "Trouble de la communication sociale (pragmatique)",
+    "Douance",
+    "Trouble de dérèglement disruptif de l'humeur",
+    "Trouble de l'opposition",
+    "Trouble grave du comportement",
+    "Trouble d'anxiété de séparation",
+    "Mutisme sélectif",
+    "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
+    "Trouble d'anxiété sociale (Phobie sociale)",
+    "Trouble panique (avec ou sans agoraphobie)",
+    "Agoraphobie",
+    "Trouble d'anxiété généralisée (TAG)",
+    "Trichotillomanie (arrachage des cheveux)",
+    "Dermatillomanie (triturage répété de la peau)",
+    "Trouble réactionnel de l'attachement",
+    "Trouble de stress post-traumatique (TSPT)",
+    "Trouble de stress aigu (immédiatement après le choc)",
+    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+    "Pica (ingestion de substances non comestibles)",
+    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+    "Boulimie",
+    "Accès hyperphagiques",
+    "Encoprésie",
+    "Énurésie",
+    "Attachement",
+  ];
+
+  // Adult diagnosed conditions list
+  const adultDiagnosedConditions = [
     "Trouble de la personnalité",
     "Trouble délirant",
     "Trouble psychotique bref (moins d'un mois)",
@@ -191,6 +235,8 @@ export default function MedicalProfileCompletionModal({
     "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
     "Tumeurs cérébrales",
   ];
+
+  const diagnosedConditions = isChild ? childDiagnosedConditions : adultDiagnosedConditions;
 
   const secondaryIssues = [
     "Anxiety",
