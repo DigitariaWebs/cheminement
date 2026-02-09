@@ -3,6 +3,7 @@ import {
   ServicesHeroSection,
   ServiceProgramsSection,
   WorkplaceSection,
+  ComplementaryServicesSection,
 } from "@/components/sections/services";
 import ColorTransition from "@/components/ui/ColorTransition";
 
@@ -16,6 +17,8 @@ export default function ServicesPage() {
       <WorkplaceSection />
       <ColorTransition fromColor="muted" toColor="muted" />
       <SentiersProgramSection />
+      <ColorTransition fromColor="muted" toColor="background" />
+      <ComplementaryServicesSection />
     </main>
   );
 }

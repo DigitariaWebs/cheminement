@@ -98,10 +98,11 @@ export default function ClinicalApproachesSection() {
           <div className="mt-12 mx-auto max-w-4xl">
             <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
               <Image
-                src="/CognitiveBehavioralTherapy.jpg"
+                src="/CognitiveBehavioralTherapy.jpg?v=2"
                 alt={t("imageAlt")}
                 fill
                 className="object-cover"
+                unoptimized
               />
             </div>
           </div>
