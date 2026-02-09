@@ -5,6 +5,7 @@ export interface IProfile extends Document {
   problematics?: string[];
   approaches?: string[];
   ageCategories?: string[];
+  diagnosedConditions?: string[]; // Conditions that the professional treats
   skills?: string[];
   bio?: string;
   yearsOfExperience?: number;
@@ -52,6 +53,7 @@ const ProfileSchema = new Schema<IProfile>(
     problematics: [String],
     approaches: [String],
     ageCategories: [String],
+    diagnosedConditions: [String],
     skills: [String],
     bio: {
       type: String,

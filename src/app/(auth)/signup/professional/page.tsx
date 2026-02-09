@@ -76,6 +76,7 @@ interface FormData {
   problematics: string[];
   approaches: string[];
   ageCategories: string[];
+  diagnosedConditions: string[];
   sessionTypes: string[];
   modalities: string[];
   languages: string[];
@@ -124,6 +125,7 @@ export default function ProfessionalSignupPage() {
     problematics: [],
     approaches: [],
     ageCategories: [],
+    diagnosedConditions: [],
     sessionTypes: [],
     modalities: [],
     languages: [],
@@ -258,6 +260,10 @@ export default function ProfessionalSignupPage() {
           ageCategories:
             formData.ageCategories.length > 0
               ? formData.ageCategories
+              : undefined,
+          diagnosedConditions:
+            formData.diagnosedConditions.length > 0
+              ? formData.diagnosedConditions
               : undefined,
           sessionTypes:
             formData.sessionTypes.length > 0
@@ -902,17 +908,65 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Therapeutic Approaches (select all that apply)</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Label>Approches et mandats potentiels (sélectionnez tous ceux qui s'appliquent)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto p-2">
                 {[
-                  "Cognitive Behavioral (CBT)",
-                  "Psychodynamic",
-                  "Humanistic",
-                  "Mindfulness-Based",
-                  "Solution-Focused",
-                  "Narrative Therapy",
-                  "Dialectical Behavior (DBT)",
-                  "EMDR",
+                  "Thérapie individuelle",
+                  "Thérapie de couple",
+                  "Thérapie familiale",
+                  "Thérapie de l'enfant",
+                  "Coaching des parents",
+                  "Thérapie des adolescents",
+                  "Thérapie individuelle pour les personnes âgées",
+                  "Hypnothérapie",
+                  "Coaching pour gestionnaires/cadres",
+                  "Évaluation du TDAH chez l'adulte",
+                  "Zoothérapie",
+                  "Accompagnement des employés avec un HPI,TSA",
+                  "Développement des compétences professionnelles",
+                  "Évaluation des troubles d'apprentissage chez les adultes",
+                  "Orientation professionnelle",
+                  "Évaluation du TDAH chez l'enfant",
+                  "Psychologie en réadaptation",
+                  "Évaluations des troubles d'apprentissage chez les enfants",
+                  "Évaluation psychologique",
+                  "Évaluation psychiatrique",
+                  "L'art-thérapie",
+                  "Supervision clinique en psychologie",
+                  "Supervision clinique pour internat",
+                  "Supervision clinique pour permis par équivalence",
+                  "Évaluations neuropsychologiques pour les enfants",
+                  "Évaluations neuropsychologiques pour les adultes",
+                  "La thérapie d'acceptation et d'engagement (ACT)",
+                  "La thérapie cognitivo-comportementale (TCC)",
+                  "La thérapie comportementale dialectique (TCD)",
+                  "La thérapie psychodynamique",
+                  "La thérapie centrée sur les émotions",
+                  "La thérapie sensorimotrice",
+                  "La psychothérapie analytique fonctionnelle",
+                  "La thérapie basée sur la mentalisation",
+                  "La pleine conscience",
+                  "L'entretien motivationnel (EM)",
+                  "La psychologie positive",
+                  "La schémathérapie",
+                  "La Psychothérapie interpersonnelle",
+                  "La Psychothérapie psychanalytique",
+                  "La thérapie existentielle",
+                  "La thérapie humaniste centrée sur la personne",
+                  "La thérapie narrative",
+                  "La Thérapie par le jeu",
+                  "Thérapie brève centrée sur les solutions",
+                  "Thérapie cognitivo-comportementale pour l'insomnie (TCC-I)",
+                  "Thérapie du rêve",
+                  "Thérapie intégrative",
+                  "Thérapie somatique",
+                  "Thérapie systémique familiale TCC",
+                  "Thérapie du processus cognitif",
+                  "Thérapie de la cohérence",
+                  "Thérapie de schémas",
+                  "Thérapie relationnelle",
+                  "Thérapie systémique-interactionnelle",
+                  "ACT thérapie pour les enfants et adolescents",
                 ].map((approach) => (
                   <div key={approach} className="flex items-center space-x-2">
                     <Checkbox
@@ -958,6 +1012,138 @@ export default function ProfessionalSignupPage() {
                     </label>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Diagnostics traités (sélectionnez tous ceux qui s'appliquent)</Label>
+              <p className="text-xs text-muted-foreground">
+                Sélectionnez les diagnostics que vous traitez selon les catégories d'âge choisies
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
+                {(() => {
+                  // Determine if professional treats children or adults based on ageCategories
+                  const treatsChildren = formData.ageCategories.some((cat) =>
+                    cat.toLowerCase().includes("child") || cat.toLowerCase().includes("adolescent")
+                  );
+                  const treatsAdults = formData.ageCategories.some((cat) =>
+                    cat.toLowerCase().includes("adult") || cat.toLowerCase().includes("senior")
+                  );
+
+                  // Child diagnosed conditions list
+                  const childDiagnosedConditions = [
+                    "Trouble du langage",
+                    "Handicaps intellectuels",
+                    "Trouble du spectre de l'autisme (TSA)",
+                    "Trouble de l'acquisition de la coordination",
+                    "Tics",
+                    "Syndrome de la Tourette",
+                    "TDAH",
+                    "Dyslexie",
+                    "Dysorthographie",
+                    "Dyscalculie",
+                    "Trouble de la communication sociale (pragmatique)",
+                    "Douance",
+                    "Trouble de dérèglement disruptif de l'humeur",
+                    "Trouble de l'opposition",
+                    "Trouble grave du comportement",
+                    "Trouble d'anxiété de séparation",
+                    "Mutisme sélectif",
+                    "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
+                    "Trouble d'anxiété sociale (Phobie sociale)",
+                    "Trouble panique (avec ou sans agoraphobie)",
+                    "Agoraphobie",
+                    "Trouble d'anxiété généralisée (TAG)",
+                    "Trichotillomanie (arrachage des cheveux)",
+                    "Dermatillomanie (triturage répété de la peau)",
+                    "Trouble réactionnel de l'attachement",
+                    "Trouble de stress post-traumatique (TSPT)",
+                    "Trouble de stress aigu (immédiatement après le choc)",
+                    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                    "Pica (ingestion de substances non comestibles)",
+                    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                    "Boulimie",
+                    "Accès hyperphagiques",
+                    "Encoprésie",
+                    "Énurésie",
+                    "Attachement",
+                  ];
+
+                  // Adult diagnosed conditions list
+                  const adultDiagnosedConditions = [
+                    "Trouble de la personnalité",
+                    "Trouble délirant",
+                    "Trouble psychotique bref (moins d'un mois)",
+                    "Schizophrénie",
+                    "Trouble schizo-affectif",
+                    "Trouble bipolaire",
+                    "Trouble dépressif majeur (épisode unique ou récurrent)",
+                    "Trouble dépressif persistant (Dysthymie)",
+                    "Trouble dysphorique prémenstruel",
+                    "Trouble de deuil prolongé",
+                    "Trouble d'anxiété généralisée (TAG)",
+                    "Trouble d'anxiété sociale (Phobie sociale)",
+                    "Trouble panique (avec ou sans agoraphobie)",
+                    "Agoraphobie",
+                    "Trouble d'adaptation avec humeur anxiodépressive",
+                    "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
+                    "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
+                    "Thésaurisation pathologique (accumulation)",
+                    "Trouble de stress post-traumatique (TSPT)",
+                    "Trouble de stress aigu (immédiatement après le choc)",
+                    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                    "Pica (ingestion de substances non comestibles)",
+                    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                    "Boulimie",
+                    "Accès hyperphagiques",
+                    "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
+                    "Jeu d'argent pathologique",
+                    "Maladie d'Alzheimer",
+                    "Maladie de Parkinson",
+                    "Douance",
+                    "TSA",
+                    "TDAH",
+                    "Traumatisme crânien (TCC)",
+                    "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
+                    "Tumeurs cérébrales",
+                  ];
+
+                  // Combine lists based on what the professional treats
+                  let conditionsList: string[] = [];
+                  if (treatsChildren && treatsAdults) {
+                    // If treats both, show both lists
+                    conditionsList = [...childDiagnosedConditions, ...adultDiagnosedConditions];
+                  } else if (treatsChildren) {
+                    conditionsList = childDiagnosedConditions;
+                  } else if (treatsAdults) {
+                    conditionsList = adultDiagnosedConditions;
+                  }
+                  // If no age categories selected, show empty list
+
+                  return conditionsList.length > 0 ? (
+                    conditionsList.map((condition) => (
+                      <div key={condition} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`diagnosed-${condition}`}
+                          checked={formData.diagnosedConditions.includes(condition)}
+                          onCheckedChange={() =>
+                            handleArrayChange("diagnosedConditions", condition)
+                          }
+                        />
+                        <label
+                          htmlFor={`diagnosed-${condition}`}
+                          className="text-sm cursor-pointer"
+                        >
+                          {condition}
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground col-span-2">
+                      Veuillez d'abord sélectionner au moins une catégorie d'âge ci-dessus
+                    </p>
+                  );
+                })()}
               </div>
             </div>
           </div>

@@ -793,59 +793,122 @@ export default function MemberSignupPage() {
             <div className="space-y-2">
               <Label>Diagnosed Conditions (select all that apply)</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
-                {[
-                  "Trouble de la personnalité",
-                  "Trouble délirant",
-                  "Trouble psychotique bref (moins d'un mois)",
-                  "Schizophrénie",
-                  "Trouble schizo-affectif",
-                  "Trouble bipolaire",
-                  "Trouble dépressif majeur (épisode unique ou récurrent)",
-                  "Trouble dépressif persistant (Dysthymie)",
-                  "Trouble dysphorique prémenstruel",
-                  "Trouble de deuil prolongé",
-                  "Trouble d'anxiété généralisée (TAG)",
-                  "Trouble d'anxiété sociale (Phobie sociale)",
-                  "Trouble panique (avec ou sans agoraphobie)",
-                  "Agoraphobie",
-                  "Trouble d'adaptation avec humeur anxiodépressive",
-                  "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
-                  "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
-                  "Thésaurisation pathologique (accumulation)",
-                  "Trouble de stress post-traumatique (TSPT)",
-                  "Trouble de stress aigu (immédiatement après le choc)",
-                  "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
-                  "Pica (ingestion de substances non comestibles)",
-                  "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
-                  "Boulimie",
-                  "Accès hyperphagiques",
-                  "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
-                  "Jeu d'argent pathologique",
-                  "Maladie d'Alzheimer",
-                  "Maladie de Parkinson",
-                  "Douance",
-                  "TSA",
-                  "TDAH",
-                  "Traumatisme crânien (TCC)",
-                  "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
-                  "Tumeurs cérébrales",
-                ].map((condition) => (
-                  <div key={condition} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`diagnosed-${condition}`}
-                      checked={formData.diagnosedConditions.includes(condition)}
-                      onCheckedChange={() =>
-                        handleArrayChange("diagnosedConditions", condition)
-                      }
-                    />
-                    <label
-                      htmlFor={`diagnosed-${condition}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {condition}
-                    </label>
-                  </div>
-                ))}
+                {(() => {
+                  // Calculate age from dateOfBirth
+                  const calculateAge = (dateOfBirth: string): number | null => {
+                    if (!dateOfBirth) return null;
+                    const birthDate = new Date(dateOfBirth);
+                    if (isNaN(birthDate.getTime())) return null;
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                      age--;
+                    }
+                    return age;
+                  };
+
+                  const age = calculateAge(formData.dateOfBirth);
+                  const isChild = age !== null && age < 18;
+
+                  // Child diagnosed conditions list
+                  const childDiagnosedConditions = [
+                    "Trouble du langage",
+                    "Handicaps intellectuels",
+                    "Trouble du spectre de l'autisme (TSA)",
+                    "Trouble de l'acquisition de la coordination",
+                    "Tics",
+                    "Syndrome de la Tourette",
+                    "TDAH",
+                    "Dyslexie",
+                    "Dysorthographie",
+                    "Dyscalculie",
+                    "Trouble de la communication sociale (pragmatique)",
+                    "Douance",
+                    "Trouble de dérèglement disruptif de l'humeur",
+                    "Trouble de l'opposition",
+                    "Trouble grave du comportement",
+                    "Trouble d'anxiété de séparation",
+                    "Mutisme sélectif",
+                    "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
+                    "Trouble d'anxiété sociale (Phobie sociale)",
+                    "Trouble panique (avec ou sans agoraphobie)",
+                    "Agoraphobie",
+                    "Trouble d'anxiété généralisée (TAG)",
+                    "Trichotillomanie (arrachage des cheveux)",
+                    "Dermatillomanie (triturage répété de la peau)",
+                    "Trouble réactionnel de l'attachement",
+                    "Trouble de stress post-traumatique (TSPT)",
+                    "Trouble de stress aigu (immédiatement après le choc)",
+                    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                    "Pica (ingestion de substances non comestibles)",
+                    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                    "Boulimie",
+                    "Accès hyperphagiques",
+                    "Encoprésie",
+                    "Énurésie",
+                    "Attachement",
+                  ];
+
+                  // Adult diagnosed conditions list
+                  const adultDiagnosedConditions = [
+                    "Trouble de la personnalité",
+                    "Trouble délirant",
+                    "Trouble psychotique bref (moins d'un mois)",
+                    "Schizophrénie",
+                    "Trouble schizo-affectif",
+                    "Trouble bipolaire",
+                    "Trouble dépressif majeur (épisode unique ou récurrent)",
+                    "Trouble dépressif persistant (Dysthymie)",
+                    "Trouble dysphorique prémenstruel",
+                    "Trouble de deuil prolongé",
+                    "Trouble d'anxiété généralisée (TAG)",
+                    "Trouble d'anxiété sociale (Phobie sociale)",
+                    "Trouble panique (avec ou sans agoraphobie)",
+                    "Agoraphobie",
+                    "Trouble d'adaptation avec humeur anxiodépressive",
+                    "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
+                    "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
+                    "Thésaurisation pathologique (accumulation)",
+                    "Trouble de stress post-traumatique (TSPT)",
+                    "Trouble de stress aigu (immédiatement après le choc)",
+                    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
+                    "Pica (ingestion de substances non comestibles)",
+                    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+                    "Boulimie",
+                    "Accès hyperphagiques",
+                    "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
+                    "Jeu d'argent pathologique",
+                    "Maladie d'Alzheimer",
+                    "Maladie de Parkinson",
+                    "Douance",
+                    "TSA",
+                    "TDAH",
+                    "Traumatisme crânien (TCC)",
+                    "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
+                    "Tumeurs cérébrales",
+                  ];
+
+                  const conditionsList = isChild ? childDiagnosedConditions : adultDiagnosedConditions;
+
+                  return conditionsList.map((condition) => (
+                    <div key={condition} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`diagnosed-${condition}`}
+                        checked={formData.diagnosedConditions.includes(condition)}
+                        onCheckedChange={() =>
+                          handleArrayChange("diagnosedConditions", condition)
+                        }
+                      />
+                      <label
+                        htmlFor={`diagnosed-${condition}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {condition}
+                      </label>
+                    </div>
+                  ));
+                })()}
               </div>
             </div>
           </div>
