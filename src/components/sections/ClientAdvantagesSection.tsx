@@ -22,12 +22,15 @@ import {
   Baby,
   Smile,
   MoreHorizontal,
+  Clock,
+  UserCheck,
 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
+  const tHero = useTranslations("HeroSection");
   const locale = useLocale();
 
   // Mapping des topics aux icônes
@@ -298,6 +301,42 @@ export default function ClientAdvantagesSection() {
               <span className="text-sm">
                 {t("trustIndicators.confidential")}
               </span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Three Key Points Cards */}
+        <ScrollReveal variant="fade-up" delayMs={1000} duration={700}>
+          <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+            <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-foreground rounded-2xl shrink-0">
+                  <UserCheck className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
+                  {tHero("personalizedCare")}
+                </h3>
+              </div>
+            </div>
+            <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-foreground rounded-2xl shrink-0">
+                  <Clock className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
+                  {tHero("flexibleScheduling")}
+                </h3>
+              </div>
+            </div>
+            <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-foreground rounded-2xl shrink-0">
+                  <Shield className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
+                  {tHero("confidentialSupport")}
+                </h3>
+              </div>
             </div>
           </div>
         </ScrollReveal>
