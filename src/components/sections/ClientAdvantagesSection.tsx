@@ -22,15 +22,15 @@ import {
   Baby,
   Smile,
   MoreHorizontal,
-  Award,
   Clock,
-  Lock,
+  UserCheck,
 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
+  const tHero = useTranslations("HeroSection");
   const locale = useLocale();
 
   // Mapping des topics aux icônes
@@ -305,96 +305,42 @@ export default function ClientAdvantagesSection() {
           </div>
         </ScrollReveal>
 
-        {/* Three Value Cards from Block B */}
+        {/* Three Key Points Cards */}
         <ScrollReveal variant="fade-up" delayMs={1000} duration={700}>
           <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-            <ValueCardBlockB
-              icon={Award}
-              titleEn="Recognized expertise"
-              titleFr="Une expertise reconnue"
-              descriptionEn="Whether it's a psychologist, psychotherapist or another professional, you will always work with an expert whose practice is regulated and recognized by their professional order."
-              descriptionFr="Que ce soit un psychologue, un psychothérapeute ou un autre professionnel, vous allez toujours travaillez avec un expert dont la pratique est encadrée et reconnue par son ordre professionnel."
-              index={0}
-              locale={locale}
-            />
-            <ValueCardBlockB
-              icon={Clock}
-              titleEn="Accessibility and flexibility"
-              titleFr="Accessibilité et flexibilité"
-              subtitleEn="Where and when you want"
-              subtitleFr="Où et quand vous le souhaitez"
-              descriptionEn="We offer flexible support tailored to your needs: remote consultations via secure video calls for accessibility from anywhere, or in-person appointments in our welcoming offices. Our matching process helps you find the right professional for your specific needs and preferences, strengthening engagement and ensuring a successful therapeutic journey."
-              descriptionFr="Nous offrons un soutien flexible adapté à vos besoins : consultations à distance via appels vidéo sécurisés pour une accessibilité partout, ou rendez-vous en personne dans nos bureaux accueillants. Notre processus de jumelage vous aide à trouver le bon professionnel pour vos besoins spécifiques et vos préférences, renforçant l'engagement et assurant un parcours thérapeutique réussi."
-              index={1}
-              locale={locale}
-            />
-            <ValueCardBlockB
-              icon={Lock}
-              titleEn="Confidentiality and ethics"
-              titleFr="Confidentialité et éthique"
-              subtitleEn="Ethics and confidentiality: The foundation of our commitment"
-              subtitleFr="Éthique et confidentialité : La fondation de notre engagement"
-              descriptionEn="Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment."
-              descriptionFr="Votre bien-être et votre confiance sont nos priorités absolues. Vos données sont hébergées exclusivement sur des serveurs canadiens, garantissant une souveraineté complète de vos données. Nous respectons strictement la Loi 25 et appliquons une protection rigoureuse de votre vie privée. Ces principes sont les fondations de notre service, garantissant que vous évoluiez dans un environnement sécuritaire et respectueux."
-              index={2}
-              locale={locale}
-            />
+            <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-foreground rounded-2xl shrink-0">
+                  <UserCheck className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
+                  {tHero("personalizedCare")}
+                </h3>
+              </div>
+            </div>
+            <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-foreground rounded-2xl shrink-0">
+                  <Clock className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
+                  {tHero("flexibleScheduling")}
+                </h3>
+              </div>
+            </div>
+            <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-foreground rounded-2xl shrink-0">
+                  <Shield className="w-6 h-6 text-card" strokeWidth={2} />
+                </div>
+                <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
+                  {tHero("confidentialSupport")}
+                </h3>
+              </div>
+            </div>
           </div>
         </ScrollReveal>
       </div>
     </section>
-  );
-}
-
-// Component for the three value cards from block B
-function ValueCardBlockB({
-  icon: Icon,
-  titleEn,
-  titleFr,
-  subtitleEn,
-  subtitleFr,
-  descriptionEn,
-  descriptionFr,
-  index,
-  locale,
-}: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  titleEn: string;
-  titleFr: string;
-  subtitleEn?: string;
-  subtitleFr?: string;
-  descriptionEn: string;
-  descriptionFr: string;
-  index: number;
-  locale: string;
-}) {
-  const title = locale === "fr" ? titleFr : titleEn;
-  const subtitle = locale === "fr" ? subtitleFr : subtitleEn;
-  const description = locale === "fr" ? descriptionFr : descriptionEn;
-
-  return (
-    <div className="bg-card rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-      {/* Icon and Title */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-foreground rounded-2xl shrink-0">
-          <Icon className="w-6 h-6 text-card" strokeWidth={2} />
-        </div>
-        <h3 className="text-lg md:text-xl font-serif font-medium text-foreground leading-tight">
-          {title}
-        </h3>
-      </div>
-
-      {/* Subtitle */}
-      {subtitle && (
-        <p className="text-base font-semibold text-foreground mb-4">
-          {subtitle}
-        </p>
-      )}
-
-      {/* Description */}
-      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed text-left">
-        {description}
-      </p>
-    </div>
   );
 }

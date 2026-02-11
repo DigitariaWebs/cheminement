@@ -133,24 +133,6 @@ export default function HeroSection() {
                 )}
               </div>
             </ScrollReveal>
-
-            {/* Additional Info Tags */}
-            <ScrollReveal variant="blur-in" delayMs={650} duration={600}>
-              <div className="flex flex-wrap items-center justify-start gap-4 text-sm text-muted-foreground mt-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/60"></div>
-                  <span>{t("personalizedCare")}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/60"></div>
-                  <span>{t("flexibleScheduling")}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/60"></div>
-                  <span>{t("confidentialSupport")}</span>
-                </div>
-              </div>
-            </ScrollReveal>
           </div>
 
           {/* Right Side: Image */}
