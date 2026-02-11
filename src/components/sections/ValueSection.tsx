@@ -102,30 +102,35 @@ export default function ValueSection() {
           </div>
         </ScrollReveal>
 
-        {/* Single Column Layout - Only first card */}
-        <div className="max-w-md mx-auto">
-          <ScrollReveal
-            variant={cardAnimations[0]}
-            delayMs={100}
-            duration={700}
-          >
-            <ValueCard value={values[0]} index={0} locale={locale} />
-          </ScrollReveal>
-          <ScrollReveal variant="fade-up" delayMs={300} duration={800}>
-            <div className="mt-8 relative">
-              <Image
-                src="/ValueSection.png?v=2"
-                alt="Inner Child Healing"
-                width={500}
-                height={500}
-                className="w-full h-auto transform scale-x-[-1] scale-110"
-                unoptimized
-              />
-              {/* Fading effect at bottom */}
-              <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
-            </div>
-          </ScrollReveal>
+        {/* Value Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto mb-16">
+          {values.map((value, index) => (
+            <ScrollReveal
+              key={index}
+              variant={cardAnimations[index % cardAnimations.length]}
+              delayMs={100 + index * 100}
+              duration={700}
+            >
+              <ValueCard value={value} index={index} locale={locale} />
+            </ScrollReveal>
+          ))}
         </div>
+
+        {/* Image Section */}
+        <ScrollReveal variant="fade-up" delayMs={500} duration={800}>
+          <div className="max-w-md mx-auto relative">
+            <Image
+              src="/ValueSection.png?v=2"
+              alt="Inner Child Healing"
+              width={500}
+              height={500}
+              className="w-full h-auto transform scale-x-[-1] scale-110"
+              unoptimized
+            />
+            {/* Fading effect at bottom */}
+            <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
