@@ -12,6 +12,7 @@ import {
   MoreVertical,
   Loader2,
   AlertCircle,
+  Star,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { appointmentsAPI } from "@/lib/api-client";
-import { CancelAppointmentDialog } from "@/components/appointments";
+import { CancelAppointmentDialog, ReviewDialog } from "@/components/appointments";
 import Link from "next/link";
 import type { AppointmentResponse } from "@/types/api";
 
@@ -33,6 +34,9 @@ export default function ClientAppointmentsPage() {
   const [error, setError] = useState("");
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] =
+    useState<AppointmentResponse | null>(null);
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [appointmentToReview, setAppointmentToReview] =
     useState<AppointmentResponse | null>(null);
   const t = useTranslations("Client.appointments");
   const router = useRouter();
@@ -70,6 +74,21 @@ export default function ClientAppointmentsPage() {
   const handleCancelSuccess = () => {
     fetchAppointments();
     closeCancelDialog();
+  };
+
+  const openReviewDialog = (appointment: AppointmentResponse) => {
+    setAppointmentToReview(appointment);
+    setShowReviewDialog(true);
+  };
+
+  const closeReviewDialog = () => {
+    setShowReviewDialog(false);
+    setAppointmentToReview(null);
+  };
+
+  const handleReviewSuccess = () => {
+    fetchAppointments();
+    closeReviewDialog();
   };
 
   const handleJoinSession = (appointment: AppointmentResponse) => {
@@ -334,6 +353,17 @@ export default function ClientAppointmentsPage() {
                           {t("actions.joinSession")}
                         </Button>
                       )}
+                    {activeTab === "past" &&
+                      appointment.status === "completed" && (
+                        <Button
+                          variant="outline"
+                          onClick={() => openReviewDialog(appointment)}
+                          className="gap-2 rounded-full"
+                        >
+                          <Star className="h-4 w-4" />
+                          {t("actions.review")}
+                        </Button>
+                      )}
                   </div>
                 </div>
 
@@ -381,6 +411,17 @@ export default function ClientAppointmentsPage() {
           amount={appointmentToCancel.payment.price}
           isPaid={appointmentToCancel.payment.status === "paid"}
           onSuccess={handleCancelSuccess}
+        />
+      )}
+
+      {/* Review Dialog */}
+      {appointmentToReview && (
+        <ReviewDialog
+          open={showReviewDialog}
+          onOpenChange={setShowReviewDialog}
+          appointmentId={appointmentToReview._id}
+          professionalName={`${appointmentToReview.professionalId?.firstName} ${appointmentToReview.professionalId?.lastName}`}
+          onSuccess={handleReviewSuccess}
         />
       )}
     </div>

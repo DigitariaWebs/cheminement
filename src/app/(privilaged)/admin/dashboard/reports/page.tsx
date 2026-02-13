@@ -37,7 +37,6 @@ interface ReportData {
   metrics: ReportMetrics;
   revenueBreakdown: {
     sessionFees: number;
-    subscriptionPlans: number;
     resourceSales: number;
     total: number;
   };
@@ -114,9 +113,6 @@ export default function ReportsPage() {
     csvContent += "Revenue Breakdown\n";
     csvContent += "Category,Amount,Percentage\n";
     csvContent += `Session Fees,$${revenueBreakdown.sessionFees.toLocaleString()},${revenueBreakdown.total > 0 ? ((revenueBreakdown.sessionFees / revenueBreakdown.total) * 100).toFixed(1) : 0}%\n`;
-    if (revenueBreakdown.subscriptionPlans > 0) {
-      csvContent += `Subscription Plans,$${revenueBreakdown.subscriptionPlans.toLocaleString()},${revenueBreakdown.total > 0 ? ((revenueBreakdown.subscriptionPlans / revenueBreakdown.total) * 100).toFixed(1) : 0}%\n`;
-    }
     if (revenueBreakdown.resourceSales > 0) {
       csvContent += `Resource Sales,$${revenueBreakdown.resourceSales.toLocaleString()},${revenueBreakdown.total > 0 ? ((revenueBreakdown.resourceSales / revenueBreakdown.total) * 100).toFixed(1) : 0}%\n`;
     }
@@ -430,29 +426,6 @@ export default function ReportsPage() {
                 />
               </div>
             </div>
-            {revenueBreakdown.subscriptionPlans > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-light text-muted-foreground">
-                    Subscription Plans
-                  </span>
-                  <span className="text-sm font-medium text-foreground">
-                    ${revenueBreakdown.subscriptionPlans.toLocaleString()}
-                  </span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-blue-500"
-                    style={{
-                      width:
-                        revenueBreakdown.total > 0
-                          ? `${(revenueBreakdown.subscriptionPlans / revenueBreakdown.total) * 100}%`
-                          : "0%",
-                    }}
-                  />
-                </div>
-              </div>
-            )}
             {revenueBreakdown.resourceSales > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-2">

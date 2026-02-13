@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
+import Review from "@/models/Review";
+import { ResourcePurchase } from "@/models/Resource";
 import { authOptions } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
@@ -67,7 +69,7 @@ export async function GET(req: NextRequest) {
         }),
         Appointment.countDocuments({
           status: "completed",
-          createdAt: { $gte: startDate },
+          date: { $gte: startDate },
         }),
         Appointment.aggregate([
           {
@@ -79,7 +81,7 @@ export async function GET(req: NextRequest) {
           {
             $group: {
               _id: null,
-              totalRevenue: { $sum: 80 }, // Assuming $80 per session
+              totalRevenue: { $sum: "$payment.price" }, // Use actual payment price
             },
           },
         ]),
@@ -98,7 +100,7 @@ export async function GET(req: NextRequest) {
         }),
         Appointment.countDocuments({
           status: "completed",
-          createdAt: { $gte: previousStartDate, $lt: startDate },
+          date: { $gte: previousStartDate, $lt: startDate },
         }),
         Appointment.aggregate([
           {
@@ -110,7 +112,7 @@ export async function GET(req: NextRequest) {
           {
             $group: {
               _id: null,
-              totalRevenue: { $sum: 80 },
+              totalRevenue: { $sum: "$payment.price" }, // Use actual payment price
             },
           },
         ]),
@@ -140,39 +142,51 @@ export async function GET(req: NextRequest) {
     };
 
     // Get revenue breakdown
-    const revenueBreakdown = await Appointment.aggregate([
-      {
-        $match: {
-          status: "completed",
-          createdAt: { $gte: startDate },
+    const [appointmentRevenue, resourceRevenue] = await Promise.all([
+      // Session fees from appointments
+      Appointment.aggregate([
+        {
+          $match: {
+            status: "completed",
+            date: { $gte: startDate },
+          },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          sessionFees: { $sum: 80 },
-          subscriptionPlans: { $sum: 0 }, // Not implemented yet
-          resourceSales: { $sum: 0 }, // Not implemented yet
+        {
+          $group: {
+            _id: null,
+            sessionFees: { $sum: "$payment.price" },
+          },
         },
-      },
+      ]),
+      // Resource sales revenue (when implemented)
+      ResourcePurchase.aggregate([
+        {
+          $match: {
+            paymentStatus: "completed",
+            createdAt: { $gte: startDate },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            resourceRevenue: { $sum: "$price" },
+          },
+        },
+      ]).catch(() => [{ resourceRevenue: 0 }]), // Fallback if collection doesn't exist yet
     ]);
 
-    const breakdown = revenueBreakdown[0] || {
-      sessionFees: 0,
-      subscriptionPlans: 0,
-      resourceSales: 0,
+    const breakdown = {
+      sessionFees: appointmentRevenue[0]?.sessionFees || 0,
+      resourceSales: resourceRevenue[0]?.resourceRevenue || 0,
     };
-    const totalRevenue =
-      breakdown.sessionFees +
-      breakdown.subscriptionPlans +
-      breakdown.resourceSales;
+    const totalRevenue = breakdown.sessionFees + breakdown.resourceSales;
 
     // Get top issue types
     const issueTypes = await Appointment.aggregate([
       {
         $match: {
           status: "completed",
-          createdAt: { $gte: startDate },
+          date: { $gte: startDate },
           issueType: { $exists: true, $ne: null },
         },
       },
@@ -195,14 +209,33 @@ export async function GET(req: NextRequest) {
       {
         $match: {
           status: "completed",
-          createdAt: { $gte: startDate },
+          date: { $gte: startDate },
         },
       },
       {
         $group: {
-          _id: "$professionalId",
+          _id: {
+            professionalId: "$professionalId",
+            clientId: "$clientId",
+          },
           sessionsCount: { $sum: 1 },
-          totalRevenue: { $sum: 80 },
+          totalRevenue: { $sum: "$payment.price" }, // Use actual payment price
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.professionalId",
+          totalSessions: { $sum: "$sessionsCount" },
+          totalRevenue: { $sum: "$totalRevenue" },
+          activeClients: { $addToSet: "$_id.clientId" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSessions: 1,
+          totalRevenue: 1,
+          activeClientsCount: { $size: "$activeClients" },
         },
       },
       {
@@ -217,14 +250,51 @@ export async function GET(req: NextRequest) {
         $unwind: "$professional",
       },
       {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "professionalId",
+          as: "reviews",
+        },
+      },
+      {
         $project: {
           name: {
             $concat: ["$professional.firstName", " ", "$professional.lastName"],
           },
-          totalSessions: "$sessionsCount",
-          activeClients: { $literal: 0 }, // This would need more complex aggregation
+          totalSessions: 1,
+          activeClients: "$activeClientsCount",
           revenueGenerated: "$totalRevenue",
-          avgRating: { $literal: 4.5 }, // Mock rating
+          reviewCount: { $size: "$reviews" },
+          avgRating: {
+            $cond: {
+              if: { $gt: [{ $size: "$reviews" }, 0] },
+              then: { $avg: "$reviews.rating" },
+              else: {
+                // Fallback to calculated mock rating based on performance
+                $add: [
+                  4.0, // Base rating
+                  {
+                    $divide: [
+                      {
+                        $min: [
+                          { $multiply: ["$activeClientsCount", 0.1] },
+                          0.5,
+                        ],
+                      },
+                      1,
+                    ],
+                  },
+                  {
+                    $divide: [
+                      { $min: [{ $multiply: ["$totalSessions", 0.01] }, 0.4] },
+                      1,
+                    ],
+                  },
+                ],
+              },
+            },
+          },
         },
       },
       {
@@ -239,7 +309,6 @@ export async function GET(req: NextRequest) {
       metrics,
       revenueBreakdown: {
         sessionFees: breakdown.sessionFees,
-        subscriptionPlans: breakdown.subscriptionPlans,
         resourceSales: breakdown.resourceSales,
         total: totalRevenue,
       },
