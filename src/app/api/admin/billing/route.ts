@@ -133,9 +133,9 @@ export async function GET(req: NextRequest) {
           ? appointment.date.toISOString().split("T")[0]
           : "N/A",
         sessionDate: `${appointment.date ? appointment.date.toISOString().split("T")[0] : "N/A"} ${appointment.time || "N/A"}`,
-        amount: 120, // Standard session price
-        platformFee: 12, // 10% platform fee
-        professionalPayout: 108, // Amount after platform fee
+        amount: appointment.payment?.price || 120, // Use actual payment price or fallback
+        platformFee: appointment.payment?.platformFee || 12, // Use actual platform fee or fallback
+        professionalPayout: appointment.payment?.professionalPayout || 108, // Use actual payout or fallback
         status: paymentStatus,
         paymentMethod: paymentStatus === "paid" ? "Various" : undefined,
         invoiceUrl: paymentStatus === "paid" ? "#" : undefined,
@@ -148,24 +148,22 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    // Calculate summary stats
-    const allPayments = await Appointment.find({
+    // Calculate summary stats using real payment data
+    const allAppointments = await Appointment.find({
       status: { $in: ["completed", "scheduled", "cancelled", "no-show"] },
     }).lean();
 
+    const completedAppointments = allAppointments.filter((p) => p.status === "completed");
+    const pendingAppointments = allAppointments.filter(
+      (p) => p.status === "scheduled" || p.status === "completed",
+    );
+
     const stats = {
-      totalRevenue:
-        allPayments.filter((p) => p.status === "completed").length * 12, // Platform fees
-      pendingRevenue:
-        allPayments.filter(
-          (p) => p.status === "scheduled" || p.status === "completed",
-        ).length * 12,
-      professionalPayouts:
-        allPayments.filter((p) => p.status === "completed").length * 108,
-      totalTransactions: allPayments.filter((p) => p.status === "completed")
-        .length,
-      overdueCount: allPayments.filter((p) => {
-        if (p.status !== "completed") return false;
+      totalRevenue: completedAppointments.reduce((sum, apt) => sum + (apt.payment?.platformFee || 12), 0),
+      pendingRevenue: pendingAppointments.reduce((sum, apt) => sum + (apt.payment?.platformFee || 12), 0),
+      professionalPayouts: completedAppointments.reduce((sum, apt) => sum + (apt.payment?.professionalPayout || 108), 0),
+      totalTransactions: completedAppointments.length,
+      overdueCount: completedAppointments.filter((p) => {
         const daysSince =
           (Date.now() - new Date(p.date || Date.now()).getTime()) /
           (1000 * 60 * 60 * 24);

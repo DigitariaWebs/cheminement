@@ -278,14 +278,16 @@ export default function AdminsPage() {
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <UserPlus className="h-4 w-4" />
-                Add Admin
+                Promote to Admin
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Create New Administrator</DialogTitle>
+                <DialogTitle>Promote Client to Administrator</DialogTitle>
                 <DialogDescription>
-                  Add a new administrator with specific role and permissions.
+                  Select an existing client account and assign them an
+                  administrator role. They will automatically gain access to the
+                  admin dashboard.
                 </DialogDescription>
               </DialogHeader>
               <CreateAdminForm
@@ -476,41 +478,60 @@ function CreateAdminForm({
   roles: RoleInfo[];
   onSuccess: () => void;
 }) {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    role: "support_admin" as AdminRole,
-    useCustomPermissions: false,
-  });
-  const [customPermissions] = useState<AdminPermissions | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedRole, setSelectedRole] = useState<AdminRole>("support_admin");
+  const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Fetch available users (non-admin users)
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("/api/admin/admins/clients");
+        if (response.ok) {
+          const data = await response.json();
+          setAvailableUsers(data.clients);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = availableUsers.filter(
+    (user) =>
+      `${user.firstName} ${user.lastName}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedUserId) {
+      setError("Please select a user to promote to admin");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const payload = {
-        ...formData,
-        ...(formData.useCustomPermissions &&
-          customPermissions && {
-            customPermissions,
-          }),
-      };
-
       const response = await fetch("/api/admin/admins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          userId: selectedUserId,
+          role: selectedRole,
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create admin");
+        throw new Error(errorData.error || "Failed to promote user to admin");
       }
 
       onSuccess();
@@ -521,64 +542,75 @@ function CreateAdminForm({
     }
   };
 
-  const selectedRole = roles.find((r) => r.role === formData.role);
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="text-sm font-medium">First Name</label>
+      <div>
+        <label className="text-sm font-medium mb-2 block">
+          Select User to Promote
+        </label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            value={formData.firstName}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, firstName: e.target.value }))
-            }
-            required
+            placeholder="Search users by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
           />
         </div>
-        <div>
-          <label className="text-sm font-medium">Last Name</label>
-          <Input
-            value={formData.lastName}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, lastName: e.target.value }))
-            }
-            required
-          />
+        <div className="mt-2 max-h-48 overflow-y-auto border rounded-md">
+          {filteredUsers.length === 0 ? (
+            <div className="p-4 text-center text-muted-foreground">
+              No users available
+            </div>
+          ) : (
+            filteredUsers.map((user) => (
+              <div
+                key={user._id}
+                onClick={() => setSelectedUserId(user._id)}
+                className={`p-3 cursor-pointer hover:bg-muted/50 border-b last:border-b-0 ${
+                  selectedUserId === user._id
+                    ? "bg-primary/10 border-primary"
+                    : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium text-primary">
+                      {user.firstName[0]}
+                      {user.lastName[0]}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        user.role === "professional"
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                          : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                      }`}
+                    >
+                      {user.role === "professional" ? "Professional" : "Client"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium">Email</label>
-        <Input
-          type="email"
-          value={formData.email}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, email: e.target.value }))
-          }
-          required
-        />
-      </div>
-
-      <div>
-        <label className="text-sm font-medium">Password</label>
-        <Input
-          type="password"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, password: e.target.value }))
-          }
-          required
-        />
-      </div>
-
-      <div>
-        <label className="text-sm font-medium">Admin Role</label>
+        <label className="text-sm font-medium mb-2 block">Admin Role</label>
         <Select
-          value={formData.role}
-          onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, role: value as AdminRole }))
-          }
+          value={selectedRole}
+          onValueChange={(value) => setSelectedRole(value as AdminRole)}
         >
           <SelectTrigger>
             <SelectValue />
@@ -588,31 +620,30 @@ function CreateAdminForm({
               <SelectItem key={role.role} value={role.role}>
                 <div className="flex items-center gap-2">
                   {getRoleIcon(role.role)}
-                  {role.name}
+                  <span>{role.name}</span>
                 </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {selectedRole && (
-          <p className="text-xs text-muted-foreground mt-1">
-            {selectedRole.description}
-          </p>
-        )}
+        <p className="text-xs text-muted-foreground mt-1">
+          {roles.find((r) => r.role === selectedRole)?.description}
+        </p>
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
+          {error}
         </div>
       )}
 
-      <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={() => {}}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Create Admin"}
+      <div className="flex gap-3">
+        <Button
+          type="submit"
+          disabled={loading || !selectedUserId}
+          className="flex-1"
+        >
+          {loading ? "Promoting..." : "Promote to Admin"}
         </Button>
       </div>
     </form>
