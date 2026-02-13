@@ -310,12 +310,13 @@ const createPriceSection = (
   amount: number,
   note: string,
   theme: EmailTheme = "info",
+  currency: string,
   branding?: IEmailBranding,
 ): string => {
   const colors = getThemeColors(theme, branding);
   return `
     <div style="background: ${colors.primary}; color: white; padding: 15px 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-      <div style="font-size: 24px; font-weight: 600;">$${amount.toFixed(2)} CAD</div>
+      <div style="font-size: 24px; font-weight: 600;">$${amount.toFixed(2)} ${currency}</div>
       <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">${note}</div>
     </div>
   `;
@@ -384,7 +385,7 @@ interface EmailTemplateOptions {
   intro: string;
   details?: Array<{ label: string; value: string; isLink?: boolean }>;
   detailsBorderColor?: string;
-  price?: { amount: number; note: string; theme?: EmailTheme };
+  price?: { amount: number; note: string; theme?: EmailTheme; currency?: string };
   infoBox?: { title: string; content: string; theme?: EmailTheme };
   badge?: { text: string; theme?: EmailTheme };
   button?: { text: string; url: string };
@@ -427,7 +428,7 @@ const buildEmailHtml = (options: EmailTemplateOptions): string => {
             <p>${greeting}</p>
             <p>${intro}</p>
             ${details ? createDetailsSection(details, detailsBorderColor || colors.primary, branding) : ""}
-            ${price ? createPriceSection(price.amount, price.note, price.theme || theme, branding) : ""}
+            ${price ? createPriceSection(price.amount, price.note, price.theme || theme, price.currency!, branding) : ""}
             ${infoBox ? createInfoBox(infoBox.title, infoBox.content, infoBox.theme, branding) : ""}
             ${button ? createButton(button.text, button.url, branding) : ""}
             ${outro ? `<p style="color: #666; font-size: 14px;">${outro}</p>` : ""}
@@ -510,10 +511,26 @@ async function getSubject(
   return settings.templates[emailType]?.subject || defaultSubject;
 }
 
+// Helper to get currency
+async function getCurrency(): Promise<string> {
+  try {
+    await connectToDatabase();
+    const settings = await PlatformSettings.findOne().lean();
+    return settings?.currency || "CAD";
+  } catch {
+    return "CAD";
+  }
+}
+
 // Helper to get branding
 async function getBranding(): Promise<IEmailBranding | undefined> {
-  const settings = await getEmailSettings();
-  return settings.branding;
+  try {
+    await connectToDatabase();
+    const settings = await PlatformSettings.findOne().lean();
+    return settings?.emailSettings?.branding;
+  } catch {
+    return undefined;
+  }
 }
 
 // =============================================================================
@@ -700,6 +717,7 @@ export async function sendGuestPaymentConfirmation(
   data: GuestBookingEmailData,
 ): Promise<boolean> {
   const branding = await getBranding();
+  const currency = await getCurrency();
   const formattedDate = formatEmailDate(data.date);
   const formattedTime = formatTime(data.time);
   const professionalName = formatProfessionalName(data.professionalName);
@@ -729,6 +747,7 @@ export async function sendGuestPaymentConfirmation(
       amount: data.price,
       note: "Session fee (taxes included)",
       theme: "info",
+      currency,
     },
     button: data.paymentLink
       ? { text: "Complete Payment", url: data.paymentLink }
@@ -754,7 +773,7 @@ export async function sendGuestPaymentConfirmation(
     `Date: ${formattedDate}`,
     `Time: ${formattedTime}`,
     `Duration: ${data.duration} minutes`,
-    `Amount Due: $${data.price.toFixed(2)} CAD`,
+    `Amount Due: $${data.price.toFixed(2)} ${currency}`,
     data.paymentLink ? `Complete payment: ${data.paymentLink}` : "",
   ]);
 
@@ -773,6 +792,7 @@ export async function sendGuestPaymentComplete(
   data: GuestBookingEmailData,
 ): Promise<boolean> {
   const branding = await getBranding();
+  const currency = await getCurrency();
   const formattedDate = formatEmailDate(data.date);
   const formattedTime = formatTime(data.time);
   const professionalName = formatProfessionalName(data.professionalName);
@@ -810,6 +830,7 @@ export async function sendGuestPaymentComplete(
       amount: data.price,
       note: "Payment received - Thank you!",
       theme: "success",
+      currency,
     },
     button: data.meetingLink
       ? { text: "Join Session", url: data.meetingLink }
@@ -835,7 +856,7 @@ export async function sendGuestPaymentComplete(
     `Date: ${formattedDate}`,
     `Time: ${formattedTime}`,
     `Duration: ${data.duration} minutes`,
-    `Amount Paid: $${data.price.toFixed(2)} CAD`,
+    `Amount Paid: $${data.price.toFixed(2)} ${currency}`,
     data.meetingLink ? `Meeting Link: ${data.meetingLink}` : "",
   ]);
 
@@ -1155,6 +1176,7 @@ export async function sendPaymentFailedNotification(
   data: PaymentEmailData,
 ): Promise<boolean> {
   const branding = await getBranding();
+  const currency = await getCurrency();
   const paymentUrl = `${process.env.NEXTAUTH_URL}/payment`;
 
   const html = buildEmailHtml({
@@ -1166,7 +1188,7 @@ export async function sendPaymentFailedNotification(
       "Unfortunately, we were unable to process your payment. Please update your payment method and try again.",
     details: data.appointmentDate
       ? [
-          { label: "Amount", value: `$${data.amount.toFixed(2)} CAD` },
+          { label: "Amount", value: `$${data.amount.toFixed(2)} ${currency}` },
           {
             label: "Appointment Date",
             value: formatEmailDate(data.appointmentDate),
@@ -1176,7 +1198,7 @@ export async function sendPaymentFailedNotification(
             value: formatProfessionalName(data.professionalName),
           },
         ]
-      : [{ label: "Amount", value: `$${data.amount.toFixed(2)} CAD` }],
+      : [{ label: "Amount", value: `$${data.amount.toFixed(2)} ${currency}` }],
     button: { text: "Retry Payment", url: paymentUrl },
     infoBox: {
       title: "Need Help?",
@@ -1192,7 +1214,7 @@ export async function sendPaymentFailedNotification(
     "Payment Failed - Action Required",
     `Dear ${data.name},`,
     "Your payment could not be processed.",
-    `Amount: $${data.amount.toFixed(2)} CAD`,
+    `Amount: $${data.amount.toFixed(2)} ${currency}`,
     `Retry payment: ${paymentUrl}`,
   ]);
 
@@ -1208,6 +1230,7 @@ export async function sendRefundConfirmation(
   data: PaymentEmailData,
 ): Promise<boolean> {
   const branding = await getBranding();
+  const currency = await getCurrency();
 
   const html = buildEmailHtml({
     title: "Refund Processed",
@@ -1216,7 +1239,7 @@ export async function sendRefundConfirmation(
     intro:
       "Your refund has been successfully processed. The funds should appear in your account within 5-10 business days.",
     details: [
-      { label: "Refund Amount", value: `$${data.amount.toFixed(2)} CAD` },
+      { label: "Refund Amount", value: `$${data.amount.toFixed(2)} ${currency}` },
       ...(data.appointmentDate
         ? [
             {
@@ -1240,7 +1263,7 @@ export async function sendRefundConfirmation(
     "Refund Processed",
     `Dear ${data.name},`,
     "Your refund has been processed.",
-    `Amount: $${data.amount.toFixed(2)} CAD`,
+    `Amount: $${data.amount.toFixed(2)} ${currency}`,
     "Funds should appear in your account within 5-10 business days.",
   ]);
 
