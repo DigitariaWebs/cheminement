@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 import { config } from "dotenv";
+import dns from "dns";
+
+// Set DNS resolver
+dns.setServers(["1.1.1.1"]);
 
 // Load environment variables
 config({
