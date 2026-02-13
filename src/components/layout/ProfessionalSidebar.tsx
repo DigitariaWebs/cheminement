@@ -107,7 +107,7 @@ export function ProfessionalSidebar() {
       items: [
         {
           title: t("helpCenter"),
-          url: "/professional/dashboard/help",
+          url: "/professional/dashboard/help-center",
           icon: HelpCircle,
         },
         {

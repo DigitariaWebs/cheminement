@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, UserPlus, CalendarCheck, FileText } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
@@ -150,10 +151,13 @@ export default function HowItWorksSection() {
         <ScrollReveal variant="bounce-in" delayMs={600} duration={700}>
           <div className="text-center mt-16">
             <p className="text-muted-foreground mb-6">{t("cta.question")}</p>
-            <button className="inline-flex items-center gap-3 bg-foreground text-primary-foreground px-8 py-4 rounded-full font-semibold hover:bg-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-3 bg-foreground text-primary-foreground px-8 py-4 rounded-full font-semibold hover:bg-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group"
+            >
               <span>{t("cta.button")}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </ScrollReveal>
       </div>

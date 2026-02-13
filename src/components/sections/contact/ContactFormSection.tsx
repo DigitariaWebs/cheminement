@@ -96,7 +96,7 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-right" delayMs={400} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-sm font-light">
-                      Prénom <span className="text-primary">*</span>
+                      Prénom | first name <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="firstName"
@@ -114,7 +114,7 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-left" delayMs={450} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="lastName" className="text-sm font-light">
-                      Nom <span className="text-primary">*</span>
+                      Nom | last name <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="lastName"
@@ -134,7 +134,7 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-right" delayMs={500} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-sm font-light">
-                      Numéro de téléphone <span className="text-primary">*</span>
+                      Numéro de téléphone | phone number <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="phone"
@@ -152,7 +152,7 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-left" delayMs={550} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-light">
-                      Adresse courriel <span className="text-primary">*</span>
+                      Adresse courriel | email address <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="email"
