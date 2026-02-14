@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
+import BookingButton from "@/components/ui/BookingButton";
 
 export default function EthicsSection() {
   const t = useTranslations("Approaches.ethics");
@@ -139,12 +140,7 @@ export default function EthicsSection() {
         </div>
         <ScrollReveal variant="bounce-in" delayMs={800} duration={700}>
           <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
-            <Link
-              href="/book"
-              className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
-            >
-              Prendre rendez-vous
-            </Link>
+            <BookingButton variant="dark" />
             <Link
               href="/professional"
               className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"

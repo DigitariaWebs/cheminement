@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { Calendar, BookOpen, ArrowRight } from "lucide-react";
+import { BookOpen, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import BookingButton from "@/components/ui/BookingButton";
 
 export default function ApproachesCTASection() {
   const locale = useLocale();
@@ -36,18 +37,7 @@ export default function ApproachesCTASection() {
 
             <ScrollReveal variant="fade-up" delayMs={300} duration={600}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link
-                  href="/appointment"
-                  className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl flex items-center gap-2"
-                >
-                  <Calendar className="h-5 w-5" />
-                  <span className="relative z-10">
-                    {locale === "fr"
-                      ? "Prendre un rendez-vous"
-                      : "Book an Appointment"}
-                  </span>
-                  <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                </Link>
+                <BookingButton size="large" showIcon />
 
                 <Link
                   href="/book"
