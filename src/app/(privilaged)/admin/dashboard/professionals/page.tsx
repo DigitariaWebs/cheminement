@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
-  UserPlus,
   Eye,
   CheckCircle2,
   XCircle,
@@ -32,7 +31,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import AddProfessionalModal from "@/components/dashboard/AddProfessionalModal";
 type ProfessionalStatus = "active" | "pending" | "inactive";
 
 interface Professional {
@@ -70,7 +68,6 @@ export default function ProfessionalsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const fetchProfessionals = useCallback(
     async (page = 1) => {
@@ -282,10 +279,6 @@ export default function ProfessionalsPage() {
             <Download className="h-4 w-4" />
             Export Data
           </Button>
-          <Button className="gap-2" onClick={() => setIsAddModalOpen(true)}>
-            <UserPlus className="h-4 w-4" />
-            Add Professional
-          </Button>
         </div>
       </div>
 
@@ -433,15 +426,6 @@ export default function ProfessionalsPage() {
           )}
         </div>
       </div>
-
-      {/* Add Professional Modal */}
-      <AddProfessionalModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={() => {
-          fetchProfessionals(currentPage);
-        }}
-      />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import bcrypt from "bcryptjs";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Admin, {
@@ -11,10 +10,7 @@ import Admin, {
 import { authOptions } from "@/lib/auth";
 
 interface CreateAdminRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
+  userId: string;
   role: AdminRole;
   customPermissions?: Partial<IAdminPermissions>;
 }
@@ -110,7 +106,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST - Create new admin
+// POST - Promote existing user to admin
 export async function POST(req: NextRequest) {
   try {
     // Check admin permissions
@@ -127,7 +123,7 @@ export async function POST(req: NextRequest) {
 
     if (!admin?.permissions.createAdmins) {
       return NextResponse.json(
-        { error: "Insufficient permissions to create admins" },
+        { error: "Insufficient permissions to promote users to admin" },
         { status: 403 },
       );
     }
@@ -135,55 +131,37 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const body: CreateAdminRequest = await req.json();
-    const { email, password, firstName, lastName, role, customPermissions } =
-      body;
+    const { userId, role, customPermissions } = body;
 
     // Validate required fields
-    if (!email || !password || !firstName || !lastName || !role) {
+    if (!userId || !role) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields: userId and role" },
         { status: 400 },
       );
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 400 },
-      );
+    // Check if user exists
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Check if user is already an admin
-    const existingAdminUser = await User.findOne({
-      email: email.toLowerCase(),
-      isAdmin: true,
-    });
-    if (existingAdminUser) {
+    if (existingUser.isAdmin) {
       return NextResponse.json(
         { error: "User is already an admin" },
         { status: 400 },
       );
     }
 
-    // Hash password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Create user
-    const newUser = new User({
-      email: email.toLowerCase(),
-      password: hashedPassword,
-      firstName,
-      lastName,
-      role: "admin",
-      isAdmin: true,
-      status: "active",
-      language: "en",
-    });
-
-    const savedUser = await newUser.save();
+    // Check if user is active
+    if (existingUser.status !== "active") {
+      return NextResponse.json(
+        { error: "Cannot promote inactive user to admin" },
+        { status: 400 },
+      );
+    }
 
     // Create admin record with appropriate permissions
     const basePermissions = ADMIN_ROLE_PERMISSIONS[role];
@@ -192,7 +170,7 @@ export async function POST(req: NextRequest) {
       : basePermissions;
 
     const newAdmin = new Admin({
-      userId: savedUser._id,
+      userId: existingUser._id,
       role,
       permissions,
       createdBy: session.user.id,
@@ -201,23 +179,25 @@ export async function POST(req: NextRequest) {
 
     const savedAdmin = await newAdmin.save();
 
-    // Update user with admin reference
-    await User.findByIdAndUpdate(savedUser._id, {
+    // Update user to be admin
+    await User.findByIdAndUpdate(existingUser._id, {
+      isAdmin: true,
       adminId: (savedAdmin as any)._id,
+      role: "admin",
     });
 
     return NextResponse.json(
       {
-        message: "Admin created successfully",
+        message: "User promoted to admin successfully",
         admin: {
           id: (savedAdmin as any)._id.toString(),
-          userId: (savedUser as any)._id.toString(),
+          userId: existingUser._id.toString(),
           role: savedAdmin.role,
           permissions: savedAdmin.permissions,
           user: {
-            firstName: savedUser.firstName,
-            lastName: savedUser.lastName,
-            email: savedUser.email,
+            firstName: existingUser.firstName,
+            lastName: existingUser.lastName,
+            email: existingUser.email,
           },
           createdAt: savedAdmin.createdAt,
         },
@@ -225,10 +205,10 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.error("Create admin error:", error);
+    console.error("Promote user to admin error:", error);
     return NextResponse.json(
       {
-        error: "Failed to create admin",
+        error: "Failed to promote user to admin",
         details: error instanceof Error ? error.message : error,
       },
       { status: 500 },

@@ -2001,7 +2001,8 @@
         "cancel": "Cancel",
         "joinSession": "Join Session",
         "addToCalendar": "Add to Calendar",
-        "getDirections": "Get Directions"
+        "getDirections": "Get Directions",
+        "review": "Leave Review"
       },
       "modality": {
         "video": "Video Call",
@@ -2078,6 +2079,17 @@
         "cancelled": "Cancelled"
       }
     }
+  },
+  "Review": {
+    "title": "Leave a Review",
+    "description": "Share your experience with {professional}",
+    "rating": "Rating",
+    "comment": "Comment",
+    "commentPlaceholder": "Tell us about your experience...",
+    "anonymous": "Submit anonymously",
+    "cancel": "Cancel",
+    "submit": "Submit Review",
+    "submitting": "Submitting..."
   },
   "Professional": {
     "billing": {

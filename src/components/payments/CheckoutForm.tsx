@@ -37,6 +37,7 @@ interface CheckoutFormProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
   paymentMethod?: "card" | "transfer" | "direct_debit";
+  currency?: string;
 }
 
 export default function CheckoutForm({
@@ -45,6 +46,7 @@ export default function CheckoutForm({
   onSuccess,
   onError,
   paymentMethod = "card",
+  currency = "CAD",
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -314,7 +316,7 @@ export default function CheckoutForm({
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-muted-foreground">Amount to pay</span>
           <span className="text-2xl font-semibold text-foreground">
-            ${amount.toFixed(2)} CAD
+            ${amount.toFixed(2)} {currency}
           </span>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -465,10 +467,10 @@ export default function CheckoutForm({
         {loading
           ? "Processing..."
           : paymentMethod === "transfer"
-            ? `Get Transfer Instructions - $${amount.toFixed(2)} CAD`
+            ? `Get Transfer Instructions - $${amount.toFixed(2)} ${currency}`
             : paymentMethod === "direct_debit"
-              ? `Authorize Debit - $${amount.toFixed(2)} CAD`
-              : `Pay $${amount.toFixed(2)} CAD`}
+              ? `Authorize Debit - $${amount.toFixed(2)} ${currency}`
+              : `Pay $${amount.toFixed(2)} ${currency}`}
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">

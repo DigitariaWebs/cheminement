@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
-  UserPlus,
   Eye,
   CheckCircle2,
   XCircle,
@@ -32,7 +31,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import AddPatientModal from "@/components/dashboard/AddPatientModal";
 
 type PatientStatus = "active" | "pending" | "inactive";
 
@@ -72,7 +70,6 @@ export default function PatientsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const fetchPatients = useCallback(
     async (page = 1) => {
@@ -284,10 +281,6 @@ export default function PatientsPage() {
             <Download className="h-4 w-4" />
             Export Data
           </Button>
-          <Button className="gap-2" onClick={() => setIsAddModalOpen(true)}>
-            <UserPlus className="h-4 w-4" />
-            Add Patient
-          </Button>
         </div>
       </div>
 
@@ -445,15 +438,6 @@ export default function PatientsPage() {
           )}
         </div>
       </div>
-
-      {/* Add Patient Modal */}
-      <AddPatientModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={() => {
-          fetchPatients(currentPage);
-        }}
-      />
     </div>
   );
 }

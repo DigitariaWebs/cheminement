@@ -79,6 +79,7 @@ export default function PaymentModal({
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethodType>("card");
   const [paymentInitiated, setPaymentInitiated] = useState(false);
+  const [currency, setCurrency] = useState<string>("CAD");
 
   const createPaymentIntent = useCallback(
     async (method: PaymentMethodType) => {
@@ -117,6 +118,23 @@ export default function PaymentModal({
       setSelectedPaymentMethod("card");
     }
   }, [open]);
+
+  // Fetch currency from platform settings
+  useEffect(() => {
+    const fetchCurrency = async () => {
+      try {
+        const response = await apiClient.get<{ currency: string }>(
+          "/admin/settings",
+        );
+        setCurrency(response.currency || "CAD");
+      } catch (err) {
+        console.error("Error fetching currency:", err);
+        setCurrency("CAD");
+      }
+    };
+
+    fetchCurrency();
+  }, []);
 
   const handleContinue = () => {
     createPaymentIntent(selectedPaymentMethod);
@@ -164,7 +182,7 @@ export default function PaymentModal({
                     Amount to pay
                   </span>
                   <span className="text-2xl font-semibold text-foreground">
-                    ${amount.toFixed(2)} CAD
+                    ${amount.toFixed(2)} {currency}
                   </span>
                 </div>
               </div>
@@ -280,6 +298,7 @@ export default function PaymentModal({
                   onSuccess={handleSuccess}
                   onError={setError}
                   paymentMethod={selectedPaymentMethod}
+                  currency={currency}
                 />
               </Elements>
             </div>
