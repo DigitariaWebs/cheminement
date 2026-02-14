@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ExpertiseSection() {
   const t = useTranslations("About.expertise");

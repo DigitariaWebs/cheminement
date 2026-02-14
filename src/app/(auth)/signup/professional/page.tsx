@@ -921,7 +921,10 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Approches et mandats potentiels (sélectionnez tous ceux qui s'appliquent)</Label>
+              <Label>
+                Approches et mandats potentiels (sélectionnez tous ceux qui
+                s&apos;appliquent)
+              </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto p-2">
                 {[
                   "Thérapie individuelle",
@@ -1029,18 +1032,26 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Diagnostics traités (sélectionnez tous ceux qui s'appliquent)</Label>
+              <Label>
+                Diagnostics traités (sélectionnez tous ceux qui
+                s&apos;appliquent)
+              </Label>
               <p className="text-xs text-muted-foreground">
-                Sélectionnez les diagnostics que vous traitez selon les catégories d'âge choisies
+                Sélectionnez les diagnostics que vous traitez selon les
+                catégories d&apos;âge choisies
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
                 {(() => {
                   // Determine if professional treats children or adults based on ageCategories
-                  const treatsChildren = formData.ageCategories.some((cat) =>
-                    cat.toLowerCase().includes("child") || cat.toLowerCase().includes("adolescent")
+                  const treatsChildren = formData.ageCategories.some(
+                    (cat) =>
+                      cat.toLowerCase().includes("child") ||
+                      cat.toLowerCase().includes("adolescent"),
                   );
-                  const treatsAdults = formData.ageCategories.some((cat) =>
-                    cat.toLowerCase().includes("adult") || cat.toLowerCase().includes("senior")
+                  const treatsAdults = formData.ageCategories.some(
+                    (cat) =>
+                      cat.toLowerCase().includes("adult") ||
+                      cat.toLowerCase().includes("senior"),
                   );
 
                   // Child diagnosed conditions list
@@ -1125,7 +1136,10 @@ export default function ProfessionalSignupPage() {
                   let conditionsList: string[] = [];
                   if (treatsChildren && treatsAdults) {
                     // If treats both, show both lists
-                    conditionsList = [...childDiagnosedConditions, ...adultDiagnosedConditions];
+                    conditionsList = [
+                      ...childDiagnosedConditions,
+                      ...adultDiagnosedConditions,
+                    ];
                   } else if (treatsChildren) {
                     conditionsList = childDiagnosedConditions;
                   } else if (treatsAdults) {
@@ -1135,10 +1149,15 @@ export default function ProfessionalSignupPage() {
 
                   return conditionsList.length > 0 ? (
                     conditionsList.map((condition) => (
-                      <div key={condition} className="flex items-center space-x-2">
+                      <div
+                        key={condition}
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={`diagnosed-${condition}`}
-                          checked={formData.diagnosedConditions.includes(condition)}
+                          checked={formData.diagnosedConditions.includes(
+                            condition,
+                          )}
                           onCheckedChange={() =>
                             handleArrayChange("diagnosedConditions", condition)
                           }
@@ -1153,7 +1172,8 @@ export default function ProfessionalSignupPage() {
                     ))
                   ) : (
                     <p className="text-sm text-muted-foreground col-span-2">
-                      Veuillez d'abord sélectionner au moins une catégorie d'âge ci-dessus
+                      Veuillez d&apos;abord sélectionner au moins une catégorie
+                      d&apos;âge ci-dessus
                     </p>
                   );
                 })()}

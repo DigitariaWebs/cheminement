@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
@@ -6,7 +6,7 @@ import Admin from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
 
 // GET - List all non-admin users (clients) that can be promoted to admin
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // Check admin permissions
     const session = await getServerSession(authOptions);
@@ -51,12 +51,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       clients: userData,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Get clients error:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch clients",
-        details: error instanceof Error ? error.message : error,
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },
     );

@@ -6,10 +6,10 @@ import { authOptions } from "@/lib/auth";
  * Middleware to protect API routes with authentication
  */
 export async function withAuth(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
   allowedRoles?: string[],
 ) {
-  return async (req: Request, context?: any) => {
+  return async (req: Request, context?: unknown) => {
     try {
       const session = await getServerSession(authOptions);
 
@@ -29,7 +29,7 @@ export async function withAuth(
       }
 
       // Add user to request for convenience
-      (req as any).user = session.user;
+      (req as unknown as { user: typeof session.user }).user = session.user;
 
       return handler(req, context);
     } catch (error) {
@@ -46,7 +46,7 @@ export async function withAuth(
  * Middleware to allow only admins
  */
 export function adminOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
 ) {
   return withAuth(handler, ["admin"]);
 }
@@ -55,7 +55,7 @@ export function adminOnly(
  * Middleware to allow only professionals and admins
  */
 export function professionalOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
 ) {
   return withAuth(handler, ["professional", "admin"]);
 }
@@ -64,7 +64,7 @@ export function professionalOnly(
  * Middleware to allow only clients and admins
  */
 export function clientOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
 ) {
   return withAuth(handler, ["client", "admin"]);
 }
@@ -73,10 +73,10 @@ export function clientOnly(
  * Middleware to check specific admin permissions
  */
 export async function withAdminPermission(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
   requiredPermission: keyof import("@/models/Admin").IAdminPermissions,
 ) {
-  return async (req: Request, context?: any) => {
+  return async (req: Request, context?: unknown) => {
     try {
       const session = await getServerSession(authOptions);
 
@@ -110,7 +110,7 @@ export async function withAdminPermission(
       }
 
       // Add admin info to request for convenience
-      (req as any).admin = admin;
+      (req as unknown as { admin: typeof admin }).admin = admin;
 
       return handler(req, context);
     } catch (error) {
@@ -127,7 +127,7 @@ export async function withAdminPermission(
  * Middleware for admin management permissions
  */
 export function adminManagementOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
 ) {
   return withAdminPermission(handler, "manageAdmins");
 }
@@ -136,7 +136,7 @@ export function adminManagementOnly(
  * Middleware for creating admins
  */
 export function adminCreationOnly(
-  handler: (req: Request, context?: any) => Promise<NextResponse>,
+  handler: (req: Request, context?: unknown) => Promise<NextResponse>,
 ) {
   return withAdminPermission(handler, "createAdmins");
 }

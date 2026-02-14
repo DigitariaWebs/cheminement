@@ -18,7 +18,6 @@ import { useTranslations } from "next-intl";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 
 interface Client {
   id: string;
@@ -182,8 +181,8 @@ export default function ClientDetailsModal({
       //   url: data.url,
       //   fileName: data.fileName,
       // });
-    } catch (error: any) {
-      setUploadError(error.message);
+    } catch (error: unknown) {
+      setUploadError(error instanceof Error ? error.message : "Upload failed");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -193,9 +192,8 @@ export default function ClientDetailsModal({
   };
 
   const handleRemoveDocument = async (index: number) => {
-    const documentToRemove = uploadedDocuments[index];
     // TODO: Implement actual API call to delete file from storage and backend
-    // await apiClient.delete(`/clients/${client.id}/documents/${documentToRemove.id}`);
+    // await apiClient.delete(`/clients/${client.id}/documents/${uploadedDocuments[index].id}`);
     setUploadedDocuments((prev) => prev.filter((_, i) => i !== index));
   };
 

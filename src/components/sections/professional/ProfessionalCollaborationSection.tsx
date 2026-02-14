@@ -2,7 +2,6 @@
 
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
 
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -17,7 +16,6 @@ const fadeInUp: Variants = {
 };
 
 export default function ProfessionalCollaborationSection() {
-  const t = useTranslations("ProfessionalCollaboration");
 
   return (
     <section className="py-16 md:py-24 bg-background">
@@ -29,7 +27,7 @@ export default function ProfessionalCollaborationSection() {
           variants={fadeInUp}
           className="max-w-6xl mx-auto"
         >
-          <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border border-primary/20 shadow-xl">
+          <div className="rounded-2xl overflow-hidden bg-linear-to-br from-primary/5 via-primary/10 to-primary/5 border border-primary/20 shadow-xl">
             <div className="relative h-[400px] md:h-[500px] lg:h-[600px] w-full">
               <Image
                 src="/professional-collaboration.jpg?v=2"
@@ -41,8 +39,8 @@ export default function ProfessionalCollaborationSection() {
                 unoptimized
               />
               {/* Gradient overlay for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
-              
+              <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/50 to-transparent" />
+
               {/* Content overlay */}
               <div className="absolute inset-0 flex items-end">
                 <div className="w-full p-8 md:p-12 lg:p-16">
@@ -63,7 +61,10 @@ export default function ProfessionalCollaborationSection() {
                       transition={{ delay: 0.3, duration: 0.6 }}
                       className="text-base md:text-lg lg:text-xl text-muted-foreground font-light leading-relaxed"
                     >
-                      Ensemble, nous créons un réseau de soutien et de collaboration pour offrir les meilleurs soins à nos clients. Votre expertise fait partie d'une équipe unie.
+                      Ensemble, nous créons un réseau de soutien et de
+                      collaboration pour offrir les meilleurs soins à nos
+                      clients. Votre expertise fait partie d&apos;une équipe
+                      unie.
                     </motion.p>
                   </div>
                 </div>

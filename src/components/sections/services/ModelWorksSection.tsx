@@ -3,7 +3,6 @@
 import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ModelWorksSection() {
   const t = useTranslations("Services.modelWorks");

@@ -4,7 +4,6 @@ import { ArrowRight, Phone, Mail, Sparkle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function PlatformCTASection() {
   const t = useTranslations("Platform.cta");

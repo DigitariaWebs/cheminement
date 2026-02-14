@@ -138,7 +138,6 @@ export default function ValueSection() {
 
 function ValueCard({
   value,
-  index,
   locale,
 }: {
   value: {

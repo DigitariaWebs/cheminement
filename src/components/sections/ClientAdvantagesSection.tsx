@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import {
   Brain,
@@ -31,7 +31,6 @@ import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
   const tHero = useTranslations("HeroSection");
-  const locale = useLocale();
 
   // Mapping des topics aux icônes
   const topicIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -218,7 +217,7 @@ export default function ClientAdvantagesSection() {
                             className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 rounded-full border border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all duration-200"
                           >
                             <div className="p-1 bg-primary/10 rounded-full">
-                              <IconComponent className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                              <IconComponent className="w-3.5 h-3.5 text-primary shrink-0" />
                             </div>
                             <span className="text-sm text-foreground/80 font-medium">
                               {topic}

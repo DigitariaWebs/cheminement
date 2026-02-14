@@ -3,7 +3,6 @@
 import { Briefcase, CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function WorkplaceSection() {
   const t = useTranslations("Services.workplaceSection");

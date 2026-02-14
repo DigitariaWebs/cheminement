@@ -102,6 +102,8 @@ export default function ClientAppointmentsPage() {
     }
 
     return false;
+  };
+
   const openReviewDialog = (appointment: AppointmentResponse) => {
     setAppointmentToReview(appointment);
     setShowReviewDialog(true);

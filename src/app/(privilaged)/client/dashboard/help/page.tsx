@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { HelpCircle, MessageCircle, Mail, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function HelpCenterPage() {
   const t = useTranslations("Dashboard.helpCenter");

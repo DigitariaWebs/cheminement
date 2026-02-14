@@ -37,6 +37,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { IUser } from "@/models/User";
 
 type AdminRole =
   | "super_admin"
@@ -480,7 +481,7 @@ function CreateAdminForm({
 }) {
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<AdminRole>("support_admin");
-  const [availableUsers, setAvailableUsers] = useState<any[]>([]);
+  const [availableUsers, setAvailableUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -565,10 +566,10 @@ function CreateAdminForm({
           ) : (
             filteredUsers.map((user) => (
               <div
-                key={user._id}
-                onClick={() => setSelectedUserId(user._id)}
+                key={user._id.toString()}
+                onClick={() => setSelectedUserId(user._id.toString())}
                 className={`p-3 cursor-pointer hover:bg-muted/50 border-b last:border-b-0 ${
-                  selectedUserId === user._id
+                  selectedUserId === user._id.toString()
                     ? "bg-primary/10 border-primary"
                     : ""
                 }`}

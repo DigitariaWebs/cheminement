@@ -506,19 +506,25 @@ export default function ProfileCompletionModal({
               {/* Diagnosed Conditions Selection */}
               <div className="space-y-2 mt-6">
                 <Label className="font-light mb-3 text-base">
-                  Diagnostics traités (sélectionnez tous ceux qui s'appliquent)
+                  Diagnostics traités (sélectionnez tous ceux qui
+                  s&apos;appliquent)
                 </Label>
                 <p className="text-sm text-muted-foreground font-light mb-4">
-                  Sélectionnez les diagnostics que vous traitez selon les catégories d'âge choisies
+                  Sélectionnez les diagnostics que vous traitez selon les
+                  catégories d&apos;âge choisies
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto">
                   {(() => {
                     // Determine if professional treats children or adults based on ageCategories
-                    const treatsChildren = formData.ageCategories.some((cat) =>
-                      cat.toLowerCase().includes("child") || cat.toLowerCase().includes("adolescent")
+                    const treatsChildren = formData.ageCategories.some(
+                      (cat) =>
+                        cat.toLowerCase().includes("child") ||
+                        cat.toLowerCase().includes("adolescent"),
                     );
-                    const treatsAdults = formData.ageCategories.some((cat) =>
-                      cat.toLowerCase().includes("adult") || cat.toLowerCase().includes("senior")
+                    const treatsAdults = formData.ageCategories.some(
+                      (cat) =>
+                        cat.toLowerCase().includes("adult") ||
+                        cat.toLowerCase().includes("senior"),
                     );
 
                     // Child diagnosed conditions list
@@ -603,7 +609,10 @@ export default function ProfileCompletionModal({
                     let conditionsList: string[] = [];
                     if (treatsChildren && treatsAdults) {
                       // If treats both, show both lists
-                      conditionsList = [...childDiagnosedConditions, ...adultDiagnosedConditions];
+                      conditionsList = [
+                        ...childDiagnosedConditions,
+                        ...adultDiagnosedConditions,
+                      ];
                     } else if (treatsChildren) {
                       conditionsList = childDiagnosedConditions;
                     } else if (treatsAdults) {
@@ -615,7 +624,9 @@ export default function ProfileCompletionModal({
                         <button
                           key={item}
                           type="button"
-                          onClick={() => handleMultiSelect("diagnosedConditions", item)}
+                          onClick={() =>
+                            handleMultiSelect("diagnosedConditions", item)
+                          }
                           className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
                             formData.diagnosedConditions.includes(item)
                               ? "bg-primary text-primary-foreground"
@@ -627,7 +638,8 @@ export default function ProfileCompletionModal({
                       ))
                     ) : (
                       <p className="text-sm text-muted-foreground col-span-3">
-                        Veuillez d'abord sélectionner au moins une catégorie d'âge ci-dessus
+                        Veuillez d&apos;abord sélectionner au moins une
+                        catégorie d&apos;âge ci-dessus
                       </p>
                     );
                   })()}

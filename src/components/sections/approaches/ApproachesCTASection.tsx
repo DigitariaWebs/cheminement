@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations, useLocale } from "next-intl";
+import { useLocale } from "next-intl";
 import { Calendar, BookOpen, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ApproachesCTASection() {
-  const t = useTranslations("Approaches.cta");
   const locale = useLocale();
 
   return (

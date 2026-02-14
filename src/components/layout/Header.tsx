@@ -29,12 +29,6 @@ export function Header() {
   const locale = useLocale();
   const { data: session, status } = useSession();
 
-  const navLinks = [
-    { href: "/", label: t("nav.home") },
-    { href: "/approaches", label: t("nav.approaches") },
-    { href: "/contact", label: t("nav.contact") },
-  ];
-
   const aboutDropdownItems = [
     { href: "/who-we-are", label: t("nav.whoWeAre") },
     { href: "/why-us", label: t("nav.whyUs") },

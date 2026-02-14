@@ -3,7 +3,6 @@
 import { HeartHandshake, Sparkle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ContactHeroSection() {
   const t = useTranslations("Contact.hero");
