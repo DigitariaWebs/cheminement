@@ -22,7 +22,7 @@ import {
   AuthCard,
   AuthFooter,
 } from "@/components/auth";
-import { SocialLogin } from "@/components/auth/SocialLogin";
+
 
 export default function LoginPage() {
   const t = useTranslations("Auth.login");
@@ -223,7 +223,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <SocialLogin mode="login" />
       </AuthCard>
 
       <AuthFooter>

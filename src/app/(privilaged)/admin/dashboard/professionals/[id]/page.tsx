@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +9,8 @@ import ProfessionalProfile from "@/components/dashboard/ProfessionalProfile";
 import AvailabilitySchedule from "@/app/(privilaged)/professional/dashboard/profile/AvailabilitySchedule";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Calendar, CheckCircle2 } from "lucide-react";
 import { usersAPI, profileAPI } from "@/lib/api-client";
 import { IUser } from "@/models/User";
 import { IProfile } from "@/models/Profile";
@@ -42,15 +44,18 @@ export default function ProfessionalDetailPage() {
     }
   }, [params.id, fetchData]);
 
+  // Check if professional has configured their schedule
+  const hasSchedule = useMemo(() => {
+    return profile?.availability?.days?.some((day) => day.isWorkDay === true) ?? false;
+  }, [profile]);
+
+  // Determine if professional can be activated
+  const canActivate = hasSchedule;
+
   const handleSetActive = async () => {
     if (!user) return;
 
-    // Check if professional has configured their schedule
-    const hasSchedule = profile?.availability?.days?.some(
-      (day) => day.isWorkDay === true,
-    );
-
-    if (!hasSchedule) {
+    if (!canActivate) {
       alert(
         "Cannot activate professional. The professional must configure their schedule first.",
       );
@@ -102,8 +107,8 @@ export default function ProfessionalDetailPage() {
           {user.status === "pending" && (
             <Button
               onClick={handleSetActive}
-              disabled={isUpdatingStatus}
-              className="bg-green-600 hover:bg-green-700 font-light tracking-wide transition-all duration-300 hover:scale-105"
+              disabled={isUpdatingStatus || !canActivate}
+              className="bg-green-600 hover:bg-green-700 font-light tracking-wide transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isUpdatingStatus ? "Updating..." : "Activate Professional"}
             </Button>
@@ -121,14 +126,44 @@ export default function ProfessionalDetailPage() {
           {user.status === "inactive" && (
             <Button
               onClick={handleSetActive}
-              disabled={isUpdatingStatus}
-              className="bg-green-600 hover:bg-green-700 font-light tracking-wide transition-all duration-300 hover:scale-105"
+              disabled={isUpdatingStatus || !canActivate}
+              className="bg-green-600 hover:bg-green-700 font-light tracking-wide transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isUpdatingStatus ? "Updating..." : "Reactivate Professional"}
             </Button>
           )}
         </div>
       </div>
+
+      {/* Activation Status Alert */}
+      {(user.status === "pending" || user.status === "inactive") && (
+        <Alert variant={canActivate ? "default" : "destructive"} className="border-2">
+          {canActivate ? (
+            <>
+              <CheckCircle2 className="h-5 w-5" />
+              <AlertTitle className="font-medium">Ready for Activation</AlertTitle>
+              <AlertDescription>
+                This professional has configured their availability schedule and can be activated.
+              </AlertDescription>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="h-5 w-5" />
+              <AlertTitle className="font-medium">Cannot Activate - Schedule Required</AlertTitle>
+              <AlertDescription className="space-y-2">
+                <p>
+                  This professional has not configured their availability schedule yet. 
+                  They must set up at least one working day before activation.
+                </p>
+                <p className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4" />
+                  Check the <strong>Schedule</strong> tab below to view their current availability settings.
+                </p>
+              </AlertDescription>
+            </>
+          )}
+        </Alert>
+      )}
 
       <div className="rounded-xl bg-card p-8 border border-border/50">
         <div className="flex items-start justify-between gap-4">

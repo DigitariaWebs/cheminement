@@ -11,6 +11,8 @@ import {
   Star,
   Timer,
   Video,
+  X,
+  CheckCircle,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -141,6 +143,9 @@ export default function LibraryPage() {
   const [activeCategory, setActiveCategory] = useState<ResourceType | "all">(
     "all",
   );
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showDownloadsModal, setShowDownloadsModal] = useState(false);
+  const [downloadedIds, setDownloadedIds] = useState<number[]>([]);
 
   const filteredResources = useMemo(() => {
     return resources.filter((resource) => {
@@ -154,6 +159,27 @@ export default function LibraryPage() {
       return matchesCategory && matchesSearch;
     });
   }, [activeCategory, search]);
+
+  const handleDownload = (resource: Resource) => {
+    setDownloadedIds((prev) =>
+      prev.includes(resource.id) ? prev : [...prev, resource.id],
+    );
+    // Create a blob with resource info and trigger download
+    const content = `${resource.title}\n${resource.author}\n\nType: ${resource.type}\nFormat: ${resource.format}\n\n${resource.description}`;
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${resource.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "")}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadedResources = resources.filter((r) =>
+    downloadedIds.includes(r.id),
+  );
 
   return (
     <div className="space-y-8">
@@ -172,12 +198,16 @@ export default function LibraryPage() {
           </div>
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
-            <Button className="gap-2 rounded-full px-5 py-5 text-base font-medium">
+            <Button
+              onClick={() => setShowUploadModal(true)}
+              className="gap-2 rounded-full px-5 py-5 text-base font-medium"
+            >
               <Sparkles className="h-4 w-4" />
               {t("uploadResource")}
             </Button>
             <Button
               variant="outline"
+              onClick={() => setShowDownloadsModal(true)}
               className="gap-2 rounded-full px-5 py-5 text-base font-medium"
             >
               <Download className="h-4 w-4" />
@@ -301,8 +331,15 @@ export default function LibraryPage() {
                   <div className="text-sm font-semibold text-foreground">
                     {resource.price}
                   </div>
-                  <Button className="gap-2 rounded-full px-4 py-4 text-sm font-medium">
-                    <Download className="h-4 w-4" />
+                  <Button
+                    onClick={() => handleDownload(resource)}
+                    className="gap-2 rounded-full px-4 py-4 text-sm font-medium"
+                  >
+                    {downloadedIds.includes(resource.id) ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : (
+                      <Download className="h-4 w-4" />
+                    )}
                     {t("read")}
                   </Button>
                 </div>
@@ -324,6 +361,135 @@ export default function LibraryPage() {
           </div>
         )}
       </section>
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-lg rounded-3xl border border-border/20 bg-card p-8 shadow-2xl">
+            <button
+              onClick={() => setShowUploadModal(false)}
+              className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="mb-2 font-serif text-2xl font-light text-foreground">
+              {t("uploadTitle")}
+            </h2>
+            <p className="mb-6 text-sm text-muted-foreground">
+              {t("uploadDescription")}
+            </p>
+            <form
+              className="space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setShowUploadModal(false);
+              }}
+            >
+              <div>
+                <label className="mb-1 block text-sm font-medium text-foreground">
+                  {t("uploadName")}
+                </label>
+                <input
+                  type="text"
+                  placeholder={t("uploadNamePlaceholder")}
+                  className="w-full rounded-xl border border-border/40 bg-card/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-foreground">
+                  {t("uploadType")}
+                </label>
+                <select className="w-full rounded-xl border border-border/40 bg-card/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30">
+                  <option value="video">Video</option>
+                  <option value="ebook">eBook</option>
+                  <option value="guide">Guide</option>
+                  <option value="webinar">Webinar</option>
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-foreground">
+                  {t("uploadFile")}
+                </label>
+                <input
+                  type="file"
+                  className="w-full rounded-xl border border-border/40 bg-card/80 px-4 py-3 text-sm text-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:py-1 file:text-sm file:font-medium file:text-primary"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowUploadModal(false)}
+                  className="rounded-full px-5"
+                >
+                  {t("uploadCancel")}
+                </Button>
+                <Button type="submit" className="rounded-full px-5">
+                  {t("uploadSubmit")}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* My Downloads Modal */}
+      {showDownloadsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-lg rounded-3xl border border-border/20 bg-card p-8 shadow-2xl">
+            <button
+              onClick={() => setShowDownloadsModal(false)}
+              className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="mb-2 font-serif text-2xl font-light text-foreground">
+              {t("myDownloadsTitle")}
+            </h2>
+            {downloadedResources.length === 0 ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                {t("myDownloadsDescription")}
+              </p>
+            ) : (
+              <ul className="mt-4 space-y-3">
+                {downloadedResources.map((r) => (
+                  <li
+                    key={r.id}
+                    className="flex items-center justify-between rounded-2xl border border-border/20 bg-card/60 px-4 py-3"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {r.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {r.author}
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDownload(r)}
+                      className="gap-1 rounded-full text-xs"
+                    >
+                      <Download className="h-3 w-3" />
+                      {t("read")}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="mt-6 flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowDownloadsModal(false)}
+                className="rounded-full px-5"
+              >
+                {t("close")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

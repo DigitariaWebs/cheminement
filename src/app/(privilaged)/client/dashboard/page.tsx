@@ -62,12 +62,36 @@ export default function ClientDashboardPage() {
     }
   };
 
+  // Check if client can join a session
+  // Allow joining if:
+  // 1. Meeting link exists and payment is confirmed
+  // 2. Session is "ongoing" OR session is "scheduled" but within 15 minutes of start time
+  const canJoinSession = (appointment: AppointmentResponse): boolean => {
+    if (!appointment.meetingLink || appointment.payment.status !== "paid") {
+      return false;
+    }
+
+    if (appointment.status === "ongoing") {
+      return true;
+    }
+
+    if (appointment.status === "scheduled" && appointment.date && appointment.time) {
+      const [hours, minutes] = appointment.time.split(":").map(Number);
+      const sessionStart = new Date(appointment.date);
+      sessionStart.setHours(hours, minutes, 0, 0);
+      
+      const now = new Date();
+      const minutesUntilSession = (sessionStart.getTime() - now.getTime()) / (1000 * 60);
+      
+      // Allow joining 15 minutes before session starts
+      return minutesUntilSession <= 15 && minutesUntilSession >= -appointment.duration;
+    }
+
+    return false;
+  };
+
   const handleJoinSession = (appointment: AppointmentResponse) => {
-    if (
-      appointment.meetingLink &&
-      appointment.status === "ongoing" &&
-      appointment.payment.status === "paid"
-    ) {
+    if (canJoinSession(appointment)) {
       window.open(appointment.meetingLink, "_blank");
     }
   };
@@ -324,10 +348,8 @@ export default function ClientDashboardPage() {
                           {appointment.professionalId?.lastName}
                         </p>
                       </div>
-                      {appointment.status === "ongoing" &&
-                        appointment.type === "video" &&
-                        appointment.meetingLink &&
-                        appointment.payment.status === "paid" && (
+                      {appointment.type === "video" &&
+                        canJoinSession(appointment) && (
                           <Button
                             onClick={() => handleJoinSession(appointment)}
                             className="gap-2 rounded-full"

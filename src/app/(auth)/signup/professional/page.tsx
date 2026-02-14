@@ -302,15 +302,28 @@ export default function ProfessionalSignupPage() {
                 ]
               : undefined,
           availability:
-            formData.sessionDuration || formData.breakDuration
+            formData.availableDays.length > 0 || formData.sessionDuration || formData.breakDuration
               ? {
                   sessionDurationMinutes: formData.sessionDuration
                     ? Number(formData.sessionDuration)
-                    : undefined,
+                    : 60,
                   breakDurationMinutes: formData.breakDuration
                     ? Number(formData.breakDuration)
-                    : undefined,
-                  days: [],
+                    : 15,
+                  days: [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                  ].map((day) => ({
+                    day,
+                    isWorkDay: formData.availableDays.includes(day),
+                    startTime: "09:00",
+                    endTime: "17:00",
+                  })),
                   firstDayOfWeek: "Monday",
                 }
               : undefined,

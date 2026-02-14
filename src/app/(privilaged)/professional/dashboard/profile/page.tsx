@@ -37,12 +37,14 @@ export default function ProfilePage() {
         const response = await profileAPI.get();
         if (response) {
           const profileData = response as IProfile;
-          if (!profileData.availability) {
+          // Initialize availability with defaults if missing or incomplete
+          if (!profileData.availability || !profileData.availability.days || profileData.availability.days.length === 0) {
             profileData.availability = {
+              ...profileData.availability,
               days: DEFAULT_DAYS,
-              sessionDurationMinutes: 60,
-              breakDurationMinutes: 15,
-              firstDayOfWeek: "Monday",
+              sessionDurationMinutes: profileData.availability?.sessionDurationMinutes ?? 60,
+              breakDurationMinutes: profileData.availability?.breakDurationMinutes ?? 15,
+              firstDayOfWeek: profileData.availability?.firstDayOfWeek ?? "Monday",
             };
           }
           setProfile(profileData);

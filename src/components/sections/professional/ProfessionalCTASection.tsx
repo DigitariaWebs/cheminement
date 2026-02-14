@@ -35,7 +35,7 @@ export default function ProfessionalCTASection() {
   ];
 
   return (
-    <section className="py-20 bg-accent relative overflow-hidden">
+    <section id="professional-cta" className="py-20 bg-accent relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5"></div>
 

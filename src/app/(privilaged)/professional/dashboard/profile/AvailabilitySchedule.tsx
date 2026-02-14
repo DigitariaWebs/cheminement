@@ -72,7 +72,7 @@ const AvailabilitySchedule = ({
   const currentSchedule =
     profile?.availability?.days && profile.availability.days.length > 0
       ? profile.availability.days
-      : DEFAULT_DAYS.map((d) => ({ ...d, isWorkDay: false }));
+      : DEFAULT_DAYS;
 
   const DAYS_ORDER = [
     "Monday",
@@ -179,9 +179,9 @@ const AvailabilitySchedule = ({
         </h2>
         {isEditable && (
           <Button
-            onClick={() => {
+            onClick={async () => {
               if (isScheduleEditable) {
-                handleSave();
+                await handleSave();
               }
               setIsScheduleEditable(!isScheduleEditable);
             }}

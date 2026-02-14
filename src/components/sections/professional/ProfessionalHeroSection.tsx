@@ -50,7 +50,7 @@ export default function ProfessionalHeroSection() {
               </Link>
 
               <Link
-                href="/professional/learn-more"
+                href="#professional-cta"
                 className="group flex items-center gap-3 px-8 py-5 text-foreground text-lg font-light tracking-wide transition-all duration-300 hover:gap-4 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
               >
                 <span>{t("learnMore")}</span>
