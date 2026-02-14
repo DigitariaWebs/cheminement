@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { appointmentsAPI } from "@/lib/api-client";
+import BookingButton from "@/components/ui/BookingButton";
 import { CancelAppointmentDialog, ReviewDialog } from "@/components/appointments";
 import Link from "next/link";
 import type { AppointmentResponse } from "@/types/api";
@@ -196,12 +197,11 @@ export default function ClientAppointmentsPage() {
           </h1>
           <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Button asChild className="gap-2 rounded-full">
-          <Link href="/appointment">
-            <Calendar className="h-4 w-4" />
-            {t("requestNew")}
-          </Link>
-        </Button>
+        <BookingButton
+          size="small"
+          showIcon
+          label={t("requestNew")}
+        />
       </div>
 
       {/* Tabs */}

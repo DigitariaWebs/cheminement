@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
+import BookingButton from "@/components/ui/BookingButton";
 
 export default function ClientDashboardPage() {
   const [upcomingAppointments, setUpcomingAppointments] = useState<
@@ -290,12 +291,13 @@ export default function ClientDashboardPage() {
                 <p className="mt-4 text-sm text-muted-foreground">
                   {t("upcomingAppointments.noAppointments")}
                 </p>
-                <Button className="mt-4 gap-2 rounded-full">
-                  <Link href="/appointment" className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    {t("upcomingAppointments.requestAppointment")}
-                  </Link>
-                </Button>
+                <div className="mt-4">
+                  <BookingButton
+                    size="small"
+                    showIcon
+                    label={t("upcomingAppointments.requestAppointment")}
+                  />
+                </div>
               </div>
             ) : (
               <div className="mt-6 space-y-4">

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
+import BookingButton from "@/components/ui/BookingButton";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -102,13 +103,7 @@ export default function ClientCTASection() {
             transition={{ duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link
-              href="/appointment"
-              className="group relative px-10 py-5 bg-primary text-primary-foreground rounded-full text-lg font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-            >
-              <span className="relative z-10">{t("bookAppointment")}</span>
-              <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-            </Link>
+            <BookingButton size="large" />
 
             <Link
               href="/resources"
