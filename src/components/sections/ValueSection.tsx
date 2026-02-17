@@ -118,17 +118,18 @@ export default function ValueSection() {
 
         {/* Image Section */}
         <ScrollReveal variant="fade-up" delayMs={500} duration={800}>
-          <div className="max-w-md mx-auto relative">
+          <div className="flex justify-center items-center max-w-md mx-auto relative">
+            {/* ✅ RESIZED PER CLIENT SPECS - slightly bigger */}
             <Image
               src="/ValueSection.png?v=2"
-              alt="Inner Child Healing"
-              width={500}
-              height={500}
-              className="w-full h-auto transform scale-x-[-1] scale-110"
+              alt="Jeune fille parcours personnalisé"
+              width={360}
+              height={360}
+              className="w-full md:w-4/5 lg:w-3/4 xl:w-2/3 h-auto scale-x-[-1]"
               unoptimized
             />
-            {/* Fading effect at bottom */}
-            <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
+            {/* Fading effect - unchanged */}
+            <div className="absolute -bottom-8 left-0 right-0 h-40 from-accent to-transparent z-10"></div>
           </div>
         </ScrollReveal>
       </div>

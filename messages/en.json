@@ -1,4 +1,19 @@
 {
+  "AppointmentSelector": {
+    "selectButton": "Book Appointment",
+    "individual": {
+      "title": "For Myself",
+      "description": "Book an appointment for yourself."
+    },
+    "relative": {
+      "title": "For a Close One",
+      "description": "Book for a child, partner, or family member."
+    },
+    "patient": {
+      "title": "For a Patient",
+      "description": "Book for a patient as a professional or doctor."
+    }
+  },
   "Header": {
     "nav": {
       "home": "Home",
@@ -38,6 +53,10 @@
     "contact": "Contact",
     "ios": "Je Chemine for iOS",
     "android": "Je Chemine for Android",
+    "phone": "Je Chemine for Phone",
+    "bookAppointment": "Book an Appointment",
+    "exploreResources": "Explore Resources",
+    "platformPress": "Platform Press",
     "helpCentre": "Help Centre",
     "status": "Status",
     "contactUs": "Contact Us",
@@ -185,7 +204,7 @@
     "description": "Join our platform and let us handle the administrative work. Connect with clients who match your expertise, optimize your practice, and grow your impact.",
     "joinPlatform": "Join Our Platform",
     "learnMore": "Learn More",
-    "activeProfessionals": "1000+ Active Professionals",
+    "activeProfessionals": "Several Active Professionals",
     "satisfactionRate": "95% Satisfaction Rate",
     "platformSupport": "24/7 Platform Support"
   },
@@ -243,7 +262,7 @@
     "fact1": "No upfront costs",
     "fact2": "Flexible scheduling",
     "fact3": "Dedicated support team",
-    "fact4": "Join 1000+ professionals",
+    "fact4": "Join several active professionals",
     "startApplication": "Start Your Application",
     "contactUs": "Contact Us",
     "helpText": "Have questions? Our team is here to help you every step of the way."
@@ -1073,12 +1092,12 @@
         "description": "Comprehensive mental health support for adults facing life's challenges. From anxiety and depression to relationship issues and life transitions, our qualified professionals provide personalized therapeutic care.",
         "highlight": "Personalized treatment plans",
         "features": [
-          "Individual therapy sessions with licensed psychologists",
-          "Evidence-based treatments (CBT, psychodynamic, humanistic)",
-          "Anxiety, depression, and stress management",
-          "ADHD assessment and ongoing support",
-          "Relationship and self-esteem counseling",
-          "Life transition and adaptation support"
+          "Individual therapy sessions with licensed psychologists.",
+          "Evidence-based treatments (CBT, psychodynamic, humanistic).",
+          "Anxiety, depression, and stress management.",
+          "ADHD assessment and ongoing support.",
+          "Relationship and self-esteem counseling.",
+          "Life transition and adaptation support."
         ]
       },
       "child": {
@@ -1086,12 +1105,12 @@
         "description": "Specialized therapeutic support designed for the unique developmental needs of children and teenagers. We help young people navigate emotional challenges, behavioral difficulties, and developmental transitions.",
         "highlight": "Age-appropriate interventions",
         "features": [
-          "Play therapy and age-appropriate techniques",
-          "ADHD evaluation and behavioral strategies",
-          "Anxiety and emotional regulation support",
-          "Social skills development",
-          "School-related difficulties and learning support",
-          "Parent collaboration and guidance"
+          "Play therapy and age-appropriate techniques.",
+          "ADHD evaluation and behavioral strategies.",
+          "Anxiety and emotional regulation support.",
+          "Social skills development.",
+          "School-related difficulties and learning support.",
+          "Parent collaboration and guidance."
         ]
       },
       "family": {
@@ -1099,12 +1118,12 @@
         "description": "Strengthen family bonds and improve communication through guided therapeutic sessions. We help families and couples navigate conflicts, rebuild trust, and create healthier relationship dynamics.",
         "highlight": "Improved communication",
         "features": [
-          "Couple therapy and relationship counseling",
-          "Family dynamics assessment and intervention",
-          "Conflict resolution strategies",
-          "Communication skills development",
-          "Blended family support",
-          "Parental coaching and co-parenting guidance"
+          "Couple therapy and relationship counseling.",
+          "Family dynamics assessment and intervention.",
+          "Conflict resolution strategies.",
+          "Communication skills development.",
+          "Blended family support.",
+          "Parental coaching and co-parenting guidance."
         ]
       },
       "workplace": {
@@ -1112,12 +1131,12 @@
         "description": "Specialized support for work-related mental health challenges. We help professionals navigate burnout, manage return-to-work transitions, and develop sustainable strategies for career well-being.",
         "highlight": "Return-to-work support",
         "features": [
-          "Burnout assessment and recovery planning",
-          "Return-to-work transition support",
-          "Stress and workload management",
-          "Professional identity and confidence rebuilding",
-          "Work-life balance strategies",
-          "Career transition counseling"
+          "Burnout assessment and recovery planning.",
+          "Return-to-work transition support.",
+          "Stress and workload management.",
+          "Professional identity and confidence rebuilding.",
+          "Work-life balance strategies.",
+          "Career transition counseling."
         ]
       },
       "schoolAnxiety": {
@@ -1125,12 +1144,12 @@
         "description": "Targeted interventions for children and adolescents experiencing school-related anxiety. We work collaboratively with the child, family, and school to create a supportive environment for academic and emotional success.",
         "highlight": "School-family collaboration",
         "features": [
-          "Performance anxiety management",
-          "Social anxiety and peer relationship support",
-          "School refusal intervention",
-          "Test anxiety and academic stress coping",
-          "Transition support (new school, grade changes)",
-          "Teacher and school collaboration"
+          "Performance anxiety management.",
+          "Social anxiety and peer relationship support.",
+          "School refusal intervention.",
+          "Test anxiety and academic stress coping.",
+          "Transition support (new school, grade changes).",
+          "Teacher and school collaboration."
         ]
       }
     },
@@ -1140,11 +1159,11 @@
       "description": "The Sentiers program offers comprehensive support that combines clinical expertise, educational tools, and close collaboration with the school environment.",
       "focusTitle": "What We Cover",
       "focusAreas": [
-        "Sentiers Program",
-        "School anxiety",
-        "School avoidance (refusal)",
-        "Academic stress",
-        "Performance management"
+        "Sentiers Program.",
+        "School anxiety.",
+        "School avoidance (refusal).",
+        "Academic stress.",
+        "Performance management."
       ],
       "studentTrack": "Student Track (CEGEP & University): support adapted to the pace, academic requirements, and mental health of students.",
       "pillarsTitle": "The Program's Pillars",
@@ -1168,11 +1187,11 @@
       },
       "professionalsTitle": "We Work With",
       "professionals": [
-        "School Psychologists",
-        "Neuropsychologists",
-        "Psychoeducators",
-        "Special Education Technicians (SET)",
-        "Specialized Practitioners"
+        "School Psychologists.",
+        "Neuropsychologists.",
+        "Psychoeducators.",
+        "Special Education Technicians (SET).",
+        "Specialized Practitioners."
       ],
       "customSupport": "Tailored support to promote success, self-esteem, and well-being for young people, in partnership with their school and family environment.",
       "networkTitle": "A Coordinated Network",
@@ -1303,7 +1322,7 @@
       },
       "otherApproaches": {
         "title": "Other Approaches and Techniques",
-        "items": ["Hypnosis", "EMDR", "IMO"]
+        "items": ["Hypnosis.", "EMDR.", "IMO."]
       }
     },
     "ethics": {
@@ -1347,17 +1366,17 @@
         "online": {
           "title": "Online Consultations",
           "bullets": [
-            "Secure, encrypted video calls, simple to join",
-            "No travel required, ideal for busy schedules",
-            "Accessible everywhere, even in remote areas"
+            "Secure, encrypted video calls, simple to join.",
+            "No travel required, ideal for busy schedules.",
+            "Accessible everywhere, even in remote areas."
           ]
         },
         "office": {
           "title": "In-Office Consultations",
           "bullets": [
-            "In-person meetings in a warm setting",
-            "For those who prefer direct contact",
-            "Spaces designed for confidentiality and comfort"
+            "In-person meetings in a warm setting.",
+            "For those who prefer direct contact.",
+            "Spaces designed for confidentiality and comfort."
           ]
         }
       },
@@ -1374,11 +1393,11 @@
       "highlight": "A major strength of Je chemine",
       "criteriaTitle": "Criteria Analyzed",
       "criteria": [
-        "Issue and clinical needs",
-        "Desired therapeutic approach",
-        "Age, life cycle and context",
-        "Desired clinical experience",
-        "Personal preferences and availability"
+        "Issue and clinical needs.",
+        "Desired therapeutic approach.",
+        "Age, life cycle and context.",
+        "Desired clinical experience.",
+        "Personal preferences and availability."
       ],
       "steps": [
         {
@@ -2262,12 +2281,12 @@
         "description": "Our modern EAP provides confidential support for personal and work-related challenges. From counseling to legal advice, we ensure your employees get the help they need quickly and discreetly.",
         "highlight": "Available 24/7/365",
         "features": [
-          "Short-term counseling for personal and work issues",
-          "Legal and financial consultation services",
-          "Crisis intervention and emergency support",
-          "Work-life balance resources and referrals",
-          "Manager consultation and training",
-          "Critical incident stress management"
+          "Short-term counseling for personal and work issues.",
+          "Legal and financial consultation services.",
+          "Crisis intervention and emergency support.",
+          "Work-life balance resources and referrals.",
+          "Manager consultation and training.",
+          "Critical incident stress management."
         ]
       },
       "mentalHealth": {
@@ -2275,12 +2294,12 @@
         "description": "Go beyond traditional EAP with comprehensive mental health support. Our Mental Health+ program provides extended therapy, psychiatric care, and ongoing treatment for complex conditions.",
         "highlight": "Extended therapy coverage",
         "features": [
-          "Extended individual therapy sessions",
-          "Psychiatric assessments and medication management",
-          "Specialized treatment for anxiety and depression",
-          "Group therapy and support programs",
-          "Digital therapeutics and self-guided tools",
-          "Progress tracking and outcome measurement"
+          "Extended individual therapy sessions.",
+          "Psychiatric assessments and medication management.",
+          "Specialized treatment for anxiety and depression.",
+          "Group therapy and support programs.",
+          "Digital therapeutics and self-guided tools.",
+          "Progress tracking and outcome measurement."
         ]
       },
       "primaryCare": {
@@ -2288,12 +2307,12 @@
         "description": "Virtual and in-person access to physicians for general health concerns. Reduce absenteeism and improve productivity with convenient primary care that fits into busy schedules.",
         "highlight": "Same-day appointments",
         "features": [
-          "Virtual consultations with licensed physicians",
-          "Prescription renewals and management",
-          "Preventive care and health screenings",
-          "Chronic condition management",
-          "Lab requisitions and referrals",
-          "Health coaching and lifestyle guidance"
+          "Virtual consultations with licensed physicians.",
+          "Prescription renewals and management.",
+          "Preventive care and health screenings.",
+          "Chronic condition management.",
+          "Lab requisitions and referrals.",
+          "Health coaching and lifestyle guidance."
         ]
       },
       "wellness": {
@@ -2301,12 +2320,12 @@
         "description": "Holistic wellness programs that address nutrition, fitness, mindfulness, and lifestyle coaching. Help your employees build sustainable healthy habits.",
         "highlight": "Personalized coaching",
         "features": [
-          "Nutrition counseling and meal planning",
-          "Fitness programs and activity challenges",
-          "Mindfulness and meditation resources",
-          "Sleep improvement programs",
-          "Stress management workshops",
-          "Financial wellness education"
+          "Nutrition counseling and meal planning.",
+          "Fitness programs and activity challenges.",
+          "Mindfulness and meditation resources.",
+          "Sleep improvement programs.",
+          "Stress management workshops.",
+          "Financial wellness education."
         ]
       }
     },

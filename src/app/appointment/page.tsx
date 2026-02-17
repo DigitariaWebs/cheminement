@@ -40,7 +40,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiClient, medicalProfileAPI } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import { MotifSearch } from "@/components/ui/MotifSearch";
 import { cn } from "@/lib/utils";
+import { MOTIFS } from "@/data/motif";
+import AppointmentForm from "@/components/appointments/AppointmentForm";
 
 interface GuestInfo {
   firstName: string;
@@ -81,8 +84,7 @@ interface MedicalProfileData {
 
 export default function BookAppointmentPage() {
   const router = useRouter();
-  const { status } = useSession();
-
+  const { data: session, status } = useSession();
   // Auth state
   const [isGuest, setIsGuest] = useState(false);
   const [authCheckDone, setAuthCheckDone] = useState(false);
@@ -95,6 +97,9 @@ export default function BookAppointmentPage() {
     phone: "",
     location: "",
   });
+
+  // Issue Type (single-select)
+  const [issueType, setIssueType] = useState<string>("");
 
   // Medical profile data for defaults
   const [medicalProfile, setMedicalProfile] =
@@ -111,7 +116,6 @@ export default function BookAppointmentPage() {
   const [therapyType, setTherapyType] = useState<"solo" | "couple" | "group">(
     "solo",
   );
-  const [issueType, setIssueType] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [preferredAvailability, setPreferredAvailability] = useState<string[]>(
     [],
@@ -359,6 +363,10 @@ export default function BookAppointmentPage() {
       setError("Please select the relationship");
       return false;
     }
+    if (!issueType) {
+      setError("Please select a motif/reason for consultation");
+      return false;
+    }
     setError("");
     return true;
   };
@@ -367,6 +375,10 @@ export default function BookAppointmentPage() {
   const validateReferralInfo = (): boolean => {
     if (!referralInfo.referrerName.trim()) {
       setError("Please provide the referring professional's name");
+      return false;
+    }
+    if (!issueType) {
+      setError("Please select a motif/reason for referral");
       return false;
     }
     setError("");
@@ -432,7 +444,12 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
-        paymentMethod: paymentMethod === "interac" ? "transfer" : paymentMethod === "payment_plan" ? "direct_debit" : "card",
+        paymentMethod:
+          paymentMethod === "interac"
+            ? "transfer"
+            : paymentMethod === "payment_plan"
+              ? "direct_debit"
+              : "card",
       };
 
       // Include loved one info if booking for a loved one
@@ -482,7 +499,12 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
-        paymentMethod: paymentMethod === "interac" ? "transfer" : paymentMethod === "payment_plan" ? "direct_debit" : "card",
+        paymentMethod:
+          paymentMethod === "interac"
+            ? "transfer"
+            : paymentMethod === "payment_plan"
+              ? "direct_debit"
+              : "card",
       };
 
       // Include loved one info if booking for a loved one
@@ -849,6 +871,62 @@ export default function BookAppointmentPage() {
               </div>
             )}
 
+            {/* Step 1.5: Appointment Form (for authenticated users after selecting booking type) */}
+            {!isGuest &&
+              status === "authenticated" &&
+              bookingFor &&
+              currentStep === 1 && (
+                <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
+                  <div className="p-6 border-b border-border/40">
+                    <h2 className="text-xl font-serif font-light text-foreground">
+                      {bookingFor === "self" && "Your Appointment Details"}
+                      {bookingFor === "patient" &&
+                        "Patient Referral Information"}
+                      {bookingFor === "loved-one" && "Loved One's Information"}
+                    </h2>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Please provide the necessary information for this
+                      appointment request
+                    </p>
+                  </div>
+                  <div className="p-6">
+                    <AppointmentForm
+                      userType={
+                        bookingFor === "patient"
+                          ? "professional"
+                          : bookingFor === "loved-one"
+                            ? "lovedOne"
+                            : "client"
+                      }
+                      userInfo={
+                        status === "authenticated" && session?.user
+                          ? {
+                              firstName: session.user.name?.split(" ")[0] || "",
+                              lastName: session.user.name?.split(" ")[1] || "",
+                              email: session.user.email || "",
+                            }
+                          : undefined
+                      }
+                      disabledFields={
+                        status === "authenticated"
+                          ? ["firstName", "lastName", "email"]
+                          : []
+                      }
+                      onSubmit={(formData: any) => {
+                        console.log("Form submitted:", formData);
+                        // Handle form submission
+                        setCurrentStep(3);
+                      }}
+                    />
+                  </div>
+                  <div className="p-6 border-t border-border/40 flex justify-between">
+                    <Button variant="outline" onClick={() => setCurrentStep(0)}>
+                      Back
+                    </Button>
+                  </div>
+                </div>
+              )}
+
             {/* Step 2: Guest Info (only for guests) */}
             {isGuest && currentStep === 2 && (
               <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
@@ -1134,6 +1212,19 @@ export default function BookAppointmentPage() {
                         />
                       </div>
 
+                      {/* Motif Search Section - ADDED HERE */}
+                      <div className="space-y-2 pt-4 border-t border-border/40">
+                        <Label htmlFor="issueType">
+                          What brings them here?{" "}
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <MotifSearch
+                          value={issueType}
+                          onChange={setIssueType}
+                          placeholder="Tapez vos motifs ex: anxiété, burnout..."
+                        />
+                      </div>
+
                       <div className="flex justify-between pt-4">
                         <Button
                           variant="outline"
@@ -1163,8 +1254,8 @@ export default function BookAppointmentPage() {
                         Patient Referral Information
                       </h2>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Please provide your professional information and
-                        optionally upload a referral document
+                        Please provide your professional information and details
+                        about the referral
                       </p>
                     </div>
                     <div className="p-6 space-y-6">
@@ -1303,8 +1394,21 @@ export default function BookAppointmentPage() {
                         />
                       </div>
 
+                      {/* Motif Search Section - ADDED HERE */}
+                      <div className="space-y-2 pt-4 border-t border-border/40">
+                        <Label htmlFor="issueType">
+                          Primary Issue / Diagnosis{" "}
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <MotifSearch
+                          value={issueType}
+                          onChange={setIssueType}
+                          placeholder="Tapez vos motifs ex: anxiété, burnout..."
+                        />
+                      </div>
+
                       {/* Document Upload Section */}
-                      <div className="space-y-3">
+                      <div className="space-y-3 pt-4 border-t border-border/40">
                         <Label>
                           Upload Referral/Prescription Document (Optional)
                         </Label>
@@ -1471,207 +1575,24 @@ export default function BookAppointmentPage() {
                     </Select>
                   </div>
 
-                  {/* Issue Type */}
-                  <div className="space-y-2">
-                    <Label htmlFor="issueType">
-                      What brings you here? *
-                      {medicalProfile?.primaryIssue && (
-                        <span className="text-xs text-muted-foreground ml-2">
-                          (Pre-filled from your profile)
-                        </span>
-                      )}
-                    </Label>
-                    <Select value={issueType} onValueChange={setIssueType}>
-                      <SelectTrigger id="issueType">
-                        <SelectValue placeholder="Select a topic" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-[300px]">
-                        {[
-                          "Intervention auprès des employés des services d'urgence (ambulanciers, policiers, pompiers…)",
-                          "Estime/affirmation de soi",
-                          "Oncologie",
-                          "Accident de la route",
-                          "Accident de travail",
-                          "Adaptation à l'école",
-                          "Adoption internationale",
-                          "Alcoolisme / toxicomanies",
-                          "Aliénation mentale",
-                          "Abus sexuel",
-                          "Anxiété",
-                          "Anxiété de performance",
-                          "Arrêt de travail",
-                          "Retour progressif au travail",
-                          "Approche intégrative",
-                          "Approche humaniste",
-                          "Approche TCC",
-                          "ACT",
-                          "Psychodynamique",
-                          "Pleine conscience",
-                          "Changement organisationnel",
-                          "Changements sociaux",
-                          "Charge mentale",
-                          "Climat de travail",
-                          "Conflits interpersonnels",
-                          "Communication",
-                          "Curatelle publique",
-                          "Déficit de l'attention/hyperactivité",
-                          "Déficience intellectuelle",
-                          "Dépendance affective",
-                          "Dépendance aux jeux de hasard et d'argent (en ligne)",
-                          "Dépendance aux jeux vidéo",
-                          "Dépendance aux contenus pornographiques",
-                          "Difficultés académiques",
-                          "Recherche de sens",
-                          "Relations amoureuses",
-                          "Relations au travail",
-                          "Intervention en milieu de travail",
-                          "Santé psychologique au travail",
-                          "Deuil",
-                          "Diversité culturelle",
-                          "Douance",
-                          "Douleur chronique / fibromyalgie",
-                          "Dynamique organisationnelle",
-                          "EMDR",
-                          "Épuisement professionnel/burnout",
-                          "Estime de soi",
-                          "Étape de la vie",
-                          "Évaluation neuropsychologique",
-                          "Évaluation psychologique",
-                          "Évaluation psychologique milieu scolaire",
-                          "Fertilité / Procréation assistée",
-                          "Garde d'enfants (expertise psychosociale)",
-                          "Gestion de carrière",
-                          "Gestion du stress",
-                          "Gestion de la colère",
-                          "Gestion des émotions",
-                          "Guerre / conflits armés (vétérans)",
-                          "Guerre / conflits armés (victimes)",
-                          "Habiletés de gestion",
-                          "Harcèlement au travail",
-                          "HPI-adulte",
-                          "TSA",
-                          "TSA adulte évaluation",
-                          "TSA adulte intervention",
-                          "Hypnose thérapeutique",
-                          "IMO",
-                          "Immigration",
-                          "Vieillissement",
-                          "Intérêts / Aptitudes au travail",
-                          "Intimidation",
-                          "Violence (agresseurs)",
-                          "Violence (victimes)",
-                          "Maladie dégénératives / sida",
-                          "Maladies physiques / handicaps",
-                          "Médiation familiale",
-                          "Monoparentalité / famille recomposée",
-                          "Orientation scolaire et professionnelle",
-                          "Orientation sexuelle",
-                          "Peur de vomir",
-                          "Peur d'avoir peur",
-                          "Peur de mourir",
-                          "Périnatalité",
-                          "Problématiques propres aux autochtones",
-                          "Problématiques propres aux agriculteurs",
-                          "Problématiques propres aux réfugiés",
-                          "Problèmes relationnels",
-                          "Proche aidant",
-                          "Psychosomatique",
-                          "Psychologie du sport",
-                          "La psychologie gériatrique",
-                          "Relations familiales",
-                          "Sectes",
-                          "Sélection de personnel/réaffectation",
-                          "Séparation/divorce",
-                          "Situations de crise",
-                          "Soins palliatifs",
-                          "Spiritualité",
-                          "Stress post-traumatique",
-                          "Stress financier",
-                          "Transexualité",
-                          "Troubles alimentaires",
-                          "Troubles anxieux, phobies, panique",
-                          "Troubles d'apprentissages",
-                          "Troubles de la personnalité",
-                          "TPL",
-                          "Troubles de l'humeur",
-                          "Troubles du langage",
-                          "Troubles du sommeil",
-                          "Troubles mentaux sévères et persistants",
-                          "Troubles neuropsychologiques",
-                          "Troubles obsessifs-compulsifs",
-                          "Identité de genre / LGBTQ+",
-                          "Addiction sexuelle et hypersexualité",
-                          "Affirmation de soi",
-                          "Anxiété de séparation",
-                          "Anxiété post-partum",
-                          "Asexualité et aromantisme",
-                          "Attachement chez les adultes",
-                          "Autosabotage",
-                          "Blessure morale",
-                          "Boulimie",
-                          "Leadership",
-                          "Gestion d'équipe",
-                          "Rôle de gestionnaire",
-                          "Compétences en matière de résolution de problèmes",
-                          "Compétences parentales",
-                          "Étape ou transition de vie",
-                          "Difficultés masculines",
-                          "Famille recomposée",
-                          "Fugue",
-                          "Gestion de la colère ordonnée par le tribunal",
-                          "Gestion de la douleur chronique",
-                          "Gestion du temps et organisation",
-                          "Grossesse et maternité",
-                          "Identité de genre",
-                          "Insomnie",
-                          "Le mensonge",
-                          "Motivation",
-                          "Perfectionnisme",
-                          "Procrastination",
-                          "Racisme, soutien à la discrimination",
-                          "Relations interpersonnelles",
-                          "Séparation ou divorce",
-                          "Problèmes professionnels",
-                          "Soutien aux réfugiés et aux immigrants",
-                          "Survivre à la maltraitance",
-                          "Fatigue chronique",
-                          "L'agoraphobie",
-                          "L'anxiété liée à la santé",
-                          "Dysrégulation émotionnelle",
-                          "Phobie",
-                          "Colère",
-                          "Personnalité dépendante",
-                          "Traitement du jeu pathologique",
-                          "Interventions/moyens TDAH",
-                          "Accumulation compulsive",
-                          "Traitement du trouble obsessionnel compulsif (TOC)",
-                          "Traitement du trouble panique",
-                          "Traitement pour l'anxiété sociale",
-                          "Trouble affectif saisonnier (TAS)",
-                          "Trouble de l'adaptation",
-                          "Trouble de la dépersonnalisation-déréalisation",
-                          "Troubles de l'attachement",
-                          "Psychose",
-                          "État dépressif",
-                          "Bipolarité",
-                          "Peur de vieillir",
-                          "Exposition mentale",
-                          "Anxiété chez les personnes âgées",
-                          "Fatigabilité",
-                          "Irritabilité",
-                          "Problèmes de sommeil",
-                          "Difficultés de concentration",
-                          "Difficultés à prendre des décisions",
-                          "Déficits des fonctions exécutives",
-                          "Médiation en milieu de travail lorsqu'une personne a un problème de santé mentale",
-                        ].map((motif) => (
-                          <SelectItem key={motif} value={motif}>
-                            {motif}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Issue Type - Only show if not already collected in Step 2.5 */}
+                  {(bookingFor === "self" || !issueType) && (
+                    <div className="space-y-2">
+                      <Label htmlFor="issueType">
+                        What brings you here? *
+                        {medicalProfile?.primaryIssue && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            (Pre-filled from your profile)
+                          </span>
+                        )}
+                      </Label>
+                      <MotifSearch
+                        value={issueType}
+                        onChange={setIssueType}
+                        placeholder="Tapez vos motifs ex: anxiété, burnout..."
+                      />
+                    </div>
+                  )}
 
                   {/* Preferred Availability */}
                   <div className="space-y-2">
@@ -1745,7 +1666,8 @@ export default function BookAppointmentPage() {
                           paymentMethod === "card"
                             ? "border-primary bg-primary/5 ring-1 ring-primary"
                             : "border-border/40 bg-card/50 hover:bg-accent/50",
-                          isFirstAppointment === true && "opacity-100 cursor-default",
+                          isFirstAppointment === true &&
+                            "opacity-100 cursor-default",
                         )}
                       >
                         <div

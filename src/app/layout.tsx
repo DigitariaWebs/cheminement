@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Petrona } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
-
-const petrona = Petrona({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Je Chemine - Integrated Health Platform",
@@ -29,7 +23,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${petrona.className} antialiased`}>
+      <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

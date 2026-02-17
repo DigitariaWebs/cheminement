@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Instagram, Linkedin } from "lucide-react";
+import { Instagram, Linkedin, Facebook, Twitter } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -37,13 +37,8 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/who-we-are" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {tNav("whoWeAre")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/why-us" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {tNav("whyUs")}
+                <Link href="/book" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {t("bookAppointment")}
                 </Link>
               </li>
               <li>
@@ -52,19 +47,29 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/why-us" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {tNav("whyUs")}
+                </Link>
+              </li>
+              <li>
                 <Link href="/approaches" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                   {tNav("approaches")}
                 </Link>
               </li>
               <li>
-                <Link href="/professional" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {tNav("professional")}
+                <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {t("exploreResources")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {t("platformPress")}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact & Aide */}
+          {/* Contact */}
           <div>
             <h4 className="font-bold text-primary-foreground mb-6 text-sm uppercase tracking-wide">
               {t("contact")}
@@ -76,6 +81,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {t("phone")}
+                </Link>
+              </li>
+              <li>
                 <Link href="/login" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                   {t("helpCentre")}
                 </Link>
@@ -83,20 +93,12 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Suivez-nous */}
+          {/* Partners & Social */}
           <div>
             <h4 className="font-bold text-primary-foreground mb-6 text-sm uppercase tracking-wide">
               {t("partners")}
             </h4>
-            <div className="flex gap-3">
-              <Link
-                href="https://instagram.com/jechemine"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
-              >
-                <Instagram size={18} />
-              </Link>
+            <div className="flex gap-3 flex-wrap">
               <Link
                 href="https://linkedin.com/company/jechemine"
                 target="_blank"
@@ -104,6 +106,30 @@ export function Footer() {
                 className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
               >
                 <Linkedin size={18} />
+              </Link>
+              <Link
+                href="https://twitter.com/jechemine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
+              >
+                <Twitter size={18} />
+              </Link>
+              <Link
+                href="https://facebook.com/jechemine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
+              >
+                <Facebook size={18} />
+              </Link>
+              <Link
+                href="https://instagram.com/jechemine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
+              >
+                <Instagram size={18} />
               </Link>
             </div>
           </div>
@@ -114,11 +140,11 @@ export function Footer() {
           <p className="text-xs text-primary-foreground/50 font-semibold uppercase tracking-widest">
             {t("copyright", { year: currentYear })}
           </p>
-          <div className="flex gap-6 text-xs text-primary-foreground/50 font-semibold">
-            <Link href="/contact" className="hover:text-primary-foreground transition-colors uppercase">
+          <div className="flex flex-wrap gap-6 text-xs text-primary-foreground/50 font-semibold justify-center">
+            <Link href="/privacy" className="hover:text-primary-foreground transition-colors uppercase">
               {t("privacyPolicy")}
             </Link>
-            <Link href="/contact" className="hover:text-primary-foreground transition-colors uppercase">
+            <Link href="/terms" className="hover:text-primary-foreground transition-colors uppercase">
               {t("termsOfUse")}
             </Link>
           </div>
