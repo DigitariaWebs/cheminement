@@ -89,7 +89,7 @@ export default function TherapySpectrumSection() {
         {/* Image placeholder for services */}
         <ScrollReveal variant="zoom-in" delayMs={200} duration={800}>
           <div className="mt-12 mx-auto max-w-4xl">
-            <div className="relative aspect-[21/9] rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative rounded-3xl overflow-hidden shadow-xl">
               {/* Placeholder - replace with actual image */}
               <div className="absolute inset-0 bg-linear-to-br from-accent/30 via-primary/20 to-muted flex items-center justify-center">
                 <div className="text-center p-8">

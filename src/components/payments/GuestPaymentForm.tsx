@@ -17,9 +17,9 @@ import {
   Shield,
 } from "lucide-react";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 interface GuestPaymentFormProps {
   guestEmail: string;
@@ -189,83 +189,113 @@ export default function GuestPaymentForm({
 
   return (
     <div className="space-y-6">
-      {/* Info Card */}
-      <div className="rounded-lg border border-border/40 bg-muted/30 p-4">
-        <div className="flex items-center gap-3 mb-2">
-          <CreditCard className="h-5 w-5 text-primary" />
-          <span className="text-sm font-medium text-foreground">
-            Payment Information Required
-          </span>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Please enter your card details to continue with booking. Your card
-          will only be charged after your appointment is confirmed by the
-          professional.
-        </p>
-      </div>
-
-      {/* Security Note */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Shield className="h-4 w-4" />
-        <span>Your payment information is secured by Stripe</span>
-      </div>
-
-      {loading && (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="text-sm text-muted-foreground">
-            Preparing secure payment form...
-          </p>
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+      {/* Stripe Not Configured Warning */}
+      {!stripePromise && (
+        <div className="rounded-lg border-2 border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-6 text-center space-y-3">
+          <AlertCircle className="h-10 w-10 text-amber-600 dark:text-amber-500 mx-auto" />
           <div>
-            <p className="text-sm font-medium text-red-800 dark:text-red-200">
-              Error
+            <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+              Stripe Configuration Required
+            </h3>
+            <p className="text-sm text-amber-800 dark:text-amber-200 mb-4">
+              Payment processing is not configured. Please add your Stripe API
+              keys to enable payments.
             </p>
-            <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-              {error}
+            <p className="text-xs text-amber-700 dark:text-amber-300 font-mono bg-amber-100 dark:bg-amber-900/30 p-3 rounded text-left">
+              Add to .env.local:
+              <br />
+              NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+              <br />
+              STRIPE_SECRET_KEY=sk_test_...
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={createSetupIntent}
-              className="mt-3"
-            >
-              Try Again
+            <Button onClick={onBack} variant="outline" className="mt-4">
+              Go Back
             </Button>
           </div>
         </div>
       )}
 
-      {!loading && !error && clientSecret && (
-        <Elements
-          options={{
-            clientSecret,
-            appearance,
-          }}
-          stripe={stripePromise}
-        >
-          <SetupForm
-            onSuccess={onSuccess}
-            onError={setError}
-            loading={externalLoading}
-          />
-        </Elements>
+      {stripePromise && (
+        <>
+          {/* Info Card */}
+          <div className="rounded-lg border border-border/40 bg-muted/30 p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-foreground">
+                Payment Information Required
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Please enter your card details to continue with booking. Your card
+              will only be charged after your appointment is confirmed by the
+              professional.
+            </p>
+          </div>
+
+          {/* Security Note */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Shield className="h-4 w-4" />
+            <span>Your payment information is secured by Stripe</span>
+          </div>
+
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <p className="text-sm text-muted-foreground">
+                Preparing secure payment form...
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                  Error
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  {error}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={createSetupIntent}
+                  className="mt-3"
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && clientSecret && (
+            <Elements
+              options={{
+                clientSecret,
+                appearance,
+              }}
+              stripe={stripePromise}
+            >
+              <SetupForm
+                onSuccess={onSuccess}
+                onError={setError}
+                loading={externalLoading}
+              />
+            </Elements>
+          )}
+
+          <div className="flex justify-between pt-4">
+            <Button variant="ghost" onClick={onBack} disabled={externalLoading}>
+              Back
+            </Button>
+          </div>
+
+          <p className="text-xs text-muted-foreground text-center">
+            Your card details are encrypted and never stored on our servers.
+          </p>
+        </>
       )}
-
-      <div className="flex justify-between pt-4">
-        <Button variant="ghost" onClick={onBack} disabled={externalLoading}>
-          Back
-        </Button>
-      </div>
-
-      <p className="text-xs text-muted-foreground text-center">
-        Your card details are encrypted and never stored on our servers.
-      </p>
     </div>
   );
 }

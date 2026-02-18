@@ -80,7 +80,7 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
         <div
           ref={containerRef}
           className={cn(
-            "min-h-[44px] rounded-lg border transition-colors",
+            "min-h-11 rounded-lg border transition-colors",
             "flex flex-wrap items-center gap-2 p-2",
             disabled
               ? "bg-muted cursor-not-allowed border-muted-foreground/20"
@@ -95,7 +95,7 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
                 type="button"
                 onClick={() => handleRemoveMotif()}
                 disabled={disabled}
-                className="hover:text-primary/80 transition-colors flex-shrink-0"
+                className="hover:text-primary/80 transition-colors shrink-0"
                 aria-label={`Remove ${value}`}
               >
                 <X className="h-3.5 w-3.5" />

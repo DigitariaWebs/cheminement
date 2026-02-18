@@ -22,9 +22,9 @@ import {
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 type PaymentMethodType = "card" | "transfer" | "direct_debit";
 
@@ -173,8 +173,24 @@ export default function PaymentModal({
         </DialogHeader>
 
         <div className="mt-4">
+          {/* Stripe Not Configured Warning */}
+          {!stripePromise && (
+            <div className="rounded-lg border-2 border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-6 text-center space-y-3">
+              <AlertCircle className="h-10 w-10 text-amber-600 dark:text-amber-500 mx-auto" />
+              <div>
+                <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                  Stripe Configuration Required
+                </h3>
+                <p className="text-sm text-amber-800 dark:text-amber-200 mb-4">
+                  Payment processing is not configured. Please add your Stripe
+                  API keys to enable payments.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Payment Method Selection */}
-          {!paymentInitiated && !loading && (
+          {stripePromise && !paymentInitiated && !loading && (
             <div className="space-y-6">
               <div className="rounded-lg border border-border/40 bg-muted/30 p-4">
                 <div className="flex items-center justify-between">

@@ -12,19 +12,28 @@ export default function BookingButtonsGroup({
       <h3 className="text-2xl font-semibold mb-4">{title}</h3>
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <Button asChild variant="default" size="lg">
-          <Link href="/book/individual" className="flex items-center gap-2">
+          <Link
+            href="/appointment?for=self"
+            className="flex items-center gap-2"
+          >
             <User className="h-5 w-5" />
             Pour moi Individuel
           </Link>
         </Button>
         <Button asChild variant="default" size="lg">
-          <Link href="/book/relative" className="flex items-center gap-2">
+          <Link
+            href="/appointment?for=loved-one"
+            className="flex items-center gap-2"
+          >
             <Users className="h-5 w-5" />
             Pour un proche
           </Link>
         </Button>
         <Button asChild variant="default" size="lg">
-          <Link href="/book/patient" className="flex items-center gap-2">
+          <Link
+            href="/appointment?for=patient"
+            className="flex items-center gap-2"
+          >
             <Stethoscope className="h-5 w-5" />
             Pour un patient
           </Link>

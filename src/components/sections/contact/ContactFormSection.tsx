@@ -19,10 +19,12 @@ export default function ContactFormSection() {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -37,15 +39,17 @@ export default function ContactFormSection() {
     setSubmitStatus("idle");
 
     try {
-      // TODO: Implémenter l'envoi du formulaire vers l'API
-      // const response = await fetch("/api/contact", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData),
-      // });
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      // Simuler un délai d'envoi
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit contact form");
+      }
 
       setSubmitStatus("success");
       setFormData({
@@ -55,7 +59,8 @@ export default function ContactFormSection() {
         email: "",
         message: "",
       });
-    } catch {
+    } catch (error) {
+      console.error("Contact form error:", error);
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -96,7 +101,8 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-right" delayMs={400} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-sm font-light">
-                      Prénom | first name <span className="text-primary">*</span>
+                      Prénom | first name{" "}
+                      <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="firstName"
@@ -134,7 +140,8 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-right" delayMs={500} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-sm font-light">
-                      Numéro de téléphone | phone number <span className="text-primary">*</span>
+                      Numéro de téléphone | phone number{" "}
+                      <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="phone"
@@ -152,7 +159,8 @@ export default function ContactFormSection() {
                 <ScrollReveal variant="fade-left" delayMs={550} duration={600}>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-light">
-                      Adresse courriel | email address <span className="text-primary">*</span>
+                      Adresse courriel | email address{" "}
+                      <span className="text-primary">*</span>
                     </Label>
                     <Input
                       id="email"
@@ -187,7 +195,8 @@ export default function ContactFormSection() {
 
               {submitStatus === "success" && (
                 <div className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 p-4 text-sm text-green-800 dark:text-green-200">
-                  Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.
+                  Votre message a été envoyé avec succès. Nous vous répondrons
+                  dans les plus brefs délais.
                 </div>
               )}
 

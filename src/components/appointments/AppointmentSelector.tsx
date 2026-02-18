@@ -16,21 +16,21 @@ export default function AppointmentSelector() {
       icon: User,
       title: t("individual.title"),
       description: t("individual.description"),
-      route: "/book/individual",
+      route: "/appointment?for=self",
     },
     {
       id: "relative",
       icon: Users,
       title: t("relative.title"),
       description: t("relative.description"),
-      route: "/book/relative",
+      route: "/appointment?for=loved-one",
     },
     {
       id: "patient",
       icon: Stethoscope,
       title: t("patient.title"),
       description: t("patient.description"),
-      route: "/book/patient",
+      route: "/appointment?for=patient",
     },
   ];
 

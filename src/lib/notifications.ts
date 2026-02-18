@@ -385,7 +385,12 @@ interface EmailTemplateOptions {
   intro: string;
   details?: Array<{ label: string; value: string; isLink?: boolean }>;
   detailsBorderColor?: string;
-  price?: { amount: number; note: string; theme?: EmailTheme; currency?: string };
+  price?: {
+    amount: number;
+    note: string;
+    theme?: EmailTheme;
+    currency?: string;
+  };
   infoBox?: { title: string; content: string; theme?: EmailTheme };
   badge?: { text: string; theme?: EmailTheme };
   button?: { text: string; url: string };
@@ -1239,7 +1244,10 @@ export async function sendRefundConfirmation(
     intro:
       "Your refund has been successfully processed. The funds should appear in your account within 5-10 business days.",
     details: [
-      { label: "Refund Amount", value: `$${data.amount.toFixed(2)} ${currency}` },
+      {
+        label: "Refund Amount",
+        value: `$${data.amount.toFixed(2)} ${currency}`,
+      },
       ...(data.appointmentDate
         ? [
             {
@@ -1361,4 +1369,427 @@ export async function sendProfessionalRejectionEmail(
     { to: data.email, subject, html, text },
     "professional_rejection",
   );
+}
+
+// =============================================================================
+// Contact Form Notifications
+// =============================================================================
+
+interface ContactSubmissionData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
+interface BusinessManagerContactData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  company: string;
+  position: string;
+  coordinates?: string;
+  message?: string;
+}
+
+export async function sendContactSubmissionNotification(
+  data: ContactSubmissionData,
+): Promise<boolean> {
+  const branding = await getBranding();
+  const settings = await getEmailSettings();
+  const adminEmail = process.env.SMTP_USER || "admin@example.com";
+
+  const html = buildEmailHtml({
+    title: "New Contact Form Submission",
+    theme: "info",
+    greeting: "New contact message received",
+    intro: `You have received a new contact form submission from ${data.firstName} ${data.lastName}.`,
+    infoBox: {
+      title: "Contact Details",
+      content: `
+        <strong>Name:</strong> ${data.firstName} ${data.lastName}<br>
+        <strong>Email:</strong> ${data.email}<br>
+        <strong>Phone:</strong> ${data.phone}<br><br>
+        <strong>Message:</strong><br>
+        ${data.message.replace(/\n/g, "<br>")}
+      `,
+    },
+    outro:
+      "Please respond to this inquiry at your earliest convenience. You can reply directly to their email.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "New Contact Form Submission",
+    `Name: ${data.firstName} ${data.lastName}`,
+    `Email: ${data.email}`,
+    `Phone: ${data.phone}`,
+    "",
+    "Message:",
+    data.message,
+  ]);
+
+  const subject = `New Contact Form - ${data.firstName} ${data.lastName}`;
+
+  return sendEmail({ to: adminEmail, subject, html, text }, "welcome");
+}
+
+export async function sendContactConfirmationEmail(
+  data: ContactSubmissionData,
+): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "We Received Your Message",
+    theme: "success",
+    greeting: `Bonjour ${data.firstName},`,
+    intro:
+      "Thank you for contacting us. We have received your message and will get back to you as soon as possible.",
+    infoBox: {
+      title: "Your Message",
+      content: data.message.replace(/\n/g, "<br>"),
+    },
+    outro:
+      "We typically respond within 24-48 hours. If your matter is urgent, please call us directly.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Thank you for contacting us",
+    `Bonjour ${data.firstName},`,
+    "We have received your message and will respond soon.",
+    "",
+    "Your message:",
+    data.message,
+  ]);
+
+  const subject = "We Received Your Message - JeChemine";
+
+  return sendEmail({ to: data.email, subject, html, text }, "welcome");
+}
+
+export async function sendBusinessManagerContactNotification(
+  data: BusinessManagerContactData,
+): Promise<boolean> {
+  const branding = await getBranding();
+  const settings = await getEmailSettings();
+  const adminEmail = process.env.SMTP_USER || "admin@example.com";
+
+  const html = buildEmailHtml({
+    title: "New Business Manager Inquiry",
+    theme: "info",
+    greeting: "New business inquiry received",
+    intro: `You have received a new workplace mental health inquiry from ${data.firstName} ${data.lastName} at ${data.company}.`,
+    infoBox: {
+      title: "Business Contact Details",
+      content: `
+        <strong>Name:</strong> ${data.firstName} ${data.lastName}<br>
+        <strong>Company:</strong> ${data.company}<br>
+        <strong>Position:</strong> ${data.position}<br>
+        <strong>Email:</strong> ${data.email}<br>
+        <strong>Phone:</strong> ${data.phone}<br>
+        ${data.coordinates ? `<strong>Additional Info:</strong> ${data.coordinates}<br>` : ""}
+        ${data.message ? `<br><strong>Message:</strong><br>${data.message.replace(/\n/g, "<br>")}` : ""}
+      `,
+    },
+    outro:
+      "This is a potential corporate client. Please follow up promptly to discuss workplace mental health services.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "New Business Manager Inquiry",
+    `Name: ${data.firstName} ${data.lastName}`,
+    `Company: ${data.company}`,
+    `Position: ${data.position}`,
+    `Email: ${data.email}`,
+    `Phone: ${data.phone}`,
+    data.coordinates ? `Additional Info: ${data.coordinates}` : "",
+    data.message ? `\nMessage:\n${data.message}` : "",
+  ]);
+
+  const subject = `New Business Inquiry - ${data.company}`;
+
+  return sendEmail({ to: adminEmail, subject, html, text }, "welcome");
+}
+
+export async function sendBusinessManagerConfirmationEmail(
+  data: BusinessManagerContactData,
+): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "Thank You for Your Inquiry",
+    theme: "success",
+    greeting: `Bonjour ${data.firstName},`,
+    intro:
+      "Thank you for your interest in our workplace mental health services. We have received your inquiry and one of our team members will contact you shortly to discuss how we can support your organization.",
+    infoBox: {
+      title: "Your Information",
+      content: `
+        <strong>Company:</strong> ${data.company}<br>
+        <strong>Your Role:</strong> ${data.position}<br>
+        <strong>Contact Email:</strong> ${data.email}<br>
+        <strong>Contact Phone:</strong> ${data.phone}
+      `,
+    },
+    outro:
+      "We understand the importance of workplace mental health and look forward to partnering with you to create a supportive environment for your team.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Thank you for your inquiry",
+    `Bonjour ${data.firstName},`,
+    "We have received your workplace mental health inquiry.",
+    "Our team will contact you shortly.",
+    "",
+    `Company: ${data.company}`,
+    `Your Role: ${data.position}`,
+  ]);
+
+  const subject = "Thank You for Your Inquiry - JeChemine";
+
+  return sendEmail({ to: data.email, subject, html, text }, "welcome");
+}
+
+// =============================================================================
+// Professional Workflow Notifications
+// =============================================================================
+
+interface ProfessionalAcceptanceData {
+  clientName: string;
+  clientEmail: string;
+  professionalName: string;
+  appointmentType: string;
+  issueType?: string;
+}
+
+interface ProfileCompletionReminderData {
+  name: string;
+  email: string;
+  missingSteps: string[];
+  completionUrl: string;
+}
+
+interface AppointmentConfirmationReadyData {
+  clientName: string;
+  clientEmail: string;
+  professionalName: string;
+  appointmentDate?: string;
+  appointmentTime?: string;
+  confirmationUrl: string;
+}
+
+export async function sendProfessionalAcceptanceNotification(
+  data: ProfessionalAcceptanceData,
+): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "Un professionnel a accepté votre demande",
+    theme: "success",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: `Bonne nouvelle ! ${data.professionalName} a accepté votre demande de rendez-vous.`,
+    infoBox: {
+      title: "Détails de la demande",
+      content: `
+        <strong>Professionnel:</strong> ${data.professionalName}<br>
+        <strong>Type de séance:</strong> ${data.appointmentType}<br>
+        ${data.issueType ? `<strong>Motif:</strong> ${data.issueType}<br>` : ""}
+      `,
+    },
+    outro:
+      "Le professionnel vous contactera bientôt pour planifier votre premier rendez-vous. Vous pouvez également lui envoyer un message via votre espace client.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Un professionnel a accepté votre demande",
+    `Bonjour ${data.clientName},`,
+    `${data.professionalName} a accepté votre demande de rendez-vous.`,
+    "",
+    `Type de séance: ${data.appointmentType}`,
+    data.issueType ? `Motif: ${data.issueType}` : "",
+    "",
+    "Le professionnel vous contactera bientôt.",
+  ]);
+
+  const subject = "Un professionnel a accepté votre demande - JeChemine";
+
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "appointment_confirmation",
+  );
+}
+
+export async function sendProfileCompletionReminder(
+  data: ProfileCompletionReminderData,
+): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "Complétez votre profil",
+    theme: "info",
+    greeting: `Bonjour ${data.name},`,
+    intro:
+      "Pour finaliser votre rendez-vous et commencer votre parcours de soins, veuillez compléter votre profil.",
+    infoBox: {
+      title: "Étapes restantes",
+      content: data.missingSteps.map((step) => `• ${step}`).join("<br>"),
+    },
+    button: {
+      text: "Compléter mon profil",
+      url: data.completionUrl,
+    },
+    outro:
+      "Une fois votre profil complété, vous pourrez confirmer votre rendez-vous et commencer vos consultations.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Complétez votre profil",
+    `Bonjour ${data.name},`,
+    "Veuillez compléter votre profil pour finaliser votre rendez-vous.",
+    "",
+    "Étapes restantes:",
+    ...data.missingSteps.map((step) => `- ${step}`),
+    "",
+    `Compléter: ${data.completionUrl}`,
+  ]);
+
+  const subject = "Complétez votre profil - JeChemine";
+
+  return sendEmail({ to: data.email, subject, html, text }, "welcome");
+}
+
+export async function sendAppointmentConfirmationReady(
+  data: AppointmentConfirmationReadyData,
+): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "Confirmez votre rendez-vous",
+    theme: "success",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: `${data.professionalName} vous propose un rendez-vous. Veuillez confirmer votre disponibilité.`,
+    infoBox: data.appointmentDate
+      ? {
+          title: "Rendez-vous proposé",
+          content: `
+            <strong>Professionnel:</strong> ${data.professionalName}<br>
+            <strong>Date:</strong> ${data.appointmentDate}<br>
+            <strong>Heure:</strong> ${data.appointmentTime}
+          `,
+        }
+      : undefined,
+    button: {
+      text: "Confirmer le rendez-vous",
+      url: data.confirmationUrl,
+    },
+    outro:
+      "Après confirmation, vous recevrez un lien pour rejoindre votre séance et toutes les informations nécessaires.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Confirmez votre rendez-vous",
+    `Bonjour ${data.clientName},`,
+    `${data.professionalName} vous propose un rendez-vous.`,
+    data.appointmentDate ? `Date: ${data.appointmentDate}` : "",
+    data.appointmentTime ? `Heure: ${data.appointmentTime}` : "",
+    "",
+    `Confirmer: ${data.confirmationUrl}`,
+  ]);
+
+  const subject = "Confirmez votre rendez-vous - JeChemine";
+
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "appointment_confirmation",
+  );
+}
+
+export async function sendPaymentProcessedNotification(data: {
+  name: string;
+  email: string;
+  amount: number;
+  appointmentDate?: string;
+  professionalName?: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "Paiement traité avec succès",
+    theme: "success",
+    greeting: `Bonjour ${data.name},`,
+    intro: `Votre paiement de ${data.amount}$ a été traité avec succès.`,
+    infoBox: {
+      title: "Détails du paiement",
+      content: `
+        <strong>Montant:</strong> ${data.amount}$<br>
+        ${data.professionalName ? `<strong>Professionnel:</strong> ${data.professionalName}<br>` : ""}
+        ${data.appointmentDate ? `<strong>Séance du:</strong> ${data.appointmentDate}` : ""}
+      `,
+    },
+    outro: "Un reçu détaillé est disponible dans votre espace client.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Paiement traité avec succès",
+    `Bonjour ${data.name},`,
+    `Votre paiement de ${data.amount}$ a été traité.`,
+    data.professionalName ? `Professionnel: ${data.professionalName}` : "",
+    data.appointmentDate ? `Séance: ${data.appointmentDate}` : "",
+  ]);
+
+  const subject = "Paiement traité - JeChemine";
+
+  return sendEmail(
+    { to: data.email, subject, html, text },
+    "guest_payment_complete",
+  );
+}
+
+export async function sendNewMessageNotification(data: {
+  recipientName: string;
+  recipientEmail: string;
+  senderName: string;
+  messagePreview: string;
+  conversationUrl: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+
+  const html = buildEmailHtml({
+    title: "Nouveau message",
+    theme: "info",
+    greeting: `Bonjour ${data.recipientName},`,
+    intro: `Vous avez reçu un nouveau message de ${data.senderName}.`,
+    infoBox: {
+      title: "Aperçu du message",
+      content: data.messagePreview,
+    },
+    button: {
+      text: "Voir le message",
+      url: data.conversationUrl,
+    },
+    outro: "Connectez-vous pour répondre à ce message.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Nouveau message",
+    `Bonjour ${data.recipientName},`,
+    `Message de ${data.senderName}:`,
+    data.messagePreview,
+    "",
+    `Répondre: ${data.conversationUrl}`,
+  ]);
+
+  const subject = `Nouveau message de ${data.senderName} - JeChemine`;
+
+  return sendEmail({ to: data.recipientEmail, subject, html, text }, "welcome");
 }

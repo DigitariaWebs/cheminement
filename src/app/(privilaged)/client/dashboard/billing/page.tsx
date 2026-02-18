@@ -80,7 +80,7 @@ export default function ClientBillingPage() {
     try {
       setLoadingPaymentMethods(true);
       const data = await apiClient.get<{ paymentMethods: PaymentMethod[] }>(
-        "/payments/payment-methods",
+        "/payments/methods",
       );
       setPaymentMethods(data.paymentMethods || []);
     } catch (err) {
