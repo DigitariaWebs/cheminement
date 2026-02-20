@@ -346,10 +346,15 @@ export async function POST(req: NextRequest) {
               language: session.user.language || "en",
             });
             await minorUser.save();
+            console.log("Created minor user:", minorUser._id.toString());
+          } else {
+            console.log("Found existing minor user:", minorUser._id.toString());
           }
 
           // Link guardian
+          console.log("Linking guardian:", data.guardianUserId, "to minor:", minorUser._id.toString());
           const linkResult = await linkGuardian(minorUser._id, data.guardianUserId);
+          console.log("Link result:", linkResult);
           if (linkResult.success) {
             minorUserId = minorUser._id.toString();
             // Update appointment to use minor's client ID if booking for loved one

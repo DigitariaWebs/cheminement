@@ -120,6 +120,20 @@
       "title": "Confidentialité assurée",
       "description": "Vos échanges et informations personnelles sont protégés selon les normes les plus strictes."
     },
+    "featureCards": {
+      "quickAccess": {
+        "title": "Accès rapide",
+        "description": "Connectez-vous rapidement avec un professionnel de la santé mentale. Pas de longues listes d'attente—commencez votre parcours vers le bien-être plus tôt."
+      },
+      "diverseProfessionals": {
+        "title": "Diversité de professionnels",
+        "description": "Un système de jumelage intelligent pour vous aiguillez vers le professionnel qui vous convient le mieux."
+      },
+      "educationalResources": {
+        "title": "Ressources éducatives",
+        "description": "Explorez notre bibliothèque de vidéos et de lectures sur l'anxiété, l'épuisement professionnel, la gestion du stress et plus encore—disponible même avant votre première séance."
+      }
+    },
     "educationalHighlight": {
       "title": "Commencez votre parcours dès maintenant",
       "description": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques.",
@@ -1087,7 +1101,7 @@
       "imageAlt": "Séance de soutien professionnel en santé mentale",
       "adult": {
         "title": "Psychothérapie adulte",
-        "description": "Soutien en santé mentale pour adultes: anxiété, dépression, problèmes relationnels, transitions de vie.",
+        "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
         "highlight": "Plans de traitement personnalisés",
         "features": [
           "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes",
@@ -1156,6 +1170,32 @@
       "badge": "2 · Santé mentale au travail",
       "title": "Section dédiée aux entreprises",
       "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre."
+    },
+    "enterpriseCta": {
+      "title": "Gestionnaire d'entreprise ?",
+      "subtitle": "Contactez-nous pour découvrir comment nous pouvons soutenir la santé mentale de vos employés.",
+      "formTitle": "Formulaire de contact",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Votre prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Votre nom",
+      "email": "Courriel",
+      "emailPlaceholder": "votre@courriel.com",
+      "phone": "Téléphone",
+      "phonePlaceholder": "514-123-4567",
+      "company": "Compagnie",
+      "companyPlaceholder": "Nom de votre entreprise",
+      "position": "Fonction",
+      "positionPlaceholder": "Votre fonction",
+      "coordinates": "Coordonnées",
+      "coordinatesPlaceholder": "Adresse ou autres coordonnées (optionnel)",
+      "submitButton": "Contacter un conseiller",
+      "submitting": "Envoi en cours...",
+      "successMessage": "Votre demande a été envoyée avec succès. Un conseiller vous contactera sous peu.",
+      "errorMessage": "Une erreur s'est produite. Veuillez réessayer.",
+      "parentTitle": "Parent / Pour mon jeune",
+      "parentDescription": "Vous cherchez un accompagnement pour votre enfant ou adolescent ?",
+      "parentButton": "Prendre rendez-vous pour un proche"
     },
     "sentiersProgram": {
       "badge": "3 · Parcours scolaire et académique",
@@ -1327,7 +1367,12 @@
       "otherApproaches": {
         "title": "Autres approches et techniques",
         "items": ["Hypnose.", "EMDR.", "IMO."]
-      }
+      },
+      "integrativeApproach": {
+        "title": "Approche intégrative",
+        "description": "Une combinaison de différentes techniques et théories psychologiques adaptées aux besoins uniques de chaque personne, plutôt que de se limiter à une seule approche."
+      },
+      "bookingTitle": "Prendre rendez-vous"
     },
     "ethics": {
       "badge": "3 · Éthique et confidentialité",

@@ -9,9 +9,12 @@ import {
   UsersRound,
   Waves,
   Workflow,
+  Puzzle,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import Link from "next/link";
+import { User, Users, Stethoscope } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
@@ -133,6 +136,62 @@ export default function ClinicalApproachesSection() {
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Integrative Approach Box */}
+        <ScrollReveal variant="zoom-in" delayMs={1000} duration={700}>
+          <div className="mt-12 mx-auto max-w-4xl rounded-4xl border border-primary/40 bg-card/90 p-8 shadow-xl">
+            <div className="flex items-start gap-6">
+              <div className="shrink-0">
+                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Puzzle className="h-7 w-7" />
+                </div>
+              </div>
+              <div className="flex-1 space-y-3">
+                <h3 className="font-serif text-xl font-medium text-foreground">
+                  {t("integrativeApproach.title")}
+                </h3>
+                <p className="text-base leading-relaxed text-muted-foreground">
+                  {t("integrativeApproach.description")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Booking Buttons */}
+        <ScrollReveal variant="fade-up" delayMs={1100} duration={700}>
+          <div className="mt-12 text-center">
+            <h3 className="text-xl font-serif font-medium text-foreground mb-6">
+              {t("bookingTitle")}
+            </h3>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/appointment?for=self"
+                className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                <span className="relative z-10">Pour moi (Individuel)</span>
+                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Link>
+              <Link
+                href="/appointment?for=loved-one"
+                className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
+              >
+                <Users className="h-4 w-4" />
+                <span className="relative z-10">Pour un proche</span>
+                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Link>
+              <Link
+                href="/appointment?for=patient"
+                className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
+              >
+                <Stethoscope className="h-4 w-4" />
+                <span className="relative z-10">Pour un patient</span>
+                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Link>
+            </div>
+          </div>
+        </ScrollReveal>
 
         <ScrollReveal variant="swing-in" delayMs={1200} duration={700}>
           <div className="mx-auto mt-10 max-w-4xl rounded-4xl border border-dashed border-primary/30 bg-card/70 p-8 text-center shadow-inner">

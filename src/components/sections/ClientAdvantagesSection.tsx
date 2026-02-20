@@ -24,6 +24,8 @@ import {
   MoreHorizontal,
   Clock,
   UserCheck,
+  Zap as ZapIcon,
+  Network,
 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
@@ -266,6 +268,62 @@ export default function ClientAdvantagesSection() {
               <span className="text-sm">
                 {t("trustIndicators.confidential")}
               </span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Three Feature Cards at the Bottom */}
+        <ScrollReveal variant="fade-up" delayMs={1000} duration={700}>
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Accès rapide */}
+            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/40">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                  <ZapIcon className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {t("featureCards.quickAccess.title")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {t("featureCards.quickAccess.description")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Diversité de professionnels */}
+            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/40">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                  <Network className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {t("featureCards.diverseProfessionals.title")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {t("featureCards.diverseProfessionals.description")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Ressources éducatives */}
+            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/40">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                  <BookOpen className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {t("featureCards.educationalResources.title")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {t("featureCards.educationalResources.description")}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </ScrollReveal>

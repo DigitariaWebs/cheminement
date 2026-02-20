@@ -120,6 +120,20 @@
       "title": "Guaranteed Confidentiality",
       "description": "Your exchanges and personal information are protected according to the strictest standards."
     },
+    "featureCards": {
+      "quickAccess": {
+        "title": "Quick Access",
+        "description": "Connect quickly with a mental health professional. No long waiting lists—start your wellness journey sooner."
+      },
+      "diverseProfessionals": {
+        "title": "Diverse Professionals",
+        "description": "An intelligent matching system to guide you to the professional that suits you best."
+      },
+      "educationalResources": {
+        "title": "Educational Resources",
+        "description": "Explore our library of videos and readings on anxiety, burnout, stress management and more—available even before your first session."
+      }
+    },
     "educationalHighlight": {
       "title": "Start Your Journey Now",
       "description": "Our professionals can support you in better managing multiple issues.",
@@ -1083,6 +1097,32 @@
       "title": "Specialized support for work-related challenges",
       "description": "We support employees in managing burnout, return-to-work transitions, and developing sustainable strategies to maintain a healthy work-life balance."
     },
+    "enterpriseCta": {
+      "title": "Business Manager?",
+      "subtitle": "Contact us to discover how we can support your employees' mental health.",
+      "formTitle": "Contact Form",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Your last name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Phone",
+      "phonePlaceholder": "514-123-4567",
+      "company": "Company",
+      "companyPlaceholder": "Your company name",
+      "position": "Position",
+      "positionPlaceholder": "Your position",
+      "coordinates": "Coordinates",
+      "coordinatesPlaceholder": "Address or other coordinates (optional)",
+      "submitButton": "Contact an advisor",
+      "submitting": "Submitting...",
+      "successMessage": "Your request has been sent successfully. An advisor will contact you shortly.",
+      "errorMessage": "An error occurred. Please try again.",
+      "parentTitle": "Parent / For My Young One",
+      "parentDescription": "Looking for support for your child or teenager?",
+      "parentButton": "Book an appointment for a loved one"
+    },
     "programs": {
       "badge": "WHAT'S INCLUDED",
       "title": "Comprehensive Mental Health Programs",
@@ -1090,7 +1130,7 @@
       "imageAlt": "Professional mental health support session",
       "adult": {
         "title": "Adult Psychotherapy",
-        "description": "Comprehensive mental health support for adults facing life's challenges. From anxiety and depression to relationship issues and life transitions, our qualified professionals provide personalized therapeutic care.",
+        "description": "Mental health support for adults facing life's challenges. From anxiety and depression to relationship issues and life transitions, our professionals provide personalized therapeutic care.",
         "highlight": "Personalized treatment plans",
         "features": [
           "Individual therapy sessions with licensed psychologists.",
@@ -1324,7 +1364,12 @@
       "otherApproaches": {
         "title": "Other Approaches and Techniques",
         "items": ["Hypnosis.", "EMDR.", "IMO."]
-      }
+      },
+      "integrativeApproach": {
+        "title": "Integrative Approach",
+        "description": "A combination of different psychological techniques and theories adapted to each person's unique needs, rather than being limited to a single approach."
+      },
+      "bookingTitle": "Book an Appointment"
     },
     "ethics": {
       "badge": "3 · Ethics and Confidentiality",

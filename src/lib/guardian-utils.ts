@@ -54,9 +54,36 @@ export async function getManagedAccounts(
   userId: mongoose.Types.ObjectId | string,
 ): Promise<IUser[]> {
   try {
+    // Convert userId to ObjectId if it's a string
+    let guardianId: mongoose.Types.ObjectId;
+    if (typeof userId === "string") {
+      // Validate that it's a valid ObjectId string
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        console.error("Invalid userId format:", userId);
+        return [];
+      }
+      guardianId = new mongoose.Types.ObjectId(userId);
+    } else {
+      guardianId = userId;
+    }
+    
+    console.log("Searching for accounts with guardianId:", guardianId.toString());
+    
+    // Search for accounts where guardianId or accountManagerId matches
     const accounts = await User.find({
-      guardianId: userId,
-    });
+      $or: [
+        { guardianId: guardianId },
+        { accountManagerId: guardianId },
+      ],
+    }).select("firstName lastName email dateOfBirth phone status guardianId accountManagerId");
+    
+    console.log("Found accounts:", accounts.length, accounts.map(a => ({ 
+      id: a._id.toString(), 
+      name: `${a.firstName} ${a.lastName}`,
+      guardianId: a.guardianId?.toString(),
+      accountManagerId: a.accountManagerId?.toString(),
+    })));
+    
     return accounts;
   } catch (error) {
     console.error("Error getting managed accounts:", error);
@@ -97,7 +124,13 @@ export async function linkGuardian(
     if (!guardian.managedAccounts) {
       guardian.managedAccounts = [];
     }
-    if (!guardian.managedAccounts.includes(minor._id)) {
+    // Check if minor._id is already in the array (compare as strings)
+    const minorIdString = minor._id.toString();
+    const isAlreadyManaged = guardian.managedAccounts.some(
+      (id) => id.toString() === minorIdString
+    );
+    
+    if (!isAlreadyManaged) {
       guardian.managedAccounts.push(minor._id);
       await guardian.save();
     }

@@ -34,8 +34,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ guardian });
     } else if (action === "managed") {
       // Get accounts managed by current user
+      console.log("Fetching managed accounts for user:", session.user.id);
       const managedAccounts = await getManagedAccounts(session.user.id);
-      return NextResponse.json({ managedAccounts });
+      console.log("Found managed accounts:", managedAccounts.length);
+      
+      // Convert to plain objects for JSON serialization
+      const serializedAccounts = managedAccounts.map((account) => ({
+        _id: account._id.toString(),
+        firstName: account.firstName,
+        lastName: account.lastName,
+        email: account.email,
+        dateOfBirth: account.dateOfBirth ? account.dateOfBirth.toISOString() : undefined,
+        phone: account.phone,
+        status: account.status,
+      }));
+      console.log("Serialized accounts:", serializedAccounts);
+      return NextResponse.json({ managedAccounts: serializedAccounts });
     } else {
       // Return both
       const guardian = await getGuardian(session.user.id);
