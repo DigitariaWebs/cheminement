@@ -520,6 +520,7 @@
       "profile": "Profile",
       "schedule": "Schedule",
       "billing": "Billing & Payments",
+      "managedAccounts": "Managed Accounts",
       "clientManagement": "Client Management",
       "proposals": "Client Proposals",
       "myRequests": "My Requests",
@@ -1695,7 +1696,9 @@
         "manageAppointments": "Manage Appointments",
         "manageAppointmentsDesc": "View and schedule your sessions",
         "browseResources": "Browse Resources",
-        "browseResourcesDesc": "Access self-care tools and materials"
+        "browseResourcesDesc": "Access self-care tools and materials",
+        "manageChildAccounts": "Manage Child Accounts",
+        "manageChildAccountsDesc": "View and manage appointments and billing for accounts you manage"
       },
       "support": {
         "title": "Support & Help",
@@ -2109,6 +2112,24 @@
     "cancel": "Cancel",
     "submit": "Submit Review",
     "submitting": "Submitting..."
+  },
+  "managedAccounts": {
+    "title": "Managed Accounts",
+    "subtitle": "Manage billing and access files for accounts you manage",
+    "noAccounts": "No Managed Accounts",
+    "noAccountsDesc": "You don't currently manage any accounts. When you book an appointment for a minor and link your account as their account manager, they will appear here.",
+    "viewing": "Viewing:",
+    "appointmentsFor": "Appointments for {name}",
+    "billingFor": "Billing for {name}",
+    "appointments": "Appointments",
+    "billing": "Billing",
+    "age": "Age: {age} years",
+    "manageChildAccounts": "Manage Child Accounts",
+    "manageChildAccountsDesc": "View and manage appointments and billing for accounts you manage",
+    "failedToLoad": "Failed to load managed accounts",
+    "accountManager": "Account Manager / Guardian",
+    "accountManagerDesc": "Since this is a minor (under 18), you can link your account as their account manager. This will allow you to manage billing and access their file.",
+    "linkAccountManager": "Link my account as their account manager"
   },
   "Professional": {
     "billing": {

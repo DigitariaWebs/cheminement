@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CreditCard,
   Download,
@@ -50,20 +51,46 @@ export default function ClientBillingPage() {
   const [error, setError] = useState<string | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(false);
+  const [managedAccountName, setManagedAccountName] = useState<string | null>(null);
 
   const t = useTranslations("Client.billing");
+  const tManaged = useTranslations("managedAccounts");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const accountId = searchParams.get("accountId");
 
   // Fetch real appointments from API
   useEffect(() => {
     fetchAppointments();
-    fetchPaymentMethods();
-  }, []);
+    if (!accountId) {
+      fetchPaymentMethods();
+    }
+    if (accountId) {
+      fetchManagedAccountInfo();
+    }
+  }, [accountId]);
+
+  const fetchManagedAccountInfo = async () => {
+    try {
+      const response = await apiClient.get<{ managedAccounts: Array<{ _id: string; firstName: string; lastName: string }> }>(
+        "/users/guardian?action=managed",
+      );
+      const account = response.managedAccounts?.find((acc) => acc._id === accountId);
+      if (account) {
+        setManagedAccountName(`${account.firstName} ${account.lastName}`);
+      }
+    } catch (err) {
+      console.error("Error fetching managed account info:", err);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await appointmentsAPI.list();
+      const response = await appointmentsAPI.list(
+        accountId ? { accountId } : undefined
+      );
 
       setAppointments(response);
     } catch (err) {
@@ -231,10 +258,21 @@ export default function ClientBillingPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-light text-foreground">
-            {t("title")}
-          </h1>
-          <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
+          <div className="flex items-center gap-3">
+            <h1 className="font-serif text-3xl font-light text-foreground">
+              {t("title")}
+            </h1>
+            {accountId && managedAccountName && (
+              <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {tManaged("viewing")} {managedAccountName}
+              </span>
+            )}
+          </div>
+          <p className="mt-2 text-muted-foreground">
+            {accountId && managedAccountName
+              ? tManaged("billingFor", { name: managedAccountName })
+              : t("subtitle")}
+          </p>
         </div>
       </div>
 

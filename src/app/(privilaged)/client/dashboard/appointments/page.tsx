@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Calendar,
   Clock,
@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { appointmentsAPI } from "@/lib/api-client";
+import { appointmentsAPI, apiClient } from "@/lib/api-client";
 import { CancelAppointmentDialog, ReviewDialog } from "@/components/appointments";
 import Link from "next/link";
 import type { AppointmentResponse } from "@/types/api";
@@ -38,18 +38,41 @@ export default function ClientAppointmentsPage() {
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [appointmentToReview, setAppointmentToReview] =
     useState<AppointmentResponse | null>(null);
+  const [managedAccountName, setManagedAccountName] = useState<string | null>(null);
   const t = useTranslations("Client.appointments");
+  const tManaged = useTranslations("managedAccounts");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const accountId = searchParams.get("accountId");
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+    if (accountId) {
+      fetchManagedAccountInfo();
+    }
+  }, [accountId]);
+
+  const fetchManagedAccountInfo = async () => {
+    try {
+      const response = await apiClient.get<{ managedAccounts: Array<{ _id: string; firstName: string; lastName: string }> }>(
+        "/users/guardian?action=managed",
+      );
+      const account = response.managedAccounts?.find((acc) => acc._id === accountId);
+      if (account) {
+        setManagedAccountName(`${account.firstName} ${account.lastName}`);
+      }
+    } catch (err) {
+      console.error("Error fetching managed account info:", err);
+    }
+  };
 
   const fetchAppointments = async () => {
     setLoading(true);
     setError("");
     try {
-      const data = await appointmentsAPI.list();
+      const data = await appointmentsAPI.list(
+        accountId ? { accountId } : undefined
+      );
       setAppointments(data);
     } catch (err) {
       console.error("Error fetching appointments:", err);
@@ -191,10 +214,21 @@ export default function ClientAppointmentsPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-light text-foreground">
-            {t("title")}
-          </h1>
-          <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
+          <div className="flex items-center gap-3">
+            <h1 className="font-serif text-3xl font-light text-foreground">
+              {t("title")}
+            </h1>
+            {accountId && managedAccountName && (
+              <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {tManaged("viewing")} {managedAccountName}
+              </span>
+            )}
+          </div>
+          <p className="mt-2 text-muted-foreground">
+            {accountId && managedAccountName
+              ? tManaged("appointmentsFor", { name: managedAccountName })
+              : t("subtitle")}
+          </p>
         </div>
         <Button asChild className="gap-2 rounded-full">
           <Link href="/appointment">

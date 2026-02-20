@@ -85,21 +85,13 @@ export default function HeroSection() {
                   // Booking Options
                   <div className="flex flex-col gap-3 animate-fade-in">
                     <div className="flex flex-col sm:flex-row items-start justify-start gap-2.5">
+                      {/* Order: 1. For me (Individual), 2. For a loved one, 3. For a patient */}
                       <Link
                         href="/appointment?for=self"
                         className="group relative px-5 py-2.5 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
                         onMouseEnter={() => setActiveHint("self")}
                       >
                         <span className="relative z-10">{t("forSelf")}</span>
-                        <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </Link>
-
-                      <Link
-                        href="/appointment?for=patient"
-                        className="group relative px-5 py-2.5 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                        onMouseEnter={() => setActiveHint("patient")}
-                      >
-                        <span className="relative z-10">{t("forPatient")}</span>
                         <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </Link>
 
@@ -111,6 +103,15 @@ export default function HeroSection() {
                         <span className="relative z-10">
                           {t("forLovedOne")}
                         </span>
+                        <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </Link>
+
+                      <Link
+                        href="/appointment?for=patient"
+                        className="group relative px-5 py-2.5 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                        onMouseEnter={() => setActiveHint("patient")}
+                      >
+                        <span className="relative z-10">{t("forPatient")}</span>
                         <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </Link>
                     </div>

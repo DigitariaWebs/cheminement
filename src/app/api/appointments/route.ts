@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
     const clientId = searchParams.get("clientId");
+    const accountId = searchParams.get("accountId"); // For guardian viewing managed account
 
     const query: {
       clientId?: string;
@@ -38,7 +39,20 @@ export async function GET(req: NextRequest) {
 
     // Filter by user role (guests are treated like clients)
     if (session.user.role === "client" || session.user.role === "guest") {
-      query.clientId = session.user.id;
+      // If accountId is provided, verify user is guardian of that account
+      if (accountId) {
+        const { canAccessAccount } = await import("@/lib/guardian-utils");
+        const canAccess = await canAccessAccount(session.user.id, accountId);
+        if (!canAccess) {
+          return NextResponse.json(
+            { error: "Unauthorized: You don't have access to this account" },
+            { status: 403 },
+          );
+        }
+        query.clientId = accountId;
+      } else {
+        query.clientId = session.user.id;
+      }
     } else if (session.user.role === "professional") {
       // Professionals can see their own appointments OR unassigned pending requests
       const showUnassigned = searchParams.get("unassigned") === "true";
@@ -56,7 +70,7 @@ export async function GET(req: NextRequest) {
       query.status = status;
     }
 
-    if (clientId) {
+    if (clientId && !accountId) {
       query.clientId = clientId;
     }
 

@@ -517,6 +517,7 @@
       "profile": "Profil",
       "schedule": "Horaire",
       "billing": "Facturation et paiements",
+      "managedAccounts": "Comptes gérés",
       "clientManagement": "Gestion des clients",
       "proposals": "Propositions de clients",
       "myRequests": "Mes demandes",
@@ -1692,7 +1693,9 @@
         "manageAppointments": "Gérer les rendez-vous",
         "manageAppointmentsDesc": "Voir et planifier vos séances",
         "browseResources": "Parcourir les ressources",
-        "browseResourcesDesc": "Accéder aux outils et matériaux d'auto-soins"
+        "browseResourcesDesc": "Accéder aux outils et matériaux d'auto-soins",
+        "manageChildAccounts": "Gérer les comptes enfants",
+        "manageChildAccountsDesc": "Voir et gérer les rendez-vous et la facturation des comptes que vous gérez"
       },
       "support": {
         "title": "Soutien et aide",
@@ -2103,6 +2106,24 @@
     "cancel": "Annuler",
     "submit": "Soumettre l'avis",
     "submitting": "Soumission..."
+  },
+  "managedAccounts": {
+    "title": "Comptes gérés",
+    "subtitle": "Gérez la facturation et accédez aux dossiers des comptes que vous gérez",
+    "noAccounts": "Aucun compte géré",
+    "noAccountsDesc": "Vous ne gérez actuellement aucun compte. Lorsque vous réservez un rendez-vous pour un mineur et liez votre compte en tant que gestionnaire de compte, ils apparaîtront ici.",
+    "viewing": "Consultation :",
+    "appointmentsFor": "Rendez-vous pour {name}",
+    "billingFor": "Facturation pour {name}",
+    "appointments": "Rendez-vous",
+    "billing": "Facturation",
+    "age": "Âge : {age} ans",
+    "manageChildAccounts": "Gérer les comptes enfants",
+    "manageChildAccountsDesc": "Voir et gérer les rendez-vous et la facturation des comptes que vous gérez",
+    "failedToLoad": "Échec du chargement des comptes gérés",
+    "accountManager": "Gestionnaire de compte / Tuteur",
+    "accountManagerDesc": "Comme il s'agit d'un mineur (moins de 18 ans), vous pouvez lier votre compte en tant que gestionnaire de compte. Cela vous permettra de gérer la facturation et d'accéder à leur dossier.",
+    "linkAccountManager": "Lier mon compte en tant que gestionnaire de compte"
   },
   "Professional": {
     "billing": {

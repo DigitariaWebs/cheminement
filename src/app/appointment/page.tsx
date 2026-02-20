@@ -51,6 +51,7 @@ import { MotifSearch } from "@/components/ui/MotifSearch";
 import { cn } from "@/lib/utils";
 import { MOTIFS } from "@/data/motif";
 import AppointmentForm from "@/components/appointments/AppointmentForm";
+import { useTranslations } from "next-intl";
 
 interface GuestInfo {
   firstName: string;
@@ -98,6 +99,7 @@ interface MedicalProfileData {
 export default function BookAppointmentPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const t = useTranslations("managedAccounts");
   // Auth state
   const [isGuest, setIsGuest] = useState(false);
   const [authCheckDone, setAuthCheckDone] = useState(false);
@@ -917,6 +919,7 @@ export default function BookAppointmentPage() {
                     }
                     className="space-y-4"
                   >
+                    {/* Order: 1. For me (Individual), 2. For a loved one, 3. For a patient */}
                     <div
                       className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
                         bookingFor === "self"
@@ -945,32 +948,6 @@ export default function BookAppointmentPage() {
 
                     <div
                       className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
-                        bookingFor === "patient"
-                          ? "border-primary bg-primary/5"
-                          : "border-border/40 hover:border-border"
-                      }`}
-                      onClick={() => handleWhoChoice("patient")}
-                    >
-                      <div className="flex items-start gap-4">
-                        <RadioGroupItem value="patient" id="patient" />
-                        <div className="flex-1">
-                          <Label
-                            htmlFor="patient"
-                            className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
-                          >
-                            <User className="h-5 w-5 text-primary" />
-                            For a Patient
-                          </Label>
-                          <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m a healthcare professional requesting on
-                            behalf of my patient.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
                         bookingFor === "loved-one"
                           ? "border-primary bg-primary/5"
                           : "border-border/40 hover:border-border"
@@ -991,6 +968,32 @@ export default function BookAppointmentPage() {
                             I&apos;m requesting this appointment for a family
                             member or loved one who will be attending the
                             session.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
+                        bookingFor === "patient"
+                          ? "border-primary bg-primary/5"
+                          : "border-border/40 hover:border-border"
+                      }`}
+                      onClick={() => handleWhoChoice("patient")}
+                    >
+                      <div className="flex items-start gap-4">
+                        <RadioGroupItem value="patient" id="patient" />
+                        <div className="flex-1">
+                          <Label
+                            htmlFor="patient"
+                            className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
+                          >
+                            <Stethoscope className="h-5 w-5 text-primary" />
+                            For a Patient
+                          </Label>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            I&apos;m a healthcare professional requesting on
+                            behalf of my patient.
                           </p>
                         </div>
                       </div>
@@ -1498,11 +1501,10 @@ export default function BookAppointmentPage() {
                                     <User className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                                     <div className="flex-1">
                                       <Label className="text-base font-medium text-foreground">
-                                        Account Manager / Guardian
+                                        {t("accountManager")}
                                       </Label>
                                       <p className="text-sm text-muted-foreground mt-1">
-                                        Since this is a minor (under 18), you can link your account as their account manager. 
-                                        This will allow you to manage billing and access their file.
+                                        {t("accountManagerDesc")}
                                       </p>
                                     </div>
                                   </div>
@@ -1518,7 +1520,7 @@ export default function BookAppointmentPage() {
                                       htmlFor="linkAsGuardian"
                                       className="text-sm font-normal cursor-pointer"
                                     >
-                                      Link my account as their account manager
+                                      {t("linkAccountManager")}
                                     </Label>
                                   </div>
                                 </div>

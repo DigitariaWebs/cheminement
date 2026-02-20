@@ -10,27 +10,28 @@ export default function AppointmentSelector() {
   const router = useRouter();
   const t = useTranslations("AppointmentSelector");
 
+  // Order: 1. For me (Individual), 2. For a loved one, 3. For a patient
   const options = [
     {
       id: "individual",
       icon: User,
       title: t("individual.title"),
       description: t("individual.description"),
-      route: "/book/individual",
+      route: "/appointment?for=self",
     },
     {
       id: "relative",
       icon: Users,
       title: t("relative.title"),
       description: t("relative.description"),
-      route: "/book/relative",
+      route: "/appointment?for=loved-one",
     },
     {
       id: "patient",
       icon: Stethoscope,
       title: t("patient.title"),
       description: t("patient.description"),
-      route: "/book/patient",
+      route: "/appointment?for=patient",
     },
   ];
 

@@ -33,7 +33,7 @@ export default function ManagedAccountsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
-  const t = useTranslations("Client.managedAccounts");
+  const t = useTranslations("managedAccounts");
 
   useEffect(() => {
     fetchManagedAccounts();
@@ -50,7 +50,7 @@ export default function ManagedAccountsPage() {
     } catch (err) {
       console.error("Error fetching managed accounts:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to load managed accounts",
+        err instanceof Error ? err.message : t("failedToLoad"),
       );
     } finally {
       setLoading(false);
@@ -82,10 +82,10 @@ export default function ManagedAccountsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-serif font-light text-foreground">
-            Managed Accounts
+            {t("title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Manage billing and access files for accounts you manage
+            {t("subtitle")}
           </p>
         </div>
       </div>
@@ -101,10 +101,10 @@ export default function ManagedAccountsPage() {
         <div className="rounded-xl border border-border/40 bg-card p-12 text-center">
           <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">
-            No Managed Accounts
+            {t("noAccounts")}
           </h3>
           <p className="text-sm text-muted-foreground mb-6">
-            You don't currently manage any accounts. When you book an appointment for a minor and link your account as their account manager, they will appear here.
+            {t("noAccountsDesc")}
           </p>
         </div>
       ) : (
@@ -127,7 +127,7 @@ export default function ManagedAccountsPage() {
                       </h3>
                       {age !== null && (
                         <p className="text-xs text-muted-foreground">
-                          Age: {age} years
+                          {t("age", { age })}
                         </p>
                       )}
                     </div>
@@ -154,7 +154,7 @@ export default function ManagedAccountsPage() {
                   >
                     <Button variant="outline" size="sm" className="w-full">
                       <Calendar className="h-4 w-4 mr-2" />
-                      Appointments
+                      {t("appointments")}
                     </Button>
                   </Link>
                   <Link
@@ -163,7 +163,7 @@ export default function ManagedAccountsPage() {
                   >
                     <Button variant="outline" size="sm" className="w-full">
                       <Wallet className="h-4 w-4 mr-2" />
-                      Billing
+                      {t("billing")}
                     </Button>
                   </Link>
                 </div>

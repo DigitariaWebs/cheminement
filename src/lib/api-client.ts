@@ -215,6 +215,7 @@ export const appointmentsAPI = {
     startDate?: string;
     endDate?: string;
     clientId?: string;
+    accountId?: string; // For guardian viewing managed account
   }) => {
     const query = new URLSearchParams(params as any).toString();
     return apiClient.get<AppointmentResponse[]>(
