@@ -1,5 +1,5 @@
 import ColorTransition from "@/components/ui/ColorTransition";
-import AppointmentSelector from "@/components/appointments/AppointmentSelector";
+import ProfileSelector from "@/components/appointments/ProfileSelector";
 import {
   ContactChannelsSection,
   ContactFormSection,
@@ -15,10 +15,11 @@ export default function ContactPage() {
       <ContactHeroSection />
       <ColorTransition fromColor="accent" toColor="background" />
       <ContactChannelsSection />
-      <AppointmentSelector />
       <ColorTransition fromColor="background" toColor="muted" />
       <ContactFormSection />
-      <ColorTransition fromColor="muted" toColor="background" />
+      <ColorTransition fromColor="muted" toColor="accent" />
+      <ProfileSelector />
+      <ColorTransition fromColor="accent" toColor="background" />
       <SupportSection />
       <ColorTransition fromColor="background" toColor="accent" />
       <EmergencySection />

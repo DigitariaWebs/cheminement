@@ -11,6 +11,7 @@ import {
   sendProfessionalNotification,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
+import { linkGuardian, isMinor } from "@/lib/guardian-utils";
 
 export async function GET(req: NextRequest) {
   try {
@@ -258,6 +259,65 @@ export async function POST(req: NextRequest) {
         data.payment = {};
       }
       data.payment.method = data.paymentMethod;
+    }
+
+    // Handle guardian/account manager linking for minors
+    let minorUserId: string | null = null;
+    if (
+      data.bookingFor === "loved-one" &&
+      data.lovedOneInfo &&
+      data.linkGuardian &&
+      data.guardianUserId &&
+      data.lovedOneInfo.dateOfBirth
+    ) {
+      try {
+        // Check if the loved one is a minor
+        const birthDate = new Date(data.lovedOneInfo.dateOfBirth);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+
+        if (age < 18) {
+          // Create or find client account for the minor
+          const minorEmail = data.lovedOneInfo.email || `${data.lovedOneInfo.firstName.toLowerCase()}.${data.lovedOneInfo.lastName.toLowerCase()}@minor.cheminement.ca`;
+          
+          let minorUser = await User.findOne({
+            email: minorEmail.toLowerCase(),
+            role: "client",
+          });
+
+          if (!minorUser) {
+            // Create new client account for minor
+            minorUser = new User({
+              email: minorEmail.toLowerCase(),
+              firstName: data.lovedOneInfo.firstName,
+              lastName: data.lovedOneInfo.lastName,
+              phone: data.lovedOneInfo.phone,
+              dateOfBirth: birthDate,
+              role: "client",
+              status: "active",
+              language: session.user.language || "en",
+            });
+            await minorUser.save();
+          }
+
+          // Link guardian
+          const linkResult = await linkGuardian(minorUser._id, data.guardianUserId);
+          if (linkResult.success) {
+            minorUserId = minorUser._id.toString();
+            // Update appointment to use minor's client ID if booking for loved one
+            if (data.bookingFor === "loved-one") {
+              data.clientId = minorUser._id;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error linking guardian:", err);
+        // Continue with appointment creation even if guardian linking fails
+      }
     }
 
     const appointment = new Appointment(data);

@@ -1,4 +1,4 @@
-import AppointmentSelector from "@/components/appointments/AppointmentSelector";
+import ProfileSelector from "@/components/appointments/ProfileSelector";
 import {
   SentiersProgramSection,
   ServicesHeroSection,
@@ -14,7 +14,8 @@ export default function ServicesPage() {
     <main>
       <ServicesHeroSection />
       <ColorTransition fromColor="accent" toColor="background" />
-      <AppointmentSelector />
+      <ProfileSelector />
+      <ColorTransition fromColor="accent" toColor="background" />
       <ServiceProgramsSection />
       <ColorTransition fromColor="background" toColor="muted" />
       <WorkplaceSection />

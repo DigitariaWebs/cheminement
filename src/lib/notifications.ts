@@ -939,6 +939,89 @@ export async function sendAppointmentConfirmation(
   );
 }
 
+export async function sendPaymentInvitation(
+  data: AppointmentEmailData & { price: number; paymentUrl?: string },
+): Promise<boolean> {
+  const branding = await getBranding();
+  const currency = await getCurrency();
+  const formattedDate = formatEmailDate(data.date);
+  const formattedTime = formatTime(data.time);
+  const professionalName = formatProfessionalName(data.professionalName);
+  const appointmentType = formatAppointmentType(data.type);
+  const dashboardUrl = `${process.env.NEXTAUTH_URL}/client/dashboard/appointments`;
+
+  const details: Array<{ label: string; value: string; isLink?: boolean }> = [
+    { label: "Professional", value: professionalName },
+    { label: "Date", value: formattedDate },
+    { label: "Time", value: formattedTime },
+    { label: "Duration", value: `${data.duration} minutes` },
+  ];
+
+  if (data.meetingLink) {
+    details.push({
+      label: "Meeting Link",
+      value: data.meetingLink,
+      isLink: true,
+    });
+  } else if (data.location) {
+    details.push({ label: "Location", value: data.location });
+  }
+
+  const html = buildEmailHtml({
+    title: "Payment Required",
+    subtitle: "Your appointment has been confirmed",
+    theme: "info",
+    badge: { text: "✅ Appointment Confirmed", theme: "success" },
+    greeting: `Dear ${data.clientName},`,
+    intro:
+      "Great news! Your appointment has been confirmed by your professional. Please complete the payment to secure your session.",
+    details,
+    detailsBorderColor: branding?.primaryColor,
+    price: {
+      amount: data.price,
+      note: "Session fee (taxes included)",
+      theme: "info",
+      currency,
+    },
+    button: data.paymentUrl
+      ? { text: "Complete Payment", url: data.paymentUrl }
+      : { text: "View Appointment", url: dashboardUrl },
+    infoBox: {
+      title: "Payment Information",
+      content:
+        "Your payment is secure and processed through Stripe. You can complete your payment from your dashboard. You'll receive your meeting link after payment is confirmed.",
+    },
+    outro:
+      "Please complete your payment within 48 hours to keep your appointment slot.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Payment Required - Appointment Confirmed",
+    `Dear ${data.clientName},`,
+    "Your appointment has been confirmed. Please complete the payment.",
+    "APPOINTMENT DETAILS:",
+    `Professional: ${professionalName}`,
+    `Date: ${formattedDate}`,
+    `Time: ${formattedTime}`,
+    `Duration: ${data.duration} minutes`,
+    `Amount Due: $${data.price.toFixed(2)} ${currency}`,
+    data.paymentUrl
+      ? `Complete payment: ${data.paymentUrl}`
+      : `View appointment: ${dashboardUrl}`,
+  ]);
+
+  const subject = await getSubject(
+    "payment_invitation",
+    "Payment Required - Your Appointment is Confirmed",
+  );
+
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "payment_invitation",
+  );
+}
+
 export async function sendProfessionalNotification(
   data: AppointmentEmailData,
 ): Promise<boolean> {

@@ -141,6 +141,9 @@ export default function BookAppointmentPage() {
     notes: "",
   });
 
+  // Guardian/Account Manager state (for minors)
+  const [linkAsGuardian, setLinkAsGuardian] = useState(false);
+
   // Referral info (for booking for a patient - medical professional referral)
   const [referralInfo, setReferralInfo] = useState<ReferralInfo>({
     referrerType: "doctor",
@@ -444,17 +447,24 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
-        paymentMethod:
-          paymentMethod === "interac"
-            ? "transfer"
-            : paymentMethod === "payment_plan"
-              ? "direct_debit"
-              : "card",
+        // Payment method removed from initial form submission
+        // Will be collected after professional schedules the appointment
+        // paymentMethod:
+        //   paymentMethod === "interac"
+        //     ? "transfer"
+        //     : paymentMethod === "payment_plan"
+        //       ? "direct_debit"
+        //       : "card",
       };
 
       // Include loved one info if booking for a loved one
       if (bookingFor === "loved-one" && lovedOneInfo.firstName) {
         appointmentData.lovedOneInfo = lovedOneInfo;
+        // Include guardian link request if parent wants to be account manager
+        if (linkAsGuardian && status === "authenticated") {
+          appointmentData.linkGuardian = true;
+          appointmentData.guardianUserId = session?.user?.id;
+        }
       }
 
       // Include referral info if booking for a patient
@@ -499,17 +509,24 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
-        paymentMethod:
-          paymentMethod === "interac"
-            ? "transfer"
-            : paymentMethod === "payment_plan"
-              ? "direct_debit"
-              : "card",
+        // Payment method removed from initial form submission
+        // Will be collected after professional schedules the appointment
+        // paymentMethod:
+        //   paymentMethod === "interac"
+        //     ? "transfer"
+        //     : paymentMethod === "payment_plan"
+        //       ? "direct_debit"
+        //       : "card",
       };
 
       // Include loved one info if booking for a loved one
       if (bookingFor === "loved-one" && lovedOneInfo.firstName) {
         appointmentData.lovedOneInfo = lovedOneInfo;
+        // Include guardian link request if parent wants to be account manager
+        if (linkAsGuardian && status === "authenticated") {
+          appointmentData.linkGuardian = true;
+          appointmentData.guardianUserId = session?.user?.id;
+        }
       }
 
       // Include referral info if booking for a patient
@@ -1225,6 +1242,57 @@ export default function BookAppointmentPage() {
                         />
                       </div>
 
+                      {/* Account Manager / Guardian Section for Minors */}
+                      {lovedOneInfo.dateOfBirth && (
+                        <div className="pt-4 border-t border-border/40">
+                          {(() => {
+                            const birthDate = new Date(lovedOneInfo.dateOfBirth);
+                            const today = new Date();
+                            let age = today.getFullYear() - birthDate.getFullYear();
+                            const monthDiff = today.getMonth() - birthDate.getMonth();
+                            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                              age--;
+                            }
+                            const isMinor = age < 18;
+
+                            if (isMinor && session && lovedOneInfo.relationship === "child") {
+                              return (
+                                <div className="space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                                  <div className="flex items-start gap-3">
+                                    <User className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                    <div className="flex-1">
+                                      <Label className="text-base font-medium text-foreground">
+                                        Account Manager / Guardian
+                                      </Label>
+                                      <p className="text-sm text-muted-foreground mt-1">
+                                        Since this is a minor (under 18), you can link your account as their account manager. 
+                                        This will allow you to manage billing and access their file.
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      id="linkAsGuardian"
+                                      checked={linkAsGuardian}
+                                      onChange={(e) => setLinkAsGuardian(e.target.checked)}
+                                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                                    />
+                                    <Label
+                                      htmlFor="linkAsGuardian"
+                                      className="text-sm font-normal cursor-pointer"
+                                    >
+                                      Link my account as their account manager
+                                    </Label>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                      )}
+
                       <div className="flex justify-between pt-4">
                         <Button
                           variant="outline"
@@ -1646,7 +1714,9 @@ export default function BookAppointmentPage() {
                     </p>
                   </div>
 
-                  {/* Payment Method */}
+                  {/* Payment Method - Hidden from initial form */}
+                  {/* Payment method will be collected after professional schedules the appointment */}
+                  {/* 
                   <div className="space-y-2">
                     <Label>
                       Mode de paiement *
@@ -1656,151 +1726,9 @@ export default function BookAppointmentPage() {
                         </span>
                       )}
                     </Label>
-                    <div className="space-y-3">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("card")}
-                        disabled={isFirstAppointment === true}
-                        className={cn(
-                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
-                          paymentMethod === "card"
-                            ? "border-primary bg-primary/5 ring-1 ring-primary"
-                            : "border-border/40 bg-card/50 hover:bg-accent/50",
-                          isFirstAppointment === true &&
-                            "opacity-100 cursor-default",
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "rounded-full p-2.5",
-                            paymentMethod === "card"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          <CreditCard className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground">
-                            Carte de crédit
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {isFirstAppointment === true
-                              ? "Obligatoire pour valider le 1er rendez-vous"
-                              : "Paiement instantané par carte"}
-                          </p>
-                        </div>
-                        <div
-                          className={cn(
-                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                            paymentMethod === "card"
-                              ? "border-primary"
-                              : "border-muted-foreground/30",
-                          )}
-                        >
-                          {paymentMethod === "card" && (
-                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                          )}
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("interac")}
-                        disabled={isFirstAppointment === true}
-                        className={cn(
-                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
-                          paymentMethod === "interac"
-                            ? "border-primary bg-primary/5 ring-1 ring-primary"
-                            : "border-border/40 bg-card/50 hover:bg-accent/50",
-                          isFirstAppointment === true &&
-                            "opacity-50 cursor-not-allowed",
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "rounded-full p-2.5",
-                            paymentMethod === "interac"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          <Building2 className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground">
-                            Virement Interac
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Transfert bancaire via Interac
-                          </p>
-                        </div>
-                        <div
-                          className={cn(
-                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                            paymentMethod === "interac"
-                              ? "border-primary"
-                              : "border-muted-foreground/30",
-                          )}
-                        >
-                          {paymentMethod === "interac" && (
-                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                          )}
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("payment_plan")}
-                        disabled={isFirstAppointment === true}
-                        className={cn(
-                          "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
-                          paymentMethod === "payment_plan"
-                            ? "border-primary bg-primary/5 ring-1 ring-primary"
-                            : "border-border/40 bg-card/50 hover:bg-accent/50",
-                          isFirstAppointment === true &&
-                            "opacity-50 cursor-not-allowed",
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "rounded-full p-2.5",
-                            paymentMethod === "payment_plan"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          <Handshake className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground">
-                            Entente de paiement
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Plan de paiement personnalisé
-                          </p>
-                        </div>
-                        <div
-                          className={cn(
-                            "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                            paymentMethod === "payment_plan"
-                              ? "border-primary"
-                              : "border-muted-foreground/30",
-                          )}
-                        >
-                          {paymentMethod === "payment_plan" && (
-                            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                          )}
-                        </div>
-                      </button>
-                    </div>
-                    {isFirstAppointment === true && (
-                      <p className="text-xs text-muted-foreground">
-                        Pour le premier rendez-vous, la carte de crédit est
-                        obligatoire pour valider votre réservation.
-                      </p>
-                    )}
+                    ...
                   </div>
+                  */}
 
                   {/* Notes */}
                   <div className="space-y-2">
@@ -1936,29 +1864,16 @@ export default function BookAppointmentPage() {
                           <p className="text-sm">{notes}</p>
                         </div>
                       )}
+                      {/* Payment Method - Removed from summary */}
+                      {/* Payment method will be collected after professional schedules the appointment */}
+                      {/* 
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">
                           Mode de paiement
                         </p>
-                        <div className="flex items-center gap-2">
-                          {paymentMethod === "card" && (
-                            <CreditCard className="h-4 w-4" />
-                          )}
-                          {paymentMethod === "interac" && (
-                            <Building2 className="h-4 w-4" />
-                          )}
-                          {paymentMethod === "payment_plan" && (
-                            <Handshake className="h-4 w-4" />
-                          )}
-                          <span className="font-medium">
-                            {paymentMethod === "card"
-                              ? "Carte de crédit"
-                              : paymentMethod === "interac"
-                                ? "Virement Interac"
-                                : "Entente de paiement"}
-                          </span>
-                        </div>
+                        ...
                       </div>
+                      */}
                     </div>
                   </div>
 
@@ -1975,7 +1890,9 @@ export default function BookAppointmentPage() {
                           your request and contact you via{" "}
                           {isGuest ? "email or phone" : "your account"} to
                           schedule your appointment at a time that works for
-                          both of you.
+                          both of you. Once the appointment is scheduled, you will
+                          be prompted to complete your payment method to confirm
+                          the appointment.
                         </p>
                       </div>
                     </div>
