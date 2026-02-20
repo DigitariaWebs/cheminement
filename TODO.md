@@ -7,8 +7,8 @@
     - For a patient (Professionals/Doctors)
   - [x] To avoid simply redirecting to the homepage, place an identical selection module on the Contact page and at the top of the Service page.
   - [x] Visually: three clear icons or buttons that open the corresponding form.
-  - [x] Direct Link: (optional) configure the buttons to point to a dedicated "Appointment Booking" page that displays these three choices in a streamlined manner. KHADIDJA
-  - [x] Provide the photos (Ilyes suggests he will choose the images for the homepage/for school services). KHADIDJA
+  - [x] Direct Link: (optional) configure the buttons to point to a dedicated "Appointment Booking" page that displays these three choices in a streamlined manner. 
+  - [x] Provide the photos (Ilyes suggests he will choose the images for the homepage/for school services).
 
 ## FORMS & MATCHING (HIGH PRIORITY)
 
@@ -34,15 +34,15 @@
   - Acceptance criteria: all three forms use the same search UI for reasons, suggestions come from `MOTIFS`, selection persisted as array (max 3), forms validate client-side and server-side.
 
 - [x] Workflow change: remove payment from initial homepage forms
-  - [x] Remove/hide payment method fields from the first-step forms on the homepage/booking flow. KHADIDJA
-  - Flow: user completes simplified form → professional chooses a request and contacts client to schedule → only after scheduling the system prompts the client to complete payment method (credit card/transfer/direct debit) and validate banking profile to confirm appointment. KHADIDJA
-  - Files: `src/app/appointment/page.tsx` (hide payment step), `src/components/payments/PaymentModal.tsx`, `src/lib/notifications.ts` (ensure payment invitation email triggers at correct step). KHADIDJA
+  - [x] Remove/hide payment method fields from the first-step forms on the homepage/booking flow.
+  - Flow: user completes simplified form → professional chooses a request and contacts client to schedule → only after scheduling the system prompts the client to complete payment method (credit card/transfer/direct debit) and validate banking profile to confirm appointment.
+  - Files: `src/app/appointment/page.tsx` (hide payment step), `src/components/payments/PaymentModal.tsx`, `src/lib/notifications.ts` (ensure payment invitation email triggers at correct step).
 
 - [x] Account structure for minors
   - [x] Implement "Account Manager / Guardian" for minors: parent is account manager and manages billing, but has access to child's file.
   - DB changes: add `guardianId` / `accountManager` fields to `User`/`Profile` schemas.
   - UI changes: booking forms and dashboard must show/allow parent management for minors.
-  - Files: `src/models/User.ts`, `src/models/Profile.ts`, relevant dashboard pages. KHADIDJA
+  - Files: `src/models/User.ts`, `src/models/Profile.ts`, relevant dashboard pages.
 
 - [ ] Matching algorithm & backend
   - [ ] Ensure `src/lib/appointment-routing.ts` consumes the selected reasons array and weights multi-reason matches appropriately.

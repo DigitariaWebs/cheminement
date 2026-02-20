@@ -125,6 +125,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate motifs/reasons (needs or reason array)
+    const motifs = data.needs || data.reason || [];
+    if (!Array.isArray(motifs)) {
+      return NextResponse.json(
+        { error: "Motifs must be an array" },
+        { status: 400 },
+      );
+    }
+    if (motifs.length === 0) {
+      return NextResponse.json(
+        { error: "At least one motif/reason is required" },
+        { status: 400 },
+      );
+    }
+    if (motifs.length > 3) {
+      return NextResponse.json(
+        { error: "Maximum 3 motifs/reasons allowed" },
+        { status: 400 },
+      );
+    }
+    // Validate all motifs are from the valid MOTIFS list
+    const { MOTIFS } = await import("@/data/motif");
+    const invalidMotifs = motifs.filter((motif) => !MOTIFS.includes(motif));
+    if (invalidMotifs.length > 0) {
+      return NextResponse.json(
+        { error: `Invalid motifs: ${invalidMotifs.join(", ")}` },
+        { status: 400 },
+      );
+    }
+
     // Only validate professional if one is specified
     let profile = null;
     if (data.professionalId) {
