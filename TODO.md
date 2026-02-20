@@ -1,22 +1,22 @@
 # LAYOUTS & DESIGN
 
-- [ ] Standardization of the "Profile Selector"
-  - [ ] No matter where the client clicks on "Book an appointment", they will be presented with the same three options, in the same order as on the homepage:
+- [x] Standardization of the "Profile Selector"
+  - [x] No matter where the client clicks on "Book an appointment", they will be presented with the same three options, in the same order as on the homepage:
     - For me (Individual)
     - For a loved one (Child, spouse, etc.)
     - For a patient (Professionals/Doctors)
-  - [ ] To avoid simply redirecting to the homepage, place an identical selection module on the Contact page and at the top of the Service page.
-  - [ ] Visually: three clear icons or buttons that open the corresponding form.
-  - [ ] Direct Link: (optional) configure the buttons to point to a dedicated "Appointment Booking" page that displays these three choices in a streamlined manner.
-  - [ ] Provide the photos (Ilyes suggests he will choose the images for the homepage/for school services).
+  - [x] To avoid simply redirecting to the homepage, place an identical selection module on the Contact page and at the top of the Service page.
+  - [x] Visually: three clear icons or buttons that open the corresponding form.
+  - [x] Direct Link: (optional) configure the buttons to point to a dedicated "Appointment Booking" page that displays these three choices in a streamlined manner. KHADIDJA
+  - [x] Provide the photos (Ilyes suggests he will choose the images for the homepage/for school services). KHADIDJA
 
 ## FORMS & MATCHING (HIGH PRIORITY)
 
 - Priority: **P0** — Integrate search-based "reason for consultation" across homepage forms (this is the top priority).
 
-- [ ] Motif / Reason search engine (core)
-  - [ ] Replace classic dropdowns with an intelligent search component that suggests items from `MOTIFS` (alphabetical suggestions).
-  - [ ] Allow multi-selection (2–3 reasons) and expose selections to the matching algorithm.
+- [x] Motif / Reason search engine (core)
+  - [x] Replace classic dropdowns with an intelligent search component that suggests items from `MOTIFS` (alphabetical suggestions).
+  - [x] Allow multi-selection (2–3 reasons) and expose selections to the matching algorithm.
   - Acceptance criteria: suggestions show while typing, results are alphabetically ordered, user can pick 1–3 reasons, selections are saved as an array and used by the routing/matching logic.
   - Files to update: `src/components/ui/MotifSearch.tsx` (add multi-select mode / maxSelection), `src/hooks/useMotifSearch.ts` (already supports alphabetical sort), `src/data/motif.ts` (source list).
   - Tests: unit tests for component behavior, integration test for forms.
@@ -33,16 +33,16 @@
     - Files: same booking pages/components.
   - Acceptance criteria: all three forms use the same search UI for reasons, suggestions come from `MOTIFS`, selection persisted as array (max 3), forms validate client-side and server-side.
 
-- [ ] Workflow change: remove payment from initial homepage forms
-  - [ ] Remove/hide payment method fields from the first-step forms on the homepage/booking flow.
-  - Flow: user completes simplified form → professional chooses a request and contacts client to schedule → only after scheduling the system prompts the client to complete payment method (credit card/transfer/direct debit) and validate banking profile to confirm appointment.
-  - Files: `src/app/appointment/page.tsx` (hide payment step), `src/components/payments/PaymentModal.tsx`, `src/lib/notifications.ts` (ensure payment invitation email triggers at correct step).
+- [x] Workflow change: remove payment from initial homepage forms
+  - [x] Remove/hide payment method fields from the first-step forms on the homepage/booking flow. KHADIDJA
+  - Flow: user completes simplified form → professional chooses a request and contacts client to schedule → only after scheduling the system prompts the client to complete payment method (credit card/transfer/direct debit) and validate banking profile to confirm appointment. KHADIDJA
+  - Files: `src/app/appointment/page.tsx` (hide payment step), `src/components/payments/PaymentModal.tsx`, `src/lib/notifications.ts` (ensure payment invitation email triggers at correct step). KHADIDJA
 
-- [ ] Account structure for minors
-  - [ ] Implement "Account Manager / Guardian" for minors: parent is account manager and manages billing, but has access to child's file.
+- [x] Account structure for minors
+  - [x] Implement "Account Manager / Guardian" for minors: parent is account manager and manages billing, but has access to child's file.
   - DB changes: add `guardianId` / `accountManager` fields to `User`/`Profile` schemas.
   - UI changes: booking forms and dashboard must show/allow parent management for minors.
-  - Files: `src/models/User.ts`, `src/models/Profile.ts`, relevant dashboard pages.
+  - Files: `src/models/User.ts`, `src/models/Profile.ts`, relevant dashboard pages. KHADIDJA
 
 - [ ] Matching algorithm & backend
   - [ ] Ensure `src/lib/appointment-routing.ts` consumes the selected reasons array and weights multi-reason matches appropriately.
