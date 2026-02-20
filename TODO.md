@@ -7,7 +7,7 @@
     - For a patient (Professionals/Doctors)
   - [x] To avoid simply redirecting to the homepage, place an identical selection module on the Contact page and at the top of the Service page.
   - [x] Visually: three clear icons or buttons that open the corresponding form.
-  - [x] Direct Link: (optional) configure the buttons to point to a dedicated "Appointment Booking" page that displays these three choices in a streamlined manner. 
+  - [ ] Direct Link: (optional) configure the buttons to point to a dedicated "Appointment Booking" page that displays these three choices in a streamlined manner. 
   - [x] Provide the photos (Ilyes suggests he will choose the images for the homepage/for school services).
 
 ## FORMS & MATCHING (HIGH PRIORITY)
@@ -21,7 +21,7 @@
   - Files to update: `src/components/ui/MotifSearch.tsx` (add multi-select mode / maxSelection), `src/hooks/useMotifSearch.ts` (already supports alphabetical sort), `src/data/motif.ts` (source list).
   - Tests: unit tests for component behavior, integration test for forms.
 
-- [ ] Homepage forms — replace & standardize (Client, Professional, Loved one)
+- [x] Homepage forms — replace & standardize (Client, Professional, Loved one)
   - A. CLIENT (Individual / Adult)
     - Fields: Last name, First name, Date of birth, Gender (M/F/Other), Language (FR/EN/ES/AR/Other), City or Postal Code, Modality (In-person / Remote / Both), Availability (next week selector), Need (Reason search engine + free-text message), Type (individual/couple/family), Message.
     - Files: `src/app/appointment/page.tsx`, `src/components/appointments/AppointmentForm.tsx`, homepage CTA components where applicable.
@@ -49,7 +49,7 @@
   - [ ] Add tests that verify matching relevance when 1 vs 2 vs 3 reasons are selected.
 
 - [ ] UX / i18n / validation
-  - [ ] Add translations for new labels (Languages list, form labels) in `messages/en.json` and `messages/fr.json` (and others if present).
+  - [x] Add translations for new labels (Languages list, form labels) in `messages/en.json` and `messages/fr.json` (and others if present).
   - [ ] Add form validation rules and helpful inline messages.
   - [ ] Create mockups / storybook stories for the three forms (requesting your validation).
 
@@ -63,57 +63,57 @@
 
 ## 1. "HOME" PAGE
 
-- [ ] Arrange the boxes in the following order:
+- [x] Arrange the boxes in the following order:
   1. For me (Individual)
   2. For a loved one (Child, spouse, etc.)
   3. For a patient (Professionals/Doctors)
 
-- [ ] Block B — Three boxes (place them lower down in the advantages section)
-  - [ ] Quick Access — "Connect quickly with a mental health professional. No long waiting lists—start your journey to wellness sooner."
-  - [ ] Diversity of Professionals — "An intelligent matching system to guide you towards the professional who best suits your needs."
-  - [ ] Educational Resources — "Explore our library of videos and readings on anxiety, burnout, stress management, and more—available even before your first session."
+- [x] Block B — Three boxes (place them lower down in the advantages section)
+  - [x] Quick Access — "Connect quickly with a mental health professional. No long waiting lists—start your journey to wellness sooner."
+  - [x] Diversity of Professionals — "An intelligent matching system to guide you towards the professional who best suits your needs."
+  - [x] Educational Resources — "Explore our library of videos and readings on anxiety, burnout, stress management, and more—available even before your first session."
 
 ## 2. Photo / Personalized Path
 
-- [ ] Move the photo of the young girl (initially under "Personalized Path") back up to its original place.
-- [ ] Resizing: reduce its dimensions so it integrates more fluidly and is less imposing within the section.
-- [ ] Advantages Section: add a new photo (pending your/thematic image).
-- [ ] Remove the following boxes: "Confidentiality assured" (personalized approach/flexible planning and confidential support).
+- [] Move the photo of the young girl (initially under "Personalized Path") back up to its original place.
+- [] Resizing: reduce its dimensions so it integrates more fluidly and is less imposing within the section.
+- [] Advantages Section: add a new photo (pending your/thematic image).
+- [] Remove the following boxes: "Confidentiality assured" (personalized approach/flexible planning and confidential support).
 
 ## 3. SERVICE PAGE
 
-- [ ] A. Mental Health at Work — section dedicated to companies (unchanged in substance).
-  - [ ] CTA / Company Manager: short form (last name, first name, email, phone, company, position, contact details).
+- [x] A. Mental Health at Work — section dedicated to companies (unchanged in substance).
+  - [x] CTA / Company Manager: short form (last name, first name, email, phone, company, position, contact details).
 
-- [ ] D. Specific Action Buttons: CTA
-  - [ ] "Parent / For my young person" — Direct to form (use the same form as "book an appointment for a loved one" on the homepage).
+- [x] D. Specific Action Buttons: CTA
+  - [x] "Parent / For my young person" — Direct to form (use the same form as "book an appointment for a loved one" on the homepage).
 
-- [ ] Update copy for "Adult Psychotherapy" (service/adult-psychotherapy):
-  - [ ] Replace:
+- [x] Update copy for "Adult Psychotherapy" (service/adult-psychotherapy):
+  - [x] Replace:
     > Comprehensive mental health support for adults facing life's challenges. From anxiety and depression to relationship issues and life transitions, our qualified professionals offer personalized therapeutic care.
-  - [ ] With:
+  - [x] With:
     > Mental health support for adults facing life's challenges. From anxiety and depression, relationship issues and life transitions, our professionals offer personalized therapeutic care.
 
 ## 4. "APPROACH" PAGE
 
-- [ ] Add an "Integrative Approach" box:
-  - [ ] "A combination of different psychological techniques and theories adapted to each person's unique needs, rather than being limited to a single approach."
-- [ ] Add "Book an appointment" buttons in Blocks A or B of the approaches section (in addition to the existing button at the bottom of the page).
+- [x] Add an "Integrative Approach" box:
+  - [x] "A combination of different psychological techniques and theories adapted to each person's unique needs, rather than being limited to a single approach."
+- [x] Add "Book an appointment" buttons in Blocks A or B of the approaches section (in addition to the existing button at the bottom of the page).
 
 ## 6. "CONTACT" PAGE (Details and Finishes)
 
-- [ ] Layout: do not change the spacing; this is the reference model.
+- [x] Layout: do not change the spacing; this is the reference model.
 
 ## 7. "I am a professional" Page
 
-- [ ] Add a period (.) at the end of the sentences: type of problem/therapeutic approach/category/expertise and skill.
-- [ ] Replace:
+- [x] Add a period (.) at the end of the sentences: type of problem/therapeutic approach/category/expertise and skill.
+- [x] Replace:
   - "Join 1000+ professionals"
   - With: "Join several active professionals"
 
 ## 8. The Bottom Bar
 
-- [ ] Add links/items to the bottom bar:
+- [x] Add links/items to the bottom bar:
   - Partners
   - Book an appointment
   - Services
@@ -123,7 +123,7 @@
   - Press
   - I am on a journey (for phone) - PLEASE USE THIS WORDING INSTEAD but I don't know if we will have a version for phone.
   - Contact us
-- [ ] Add further down:
+- [x] Add further down:
   - Privacy Policy
   - Terms of Use
   - Cookie Policy

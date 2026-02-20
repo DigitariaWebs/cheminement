@@ -1323,7 +1323,8 @@
           "title": "Vos préférences thérapeutiques",
           "description": "Nous ajustons les méthodes, les outils et la structure des rencontres afin que vous vous sentiez reconnu et respecté à chaque étape."
         }
-      }
+      },
+      "bookingTitle": "Prendre rendez-vous"
     },
     "clinicalApproaches": {
       "badge": "2 · Approches reconnues et encadrées",
