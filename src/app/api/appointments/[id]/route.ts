@@ -7,6 +7,7 @@ import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
 import {
   sendGuestPaymentConfirmation,
+  sendPaymentInvitation,
   sendMeetingLinkNotification,
   sendCancellationNotification,
   sendRefundConfirmation,
@@ -165,7 +166,7 @@ export async function PATCH(
       );
     }
 
-    // Send confirmation email to guest users when professional confirms the appointment
+    // Send payment invitation email when professional confirms/schedules the appointment
     if (
       oldAppointment &&
       oldAppointment.status === "pending" &&
@@ -183,8 +184,9 @@ export async function PATCH(
         lastName: string;
       };
 
-      // Send confirmation email to guest users with payment link
       const clientUser = await User.findById(client._id);
+      const dashboardUrl = `${getBaseUrl()}/client/dashboard/appointments`;
+
       if (clientUser && clientUser.role === "guest") {
         // Generate payment token for guest user
         const paymentToken = generatePaymentToken();
@@ -214,7 +216,27 @@ export async function PATCH(
           price: appointment.payment.price,
           paymentLink,
         }).catch((err) =>
-          console.error("Error sending guest confirmation email:", err),
+          console.error("Error sending guest payment invitation:", err),
+        );
+      } else if (clientUser && clientUser.role === "client") {
+        // Send payment invitation to authenticated client users
+        sendPaymentInvitation({
+          clientName: `${client.firstName} ${client.lastName}`,
+          clientEmail: client.email,
+          professionalName: `${professional.firstName} ${professional.lastName}`,
+          professionalEmail: "", // Not needed for payment invitation
+          date: appointment.date
+            ? appointment.date.toISOString()
+            : "To be scheduled",
+          time: appointment.time || "To be scheduled",
+          duration: appointment.duration || 60,
+          type: appointment.type,
+          meetingLink: appointment.meetingLink,
+          location: appointment.location,
+          price: appointment.payment.price,
+          paymentUrl: dashboardUrl, // Link to dashboard where they can complete payment
+        }).catch((err) =>
+          console.error("Error sending payment invitation:", err),
         );
       }
     }

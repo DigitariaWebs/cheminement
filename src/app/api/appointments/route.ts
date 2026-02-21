@@ -11,6 +11,7 @@ import {
   sendProfessionalNotification,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
+import { linkGuardian, isMinor } from "@/lib/guardian-utils";
 
 export async function GET(req: NextRequest) {
   try {
@@ -27,6 +28,7 @@ export async function GET(req: NextRequest) {
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
     const clientId = searchParams.get("clientId");
+    const accountId = searchParams.get("accountId"); // For guardian viewing managed account
 
     const query: {
       clientId?: string;
@@ -37,7 +39,20 @@ export async function GET(req: NextRequest) {
 
     // Filter by user role (guests are treated like clients)
     if (session.user.role === "client" || session.user.role === "guest") {
-      query.clientId = session.user.id;
+      // If accountId is provided, verify user is guardian of that account
+      if (accountId) {
+        const { canAccessAccount } = await import("@/lib/guardian-utils");
+        const canAccess = await canAccessAccount(session.user.id, accountId);
+        if (!canAccess) {
+          return NextResponse.json(
+            { error: "Unauthorized: You don't have access to this account" },
+            { status: 403 },
+          );
+        }
+        query.clientId = accountId;
+      } else {
+        query.clientId = session.user.id;
+      }
     } else if (session.user.role === "professional") {
       // Professionals can see their own appointments OR unassigned pending requests
       const showUnassigned = searchParams.get("unassigned") === "true";
@@ -55,7 +70,7 @@ export async function GET(req: NextRequest) {
       query.status = status;
     }
 
-    if (clientId) {
+    if (clientId && !accountId) {
       query.clientId = clientId;
     }
 
@@ -120,6 +135,36 @@ export async function POST(req: NextRequest) {
     if (!["solo", "couple", "group"].includes(data.therapyType)) {
       return NextResponse.json(
         { error: "Invalid therapy type. Must be solo, couple, or group" },
+        { status: 400 },
+      );
+    }
+
+    // Validate motifs/reasons (needs or reason array)
+    const motifs = data.needs || data.reason || [];
+    if (!Array.isArray(motifs)) {
+      return NextResponse.json(
+        { error: "Motifs must be an array" },
+        { status: 400 },
+      );
+    }
+    if (motifs.length === 0) {
+      return NextResponse.json(
+        { error: "At least one motif/reason is required" },
+        { status: 400 },
+      );
+    }
+    if (motifs.length > 3) {
+      return NextResponse.json(
+        { error: "Maximum 3 motifs/reasons allowed" },
+        { status: 400 },
+      );
+    }
+    // Validate all motifs are from the valid MOTIFS list
+    const { MOTIFS } = await import("@/data/motif");
+    const invalidMotifs = motifs.filter((motif) => !MOTIFS.includes(motif));
+    if (invalidMotifs.length > 0) {
+      return NextResponse.json(
+        { error: `Invalid motifs: ${invalidMotifs.join(", ")}` },
         { status: 400 },
       );
     }
@@ -258,6 +303,74 @@ export async function POST(req: NextRequest) {
         data.payment = {};
       }
       data.payment.method = data.paymentMethod;
+    }
+
+    // Handle guardian/account manager linking for minors
+    let minorUserId: string | null = null;
+    if (
+      data.bookingFor === "loved-one" &&
+      data.lovedOneInfo &&
+      data.linkGuardian &&
+      data.guardianUserId &&
+      data.lovedOneInfo.dateOfBirth
+    ) {
+      try {
+        // Check if the loved one is a minor
+        const birthDate = new Date(data.lovedOneInfo.dateOfBirth);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+
+        if (age < 18) {
+          // Create or find client account for the minor
+          const minorEmail = data.lovedOneInfo.email || `${data.lovedOneInfo.firstName.toLowerCase()}.${data.lovedOneInfo.lastName.toLowerCase()}@minor.cheminement.ca`;
+          
+          let minorUser = await User.findOne({
+            email: minorEmail.toLowerCase(),
+            role: "client",
+          });
+
+          if (!minorUser) {
+            // Get guardian's language from database or use default
+            const guardianUser = await User.findById(session.user.id);
+            const guardianLanguage = guardianUser?.language || data.lovedOneInfo?.language || "en";
+            
+            // Create new client account for minor
+            minorUser = new User({
+              email: minorEmail.toLowerCase(),
+              firstName: data.lovedOneInfo.firstName,
+              lastName: data.lovedOneInfo.lastName,
+              phone: data.lovedOneInfo.phone,
+              dateOfBirth: birthDate,
+              role: "client",
+              status: "active",
+              language: guardianLanguage,
+            });
+            await minorUser.save();
+            console.log("Created minor user:", minorUser._id.toString());
+          } else {
+            console.log("Found existing minor user:", minorUser._id.toString());
+          }
+
+          // Link guardian
+          console.log("Linking guardian:", data.guardianUserId, "to minor:", minorUser._id.toString());
+          const linkResult = await linkGuardian(minorUser._id, data.guardianUserId);
+          console.log("Link result:", linkResult);
+          if (linkResult.success) {
+            minorUserId = minorUser._id.toString();
+            // Update appointment to use minor's client ID if booking for loved one
+            if (data.bookingFor === "loved-one") {
+              data.clientId = minorUser._id;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error linking guardian:", err);
+        // Continue with appointment creation even if guardian linking fails
+      }
     }
 
     const appointment = new Appointment(data);

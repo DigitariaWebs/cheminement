@@ -19,6 +19,9 @@ export interface IUser extends Document {
   image?: string;
   stripeCustomerId?: string; // For clients to store payment methods
   stripeConnectAccountId?: string; // For professionals to receive payouts
+  guardianId?: mongoose.Types.ObjectId; // Reference to parent/guardian User (for minors)
+  accountManagerId?: mongoose.Types.ObjectId; // Alias for guardianId (same field, different name for clarity)
+  managedAccounts?: mongoose.Types.ObjectId[]; // Array of User IDs that this user manages (for parents)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -97,6 +100,22 @@ const UserSchema = new Schema<IUser>(
     image: String,
     stripeCustomerId: String, // For clients to store payment methods
     stripeConnectAccountId: String, // For professionals to receive payouts
+    guardianId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    }, // Reference to parent/guardian User (for minors)
+    accountManagerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    }, // Alias for guardianId (same field, different name for clarity)
+    managedAccounts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ], // Array of User IDs that this user manages (for parents)
   },
   {
     timestamps: true,
@@ -107,6 +126,9 @@ const UserSchema = new Schema<IUser>(
 UserSchema.index({ role: 1, status: 1 });
 UserSchema.index({ isAdmin: 1 });
 UserSchema.index({ adminId: 1 });
+UserSchema.index({ guardianId: 1 });
+UserSchema.index({ accountManagerId: 1 });
+UserSchema.index({ managedAccounts: 1 });
 
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

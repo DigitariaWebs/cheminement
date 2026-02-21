@@ -31,7 +31,7 @@ export default function ProfessionalCTASection() {
     { en: "No upfront costs", fr: "Aucun coût initial" },
     { en: "Flexible scheduling", fr: "Horaire flexible" },
     { en: "Dedicated support team", fr: "Équipe de soutien dédiée" },
-    { en: "Join 1000+ professionals", fr: "Rejoignez 1000+ professionnels" },
+    { en: "Join several active professionals", fr: "Rejoignez plusieurs professionnels actifs" },
   ];
 
   return (

@@ -720,7 +720,7 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Issues Handled (select all that apply)</Label>
+              <Label>Issues Handled (select all that apply).</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto p-2">
                 {[
                   "Intervention auprès des employés des services d'urgence (ambulanciers, policiers, pompiers…)",
@@ -923,7 +923,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label>
                 Approches et mandats potentiels (sélectionnez tous ceux qui
-                s&apos;appliquent)
+                s&apos;appliquent).
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto p-2">
                 {[
@@ -1004,7 +1004,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Age Categories (select all that apply)</Label>
+              <Label>Age Categories (select all that apply).</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Children (0-12)",
@@ -1034,7 +1034,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label>
                 Diagnostics traités (sélectionnez tous ceux qui
-                s&apos;appliquent)
+                s&apos;appliquent).
               </Label>
               <p className="text-xs text-muted-foreground">
                 Sélectionnez les diagnostics que vous traitez selon les
@@ -1148,9 +1148,9 @@ export default function ProfessionalSignupPage() {
                   // If no age categories selected, show empty list
 
                   return conditionsList.length > 0 ? (
-                    conditionsList.map((condition) => (
+                    conditionsList.map((condition, index) => (
                       <div
-                        key={condition}
+                        key={`condition-${index}-${condition}`}
                         className="flex items-center space-x-2"
                       >
                         <Checkbox

@@ -12,18 +12,21 @@ import {
   MapPin,
   Clock,
   Wallet,
+  Users,
+  Shield,
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
-import { appointmentsAPI } from "@/lib/api-client";
+import { appointmentsAPI, apiClient } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 
 export default function ClientDashboardPage() {
   const [upcomingAppointments, setUpcomingAppointments] = useState<
     AppointmentResponse[]
   >([]);
+  const [hasManagedAccounts, setHasManagedAccounts] = useState(false);
   const { data: session, status } = useSession();
   const t = useTranslations("Client.overview");
 
@@ -46,7 +49,21 @@ export default function ClientDashboardPage() {
         console.error("Error fetching upcoming appointments:", err);
       }
     };
+
+    const checkManagedAccounts = async () => {
+      try {
+        const response = await apiClient.get<{ managedAccounts: Array<{ _id: string }> }>(
+          "/users/guardian?action=managed",
+        );
+        setHasManagedAccounts((response.managedAccounts?.length || 0) > 0);
+      } catch (err) {
+        // Silently fail - user might not have managed accounts
+        console.error("Error checking managed accounts:", err);
+      }
+    };
+
     fetchUpcomingAppointments();
+    checkManagedAccounts();
   }, []);
 
   const getModalityIcon = (type: string) => {
@@ -192,6 +209,26 @@ export default function ClientDashboardPage() {
                 </div>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </Link>
+
+              {hasManagedAccounts && (
+                <Link
+                  href="/client/dashboard/managed-accounts"
+                  className="flex items-start gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 transition hover:bg-primary/10"
+                >
+                  <div className="rounded-full bg-primary/20 p-3">
+                    <Shield className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                  <h3 className="font-medium text-foreground">
+                    {t("quickActions.manageChildAccounts")}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {t("quickActions.manageChildAccountsDesc")}
+                  </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-primary" />
+                </Link>
+              )}
             </div>
           </section>
 

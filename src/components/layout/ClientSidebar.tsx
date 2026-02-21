@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useState, useEffect } from "react";
 import {
   Home,
   User,
@@ -13,9 +14,11 @@ import {
   ChevronRight,
   Calendar,
   Wallet,
+  Shield,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
+import { apiClient } from "@/lib/api-client";
 
 import {
   Sidebar,
@@ -36,32 +39,55 @@ export function ClientSidebar() {
   const pathname = usePathname();
   const { state } = useSidebar();
   const t = useTranslations("Dashboard.sidebar");
+  const [hasManagedAccounts, setHasManagedAccounts] = useState(false);
+
+  useEffect(() => {
+    const checkManagedAccounts = async () => {
+      try {
+        const response = await apiClient.get<{ managedAccounts: Array<{ _id: string }> }>(
+          "/users/guardian?action=managed",
+        );
+        setHasManagedAccounts((response.managedAccounts?.length || 0) > 0);
+      } catch (err) {
+        // Silently fail - user might not have managed accounts
+        console.error("Error checking managed accounts:", err);
+      }
+    };
+    checkManagedAccounts();
+  }, []);
+
+  const dashboardItems = [
+    {
+      title: t("overview"),
+      url: "/client/dashboard",
+      icon: Home,
+    },
+    {
+      title: t("profile"),
+      url: "/client/dashboard/profile",
+      icon: User,
+    },
+    {
+      title: t("schedule"),
+      url: "/client/dashboard/appointments",
+      icon: Calendar,
+    },
+    {
+      title: t("billing"),
+      url: "/client/dashboard/billing",
+      icon: Wallet,
+    },
+    {
+      title: t("managedAccounts"),
+      url: "/client/dashboard/managed-accounts",
+      icon: Shield,
+    },
+  ];
 
   const navigationItems = [
     {
       title: t("dashboard"),
-      items: [
-        {
-          title: t("overview"),
-          url: "/client/dashboard",
-          icon: Home,
-        },
-        {
-          title: t("profile"),
-          url: "/client/dashboard/profile",
-          icon: User,
-        },
-        {
-          title: t("schedule"),
-          url: "/client/dashboard/appointments",
-          icon: Calendar,
-        },
-        {
-          title: t("billing"),
-          url: "/client/dashboard/billing",
-          icon: Wallet,
-        },
-      ],
+      items: dashboardItems,
     },
     {
       title: t("resources"),

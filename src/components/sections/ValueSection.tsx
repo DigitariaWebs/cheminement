@@ -102,35 +102,43 @@ export default function ValueSection() {
           </div>
         </ScrollReveal>
 
-        {/* Value Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto mb-16">
-          {values.map((value, index) => (
-            <ScrollReveal
-              key={index}
-              variant={cardAnimations[index % cardAnimations.length]}
-              delayMs={100 + index * 100}
-              duration={700}
-            >
-              <ValueCard value={value} index={index} locale={locale} />
-            </ScrollReveal>
-          ))}
-        </div>
+        {/* Image as Background and Cards in Staircase Layout starting from left */}
+        <div className="relative min-h-[800px] -mx-6 px-6">
+          {/* Image Section - Background, Left Top */}
+          <ScrollReveal variant="fade-right" delayMs={200} duration={800}>
+            <div className="absolute top-16 -left-8 z-0">
+              <Image
+                src="/ValueSection.png?v=2"
+                alt="Jeune fille parcours personnalisé"
+                width={500}
+                height={500}
+                className="w-auto h-auto max-w-md opacity-30 scale-x-[-1]"
+                unoptimized
+              />
+            </div>
+          </ScrollReveal>
 
-        {/* Image Section */}
-        <ScrollReveal variant="fade-up" delayMs={500} duration={800}>
-          <div className="max-w-md mx-auto relative">
-            <Image
-              src="/ValueSection.png?v=2"
-              alt="Inner Child Healing"
-              width={500}
-              height={500}
-              className="w-full h-auto transform scale-x-[-1] scale-110"
-              unoptimized
-            />
-            {/* Fading effect at bottom */}
-            <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>
+          {/* Value Cards in Horizontal Staircase Layout - All in one line with vertical offset */}
+          <div className="relative z-10 flex flex-row gap-4 lg:gap-6 items-start overflow-x-auto ml-48 lg:ml-64">
+            {values.map((value, index) => (
+              <ScrollReveal
+                key={index}
+                variant={cardAnimations[index % cardAnimations.length]}
+                delayMs={300 + index * 150}
+                duration={700}
+              >
+                <div
+                  className="transform transition-all duration-300 hover:-translate-y-1 flex-shrink-0 w-full max-w-xs"
+                  style={{
+                    marginTop: `${index * 3.5}rem`,
+                  }}
+                >
+                  <ValueCard value={value} index={index} locale={locale} />
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
-        </ScrollReveal>
+        </div>
       </div>
     </section>
   );

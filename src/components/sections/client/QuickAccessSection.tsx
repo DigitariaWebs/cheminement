@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Clock, MapPin, BookOpen } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -134,6 +136,22 @@ export default function QuickAccessSection() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Image Section */}
+          <ScrollReveal variant="fade-up" delayMs={400} duration={800}>
+            <div className="mb-12 max-w-4xl mx-auto">
+              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl group">
+                <Image
+                  src="/chem1.avif"
+                  alt="Cheminement"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+            </div>
+          </ScrollReveal>
 
           {/* Highlight Box */}
           <motion.div

@@ -19,6 +19,7 @@ export default function ClientProfilePage() {
       if (profileData) {
         setProfile(profileData as IMedicalProfile);
       }
+      console.log(profile);
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {
