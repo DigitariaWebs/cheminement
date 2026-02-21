@@ -1330,6 +1330,11 @@
       },
       "bookingTitle": "Book an Appointment"
     },
+    "cta": {
+      "title": "Ready to Start Your Journey?",
+      "description": "Discover our therapeutic approaches and find the professional that matches your needs.",
+      "bookAppointment": "Book an Appointment"
+    },
     "clinicalApproaches": {
       "badge": "2 · Recognized and Regulated Approaches",
       "title": "Validated clinical models, carried by recognized experts.",

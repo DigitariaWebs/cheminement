@@ -1474,7 +1474,9 @@ export default function BookAppointmentPage() {
                         </Label>
                         <MotifSearch
                           value={issueType}
-                          onChange={setIssueType}
+                          onChange={(value) => {
+                            setIssueType(Array.isArray(value) ? value : value ? [value] : []);
+                          }}
                           placeholder="Tapez vos motifs ex: anxiété, burnout..."
                           multiSelect={true}
                           maxSelections={3}
@@ -1535,13 +1537,10 @@ export default function BookAppointmentPage() {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            // For professional guest bookings, go back to Auth Choice (Step 0)
-                            // For other guest bookings, go back to Guest Info (Step 2)
+                            // For guest bookings (loved-one), go back to Auth Choice (Step 0)
                             // For authenticated users, go back to Who is this for (Step 1)
-                            if (isGuest && bookingFor === "patient") {
+                            if (isGuest) {
                               setCurrentStep(0);
-                            } else if (isGuest) {
-                              setCurrentStep(2);
                             } else {
                               setCurrentStep(1);
                             }
@@ -1723,7 +1722,9 @@ export default function BookAppointmentPage() {
                         </Label>
                         <MotifSearch
                           value={issueType}
-                          onChange={setIssueType}
+                          onChange={(value) => {
+                            setIssueType(Array.isArray(value) ? value : value ? [value] : []);
+                          }}
                           placeholder="Tapez vos motifs ex: anxiété, burnout..."
                           multiSelect={true}
                           maxSelections={3}
@@ -2027,7 +2028,9 @@ export default function BookAppointmentPage() {
                       </Label>
                       <MotifSearch
                         value={issueType}
-                        onChange={setIssueType}
+                        onChange={(value) => {
+                          setIssueType(Array.isArray(value) ? value : value ? [value] : []);
+                        }}
                         placeholder="Tapez vos motifs ex: anxiété, burnout..."
                         multiSelect={true}
                         maxSelections={3}

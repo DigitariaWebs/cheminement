@@ -273,9 +273,10 @@ const AppointmentForm = ({
           <Label>Motif de Consultation</Label>
           <MotifSearch
             value={formData.selectedMotifs[0] || ""}
-            onChange={(motif: string) =>
-              updateField("selectedMotifs", motif ? [motif] : [])
-            }
+            onChange={(value) => {
+              const motifs = Array.isArray(value) ? value : value ? [value] : [];
+              updateField("selectedMotifs", motifs);
+            }}
             placeholder="Tapez vos motifs ex: anxiété, burnout..."
           />
         </div>
@@ -478,9 +479,10 @@ const AppointmentForm = ({
           <Label>Motif</Label>
           <MotifSearch
             value={formData.selectedMotifs[0] || ""}
-            onChange={(motif: string) =>
-              updateField("selectedMotifs", motif ? [motif] : [])
-            }
+            onChange={(value) => {
+              const motifs = Array.isArray(value) ? value : value ? [value] : [];
+              updateField("selectedMotifs", motifs);
+            }}
             placeholder="Tapez vos motifs ex: anxiété, burnout..."
           />
         </div>
@@ -632,9 +634,10 @@ const AppointmentForm = ({
           <Label>Motif de Consultation</Label>
           <MotifSearch
             value={formData.selectedMotifs[0] || ""}
-            onChange={(motif: string) =>
-              updateField("selectedMotifs", motif ? [motif] : [])
-            }
+            onChange={(value) => {
+              const motifs = Array.isArray(value) ? value : value ? [value] : [];
+              updateField("selectedMotifs", motifs);
+            }}
             placeholder="Tapez vos motifs ex: anxiété, burnout..."
           />
         </div>

@@ -13,14 +13,11 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
-import { User, Users, Stethoscope } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ClinicalApproachesSection() {
   const t = useTranslations("Approaches.clinicalApproaches");
-  const tHero = useTranslations("HeroSection");
 
   const approaches = [
     {
@@ -159,42 +156,7 @@ export default function ClinicalApproachesSection() {
           </div>
         </ScrollReveal>
 
-        {/* Booking Buttons */}
-        <ScrollReveal variant="fade-up" delayMs={1100} duration={700}>
-          <div className="mt-12 text-center">
-            <h3 className="text-xl font-serif font-medium text-foreground mb-6">
-              {t("bookingTitle")}
-            </h3>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/appointment?for=self"
-                className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
-              >
-                <User className="h-4 w-4" />
-                <span className="relative z-10">{tHero("forSelf")}</span>
-                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Link>
-              <Link
-                href="/appointment?for=loved-one"
-                className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                <span className="relative z-10">{tHero("forLovedOne")}</span>
-                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Link>
-              <Link
-                href="/appointment?for=patient"
-                className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
-              >
-                <Stethoscope className="h-4 w-4" />
-                <span className="relative z-10">{tHero("forPatient")}</span>
-                <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Link>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal variant="swing-in" delayMs={1200} duration={700}>
+        <ScrollReveal variant="swing-in" delayMs={1100} duration={700}>
           <div className="mx-auto mt-10 max-w-4xl rounded-4xl border border-dashed border-primary/30 bg-card/70 p-8 text-center shadow-inner">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
               {t("otherApproaches.title")}

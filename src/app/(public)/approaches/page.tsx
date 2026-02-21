@@ -19,9 +19,7 @@ export default function ApproachesPage() {
       <BookingButtonsGroup />
       <ColorTransition fromColor="background" toColor="muted" />
       <ClinicalApproachesSection />
-      {/* Booking buttons after Bloc B (ClinicalApproachesSection) */}
       <ColorTransition fromColor="muted" toColor="background" />
-      <BookingButtonsGroup />
       <ColorTransition fromColor="background" toColor="muted" />
       <FlexibilitySection />
       <ColorTransition fromColor="muted" toColor="background" />

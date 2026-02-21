@@ -334,6 +334,10 @@ export async function POST(req: NextRequest) {
           });
 
           if (!minorUser) {
+            // Get guardian's language from database or use default
+            const guardianUser = await User.findById(session.user.id);
+            const guardianLanguage = guardianUser?.language || data.lovedOneInfo?.language || "en";
+            
             // Create new client account for minor
             minorUser = new User({
               email: minorEmail.toLowerCase(),
@@ -343,7 +347,7 @@ export async function POST(req: NextRequest) {
               dateOfBirth: birthDate,
               role: "client",
               status: "active",
-              language: session.user.language || "en",
+              language: guardianLanguage,
             });
             await minorUser.save();
             console.log("Created minor user:", minorUser._id.toString());

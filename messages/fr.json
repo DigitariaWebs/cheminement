@@ -1333,6 +1333,11 @@
       },
       "bookingTitle": "Prendre rendez-vous"
     },
+    "cta": {
+      "title": "Prêt à commencer votre parcours ?",
+      "description": "Découvrez nos approches thérapeutiques et trouvez le professionnel qui correspond à vos besoins.",
+      "bookAppointment": "Prendre un rendez-vous"
+    },
     "clinicalApproaches": {
       "badge": "2 · Approches reconnues et encadrées",
       "title": "Des modèles cliniques validés, portés par des experts reconnus.",

@@ -12,6 +12,7 @@ export type EmailNotificationType =
   | "guest_booking_confirmation"
   | "guest_payment_confirmation"
   | "guest_payment_complete"
+  | "payment_invitation"
   | "payment_failed"
   | "payment_refund"
   | "meeting_link"
@@ -109,6 +110,10 @@ const defaultEmailTemplates: Record<
   guest_payment_complete: {
     enabled: true,
     subject: "Payment Confirmed - JeChemine",
+  },
+  payment_invitation: {
+    enabled: true,
+    subject: "Payment Required - Your Appointment is Confirmed",
   },
   payment_failed: {
     enabled: true,

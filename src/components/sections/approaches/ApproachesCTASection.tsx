@@ -6,7 +6,8 @@ import { Calendar, BookOpen, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ApproachesCTASection() {
-  const t = useTranslations("common");
+  const t = useTranslations("Approaches.cta");
+  const tFooter = useTranslations("Footer");
 
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-background via-muted/30 to-background py-24">
@@ -20,17 +21,13 @@ export default function ApproachesCTASection() {
           <div className="mx-auto max-w-4xl text-center">
             <ScrollReveal variant="fade-up" delayMs={100} duration={600}>
               <h2 className="font-serif text-3xl md:text-4xl font-medium leading-tight text-foreground mb-6">
-                {locale === "fr"
-                  ? "Prêt à commencer votre parcours ?"
-                  : "Ready to Start Your Journey?"}
+                {t("title")}
               </h2>
             </ScrollReveal>
 
             <ScrollReveal variant="fade-up" delayMs={200} duration={600}>
               <p className="text-lg text-muted-foreground mb-10 leading-relaxed font-light">
-                {locale === "fr"
-                  ? "Découvrez nos approches thérapeutiques et trouvez le professionnel qui correspond à vos besoins."
-                  : "Discover our therapeutic approaches and find the professional that matches your needs."}
+                {t("description")}
               </p>
             </ScrollReveal>
 
@@ -42,9 +39,7 @@ export default function ApproachesCTASection() {
                 >
                   <Calendar className="h-5 w-5" />
                   <span className="relative z-10">
-                    {locale === "fr"
-                      ? "Prendre un rendez-vous"
-                      : "Book an Appointment"}
+                    {t("bookAppointment")}
                   </span>
                   <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                 </Link>
@@ -55,7 +50,7 @@ export default function ApproachesCTASection() {
                 >
                   <BookOpen className="h-5 w-5" />
                   <span>
-                    {t("exploreResources")}
+                    {tFooter("exploreResources")}
                   </span>
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
