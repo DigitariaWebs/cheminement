@@ -20,6 +20,7 @@ import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ClinicalApproachesSection() {
   const t = useTranslations("Approaches.clinicalApproaches");
+  const tHero = useTranslations("HeroSection");
 
   const approaches = [
     {
@@ -170,7 +171,7 @@ export default function ClinicalApproachesSection() {
                 className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
               >
                 <User className="h-4 w-4" />
-                <span className="relative z-10">Pour moi (Individuel)</span>
+                <span className="relative z-10">{tHero("forSelf")}</span>
                 <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
               <Link
@@ -178,7 +179,7 @@ export default function ClinicalApproachesSection() {
                 className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
               >
                 <Users className="h-4 w-4" />
-                <span className="relative z-10">Pour un proche</span>
+                <span className="relative z-10">{tHero("forLovedOne")}</span>
                 <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
               <Link
@@ -186,7 +187,7 @@ export default function ClinicalApproachesSection() {
                 className="group relative px-6 py-3 bg-primary/90 text-primary-foreground rounded-full text-sm md:text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
               >
                 <Stethoscope className="h-4 w-4" />
-                <span className="relative z-10">Pour un patient</span>
+                <span className="relative z-10">{tHero("forPatient")}</span>
                 <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
             </div>

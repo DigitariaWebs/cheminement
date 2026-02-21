@@ -75,9 +75,9 @@
 
 ## 2. Photo / Personalized Path
 
-- [] Move the photo of the young girl (initially under "Personalized Path") back up to its original place.
-- [] Resizing: reduce its dimensions so it integrates more fluidly and is less imposing within the section.
-- [] Advantages Section: add a new photo (pending your/thematic image).
+- [x] Move the photo of the young girl (initially under "Personalized Path") back up to its original place.
+- [x] Resizing: reduce its dimensions so it integrates more fluidly and is less imposing within the section.
+- [x] Advantages Section: add a new photo (pending your/thematic image).
 - [] Remove the following boxes: "Confidentiality assured" (personalized approach/flexible planning and confidential support).
 
 ## 3. SERVICE PAGE

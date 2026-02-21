@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Calendar, BookOpen, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function ApproachesCTASection() {
-  const locale = useLocale();
+  const t = useTranslations("common");
 
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-background via-muted/30 to-background py-24">
@@ -55,9 +55,7 @@ export default function ApproachesCTASection() {
                 >
                   <BookOpen className="h-5 w-5" />
                   <span>
-                    {locale === "fr"
-                      ? "Explorez les ressources"
-                      : "Explore Resources"}
+                    {t("exploreResources")}
                   </span>
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>

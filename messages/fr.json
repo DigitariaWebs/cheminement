@@ -396,9 +396,16 @@
       "male": "Homme",
       "female": "Femme",
       "other": "Autre",
+      "preferNotToSay": "Préfère ne pas dire",
       "selectLanguage": "Sélectionner la langue",
+      "select": "Sélectionner",
       "english": "Anglais",
       "french": "Français",
+      "spanish": "Español",
+      "arabic": "العربية",
+      "parent": "Parent",
+      "spouse": "Conjoint",
+      "sibling": "Frère/Sœur",
       "issuePlaceholder": "Décrivez votre préoccupation principale",
       "diagnosisPlaceholder": "Tout diagnostic connu",
       "desiredProfessionalPlaceholder": "ex. Psychologue, Thérapeute",
@@ -2078,6 +2085,15 @@
       "cancelling": "Annulation...",
       "confirmCancel": "Oui, annuler le rendez-vous",
       "cancel": "Annuler"
+    },
+    "AppointmentForm": {
+      "referrerSection": "Le Référent",
+      "patientSection": "Le Patient",
+      "clientSection": "Le Client",
+      "optional": "optionnel",
+      "phoneOrEmail": "Téléphone ou Email",
+      "professionalName": "Nom du professionnel",
+      "patientName": "Nom du patient"
     },
     "library": {
       "badge": "Bibliothèque de ressources",

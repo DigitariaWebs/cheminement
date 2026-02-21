@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -75,6 +76,8 @@ const AppointmentForm = ({
   disabledFields = [],
   initialValues = {},
 }: AppointmentFormProps) => {
+  const t = useTranslations("AppointmentForm");
+  const tCommon = useTranslations("memberSignup");
   const [formData, setFormData] = useState<FormData>({
     // Common fields
     firstName: userInfo?.firstName || initialValues.firstName || "",
@@ -147,10 +150,10 @@ const AppointmentForm = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Identity Section */}
           <div>
-            <Label htmlFor="firstName">Prénom</Label>
+            <Label htmlFor="firstName">{tCommon("firstName")}</Label>
             <Input
               id="firstName"
-              placeholder="Prénom"
+              placeholder={tCommon("firstNamePlaceholder")}
               value={formData.firstName}
               onChange={(e) => updateField("firstName", e.target.value)}
               disabled={isDisabled("firstName")}
@@ -158,10 +161,10 @@ const AppointmentForm = ({
             />
           </div>
           <div>
-            <Label htmlFor="lastName">Nom</Label>
+            <Label htmlFor="lastName">{tCommon("lastName")}</Label>
             <Input
               id="lastName"
-              placeholder="Nom"
+              placeholder={tCommon("lastNamePlaceholder")}
               value={formData.lastName}
               onChange={(e) => updateField("lastName", e.target.value)}
               disabled={isDisabled("lastName")}
@@ -169,7 +172,7 @@ const AppointmentForm = ({
             />
           </div>
           <div>
-            <Label htmlFor="dob">Date de naissance</Label>
+            <Label htmlFor="dob">{tCommon("dateOfBirth")}</Label>
             <Input
               id="dob"
               type="date"
@@ -180,43 +183,43 @@ const AppointmentForm = ({
             />
           </div>
           <div>
-            <Label htmlFor="gender">Genre</Label>
+            <Label htmlFor="gender">{tCommon("gender")}</Label>
             <Select
               value={formData.gender}
               onValueChange={(value) => updateField("gender", value)}
             >
               <SelectTrigger disabled={isDisabled("gender")}>
-                <SelectValue placeholder="Sélectionner" />
+                <SelectValue placeholder={tCommon("selectGender")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="M">Homme</SelectItem>
-                <SelectItem value="F">Femme</SelectItem>
-                <SelectItem value="Other">Autre</SelectItem>
+                <SelectItem value="M">{tCommon("male")}</SelectItem>
+                <SelectItem value="F">{tCommon("female")}</SelectItem>
+                <SelectItem value="Other">{tCommon("other")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label htmlFor="language">Langue</Label>
+            <Label htmlFor="language">{tCommon("language")}</Label>
             <Select
               value={formData.language}
               onValueChange={(value) => updateField("language", value)}
             >
               <SelectTrigger disabled={isDisabled("language")}>
-                <SelectValue placeholder="Sélectionner" />
+                <SelectValue placeholder={tCommon("selectLanguage")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="FR">Français</SelectItem>
-                <SelectItem value="EN">English</SelectItem>
-                <SelectItem value="ES">Español</SelectItem>
-                <SelectItem value="AR">العربية</SelectItem>
+                <SelectItem value="FR">{tCommon("french")}</SelectItem>
+                <SelectItem value="EN">{tCommon("english")}</SelectItem>
+                <SelectItem value="ES">{tCommon("spanish")}</SelectItem>
+                <SelectItem value="AR">{tCommon("arabic")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label htmlFor="location">Ville ou Code Postal</Label>
+            <Label htmlFor="location">{tCommon("location")}</Label>
             <Input
               id="location"
-              placeholder="Ville ou Code Postal"
+              placeholder={tCommon("locationPlaceholder")}
               value={formData.location}
               onChange={(e) => updateField("location", e.target.value)}
               disabled={isDisabled("location")}
@@ -302,43 +305,43 @@ const AppointmentForm = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Referrer Section */}
         <div className="border-b pb-6">
-          <h3 className="font-semibold mb-4">Le Référent</h3>
+          <h3 className="font-semibold mb-4">{t("referrerSection")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="referrerName">Nom</Label>
+              <Label htmlFor="referrerName">{tCommon("lastName")}</Label>
               <Input
                 id="referrerName"
-                placeholder="Nom du professionnel"
+                placeholder={t("professionalName")}
                 value={formData.referrerName}
                 onChange={(e) => updateField("referrerName", e.target.value)}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="referrerFirstName">Prénom</Label>
+              <Label htmlFor="referrerFirstName">{tCommon("firstName")}</Label>
               <Input
                 id="referrerFirstName"
-                placeholder="Prénom"
+                placeholder={tCommon("firstNamePlaceholder")}
                 value={formData.firstName}
                 onChange={(e) => updateField("firstName", e.target.value)}
               />
             </div>
             <div>
-              <Label htmlFor="referrerPhone">Téléphone (optionnel)</Label>
+              <Label htmlFor="referrerPhone">{tCommon("phone")} ({t("optional")})</Label>
               <Input
                 id="referrerPhone"
                 type="tel"
-                placeholder="Téléphone"
+                placeholder={tCommon("phonePlaceholder")}
                 value={formData.referrerPhone}
                 onChange={(e) => updateField("referrerPhone", e.target.value)}
               />
             </div>
             <div>
-              <Label htmlFor="referrerEmail">Email (optionnel)</Label>
+              <Label htmlFor="referrerEmail">{tCommon("email")} ({t("optional")})</Label>
               <Input
                 id="referrerEmail"
                 type="email"
-                placeholder="Email"
+                placeholder={tCommon("emailPlaceholder")}
                 value={formData.referrerEmail}
                 onChange={(e) => updateField("referrerEmail", e.target.value)}
               />
@@ -348,23 +351,23 @@ const AppointmentForm = ({
 
         {/* Patient Section */}
         <div className="border-b pb-6">
-          <h3 className="font-semibold mb-4">Le Patient</h3>
+          <h3 className="font-semibold mb-4">{t("patientSection")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="patientName">Nom</Label>
+              <Label htmlFor="patientName">{tCommon("lastName")}</Label>
               <Input
                 id="patientName"
-                placeholder="Nom du patient"
+                placeholder={t("patientName")}
                 value={formData.patientName}
                 onChange={(e) => updateField("patientName", e.target.value)}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="patientFirstName">Prénom</Label>
+              <Label htmlFor="patientFirstName">{tCommon("firstName")}</Label>
               <Input
                 id="patientFirstName"
-                placeholder="Prénom"
+                placeholder={tCommon("firstNamePlaceholder")}
                 value={formData.patientFirstName}
                 onChange={(e) =>
                   updateField("patientFirstName", e.target.value)
@@ -383,10 +386,10 @@ const AppointmentForm = ({
               />
             </div>
             <div>
-              <Label htmlFor="patientPhone">Téléphone ou Email</Label>
+              <Label htmlFor="patientPhone">{t("phoneOrEmail")}</Label>
               <Input
                 id="patientPhone"
-                placeholder="Téléphone ou Email"
+                placeholder={t("phoneOrEmail")}
                 value={formData.patientPhone}
                 onChange={(e) => updateField("patientPhone", e.target.value)}
                 required
@@ -528,13 +531,13 @@ const AppointmentForm = ({
                 }
               >
                 <SelectTrigger id="relationship">
-                  <SelectValue placeholder="Sélectionner" />
+                  <SelectValue placeholder={tCommon("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="parent">Parent</SelectItem>
-                  <SelectItem value="spouse">Conjoint</SelectItem>
-                  <SelectItem value="sibling">Frère/Sœur</SelectItem>
-                  <SelectItem value="other">Autre</SelectItem>
+                  <SelectItem value="parent">{tCommon("parent")}</SelectItem>
+                  <SelectItem value="spouse">{tCommon("spouse")}</SelectItem>
+                  <SelectItem value="sibling">{tCommon("sibling")}</SelectItem>
+                  <SelectItem value="other">{tCommon("other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -543,30 +546,30 @@ const AppointmentForm = ({
 
         {/* Client Section */}
         <div className="border-b pb-6">
-          <h3 className="font-semibold mb-4">Le Client</h3>
+          <h3 className="font-semibold mb-4">{t("clientSection")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="clientFirstName">Prénom</Label>
+              <Label htmlFor="clientFirstName">{tCommon("firstName")}</Label>
               <Input
                 id="clientFirstName"
-                placeholder="Prénom du client"
+                placeholder={tCommon("firstNamePlaceholder")}
                 value={formData.firstName}
                 onChange={(e) => updateField("firstName", e.target.value)}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="clientLastName">Nom</Label>
+              <Label htmlFor="clientLastName">{tCommon("lastName")}</Label>
               <Input
                 id="clientLastName"
-                placeholder="Nom du client"
+                placeholder={tCommon("lastNamePlaceholder")}
                 value={formData.lastName}
                 onChange={(e) => updateField("lastName", e.target.value)}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="clientDOB">Date de naissance</Label>
+              <Label htmlFor="clientDOB">{tCommon("dateOfBirth")}</Label>
               <Input
                 id="clientDOB"
                 type="date"
@@ -576,29 +579,29 @@ const AppointmentForm = ({
               />
             </div>
             <div>
-              <Label htmlFor="clientLocation">Ville ou Code Postal</Label>
+              <Label htmlFor="clientLocation">{tCommon("location")}</Label>
               <Input
                 id="clientLocation"
-                placeholder="Ville ou Code Postal"
+                placeholder={tCommon("locationPlaceholder")}
                 value={formData.clientLocation}
                 onChange={(e) => updateField("clientLocation", e.target.value)}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="clientLanguage">Langue</Label>
+              <Label htmlFor="clientLanguage">{tCommon("language")}</Label>
               <Select
                 value={formData.clientLanguage}
                 onValueChange={(value) => updateField("clientLanguage", value)}
               >
                 <SelectTrigger id="clientLanguage">
-                  <SelectValue placeholder="Sélectionner" />
+                  <SelectValue placeholder={tCommon("selectLanguage")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="FR">Français</SelectItem>
-                  <SelectItem value="EN">English</SelectItem>
-                  <SelectItem value="ES">Español</SelectItem>
-                  <SelectItem value="AR">العربية</SelectItem>
+                  <SelectItem value="FR">{tCommon("french")}</SelectItem>
+                  <SelectItem value="EN">{tCommon("english")}</SelectItem>
+                  <SelectItem value="ES">{tCommon("spanish")}</SelectItem>
+                  <SelectItem value="AR">{tCommon("arabic")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

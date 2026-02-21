@@ -424,11 +424,11 @@ export default function BasicInformation({
                       <SelectValue placeholder={t("gender")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      <SelectItem value="Male">{t("male")}</SelectItem>
+                      <SelectItem value="Female">{t("female")}</SelectItem>
+                      <SelectItem value="Other">{t("other")}</SelectItem>
                       <SelectItem value="Prefer not to say">
-                        Prefer not to say
+                        {t("preferNotToSay")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
