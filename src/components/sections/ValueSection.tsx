@@ -102,24 +102,9 @@ export default function ValueSection() {
           </div>
         </ScrollReveal>
 
-        {/* Image as Background and Cards in Staircase Layout starting from left */}
-        <div className="relative min-h-[800px] -mx-6 px-6">
-          {/* Image Section - Background, Left Top */}
-          <ScrollReveal variant="fade-right" delayMs={200} duration={800}>
-            <div className="absolute top-16 -left-8 z-0">
-              <Image
-                src="/ValueSection.png?v=2"
-                alt="Jeune fille parcours personnalisé"
-                width={500}
-                height={500}
-                className="w-auto h-auto max-w-md opacity-30 scale-x-[-1]"
-                unoptimized
-              />
-            </div>
-          </ScrollReveal>
-
-          {/* Value Cards in Horizontal Staircase Layout - All in one line with vertical offset */}
-          <div className="relative z-10 flex flex-row gap-4 lg:gap-6 items-start overflow-x-auto ml-48 lg:ml-64">
+        {/* Value Cards in Horizontal Staircase Layout */}
+        <div className="relative -mx-6 px-6">
+          <div className="flex flex-row flex-wrap gap-4 lg:gap-6 items-start justify-center lg:justify-start">
             {values.map((value, index) => (
               <ScrollReveal
                 key={index}
@@ -137,6 +122,18 @@ export default function ValueSection() {
                 </div>
               </ScrollReveal>
             ))}
+          </div>
+
+          {/* Photo sous "Parcours personnalisé" - en bas, taille réduite, sans défilement */}
+          <div className="mt-12 flex justify-center">
+            <Image
+              src="/ValueSection.png?v=2"
+              alt="Jeune fille parcours personnalisé"
+              width={240}
+              height={240}
+              className="w-auto h-auto max-w-[200px] md:max-w-[240px] object-contain"
+              unoptimized
+            />
           </div>
         </div>
       </div>
