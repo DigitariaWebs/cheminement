@@ -397,6 +397,8 @@
       "phonePlaceholder": "+1 (555) 123-4567",
       "postalCode": "Postal Code",
       "postalCodePlaceholder": "A1A 1A1",
+      "location": "Location",
+      "locationPlaceholder": "City, State/Province",
       "dateOfBirth": "Date of Birth",
       "gender": "Gender",
       "selectGender": "Select gender",
