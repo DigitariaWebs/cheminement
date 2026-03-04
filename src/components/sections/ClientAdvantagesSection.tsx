@@ -26,12 +26,14 @@ import {
   UserCheck,
   Zap as ZapIcon,
   Network,
+  MapPin,
 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
 export default function ClientAdvantagesSection() {
   const t = useTranslations("ClientAdvantagesSection");
+  const tQuick = useTranslations("QuickAccess");
   const tHero = useTranslations("HeroSection");
 
   // Mapping des topics aux icônes
@@ -121,28 +123,82 @@ export default function ClientAdvantagesSection() {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Section Header */}
+        {/* Section Vos avantages (contenu QuickAccess) */}
         <ScrollReveal variant="fade-down" duration={700}>
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <span className="inline-block text-sm font-bold text-primary uppercase tracking-widest mb-4">
-              {t("badge")}
+              {tQuick("badge")}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
-              {t("title")}
+              {tQuick("title")}
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              {t("subtitle")}
+              {tQuick("subtitle")}
             </p>
           </div>
         </ScrollReveal>
 
-        {/* Hero Image */}
-        <ScrollReveal variant="zoom-in" delayMs={200} duration={800}>
-          <div className="mb-16 mx-auto max-w-4xl">
-            <div className="relative aspect-21/9 rounded-3xl overflow-hidden shadow-xl">
+        <ScrollReveal variant="fade-up" delayMs={200} duration={700}>
+          <div className="mb-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 md:p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/40 text-center md:text-left">
+              <div className="mb-4 flex justify-center md:justify-start">
+                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                  <Clock className="w-6 h-6 text-primary" />
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {tQuick("findHelp")}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {tQuick("findHelpDesc")}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 md:p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/40 text-center md:text-left">
+              <div className="mb-4 flex justify-center md:justify-start">
+                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                  <MapPin className="w-6 h-6 text-primary" />
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {tQuick("accessAnywhere")}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {tQuick("accessAnywhereDesc")}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 md:p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/40 text-center md:text-left">
+              <div className="mb-4 flex justify-center md:justify-start">
+                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                  <BookOpen className="w-6 h-6 text-primary" />
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {tQuick("startJourney")}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {tQuick("startJourneyDesc")}
+              </p>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Photos des deux professionnels */}
+        <ScrollReveal variant="zoom-in" delayMs={300} duration={800}>
+          <div className="mb-20 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
               <Image
-                src="/PatientTestimonialHappy.jpg"
-                alt="Happy patient using health platform"
+                src="/ProfessionalTherapistPortraitWoman.jpg"
+                alt="Professionnelle de la santé mentale"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
+              <Image
+                src="/ProfessionalTherapistPortraitMan.jpg"
+                alt="Professionnel de la santé mentale"
                 fill
                 className="object-cover"
               />
@@ -268,62 +324,6 @@ export default function ClientAdvantagesSection() {
               <span className="text-sm">
                 {t("trustIndicators.confidential")}
               </span>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Three Feature Cards at the Bottom */}
-        <ScrollReveal variant="fade-up" delayMs={1000} duration={700}>
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Accès rapide */}
-            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/40">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                  <ZapIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {t("featureCards.quickAccess.title")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("featureCards.quickAccess.description")}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Diversité de professionnels */}
-            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/40">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                  <Network className="w-6 h-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {t("featureCards.diverseProfessionals.title")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("featureCards.diverseProfessionals.description")}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Ressources éducatives */}
-            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/40">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {t("featureCards.educationalResources.title")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("featureCards.educationalResources.description")}
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </ScrollReveal>
