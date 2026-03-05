@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ArrowRight, UserPlus, CalendarCheck, FileText } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import Image from "next/image";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
 
@@ -147,32 +146,6 @@ export default function HowItWorksSection() {
             ))}
           </div>
         </div>
-
-        {/* Images Section */}
-        <ScrollReveal variant="fade-up" delayMs={500} duration={800}>
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 group">
-              <Image
-                src="/chem2.jpg"
-                alt="Cheminement"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            </div>
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 group">
-              <Image
-                src="/chem3.jpeg"
-                alt="Cheminement"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            </div>
-          </div>
-        </ScrollReveal>
 
         {/* Bottom CTA */}
         <ScrollReveal variant="bounce-in" delayMs={600} duration={700}>

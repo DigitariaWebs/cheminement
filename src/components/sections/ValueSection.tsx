@@ -96,13 +96,13 @@ export default function ValueSection() {
           {/* First Column - Carte "Parcours personnalisé" + bloc B image jeune fille */}
           <div className="lg:mt-0">
             <ValueCard value={values[0]} index={0} locale={locale} />
-            <div className="-mt-1 relative ">
+            <div className="-mt-1 relative flex justify-center lg:justify-start">
               <Image
                 src="/ValueSection.png"
                 alt="Jeune fille parcours personnalisé"
-                width={500}
-                height={500}
-                className="w-full h-auto transform scale-x-[-1] scale-110"
+                width={340}
+                height={340}
+                className="w-full max-w-[340px] h-auto transform scale-x-[-1]"
               />
               {/* Fading effect at bottom */}
               <div className="absolute -bottom-8 left-0 right-0 h-40 bg-linear-to-t from-accent to-transparent z-10"></div>

@@ -138,70 +138,68 @@ export default function ClientAdvantagesSection() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal variant="fade-up" delayMs={200} duration={700}>
-          <div className="mb-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 md:p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/40 text-center md:text-left">
-              <div className="mb-4 flex justify-center md:justify-start">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                  <Clock className="w-6 h-6 text-primary" />
+        {/* Bloc unifié : image entre les encadrés (Carte | Image | Carte puis Carte 3) */}
+        <ScrollReveal variant="fade-up" delayMs={150} duration={700}>
+          <div className="mb-20 max-w-6xl mx-auto">
+            {/* Ligne 1 : Carte 1 | Image | Carte 2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 lg:mb-8">
+              <div className="rounded-2xl border border-border/40 bg-card/80 p-6 lg:p-8 hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col">
+                <div className="mb-4 flex justify-center lg:justify-start">
+                  <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                    <Clock className="w-6 h-6 text-primary" />
+                  </div>
                 </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {tQuick("findHelp")}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                  {tQuick("findHelpDesc")}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                {tQuick("findHelp")}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {tQuick("findHelpDesc")}
-              </p>
+
+              <div className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-border/20 transition-all duration-500 hover:shadow-2xl hover:ring-primary/30 hover:scale-[1.02] aspect-[4/3] min-h-[240px]">
+                <Image
+                  src="/avantages.png"
+                  alt="Vos avantages"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-70 pointer-events-none" />
+              </div>
+
+              <div className="rounded-2xl border border-border/40 bg-card/80 p-6 lg:p-8 hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col">
+                <div className="mb-4 flex justify-center lg:justify-start">
+                  <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                    <MapPin className="w-6 h-6 text-primary" />
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {tQuick("accessAnywhere")}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                  {tQuick("accessAnywhereDesc")}
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 md:p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/40 text-center md:text-left">
-              <div className="mb-4 flex justify-center md:justify-start">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                  <MapPin className="w-6 h-6 text-primary" />
+            {/* Ligne 2 : Carte 3 centrée, largeur limitée pour équilibre */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-2xl rounded-2xl border border-border/40 bg-card/80 p-6 lg:p-8 hover:shadow-lg hover:border-primary/40 transition-all duration-300">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                  <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                    <BookOpen className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      {tQuick("startJourney")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {tQuick("startJourneyDesc")}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                {tQuick("accessAnywhere")}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {tQuick("accessAnywhereDesc")}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border/40 bg-card/80 p-6 md:p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/40 text-center md:text-left">
-              <div className="mb-4 flex justify-center md:justify-start">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                {tQuick("startJourney")}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {tQuick("startJourneyDesc")}
-              </p>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Photos des deux professionnels */}
-        <ScrollReveal variant="zoom-in" delayMs={300} duration={800}>
-          <div className="mb-20 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
-              <Image
-                src="/ProfessionalTherapistPortraitWoman.jpg"
-                alt="Professionnelle de la santé mentale"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
-              <Image
-                src="/ProfessionalTherapistPortraitMan.jpg"
-                alt="Professionnel de la santé mentale"
-                fill
-                className="object-cover"
-              />
             </div>
           </div>
         </ScrollReveal>
