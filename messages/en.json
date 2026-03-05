@@ -1104,7 +1104,8 @@
     "workplaceSection": {
       "badge": "2 · Workplace Mental Health",
       "title": "Specialized support for work-related challenges",
-      "description": "We support employees in managing burnout, return-to-work transitions, and developing sustainable strategies to maintain a healthy work-life balance."
+      "description": "We support employees in managing burnout, return-to-work transitions, and developing sustainable strategies to maintain a healthy work-life balance.",
+      "contactButton": "Contact us directly"
     },
     "enterpriseCta": {
       "title": "Business Manager?",

@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { Briefcase, CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { Button } from "@/components/ui/button";
+import EnterpriseContactDialog from "./EnterpriseContactDialog";
 
 export default function WorkplaceSection() {
   const t = useTranslations("Services.workplaceSection");
   const workplace = useTranslations("Services.programs.workplace");
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
 
   return (
     <section className="relative overflow-hidden bg-muted py-24">
@@ -54,6 +58,12 @@ export default function WorkplaceSection() {
                       <span>{workplace("highlight")}</span>
                     </div>
                   </div>
+                  <Button
+                    onClick={() => setContactDialogOpen(true)}
+                    className="mt-6 w-full sm:w-auto"
+                  >
+                    {t("contactButton")}
+                  </Button>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -74,6 +84,10 @@ export default function WorkplaceSection() {
           </ScrollReveal>
         </div>
       </div>
+      <EnterpriseContactDialog
+        open={contactDialogOpen}
+        onOpenChange={setContactDialogOpen}
+      />
     </section>
   );
 }

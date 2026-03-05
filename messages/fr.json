@@ -1179,7 +1179,8 @@
     "workplaceSection": {
       "badge": "2 · Santé mentale au travail",
       "title": "Section dédiée aux entreprises",
-      "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre."
+      "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre.",
+      "contactButton": "Nous contacter directement"
     },
     "enterpriseCta": {
       "title": "Gestionnaire d'entreprise ?",

@@ -123,82 +123,83 @@ export default function ClientAdvantagesSection() {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Section Vos avantages (contenu QuickAccess) */}
+        {/* Section Vos avantages – même design et typographie que QuickAccessSection (en bas du site) */}
         <ScrollReveal variant="fade-down" duration={700}>
-          <div className="text-center mb-12">
-            <span className="inline-block text-sm font-bold text-primary uppercase tracking-widest mb-4">
-              {tQuick("badge")}
-            </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
+          <div className="text-center mb-16">
+            <div className="mb-4">
+              <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
+                {tQuick("badge")}
+              </p>
+              <div className="w-32 h-0.5 bg-muted-foreground mx-auto" />
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-light text-foreground mb-6">
               {tQuick("title")}
             </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
               {tQuick("subtitle")}
             </p>
           </div>
         </ScrollReveal>
 
-        {/* Bloc unifié : image entre les encadrés (Carte | Image | Carte puis Carte 3) */}
+        {/* Bloc unifié : cartes + image (style QuickAccessSection) */}
         <ScrollReveal variant="fade-up" delayMs={150} duration={700}>
           <div className="mb-20 max-w-6xl mx-auto">
             {/* Ligne 1 : Carte 1 | Image | Carte 2 */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 lg:mb-8">
-              <div className="rounded-2xl border border-border/40 bg-card/80 p-6 lg:p-8 hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col">
-                <div className="mb-4 flex justify-center lg:justify-start">
-                  <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                    <Clock className="w-6 h-6 text-primary" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch mb-8">
+              <div className="p-8 rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 text-center">
+                <div className="mb-4 flex justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <Clock className="w-6 h-6" />
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <h3 className="text-xl font-light text-foreground mb-3">
                   {tQuick("findHelp")}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                <p className="text-muted-foreground leading-relaxed font-light">
                   {tQuick("findHelpDesc")}
                 </p>
               </div>
 
-              <div className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-border/20 transition-all duration-500 hover:shadow-2xl hover:ring-primary/30 hover:scale-[1.02] aspect-[4/3] min-h-[240px]">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3] min-h-[240px] group">
                 <Image
                   src="/avantages.png"
                   alt="Vos avantages"
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 1024px) 100vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-70 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
 
-              <div className="rounded-2xl border border-border/40 bg-card/80 p-6 lg:p-8 hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col">
-                <div className="mb-4 flex justify-center lg:justify-start">
-                  <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                    <MapPin className="w-6 h-6 text-primary" />
+              <div className="p-8 rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 text-center">
+                <div className="mb-4 flex justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <MapPin className="w-6 h-6" />
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <h3 className="text-xl font-light text-foreground mb-3">
                   {tQuick("accessAnywhere")}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                <p className="text-muted-foreground leading-relaxed font-light">
                   {tQuick("accessAnywhereDesc")}
                 </p>
               </div>
             </div>
 
-            {/* Ligne 2 : Carte 3 centrée, largeur limitée pour équilibre */}
+            {/* Ligne 2 : Carte 3 (même style que les autres cartes QuickAccess) */}
             <div className="flex justify-center">
-              <div className="w-full max-w-2xl rounded-2xl border border-border/40 bg-card/80 p-6 lg:p-8 hover:shadow-lg hover:border-primary/40 transition-all duration-300">
-                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                  <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                    <BookOpen className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      {tQuick("startJourney")}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {tQuick("startJourneyDesc")}
-                    </p>
+              <div className="w-full max-w-2xl p-8 rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 text-center">
+                <div className="mb-4 flex justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <BookOpen className="w-6 h-6" />
                   </div>
                 </div>
+                <h3 className="text-xl font-light text-foreground mb-3">
+                  {tQuick("startJourney")}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed font-light">
+                  {tQuick("startJourneyDesc")}
+                </p>
               </div>
             </div>
           </div>
