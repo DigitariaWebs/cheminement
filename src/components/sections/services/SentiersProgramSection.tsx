@@ -155,7 +155,7 @@ export default function SentiersProgramSection() {
           <ScrollReveal variant="slide-up" delayMs={950} duration={700}>
             <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
               <a
-                href="/book/relative"
+                href="/appointment?for=loved-one"
                 className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
               >
                 {t("cta.parent")}

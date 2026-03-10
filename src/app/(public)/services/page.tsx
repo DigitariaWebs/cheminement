@@ -6,7 +6,6 @@ import {
   WorkplaceSection,
   ComplementaryServicesSection,
 } from "@/components/sections/services";
-import EnterpriseCtaForm from "@/components/sections/services/EnterpriseCtaForm";
 import ColorTransition from "@/components/ui/ColorTransition";
 
 export default function ServicesPage() {
@@ -20,10 +19,8 @@ export default function ServicesPage() {
       <ColorTransition fromColor="background" toColor="muted" />
       <WorkplaceSection />
       <ColorTransition fromColor="muted" toColor="background" />
-      <EnterpriseCtaForm />
-      <ColorTransition fromColor="background" toColor="muted" />
       <SentiersProgramSection />
-      <ColorTransition fromColor="muted" toColor="background" />
+      <ColorTransition fromColor="background" toColor="muted" />
       <ComplementaryServicesSection />
     </main>
   );

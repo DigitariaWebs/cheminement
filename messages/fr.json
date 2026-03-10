@@ -1059,7 +1059,7 @@
         "items": [
           "Des experts qualifiés pour chaque problématique.",
           "Un jumelage intelligent pour un accompagnement rapide.",
-          "Une plateforme simple pour amorcer rapidement votre cheminement"
+          "Une plateforme simple pour amorcer rapidement votre cheminement."
         ]
       }
     },
@@ -1114,12 +1114,12 @@
         "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
         "highlight": "Plans de traitement personnalisés",
         "features": [
-          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes",
-          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste)",
-          "Gestion de l'anxiété, de la dépression et du stress",
-          "Évaluation du TDAH et soutien continu",
-          "Consultations en lien avec les défis relationnels et l’estime de soi",
-          "Soutien aux transitions et à l'adaptation de vie"
+          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes.",
+          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste).",
+          "Gestion de l'anxiété, de la dépression et du stress.",
+          "Évaluation du TDAH et soutien continu.",
+          "Consultations en lien avec les défis relationnels et l'estime de soi.",
+          "Soutien aux transitions et à l'adaptation de vie."
         ]
       },
       "child": {
@@ -1127,13 +1127,13 @@
         "description": "Soutien thérapeutique spécialisé conçu pour les besoins développement aux uniques des enfants et des adolescents. Nous aidons les jeunes à mieux composer avec les défis émotionnels, les difficultés comportementales et les transitions développementales.",
         "highlight": "Interventions adaptées à l'âge",
         "features": [
-          "Thérapie par le jeu et techniques adaptées à l'âge",
-          "Évaluation du TDAH et stratégies comportementales",
-          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle",
-          "Développement des habiletés sociales",
-          "Difficultés scolaires et soutien à l'apprentissage",
-          "Cyberdépendance et dépendances aux substances",
-          "Collaboration et guidance parentale"
+          "Thérapie par le jeu et techniques adaptées à l'âge.",
+          "Évaluation du TDAH et stratégies comportementales.",
+          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle.",
+          "Développement des habiletés sociales.",
+          "Difficultés scolaires et soutien à l'apprentissage.",
+          "Cyberdépendance et dépendances aux substances.",
+          "Collaboration et guidance parentale."
         ]
       },
       "family": {
