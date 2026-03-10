@@ -37,7 +37,7 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/book" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link href="/appointment" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                   {t("bookAppointment")}
                 </Link>
               </li>
@@ -52,18 +52,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/approaches" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {tNav("approaches")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link href="/explore" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                   {t("exploreResources")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {t("platformPress")}
                 </Link>
               </li>
             </ul>
@@ -76,28 +66,36 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {t("contactUs")}
+                <Link href="/press" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {t("press")}
                 </Link>
               </li>
               <li>
-                <Link href="/" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                   {t("phone")}
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                  {t("helpCentre")}
+                <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                  {t("contactUs")}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Partners & Social */}
+          {/* Partenaires - logo clinique partenaire + réseaux */}
           <div>
             <h4 className="font-bold text-primary-foreground mb-6 text-sm uppercase tracking-wide">
               {t("partners")}
             </h4>
+            <div className="space-y-4">
+              <Image
+                src="/logocln.png"
+                alt="Clinique partenaire"
+                width={240}
+                height={96}
+                className="h-24 w-auto object-contain"
+              />
             <div className="flex gap-3 flex-wrap">
               <Link
                 href="https://linkedin.com/company/jechemine"
@@ -132,6 +130,7 @@ export function Footer() {
                 <Instagram size={18} />
               </Link>
             </div>
+            </div>
           </div>
         </div>
 
@@ -146,6 +145,9 @@ export function Footer() {
             </Link>
             <Link href="/terms" className="hover:text-primary-foreground transition-colors uppercase">
               {t("termsOfUse")}
+            </Link>
+            <Link href="/cookies" className="hover:text-primary-foreground transition-colors uppercase">
+              {t("cookiePolicy")}
             </Link>
           </div>
         </div>

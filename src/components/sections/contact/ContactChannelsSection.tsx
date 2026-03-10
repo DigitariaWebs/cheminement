@@ -1,12 +1,16 @@
 "use client";
 
-import { Mail, Info, Users, ClipboardList, Wallet } from "lucide-react";
+import { useState } from "react";
+import { Mail, Info, Users, ClipboardList, Wallet, MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
+import { Button } from "@/components/ui/button";
+import ContactFormDialog from "./ContactFormDialog";
 
 export default function ContactChannelsSection() {
   const t = useTranslations("Contact.channels");
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
 
   const inquiries = [
     {
@@ -76,6 +80,14 @@ export default function ContactChannelsSection() {
                     <p className="text-base text-foreground">{t("phone")}</p>
                   </div>
                 </div>
+                <Button
+                  onClick={() => setFormDialogOpen(true)}
+                  variant="default"
+                  className="mt-4 w-full sm:w-auto"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  {t("formButton")}
+                </Button>
               </div>
             </header>
           </ScrollReveal>
@@ -111,6 +123,10 @@ export default function ContactChannelsSection() {
           </ScrollReveal>
         </div>
       </div>
+      <ContactFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+      />
     </section>
   );
 }

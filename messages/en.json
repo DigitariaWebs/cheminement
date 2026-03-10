@@ -1379,7 +1379,7 @@
       },
       "otherApproaches": {
         "title": "Other Approaches and Techniques",
-        "items": ["Hypnosis.", "EMDR.", "IMO."]
+        "items": ["Hypnosis", "EMDR", "IMO"]
       },
       "integrativeApproach": {
         "title": "Integrative Approach",
@@ -1428,17 +1428,17 @@
         "online": {
           "title": "Online Consultations",
           "bullets": [
-            "Secure, encrypted video calls, simple to join.",
-            "No travel required, ideal for busy schedules.",
-            "Accessible everywhere, even in remote areas."
+            "Secure, encrypted video calls, simple to join",
+            "No travel required, ideal for busy schedules",
+            "Accessible everywhere, even in remote areas"
           ]
         },
         "office": {
           "title": "In-Office Consultations",
           "bullets": [
-            "In-person meetings in a warm setting.",
-            "For those who prefer direct contact.",
-            "Spaces designed for confidentiality and comfort."
+            "In-person meetings in a warm setting",
+            "For those who prefer direct contact",
+            "Spaces designed for confidentiality and comfort"
           ]
         }
       },
@@ -1455,11 +1455,11 @@
       "highlight": "A major strength of Je chemine",
       "criteriaTitle": "Criteria Analyzed",
       "criteria": [
-        "Issue and clinical needs.",
-        "Desired therapeutic approach.",
-        "Age, life cycle and context.",
-        "Desired clinical experience.",
-        "Personal preferences and availability."
+        "Issue and clinical needs",
+        "Desired therapeutic approach",
+        "Age, life cycle and context",
+        "Desired clinical experience",
+        "Personal preferences and availability"
       ],
       "steps": [
         {
@@ -1503,6 +1503,7 @@
       "email": "contact@monimpression.com",
       "phoneLabel": "Phone",
       "phone": "Coming soon",
+      "formButton": "Fill in the contact form",
       "inquiries": {
         "services": {
           "title": "Services and Approaches",
