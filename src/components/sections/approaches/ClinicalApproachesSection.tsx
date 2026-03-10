@@ -144,11 +144,11 @@ export default function ClinicalApproachesSection() {
                   <Puzzle className="h-7 w-7" />
                 </div>
               </div>
-              <div className="flex-1 space-y-3">
-                <h3 className="font-serif text-xl font-medium text-foreground">
+              <div className="flex-1 space-y-4">
+                <h3 className="font-serif text-lg font-medium text-foreground">
                   {t("integrativeApproach.title")}
                 </h3>
-                <p className="text-base leading-relaxed text-muted-foreground">
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {t("integrativeApproach.description")}
                 </p>
               </div>

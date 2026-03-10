@@ -77,7 +77,7 @@ const AppointmentForm = ({
   initialValues = {},
 }: AppointmentFormProps) => {
   const t = useTranslations("AppointmentForm");
-  const tCommon = useTranslations("memberSignup");
+  const tCommon = useTranslations("Auth.memberSignup");
   const [formData, setFormData] = useState<FormData>({
     // Common fields
     firstName: userInfo?.firstName || initialValues.firstName || "",

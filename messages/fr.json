@@ -64,7 +64,7 @@
     "privacyPolicy": "Politique de confidentialité",
     "termsOfUse": "Conditions d'utilisation",
     "aoda": "AODA",
-    "cookiePolicy": "Politique de cookies",
+    "cookiePolicy": "Politique témoins de connexion",
     "rightsAndResponsibilities": "Droits et responsabilités"
   },
   "HeroSection": {
@@ -224,13 +224,13 @@
     "title": "Trouvez des clients qui vous conviennent",
     "subtitle": "Économisez du temps et de l'énergie grâce à notre système de jumelage intelligent. Concentrez-vous sur les aspects cliniques de votre pratique pendant que nous vous mettons en contact avec des clients qui correspondent parfaitement à votre expertise et à vos préférences.",
     "issueType": "Type de problème",
-    "issueTypeDesc": "Jumelage avec des clients en fonction des défis spécifiques de santé mentale que vous êtes spécialisé à traiter",
+    "issueTypeDesc": "Jumelage avec des clients en fonction des défis spécifiques de santé mentale que vous êtes spécialisé à traiter.",
     "therapeuticApproach": "Approche thérapeutique",
-    "therapeuticApproachDesc": "Connectez-vous avec des clients qui préfèrent vos méthodes et techniques thérapeutiques",
+    "therapeuticApproachDesc": "Connectez-vous avec des clients qui préfèrent vos méthodes et techniques thérapeutiques.",
     "ageCategory": "Catégorie d'âge",
-    "ageCategoryDesc": "Travaillez avec les groupes d'âge avec lesquels vous êtes le plus expérimenté et à l'aise",
+    "ageCategoryDesc": "Travaillez avec les groupes d'âge avec lesquels vous êtes le plus expérimenté et à l'aise.",
     "expertise": "Expertise et compétences",
-    "expertiseDesc": "Tirez parti de vos compétences uniques pour aider ceux qui en ont le plus besoin",
+    "expertiseDesc": "Tirez parti de vos compétences uniques pour aider ceux qui en ont le plus besoin.",
     "benefitTitle": "Travaillez plus intelligemment, pas plus dur",
     "benefitDesc": "Notre jumelage de précision signifie que vous passez moins de temps sur les tâches administratives et plus de temps à faire ce que vous aimez—fournir des soins de santé mentale de qualité. Chaque connexion avec un client est adaptée à vos forces et préférences professionnelles."
   },
@@ -390,8 +390,11 @@
       "lastNamePlaceholder": "Dupont",
       "email": "Adresse e-mail",
       "emailPlaceholder": "vous@exemple.com",
+      "phone": "Téléphone",
       "phonePlaceholder": "+1 (555) 123-4567",
       "postalCodePlaceholder": "A1A 1A1",
+      "location": "Localisation",
+      "locationPlaceholder": "Ville, Province",
       "selectGender": "Sélectionner le genre",
       "male": "Homme",
       "female": "Femme",
@@ -1056,7 +1059,7 @@
         "items": [
           "Des experts qualifiés pour chaque problématique.",
           "Un jumelage intelligent pour un accompagnement rapide.",
-          "Une plateforme simple pour amorcer rapidement votre cheminement"
+          "Une plateforme simple pour amorcer rapidement votre cheminement."
         ]
       }
     },
@@ -1111,12 +1114,12 @@
         "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
         "highlight": "Plans de traitement personnalisés",
         "features": [
-          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes",
-          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste)",
-          "Gestion de l'anxiété, de la dépression et du stress",
-          "Évaluation du TDAH et soutien continu",
-          "Consultations en lien avec les défis relationnels et l’estime de soi",
-          "Soutien aux transitions et à l'adaptation de vie"
+          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes.",
+          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste).",
+          "Gestion de l'anxiété, de la dépression et du stress.",
+          "Évaluation du TDAH et soutien continu.",
+          "Consultations en lien avec les défis relationnels et l'estime de soi.",
+          "Soutien aux transitions et à l'adaptation de vie."
         ]
       },
       "child": {
@@ -1124,13 +1127,13 @@
         "description": "Soutien thérapeutique spécialisé conçu pour les besoins développement aux uniques des enfants et des adolescents. Nous aidons les jeunes à mieux composer avec les défis émotionnels, les difficultés comportementales et les transitions développementales.",
         "highlight": "Interventions adaptées à l'âge",
         "features": [
-          "Thérapie par le jeu et techniques adaptées à l'âge",
-          "Évaluation du TDAH et stratégies comportementales",
-          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle",
-          "Développement des habiletés sociales",
-          "Difficultés scolaires et soutien à l'apprentissage",
-          "Cyberdépendance et dépendances aux substances",
-          "Collaboration et guidance parentale"
+          "Thérapie par le jeu et techniques adaptées à l'âge.",
+          "Évaluation du TDAH et stratégies comportementales.",
+          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle.",
+          "Développement des habiletés sociales.",
+          "Difficultés scolaires et soutien à l'apprentissage.",
+          "Cyberdépendance et dépendances aux substances.",
+          "Collaboration et guidance parentale."
         ]
       },
       "family": {
@@ -1176,7 +1179,8 @@
     "workplaceSection": {
       "badge": "2 · Santé mentale au travail",
       "title": "Section dédiée aux entreprises",
-      "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre."
+      "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre.",
+      "contactButton": "Nous contacter directement"
     },
     "enterpriseCta": {
       "title": "Gestionnaire d'entreprise ?",
@@ -1210,11 +1214,11 @@
       "description": "Le programme Sentiers regroupe l’accompagnement pour l’anxiété scolaire, l’évitement scolaire (refus), le stress académique et la gestion de performance.",
       "focusTitle": "Ce que nous couvrons",
       "focusAreas": [
-        "Programme Sentiers.",
-        "Anxiété scolaire.",
-        "Évitement scolaire (refus).",
-        "Stress académique.",
-        "Gestion de performance."
+        "Programme Sentiers",
+        "Anxiété scolaire",
+        "Évitement scolaire (refus)",
+        "Stress académique",
+        "Gestion de performance"
       ],
       "studentTrack": "Volet Étudiants (Cégep & Université) : accompagnement adapté au rythme, aux exigences académiques et à la santé mentale des étudiants.",
       "pillarsTitle": "Les piliers du programme",
@@ -1238,11 +1242,11 @@
       },
       "professionalsTitle": "Nous travaillons avec",
       "professionals": [
-        "Psychologues scolaires.",
-        "Neuropsychologues.",
-        "Psychoéducateurs.",
-        "Techniciens en éducation spécialisée (TES).",
-        "Intervenants spécialisés."
+        "Psychologues scolaires",
+        "Neuropsychologues",
+        "Psychoéducateurs",
+        "Techniciens en éducation spécialisée (TES)",
+        "Intervenants spécialisés"
       ],
       "customSupport": "Un accompagnement sur mesure pour soutenir la réussite, l'estime de soi et le bien-être des jeunes, en partenariat avec leur entourage scolaire et familial.",
       "networkTitle": "Un réseau coordonné",
@@ -1379,7 +1383,7 @@
       },
       "otherApproaches": {
         "title": "Autres approches et techniques",
-        "items": ["Hypnose.", "EMDR.", "IMO."]
+        "items": ["Hypnose", "EMDR", "IMO"]
       },
       "integrativeApproach": {
         "title": "Approche intégrative",
@@ -1428,17 +1432,17 @@
         "online": {
           "title": "Consultations en ligne",
           "bullets": [
-            "Appels vidéo sécurisés, cryptés et simples à rejoindre.",
-            "Aucun déplacement requis, idéal pour les horaires chargés.",
-            "Accessibles partout, même en région éloignée."
+            "Appels vidéo sécurisés, cryptés et simples à rejoindre",
+            "Aucun déplacement requis, idéal pour les horaires chargés",
+            "Accessibles partout, même en région éloignée"
           ]
         },
         "office": {
           "title": "Consultations en bureau",
           "bullets": [
-            "Rencontres en personne dans un cadre chaleureux.",
-            "Pour ceux qui préfèrent un contact direct.",
-            "Des espaces pensés pour la confidentialité et le confort."
+            "Rencontres en personne dans un cadre chaleureux",
+            "Pour ceux qui préfèrent un contact direct",
+            "Des espaces pensés pour la confidentialité et le confort"
           ]
         }
       },
@@ -1455,11 +1459,11 @@
       "highlight": "Une force majeure de Je chemine",
       "criteriaTitle": "Critères analysés",
       "criteria": [
-        "Problématique et besoins cliniques.",
-        "Approche thérapeutique souhaitée.",
-        "Âge, cycle de vie et contexte.",
-        "Expérience clinique recherchée.",
-        "Préférences personnelles et disponibilité."
+        "Problématique et besoins cliniques",
+        "Approche thérapeutique souhaitée",
+        "Âge, cycle de vie et contexte",
+        "Expérience clinique recherchée",
+        "Préférences personnelles et disponibilité"
       ],
       "steps": [
         {
@@ -1503,6 +1507,7 @@
       "email": "contact@monimpression.com",
       "phoneLabel": "Téléphone",
       "phone": "À venir",
+      "formButton": "Remplir le formulaire de contact",
       "inquiries": {
         "services": {
           "title": "Services et approches",

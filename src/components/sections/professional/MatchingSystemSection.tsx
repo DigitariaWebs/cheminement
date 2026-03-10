@@ -43,7 +43,7 @@ export default function MatchingSystemSection() {
       descriptionEn:
         "Match with clients based on the specific mental health challenges you specialize in treating",
       descriptionFr:
-        "Jumelage avec des clients en fonction des défis spécifiques de santé mentale que vous êtes spécialisé à traiter",
+        "Jumelage avec des clients en fonction des défis spécifiques de santé mentale que vous êtes spécialisé à traiter.",
     },
     {
       icon: Briefcase,
@@ -52,7 +52,7 @@ export default function MatchingSystemSection() {
       descriptionEn:
         "Connect with clients who prefer your therapeutic methods and techniques",
       descriptionFr:
-        "Connectez-vous avec des clients qui préfèrent votre approche et vision thérapeutique",
+        "Connectez-vous avec des clients qui préfèrent votre approche et vision thérapeutique.",
     },
     {
       icon: Users,
@@ -61,7 +61,7 @@ export default function MatchingSystemSection() {
       descriptionEn:
         "Work with the age groups you're most experienced and comfortable with",
       descriptionFr:
-        "Travaillez avec les groupes d'âge avec lesquels vous êtes le plus expérimenté et à l'aise",
+        "Travaillez avec les groupes d'âge avec lesquels vous êtes le plus expérimenté et à l'aise.",
     },
     {
       icon: Calendar,
@@ -70,7 +70,7 @@ export default function MatchingSystemSection() {
       descriptionEn:
         "Leverage your unique competencies to help those who need them most",
       descriptionFr:
-        "Tirez parti de vos compétences uniques pour aider ceux qui en ont le plus besoin",
+        "Tirez parti de vos compétences uniques pour aider ceux qui en ont le plus besoin.",
     },
   ];
 

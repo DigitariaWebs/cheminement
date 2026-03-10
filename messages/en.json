@@ -397,6 +397,8 @@
       "phonePlaceholder": "+1 (555) 123-4567",
       "postalCode": "Postal Code",
       "postalCodePlaceholder": "A1A 1A1",
+      "location": "Location",
+      "locationPlaceholder": "City, State/Province",
       "dateOfBirth": "Date of Birth",
       "gender": "Gender",
       "selectGender": "Select gender",
@@ -1102,7 +1104,8 @@
     "workplaceSection": {
       "badge": "2 · Workplace Mental Health",
       "title": "Specialized support for work-related challenges",
-      "description": "We support employees in managing burnout, return-to-work transitions, and developing sustainable strategies to maintain a healthy work-life balance."
+      "description": "We support employees in managing burnout, return-to-work transitions, and developing sustainable strategies to maintain a healthy work-life balance.",
+      "contactButton": "Contact us directly"
     },
     "enterpriseCta": {
       "title": "Business Manager?",
@@ -1376,7 +1379,7 @@
       },
       "otherApproaches": {
         "title": "Other Approaches and Techniques",
-        "items": ["Hypnosis.", "EMDR.", "IMO."]
+        "items": ["Hypnosis", "EMDR", "IMO"]
       },
       "integrativeApproach": {
         "title": "Integrative Approach",
@@ -1425,17 +1428,17 @@
         "online": {
           "title": "Online Consultations",
           "bullets": [
-            "Secure, encrypted video calls, simple to join.",
-            "No travel required, ideal for busy schedules.",
-            "Accessible everywhere, even in remote areas."
+            "Secure, encrypted video calls, simple to join",
+            "No travel required, ideal for busy schedules",
+            "Accessible everywhere, even in remote areas"
           ]
         },
         "office": {
           "title": "In-Office Consultations",
           "bullets": [
-            "In-person meetings in a warm setting.",
-            "For those who prefer direct contact.",
-            "Spaces designed for confidentiality and comfort."
+            "In-person meetings in a warm setting",
+            "For those who prefer direct contact",
+            "Spaces designed for confidentiality and comfort"
           ]
         }
       },
@@ -1452,11 +1455,11 @@
       "highlight": "A major strength of Je chemine",
       "criteriaTitle": "Criteria Analyzed",
       "criteria": [
-        "Issue and clinical needs.",
-        "Desired therapeutic approach.",
-        "Age, life cycle and context.",
-        "Desired clinical experience.",
-        "Personal preferences and availability."
+        "Issue and clinical needs",
+        "Desired therapeutic approach",
+        "Age, life cycle and context",
+        "Desired clinical experience",
+        "Personal preferences and availability"
       ],
       "steps": [
         {
@@ -1500,6 +1503,7 @@
       "email": "contact@monimpression.com",
       "phoneLabel": "Phone",
       "phone": "Coming soon",
+      "formButton": "Fill in the contact form",
       "inquiries": {
         "services": {
           "title": "Services and Approaches",
