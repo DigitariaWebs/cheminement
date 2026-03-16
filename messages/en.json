@@ -74,10 +74,13 @@
     "description": "Take the first step towards better mental health. Our platform connects you with qualified professionals who understand your unique journey and provide the support you need, when you need it most.",
     "bookNow": "Book now",
     "bookingTitle": "Book an appointment",
-    "bookingSubtitle": "Choose who this appointment is for.",
+    "bookingSubtitle": "Who would you like to book an appointment for?",
     "forSelf": "For yourself",
+    "forSelfDesc": "Book an appointment for your own mental well-being.",
     "forPatient": "For a patient",
+    "forPatientDesc": "Refer a patient to a qualified professional.",
     "forLovedOne": "For a loved one",
+    "forLovedOneDesc": "Book an appointment for a family member or loved one.",
     "bookForSelfHint": "Are you looking for support for your own mental health journey?",
     "bookForPatientHint": "Are you a physician or professional referring a patient for care?",
     "bookForLovedOneHint": "Are you seeking help for a family member, partner, or child?",
@@ -1525,6 +1528,11 @@
         }
       },
       "responseTime": "We respond to every message promptly and schedule, when needed, an exploratory call to clarify your expectations."
+    },
+    "bookingCta": {
+      "badge": "Appointment",
+      "title": "Book an appointment",
+      "description": "Take the first step towards well-being. We'll help you find the right professional for your needs."
     },
     "form": {
       "badge": "Contact Form",

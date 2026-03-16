@@ -51,6 +51,7 @@ import { MotifSearch } from "@/components/ui/MotifSearch";
 import { cn } from "@/lib/utils";
 import { MOTIFS } from "@/data/motif";
 import AppointmentForm from "@/components/appointments/AppointmentForm";
+import ProfileSelectionCard from "@/components/appointments/ProfileSelectionCard";
 import { useTranslations } from "next-intl";
 
 interface GuestInfo {
@@ -100,6 +101,7 @@ export default function BookAppointmentPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const t = useTranslations("managedAccounts");
+  const tHero = useTranslations("HeroSection");
   // Auth state
   const [isGuest, setIsGuest] = useState(false);
   const [authCheckDone, setAuthCheckDone] = useState(false);
@@ -779,6 +781,60 @@ export default function BookAppointmentPage() {
     return (
       <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Profile selection view — when no ?for= param is set
+  if (!bookingFor) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20">
+        <div className="container mx-auto px-4 py-12 max-w-5xl">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="mb-8 gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {tHero("back")}
+          </Button>
+
+          <div className="text-center mb-14">
+            <div className="mb-4">
+              <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
+                {tHero("bookingTitle")}
+              </p>
+              <div className="w-24 h-0.5 bg-muted-foreground mx-auto" />
+            </div>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-light text-foreground">
+              {tHero("bookingSubtitle")}
+            </h1>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ProfileSelectionCard
+              href="/appointment?for=self"
+              icon={User}
+              title={tHero("forSelf")}
+              description={tHero("forSelfDesc")}
+              cta={tHero("bookNow")}
+            />
+            <ProfileSelectionCard
+              href="/appointment?for=loved-one"
+              icon={Users}
+              title={tHero("forLovedOne")}
+              description={tHero("forLovedOneDesc")}
+              cta={tHero("bookNow")}
+            />
+            <ProfileSelectionCard
+              href="/appointment?for=patient"
+              icon={Stethoscope}
+              title={tHero("forPatient")}
+              description={tHero("forPatientDesc")}
+              cta={tHero("bookNow")}
+            />
+          </div>
+        </div>
       </div>
     );
   }

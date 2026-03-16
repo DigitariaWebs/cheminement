@@ -1,53 +1,57 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { User, Users, Stethoscope } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import type { AnimationVariant } from "@/components/ui/ScrollReveal";
+import ProfileSelectionCard from "./ProfileSelectionCard";
 
-const options = [
-  { key: "self" as const, href: "/appointment?for=self", Icon: User },
-  { key: "loved-one" as const, href: "/appointment?for=loved-one", Icon: Users },
-  { key: "patient" as const, href: "/appointment?for=patient", Icon: Stethoscope },
+const profiles = [
+  { key: "self" as const, href: "/appointment?for=self", icon: User },
+  { key: "loved-one" as const, href: "/appointment?for=loved-one", icon: Users },
+  { key: "patient" as const, href: "/appointment?for=patient", icon: Stethoscope },
 ];
+
+const cardAnimations: AnimationVariant[] = ["fade-right", "zoom-in", "fade-left"];
 
 export default function ProfileSelector() {
   const t = useTranslations("HeroSection");
 
   return (
-    <section className="relative py-16 bg-accent/30 overflow-hidden">
-      <div className="container mx-auto px-5 sm:px-7 relative z-10 max-w-4xl">
+    <section className="relative py-20 bg-accent/30 overflow-hidden">
+      <div className="container mx-auto px-5 sm:px-7 relative z-10 max-w-5xl">
         <ScrollReveal variant="fade-down" duration={700}>
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-serif font-light text-foreground mb-3">
-              {t("bookingTitle")}
-            </h2>
-            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+          <div className="text-center mb-14">
+            <div className="mb-4">
+              <p className="text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground font-light mb-2">
+                {t("bookingTitle")}
+              </p>
+              <div className="w-24 h-0.5 bg-muted-foreground mx-auto" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-serif font-light text-foreground">
               {t("bookingSubtitle")}
-            </p>
+            </h2>
           </div>
         </ScrollReveal>
 
-        <ScrollReveal variant="fade-up" delayMs={200} duration={700}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {options.map(({ key, href, Icon }) => (
-              <Link
-                key={key}
-                href={href}
-                className="group flex flex-col items-center justify-center gap-4 p-6 sm:p-8 rounded-xl border border-border/40 bg-card/80 hover:bg-card hover:border-primary/40 hover:shadow-lg transition-all duration-300 text-center"
-              >
-                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors duration-300">
-                  <Icon className="h-7 w-7" aria-hidden />
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {key === "self" && t("forSelf")}
-                  {key === "loved-one" && t("forLovedOne")}
-                  {key === "patient" && t("forPatient")}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </ScrollReveal>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {profiles.map((profile, index) => (
+            <ScrollReveal
+              key={profile.key}
+              variant={cardAnimations[index]}
+              delayMs={150 + index * 100}
+              duration={700}
+            >
+              <ProfileSelectionCard
+                href={profile.href}
+                icon={profile.icon}
+                title={t(`for${profile.key === "self" ? "Self" : profile.key === "loved-one" ? "LovedOne" : "Patient"}`)}
+                description={t(`for${profile.key === "self" ? "Self" : profile.key === "loved-one" ? "LovedOne" : "Patient"}Desc`)}
+                cta={t("bookNow")}
+              />
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
     </section>
   );

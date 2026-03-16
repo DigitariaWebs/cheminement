@@ -74,10 +74,13 @@
     "description": "Faites le premier pas vers une meilleure santé mentale. Notre plateforme vous met en relation avec des professionnels qualifiés qui comprennent votre parcours unique et vous apportent le soutien dont vous avez besoin, quand vous en avez le plus besoin.",
     "bookNow": "Prendre rendez-vous",
     "bookingTitle": "Prise de rendez-vous",
-    "bookingSubtitle": "Choisissez pour qui vous prenez rendez-vous.",
+    "bookingSubtitle": "Pour qui souhaitez-vous prendre rendez-vous ?",
     "forSelf": "Pour moi",
+    "forSelfDesc": "Prenez rendez-vous pour votre propre bien-être mental.",
     "forPatient": "Pour un patient",
+    "forPatientDesc": "Référez un patient vers un professionnel qualifié.",
     "forLovedOne": "Pour un proche",
+    "forLovedOneDesc": "Prenez rendez-vous pour un membre de votre famille ou un proche.",
     "bookForSelfHint": "Cherchez-vous un soutien professionnel pour votre propre bien-être mental?",
     "bookForPatientHint": "Êtes-vous un médecin ou un professionnel souhaitant référer un patient?",
     "bookForLovedOneHint": "Souhaitez-vous aider un membre de votre famille ou un proche à trouver du soutien?",
@@ -1529,6 +1532,11 @@
         }
       },
       "responseTime": "Nous répondons à chaque message dans les meilleurs délais et planifions, au besoin, un appel d'exploration pour préciser vos attentes."
+    },
+    "bookingCta": {
+      "badge": "Rendez-vous",
+      "title": "Prise de rendez-vous",
+      "description": "Faites le premier pas vers un mieux-être. Nous vous accompagnons pour trouver le professionnel adapté à vos besoins."
     },
     "form": {
       "badge": "Formulaire de contact",

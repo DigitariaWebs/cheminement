@@ -161,7 +161,7 @@ export default function SentiersProgramSection() {
                 {t("cta.parent")}
               </a>
               <a
-                href="/book"
+                href="/appointment"
                 className="inline-flex items-center justify-center rounded-full border border-border px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:border-primary hover:text-primary"
               >
                 {t("cta.student")}

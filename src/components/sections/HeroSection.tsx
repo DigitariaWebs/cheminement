@@ -3,26 +3,20 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useState } from "react";
 import { Award } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function HeroSection() {
   const t = useTranslations("HeroSection");
-  const [showBookingOptions, setShowBookingOptions] = useState(false);
-  const [activeHint, setActiveHint] = useState<string>("self");
 
   return (
     <section className="relative bg-accent overflow-hidden">
-      {/* Background Pattern/Decoration */}
       <div className="absolute inset-0 opacity-5"></div>
 
-      {/* Scale wrapper - scaled to ~110% */}
       <div className="container mx-auto px-5 sm:px-7 py-24 md:py-32 relative z-10 max-w-7xl">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
           {/* Left Side: Content */}
           <div className="flex-1 w-full lg:max-w-[55%]">
-            {/* Top Tagline */}
             <ScrollReveal variant="fade-down" duration={700}>
               <div className="mb-4">
                 <p className="text-sm md:text-base tracking-[0.25em] uppercase text-muted-foreground font-light mb-2">
@@ -32,7 +26,6 @@ export default function HeroSection() {
               </div>
             </ScrollReveal>
 
-            {/* Designed by Psychologists Badge */}
             <ScrollReveal variant="zoom-in" delayMs={100} duration={600}>
               <div className="mb-5">
                 <div className="inline-flex items-center gap-2.5 rounded-full bg-primary/10 border border-primary/20 px-4 py-2">
@@ -46,92 +39,34 @@ export default function HeroSection() {
               </div>
             </ScrollReveal>
 
-            {/* Main Headline */}
             <ScrollReveal variant="slide-up" delayMs={200} duration={800}>
               <h1 className="text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-serif font-light text-foreground mb-5 lg:mb-6 leading-tight text-left">
                 {t("headline")}
               </h1>
             </ScrollReveal>
 
-            {/* Description */}
             <ScrollReveal variant="fade-up" delayMs={350} duration={700}>
               <p className="text-sm sm:text-base md:text-lg lg:text-lg text-muted-foreground max-w-none lg:max-w-[95%] mb-6 leading-relaxed font-light text-left">
                 {t("description")}
               </p>
             </ScrollReveal>
 
-            {/* CTA Buttons */}
             <ScrollReveal variant="fade-up" delayMs={500} duration={700}>
-              <div className="flex flex-col gap-4 min-h-[100px]">
-                {!showBookingOptions ? (
-                  // Main Buttons
-                  <div className="flex flex-col sm:flex-row items-start justify-start gap-3">
-                    <button
-                      onClick={() => setShowBookingOptions(true)}
-                      className="group relative px-7 py-3.5 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-                    >
-                      <span className="relative z-10">{t("bookNow")}</span>
-                      <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    </button>
+              <div className="flex flex-col sm:flex-row items-start justify-start gap-3">
+                <Link
+                  href="/appointment"
+                  className="group relative px-7 py-3.5 bg-primary text-primary-foreground rounded-full text-base font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                >
+                  <span className="relative z-10">{t("bookNow")}</span>
+                  <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                </Link>
 
-                    <Link
-                      href="/book"
-                      className="group flex items-center gap-2 px-7 py-3.5 text-foreground text-base font-light tracking-wide transition-all duration-300 hover:gap-3 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
-                    >
-                      <span>{t("learnMore")}</span>
-                    </Link>
-                  </div>
-                ) : (
-                  // Booking Options
-                  <div className="flex flex-col gap-3 animate-fade-in">
-                    <div className="flex flex-col sm:flex-row items-start justify-start gap-2.5">
-                      {/* Order: 1. For me (Individual), 2. For a loved one, 3. For a patient */}
-                      <Link
-                        href="/appointment?for=self"
-                        className="group relative px-5 py-2.5 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                        onMouseEnter={() => setActiveHint("self")}
-                      >
-                        <span className="relative z-10">{t("forSelf")}</span>
-                        <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </Link>
-
-                      <Link
-                        href="/appointment?for=loved-one"
-                        className="group relative px-5 py-2.5 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                        onMouseEnter={() => setActiveHint("loved-one")}
-                      >
-                        <span className="relative z-10">
-                          {t("forLovedOne")}
-                        </span>
-                        <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </Link>
-
-                      <Link
-                        href="/appointment?for=patient"
-                        className="group relative px-5 py-2.5 bg-primary/90 text-primary-foreground rounded-full text-sm font-light tracking-wide overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                        onMouseEnter={() => setActiveHint("patient")}
-                      >
-                        <span className="relative z-10">{t("forPatient")}</span>
-                        <div className="absolute inset-0 bg-primary/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </Link>
-                    </div>
-
-                    {/* Hover Context Text with Back button */}
-                    <div className="flex items-center justify-between gap-4 min-h-8">
-                      <p className="text-sm text-muted-foreground italic transition-opacity duration-300 flex-1">
-                        {activeHint === "self" && t("bookForSelfHint")}
-                        {activeHint === "patient" && t("bookForPatientHint")}
-                        {activeHint === "loved-one" && t("bookForLovedOneHint")}
-                      </p>
-                      <button
-                        onClick={() => setShowBookingOptions(false)}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors underline whitespace-nowrap"
-                      >
-                        {t("back")}
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <Link
+                  href="/book"
+                  className="group flex items-center gap-2 px-7 py-3.5 text-foreground text-base font-light tracking-wide transition-all duration-300 hover:gap-3 border border-muted-foreground/20 rounded-full hover:bg-muted/50"
+                >
+                  <span>{t("learnMore")}</span>
+                </Link>
               </div>
             </ScrollReveal>
           </div>
@@ -149,7 +84,6 @@ export default function HeroSection() {
                   priority
                   unoptimized
                 />
-                {/* Fading effect at bottom */}
                 <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-linear-to-t from-accent to-transparent"></div>
               </div>
             </ScrollReveal>

@@ -140,7 +140,7 @@ export default function EthicsSection() {
         <ScrollReveal variant="bounce-in" delayMs={800} duration={700}>
           <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center justify-center gap-4 text-center sm:flex-row">
             <Link
-              href="/book"
+              href="/appointment"
               className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
             >
               Prendre rendez-vous
