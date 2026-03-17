@@ -5,11 +5,17 @@ export interface IMedicalProfile extends Document {
 
   // Personal Information
   concernedPerson?: string;
+  accountFor?: "me" | "child";
+  childFirstName?: string;
+  childLastName?: string;
+  childDateOfBirth?: string;
+  childServiceType?: "evaluation" | "suivi";
 
   // Health Background
   medicalConditions?: string[];
   currentMedications?: string[];
   allergies?: string[];
+  consultationMotifs?: string[];
   substanceUse?: string;
 
   // Mental Health History
@@ -53,10 +59,12 @@ export interface IMedicalProfile extends Document {
   suicidalThoughts?: boolean;
 
   // Professional Matching Preferences
-  preferredGender?: "noPreference" | "male" | "female";
+  preferredGender?: "noPreference" | "male" | "female" | "other";
   preferredAge?: "any" | "younger" | "middle" | "older";
   languagePreference?: string;
   culturalConsiderations?: string;
+
+  paymentMethod?: string;
 
   profileCompleted: boolean;
   createdAt: Date;
@@ -74,11 +82,17 @@ const MedicalProfileSchema = new Schema<IMedicalProfile>(
 
     // Personal Information
     concernedPerson: String,
+    accountFor: String,
+    childFirstName: String,
+    childLastName: String,
+    childDateOfBirth: String,
+    childServiceType: String,
 
     // Health Background
     medicalConditions: [String],
     currentMedications: [String],
     allergies: [String],
+    consultationMotifs: [String],
     substanceUse: String,
 
     // Mental Health History
@@ -139,7 +153,7 @@ const MedicalProfileSchema = new Schema<IMedicalProfile>(
     // Professional Matching Preferences
     preferredGender: {
       type: String,
-      enum: ["noPreference", "male", "female"],
+      enum: ["noPreference", "male", "female", "other"],
     },
     preferredAge: {
       type: String,
@@ -147,6 +161,7 @@ const MedicalProfileSchema = new Schema<IMedicalProfile>(
     },
     languagePreference: String,
     culturalConsiderations: String,
+    paymentMethod: String,
 
     profileCompleted: {
       type: Boolean,

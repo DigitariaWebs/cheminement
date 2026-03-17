@@ -28,6 +28,7 @@ import {
   Users,
   AlertTriangle,
   CheckCircle2,
+  CreditCard,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,7 @@ import {
   AuthCard,
   AuthFooter,
 } from "@/components/auth";
+import { MotifSearch } from "@/components/ui/MotifSearch";
 
 interface FormData {
   // User fields
@@ -60,14 +62,21 @@ interface FormData {
   language: string;
   location: string;
 
+  // Compte pour moi ou pour mon enfant
+  accountFor: string;
+  childFirstName: string;
+  childLastName: string;
+  childDateOfBirth: string;
+  childServiceType: string; // "evaluation" | "suivi"
+
   // Medical Profile - Personal Information
   concernedPerson: string;
 
   // Health Background
   medicalConditions: string[];
   currentMedications: string[];
-  allergies: string[];
   substanceUse: string;
+  consultationMotifs: string[]; // motifs de consultation (max 10)
 
   // Mental Health History
   previousTherapy: string;
@@ -114,6 +123,9 @@ interface FormData {
   languagePreference: string;
   culturalConsiderations: string;
 
+  // Mode de paiement
+  paymentMethod: string;
+
   agreeToTerms: boolean;
 }
 
@@ -136,11 +148,16 @@ export default function MemberSignupPage() {
     gender: "",
     language: "",
     location: "",
+    accountFor: "me",
+    childFirstName: "",
+    childLastName: "",
+    childDateOfBirth: "",
+    childServiceType: "",
     concernedPerson: "",
     medicalConditions: [],
     currentMedications: [],
-    allergies: [],
     substanceUse: "",
+    consultationMotifs: [],
     previousTherapy: "",
     previousTherapyDetails: "",
     psychiatricHospitalization: "",
@@ -172,21 +189,28 @@ export default function MemberSignupPage() {
     preferredAge: "",
     languagePreference: "",
     culturalConsiderations: "",
+    paymentMethod: "",
     agreeToTerms: false,
   });
 
   const sections = [
-    { title: "Basic Information", icon: UserCircle, required: true },
-    { title: "Health Background", icon: Heart, required: false },
-    { title: "Mental Health History", icon: Brain, required: false },
-    { title: "Current Concerns", icon: Activity, required: false },
-    { title: "Symptoms & Impact", icon: Activity, required: false },
-    { title: "Treatment Goals", icon: Target, required: false },
-    { title: "Appointment Preferences", icon: Clock, required: false },
-    { title: "Emergency Contact", icon: AlertTriangle, required: false },
-    { title: "Professional Preferences", icon: Users, required: false },
-    { title: "Review & Confirm", icon: CheckCircle2, required: true },
+    { title: "Informations de base", icon: UserCircle, required: true },
+    { title: "Histoire médicale & Santé", icon: Heart, required: true },
+    { title: "Histoire de santé mentale", icon: Brain, required: true },
+    { title: "Préoccupations actuelles", icon: Activity, required: true },
+    { title: "Symptômes et impact", icon: Activity, required: true },
+    { title: "Thérapies & Objectifs", icon: Target, required: true },
+    { title: "Préférences de rendez-vous", icon: Clock, required: true },
+    { title: "Contact d'urgence", icon: AlertTriangle, required: true },
+    { title: "Préférences du professionnel", icon: Users, required: true },
+    { title: "Mode de paiement", icon: CreditCard, required: true },
+    { title: "Révision et confirmation", icon: CheckCircle2, required: true },
   ];
+
+  const isChildEvaluation = formData.accountFor === "child" && formData.childServiceType === "evaluation";
+  const stepIndices = isChildEvaluation ? [0, 1, 2, 3, 4, 6, 7, 8, 9, 10] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const actualSection = stepIndices[currentSection];
+  const totalSteps = stepIndices.length;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -228,47 +252,96 @@ export default function MemberSignupPage() {
     });
   };
 
+  const validatePassword = (pwd: string): { ok: boolean; message?: string } => {
+    if (!pwd || pwd.length < 8) return { ok: false, message: "Le mot de passe doit contenir au moins 8 caractères." };
+    if (!/[A-Z]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins une majuscule." };
+    if (!/[a-z]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins une minuscule." };
+    if (!/[0-9]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins un chiffre." };
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins un symbole." };
+    return { ok: true };
+  };
+
   const validateSection = (section: number): boolean => {
     switch (section) {
       case 0: // Basic Information
         if (!formData.firstName.trim() || !formData.lastName.trim()) {
-          setError("First name and last name are required");
+          setError("Le prénom et le nom sont requis.");
           return false;
         }
-        if (
-          !formData.email.trim() ||
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-        ) {
-          setError("Valid email is required");
+        if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+          setError("Un courriel valide est requis.");
           return false;
         }
-        if (!formData.password || formData.password.length < 8) {
-          setError("Password must be at least 8 characters");
+        const pwdCheck = validatePassword(formData.password);
+        if (!pwdCheck.ok) {
+          setError(pwdCheck.message ?? "Mot de passe invalide.");
           return false;
         }
         if (formData.password !== formData.confirmPassword) {
-          setError("Passwords do not match");
+          setError("Les mots de passe ne correspondent pas.");
+          return false;
+        }
+        if (!formData.language) {
+          setError("Veuillez sélectionner une langue de préférence.");
+          return false;
+        }
+        if (formData.accountFor === "child") {
+          if (!formData.childFirstName.trim() || !formData.childLastName.trim()) {
+            setError("Le prénom et le nom de l'enfant sont requis.");
+            return false;
+          }
+          if (!formData.childDateOfBirth) {
+            setError("La date de naissance de l'enfant est requise.");
+            return false;
+          }
+          if (!formData.childServiceType) {
+            setError("Veuillez indiquer si c'est pour une évaluation ou un suivi psychologique.");
+            return false;
+          }
+        }
+        return true;
+      case 1:
+        return true;
+      case 2:
+        return true;
+      case 3:
+        return true;
+      case 4:
+        return true;
+      case 5:
+        if (!formData.preferredGender) {
+          setError("Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.");
           return false;
         }
         return true;
-
-      case 9: // Review & Confirm
+      case 6:
+        return true;
+      case 7:
+        return true;
+      case 8:
+        return true;
+      case 9: // Payment
+        if (!formData.paymentMethod) {
+          setError("Veuillez choisir un mode de paiement.");
+          return false;
+        }
+        return true;
+      case 10: // Review & Confirm
         if (!formData.agreeToTerms) {
-          setError("You must agree to the terms and conditions");
+          setError("Vous devez accepter les conditions d'utilisation.");
           return false;
         }
         return true;
-
       default:
-        return true; // Optional sections
+        return true;
     }
   };
 
   const handleNext = () => {
     setError("");
-    if (validateSection(currentSection)) {
+    if (validateSection(actualSection)) {
       setDirection(1);
-      setCurrentSection((prev) => Math.min(prev + 1, sections.length - 1));
+      setCurrentSection((prev) => Math.min(prev + 1, totalSteps - 1));
     }
   };
 
@@ -296,6 +369,11 @@ export default function MemberSignupPage() {
         gender: formData.gender || undefined,
         language: formData.language || undefined,
         location: formData.location || undefined,
+        accountFor: formData.accountFor || undefined,
+        childFirstName: formData.childFirstName || undefined,
+        childLastName: formData.childLastName || undefined,
+        childDateOfBirth: formData.childDateOfBirth || undefined,
+        childServiceType: formData.childServiceType || undefined,
         concernedPerson: formData.concernedPerson || undefined,
         medicalConditions:
           formData.medicalConditions.length > 0
@@ -305,8 +383,10 @@ export default function MemberSignupPage() {
           formData.currentMedications.length > 0
             ? formData.currentMedications
             : undefined,
-        allergies:
-          formData.allergies.length > 0 ? formData.allergies : undefined,
+        consultationMotifs:
+          formData.consultationMotifs.length > 0
+            ? formData.consultationMotifs
+            : undefined,
         substanceUse: formData.substanceUse || undefined,
         previousTherapy: formData.previousTherapy
           ? formData.previousTherapy === "yes"
@@ -359,6 +439,7 @@ export default function MemberSignupPage() {
         preferredAge: formData.preferredAge || undefined,
         languagePreference: formData.languagePreference || undefined,
         culturalConsiderations: formData.culturalConsiderations || undefined,
+        paymentMethod: formData.paymentMethod || undefined,
       });
 
       const result = await signIn("credentials", {
@@ -397,8 +478,8 @@ export default function MemberSignupPage() {
     }),
   };
 
-  const renderSection = () => {
-    switch (currentSection) {
+  const renderSection = (sectionIndex: number) => {
+    switch (sectionIndex) {
       case 0: // Basic Information
         return (
           <div className="space-y-6">
@@ -508,22 +589,96 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="language" className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  Preferred Language
+                  Langue de préférence <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.language}
                   onValueChange={(val) => handleSelectChange("language", val)}
                 >
                   <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder="Choisir une langue" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="french">Français</SelectItem>
                     <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
+                    <SelectItem value="arabic">Arabe</SelectItem>
+                    <SelectItem value="spanish">Espagnol</SelectItem>
+                    <SelectItem value="mandarin">Mandarin</SelectItem>
+                    <SelectItem value="other">Autre</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label>Ce compte est pour</Label>
+              <Select
+                value={formData.accountFor}
+                onValueChange={(val) => handleSelectChange("accountFor", val)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pour moi ou pour mon enfant" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="me">Pour moi</SelectItem>
+                  <SelectItem value="child">Pour mon enfant</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.accountFor === "child" && (
+              <div className="space-y-4 rounded-lg border border-border/50 p-4 bg-muted/20">
+                <p className="text-sm font-medium text-foreground">Informations concernant l&apos;enfant</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="childFirstName">Prénom de l&apos;enfant <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="childFirstName"
+                      name="childFirstName"
+                      value={formData.childFirstName}
+                      onChange={handleChange}
+                      placeholder="Prénom"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="childLastName">Nom de l&apos;enfant <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="childLastName"
+                      name="childLastName"
+                      value={formData.childLastName}
+                      onChange={handleChange}
+                      placeholder="Nom"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="childDateOfBirth">Date de naissance de l&apos;enfant <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="childDateOfBirth"
+                      name="childDateOfBirth"
+                      type="date"
+                      value={formData.childDateOfBirth}
+                      onChange={handleChange}
+                      max={new Date().toISOString().split("T")[0]}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Souhaitez-vous une évaluation ou un suivi psychologique ? <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={formData.childServiceType}
+                    onValueChange={(val) => handleSelectChange("childServiceType", val)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="evaluation">Évaluation</SelectItem>
+                      <SelectItem value="suivi">Suivi psychologique</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="location" className="flex items-center gap-2">
@@ -568,7 +723,7 @@ export default function MemberSignupPage() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                At least 8 characters
+                Au moins 8 caractères, une majuscule, une minuscule, un chiffre et un symbole
               </p>
             </div>
 
@@ -676,33 +831,21 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Allergies (select all that apply)</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Penicillin",
-                  "Sulfa drugs",
-                  "Aspirin",
-                  "Latex",
-                  "Food allergies",
-                  "None",
-                ].map((allergy) => (
-                  <div key={allergy} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`allergy-${allergy}`}
-                      checked={formData.allergies.includes(allergy)}
-                      onCheckedChange={() =>
-                        handleArrayChange("allergies", allergy)
-                      }
-                    />
-                    <label
-                      htmlFor={`allergy-${allergy}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {allergy}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <Label>
+                Indiquez le plus de motifs de consultation pour mieux aiguiller votre demande (jusqu&apos;à 10)
+              </Label>
+              <MotifSearch
+                value={formData.consultationMotifs}
+                onChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    consultationMotifs: Array.isArray(v) ? v : v ? [v] : [],
+                  }))
+                }
+                multiSelect
+                maxSelections={10}
+                placeholder="Rechercher des motifs (anxiété, burnout...)"
+              />
             </div>
 
             <div className="space-y-2">
@@ -1118,45 +1261,47 @@ export default function MemberSignupPage() {
           </div>
         );
 
-      case 5: // Treatment Goals
+      case 5: // Treatment Goals (skipped when child + evaluation)
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>
-                What are your goals for therapy? (select all that apply)
-              </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Reduce symptoms",
-                  "Improve relationships",
-                  "Better coping skills",
-                  "Self-understanding",
-                  "Life changes",
-                  "Personal growth",
-                  "Stress management",
-                  "Grief processing",
-                ].map((goal) => (
-                  <div key={goal} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`goal-${goal}`}
-                      checked={formData.treatmentGoals.includes(goal)}
-                      onCheckedChange={() =>
-                        handleArrayChange("treatmentGoals", goal)
-                      }
-                    />
-                    <label
-                      htmlFor={`goal-${goal}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {goal}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <Label>Objectifs de thérapie (recherche, plusieurs choix possibles)</Label>
+              <MotifSearch
+                value={formData.treatmentGoals}
+                onChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    treatmentGoals: Array.isArray(v) ? v : v ? [v] : [],
+                  }))
+                }
+                multiSelect
+                maxSelections={10}
+                placeholder="Rechercher des objectifs (gestion du stress, anxiété...)"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Preferred Therapy Approach (select all that apply)</Label>
+              <Label>Vous souhaitez consulter un professionnel</Label>
+              <Select
+                value={formData.preferredGender}
+                onValueChange={(val) =>
+                  handleSelectChange("preferredGender", val)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisir..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="noPreference">Pas de préférence</SelectItem>
+                  <SelectItem value="male">Homme</SelectItem>
+                  <SelectItem value="female">Femme</SelectItem>
+                  <SelectItem value="other">Autre</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Approche de thérapie préférée (optionnel)</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "CBT",
@@ -1481,12 +1626,54 @@ export default function MemberSignupPage() {
           </div>
         );
 
-      case 9: // Review & Confirm
+      case 9: // Mode de paiement
+        return (
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              Choisissez votre mode de paiement préféré pour les consultations.
+            </p>
+            <div className="space-y-3">
+              {[
+                { value: "credit_card", label: "Carte de crédit" },
+                { value: "interac", label: "Virement Interac" },
+                { value: "bank_withdrawal", label: "Entente de prélèvement bancaire" },
+              ].map((opt) => (
+                <div
+                  key={opt.value}
+                  className="flex items-center space-x-3 rounded-lg border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+                >
+                  <input
+                    type="radio"
+                    id={`payment-${opt.value}`}
+                    name="paymentMethod"
+                    value={opt.value}
+                    checked={formData.paymentMethod === opt.value}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        paymentMethod: e.target.value,
+                      }))
+                    }
+                    className="h-4 w-4 text-primary"
+                  />
+                  <label
+                    htmlFor={`payment-${opt.value}`}
+                    className="text-sm font-medium cursor-pointer"
+                  >
+                    {opt.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 10: // Review & Confirm
         return (
           <div className="space-y-6">
             <div className="rounded-xl bg-muted/30 p-6">
               <h3 className="font-serif text-lg mb-4">
-                Review Your Information
+                Révision de vos informations
               </h3>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b">
@@ -1554,7 +1741,7 @@ export default function MemberSignupPage() {
     }
   };
 
-  const CurrentIcon = sections[currentSection].icon;
+  const CurrentIcon = sections[actualSection].icon;
 
   return (
     <AuthContainer maxWidth="2xl">
@@ -1572,15 +1759,15 @@ export default function MemberSignupPage() {
               <CurrentIcon className="w-6 h-6 text-primary" />
               <div>
                 <h3 className="font-serif text-lg">
-                  {sections[currentSection].title}
+                  {sections[actualSection].title}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Step {currentSection + 1} of {sections.length}
+                  Étape {currentSection + 1} sur {totalSteps}
                 </p>
               </div>
             </div>
-            {sections[currentSection].required && (
-              <span className="text-xs text-red-500">* Required</span>
+            {sections[actualSection].required && (
+              <span className="text-xs text-red-500">* Obligatoire</span>
             )}
           </div>
           <div className="w-full bg-muted rounded-full h-2">
@@ -1588,7 +1775,7 @@ export default function MemberSignupPage() {
               className="bg-primary h-2 rounded-full"
               initial={{ width: 0 }}
               animate={{
-                width: `${((currentSection + 1) / sections.length) * 100}%`,
+                width: `${((currentSection + 1) / totalSteps) * 100}%`,
               }}
               transition={{ duration: 0.3 }}
             />
@@ -1621,7 +1808,7 @@ export default function MemberSignupPage() {
               }}
               className="w-full"
             >
-              {renderSection()}
+              {renderSection(actualSection)}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -1638,13 +1825,13 @@ export default function MemberSignupPage() {
             <span>Back</span>
           </button>
 
-          {currentSection < sections.length - 1 ? (
+          {currentSection < totalSteps - 1 ? (
             <button
               type="button"
               onClick={handleNext}
               className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-light hover:scale-105 transition-transform"
             >
-              <span>Continue</span>
+              <span>Continuer</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           ) : (
@@ -1657,11 +1844,11 @@ export default function MemberSignupPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Creating account...</span>
+                  <span>Création du compte...</span>
                 </>
               ) : (
                 <>
-                  <span>Create Account</span>
+                  <span>Créer le compte</span>
                   <CheckCircle2 className="w-5 h-5" />
                 </>
               )}

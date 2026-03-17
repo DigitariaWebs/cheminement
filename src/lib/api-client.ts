@@ -109,9 +109,14 @@ export const authAPI = {
     location?: string;
     // Medical Profile fields
     concernedPerson?: string;
+    accountFor?: string;
+    childFirstName?: string;
+    childLastName?: string;
+    childDateOfBirth?: string;
+    childServiceType?: string;
     medicalConditions?: string[];
     currentMedications?: string[];
-    allergies?: string[];
+    consultationMotifs?: string[];
     substanceUse?: string;
     previousTherapy?: boolean;
     previousTherapyDetails?: string;
@@ -144,6 +149,7 @@ export const authAPI = {
     preferredAge?: string;
     languagePreference?: string;
     culturalConsiderations?: string;
+    paymentMethod?: string;
     // Professional fields
     professionalProfile?: {
       problematics?: string[];
