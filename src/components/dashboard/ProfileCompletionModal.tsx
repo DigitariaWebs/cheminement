@@ -9,6 +9,8 @@ import { useTranslations } from "next-intl";
 import { IProfile } from "@/models/Profile";
 import { profileAPI } from "@/lib/api-client";
 import { APPROACHES_ET_THERAPIES } from "@/data/approaches";
+import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
+import { ADULT_PROBLEMATICS } from "@/data/adultProblematics";
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
@@ -471,83 +473,11 @@ export default function ProfileCompletionModal({
                         cat.toLowerCase().includes("senior"),
                     );
 
-                    // Child diagnosed conditions list
-                    const childDiagnosedConditions = [
-                      "Trouble du langage",
-                      "Handicaps intellectuels",
-                      "Trouble du spectre de l'autisme (TSA)",
-                      "Trouble de l'acquisition de la coordination",
-                      "Tics",
-                      "Syndrome de la Tourette",
-                      "TDAH",
-                      "Dyslexie",
-                      "Dysorthographie",
-                      "Dyscalculie",
-                      "Trouble de la communication sociale (pragmatique)",
-                      "Douance",
-                      "Trouble de dérèglement disruptif de l'humeur",
-                      "Trouble de l'opposition",
-                      "Trouble grave du comportement",
-                      "Trouble d'anxiété de séparation",
-                      "Mutisme sélectif",
-                      "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
-                      "Trouble d'anxiété sociale (Phobie sociale)",
-                      "Trouble panique (avec ou sans agoraphobie)",
-                      "Agoraphobie",
-                      "Trouble d'anxiété généralisée (TAG)",
-                      "Trichotillomanie (arrachage des cheveux)",
-                      "Dermatillomanie (triturage répété de la peau)",
-                      "Trouble réactionnel de l'attachement",
-                      "Trouble de stress post-traumatique (TSPT)",
-                      "Trouble de stress aigu (immédiatement après le choc)",
-                      "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
-                      "Pica (ingestion de substances non comestibles)",
-                      "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
-                      "Boulimie",
-                      "Accès hyperphagiques",
-                      "Encoprésie",
-                      "Énurésie",
-                      "Attachement",
-                    ];
+                    // Problématiques et mandats (enfants et adolescents)
+                    const childDiagnosedConditions = CHILD_PROBLEMATICS;
 
-                    // Adult diagnosed conditions list
-                    const adultDiagnosedConditions = [
-                      "Trouble de la personnalité",
-                      "Trouble délirant",
-                      "Trouble psychotique bref (moins d'un mois)",
-                      "Schizophrénie",
-                      "Trouble schizo-affectif",
-                      "Trouble bipolaire",
-                      "Trouble dépressif majeur (épisode unique ou récurrent)",
-                      "Trouble dépressif persistant (Dysthymie)",
-                      "Trouble dysphorique prémenstruel",
-                      "Trouble de deuil prolongé",
-                      "Trouble d'anxiété généralisée (TAG)",
-                      "Trouble d'anxiété sociale (Phobie sociale)",
-                      "Trouble panique (avec ou sans agoraphobie)",
-                      "Agoraphobie",
-                      "Trouble d'adaptation avec humeur anxiodépressive",
-                      "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
-                      "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
-                      "Thésaurisation pathologique (accumulation)",
-                      "Trouble de stress post-traumatique (TSPT)",
-                      "Trouble de stress aigu (immédiatement après le choc)",
-                      "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
-                      "Pica (ingestion de substances non comestibles)",
-                      "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
-                      "Boulimie",
-                      "Accès hyperphagiques",
-                      "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
-                      "Jeu d'argent pathologique",
-                      "Maladie d'Alzheimer",
-                      "Maladie de Parkinson",
-                      "Douance",
-                      "TSA",
-                      "TDAH",
-                      "Traumatisme crânien (TCC)",
-                      "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
-                      "Tumeurs cérébrales",
-                    ];
+                    // Problématiques et mandats (adultes)
+                    const adultDiagnosedConditions = ADULT_PROBLEMATICS;
 
                     // Combine lists based on what the professional treats
                     let conditionsList: string[] = [];
