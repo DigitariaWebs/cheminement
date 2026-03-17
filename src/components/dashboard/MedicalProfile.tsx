@@ -17,7 +17,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IMedicalProfile } from "@/models/MedicalProfile";
 import { medicalProfileAPI } from "@/lib/api-client";
-import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
+import { CHILD_DIAGNOSTICS } from "@/data/childDiagnostics";
 import { ADULT_DIAGNOSTICS } from "@/data/adultDiagnostics";
 
 interface MedicalProfileProps {
@@ -1116,8 +1116,8 @@ function MedicalProfileModal({
                       const isChild = healthBackgroundData.concernedPerson?.toLowerCase().includes("enfant") || 
                                      healthBackgroundData.concernedPerson?.toLowerCase().includes("child");
 
-                      // Problématiques et mandats (enfants et adolescents)
-                      const childDiagnosedConditions = CHILD_PROBLEMATICS;
+                      // Diagnostics pour les enfants (liste affichée au client pour son profil médical)
+                      const childDiagnosedConditions = CHILD_DIAGNOSTICS;
 
                       // Diagnostics pour les adultes (liste affichée au client pour son profil médical)
                       const adultDiagnosedConditions = ADULT_DIAGNOSTICS;
