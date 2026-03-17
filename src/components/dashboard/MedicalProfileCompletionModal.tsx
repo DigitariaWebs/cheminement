@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { IMedicalProfile } from "@/models/MedicalProfile";
 import { medicalProfileAPI } from "@/lib/api-client";
 import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
-import { ADULT_PROBLEMATICS } from "@/data/adultProblematics";
+import { ADULT_DIAGNOSTICS } from "@/data/adultDiagnostics";
 
 interface MedicalProfileCompletionModalProps {
   isOpen: boolean;
@@ -163,8 +163,8 @@ export default function MedicalProfileCompletionModal({
   // Problématiques et mandats (enfants et adolescents)
   const childDiagnosedConditions = CHILD_PROBLEMATICS;
 
-  // Problématiques et mandats (adultes)
-  const adultDiagnosedConditions = ADULT_PROBLEMATICS;
+  // Diagnostics pour les adultes (liste affichée au client pour son profil médical)
+  const adultDiagnosedConditions = ADULT_DIAGNOSTICS;
 
   const diagnosedConditions = isChild ? childDiagnosedConditions : adultDiagnosedConditions;
 
