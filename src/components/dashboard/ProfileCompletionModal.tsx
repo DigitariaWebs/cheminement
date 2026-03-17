@@ -8,6 +8,7 @@ import { Stepper } from "@/components/ui/stepper";
 import { useTranslations } from "next-intl";
 import { IProfile } from "@/models/Profile";
 import { profileAPI } from "@/lib/api-client";
+import { APPROACHES_ET_THERAPIES } from "@/data/approaches";
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
@@ -235,64 +236,7 @@ export default function ProfileCompletionModal({
     "Médiation en milieu de travail lorsqu'une personne a un problème de santé mentale",
   ];
 
-  const therapeuticApproaches = [
-    "Thérapie individuelle",
-    "Thérapie de couple",
-    "Thérapie familiale",
-    "Thérapie de l'enfant",
-    "Coaching des parents",
-    "Thérapie des adolescents",
-    "Thérapie individuelle pour les personnes âgées",
-    "Hypnothérapie",
-    "Coaching pour gestionnaires/cadres",
-    "Évaluation du TDAH chez l'adulte",
-    "Zoothérapie",
-    "Accompagnement des employés avec un HPI,TSA",
-    "Développement des compétences professionnelles",
-    "Évaluation des troubles d'apprentissage chez les adultes",
-    "Orientation professionnelle",
-    "Évaluation du TDAH chez l'enfant",
-    "Psychologie en réadaptation",
-    "Évaluations des troubles d'apprentissage chez les enfants",
-    "Évaluation psychologique",
-    "Évaluation psychiatrique",
-    "L'art-thérapie",
-    "Supervision clinique en psychologie",
-    "Supervision clinique pour internat",
-    "Supervision clinique pour permis par équivalence",
-    "Évaluations neuropsychologiques pour les enfants",
-    "Évaluations neuropsychologiques pour les adultes",
-    "La thérapie d'acceptation et d'engagement (ACT)",
-    "La thérapie cognitivo-comportementale (TCC)",
-    "La thérapie comportementale dialectique (TCD)",
-    "La thérapie psychodynamique",
-    "La thérapie centrée sur les émotions",
-    "La thérapie sensorimotrice",
-    "La psychothérapie analytique fonctionnelle",
-    "La thérapie basée sur la mentalisation",
-    "La pleine conscience",
-    "L'entretien motivationnel (EM)",
-    "La psychologie positive",
-    "La schémathérapie",
-    "La Psychothérapie interpersonnelle",
-    "La Psychothérapie psychanalytique",
-    "La thérapie existentielle",
-    "La thérapie humaniste centrée sur la personne",
-    "La thérapie narrative",
-    "La Thérapie par le jeu",
-    "Thérapie brève centrée sur les solutions",
-    "Thérapie cognitivo-comportementale pour l'insomnie (TCC-I)",
-    "Thérapie du rêve",
-    "Thérapie intégrative",
-    "Thérapie somatique",
-    "Thérapie systémique familiale TCC",
-    "Thérapie du processus cognitif",
-    "Thérapie de la cohérence",
-    "Thérapie de schémas",
-    "Thérapie relationnelle",
-    "Thérapie systémique-interactionnelle",
-    "ACT thérapie pour les enfants et adolescents",
-  ];
+  const therapeuticApproaches = APPROACHES_ET_THERAPIES;
 
   const ageCategories = [
     "Children (0-12)",
