@@ -177,6 +177,7 @@ export const authAPI = {
       sessionTypes?: string[];
       modalities?: string[];
       paymentAgreement?: string;
+      paymentFrequency?: string;
       pricing?: {
         individualSession?: number;
         coupleSession?: number;

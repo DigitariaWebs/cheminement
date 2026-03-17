@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
         // Pricing & Payment
         pricing: professionalProfile?.pricing,
         paymentAgreement: professionalProfile?.paymentAgreement,
+        paymentFrequency: professionalProfile?.paymentFrequency,
         // Education
         education: professionalProfile?.education,
         profileCompleted: false,
