@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -103,6 +104,7 @@ interface FormData {
 }
 
 export default function ProfessionalSignupPage() {
+  const t = useTranslations("Auth.professionalSignup");
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -148,14 +150,14 @@ export default function ProfessionalSignupPage() {
   });
 
   const sections = [
-    { title: "Basic Information", icon: User, required: true },
-    { title: "Professional Details", icon: Briefcase, required: true },
-    { title: "Education & Credentials", icon: GraduationCap, required: true },
-    { title: "Expertise & Approach", icon: Target, required: false },
-    { title: "Session Types & Modalities", icon: Users, required: false },
-    { title: "Pricing & Payment", icon: DollarSign, required: false },
-    { title: "Availability", icon: Clock, required: false },
-    { title: "Review & Confirm", icon: CheckCircle2, required: true },
+    { title: t("sections.basicInfo"), icon: User, required: true },
+    { title: t("sections.professionalDetails"), icon: Briefcase, required: true },
+    { title: t("sections.education"), icon: GraduationCap, required: true },
+    { title: t("sections.expertise"), icon: Target, required: false },
+    { title: t("sections.sessionTypes"), icon: Users, required: false },
+    { title: t("sections.pricing"), icon: DollarSign, required: false },
+    { title: t("sections.availability"), icon: Clock, required: false },
+    { title: t("sections.review"), icon: CheckCircle2, required: true },
   ];
 
   const handleChange = (
@@ -188,27 +190,34 @@ export default function ProfessionalSignupPage() {
   const validateSection = () => {
     switch (currentSection) {
       case 0: // Basic Information
-        if (!formData.firstName.trim()) return "First name is required";
-        if (!formData.lastName.trim()) return "Last name is required";
-        if (!formData.email.trim()) return "Email is required";
+        if (!formData.firstName.trim()) return t("errors.firstNameRequired");
+        if (!formData.lastName.trim()) return t("errors.lastNameRequired");
+        if (!formData.email.trim()) return t("errors.emailRequired");
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-          return "Invalid email address";
-        if (!formData.password) return "Password is required";
+          return t("errors.invalidEmail");
+        if (!formData.password) return t("errors.passwordRequired");
         if (formData.password.length < 8)
-          return "Password must be at least 8 characters";
+          return t("errors.passwordMinLength");
         if (formData.password !== formData.confirmPassword)
-          return "Passwords do not match";
+          return t("errors.passwordsDoNotMatch");
         break;
       case 1: // Professional Details (Titres + Catégorie d'âge)
         if (formData.ageCategories.length === 0)
-          return "Veuillez sélectionner au moins une catégorie d'âge.";
-        if (!formData.specialty) return "Le titre professionnel est requis.";
+          return t("errors.ageCategoryRequired");
+        if (!formData.specialty) return t("errors.specialtyRequired");
         if (!formData.license.trim())
-          return "Le numéro de permis ou d'exercice est requis.";
+          return t("errors.licenseRequired");
+        break;
+      case 2:
+        if (!formData.degree.trim()) return t("errors.degreeRequired");
+        if (!formData.institution.trim()) return t("errors.institutionRequired");
         break;
       case 5: // Pricing
         if (!formData.paymentFrequency)
-          return "La fréquence souhaitée est obligatoire.";
+          return t("errors.paymentFrequencyRequired");
+        break;
+      case 7:
+        if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
         break;
       case 2: // Education
         if (!formData.degree.trim()) return "Degree is required";
@@ -394,7 +403,7 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  First Name <span className="text-red-500">*</span>
+                  {t("firstName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="firstName"
@@ -408,7 +417,7 @@ export default function ProfessionalSignupPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="flex items-center gap-2">
-                  Last Name <span className="text-red-500">*</span>
+                  {t("lastName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="lastName"
@@ -424,7 +433,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                Email <span className="text-red-500">*</span>
+                {t("email")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
@@ -474,20 +483,20 @@ export default function ProfessionalSignupPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
+                <Label htmlFor="gender">{t("gender")}</Label>
                 <Select
                   value={formData.gender}
                   onValueChange={(val) => handleSelectChange("gender", val)}
                 >
                   <SelectTrigger id="gender">
-                    <SelectValue placeholder="Select gender" />
+                    <SelectValue placeholder={t("selectGender")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="male">{t("male")}</SelectItem>
+                    <SelectItem value="female">{t("female")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
                     <SelectItem value="preferNotToSay">
-                      Prefer not to say
+                      {t("preferNotToSay")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -496,16 +505,16 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  Langues utilisées (plusieurs choix possibles)
+                  {t("languagesUsed")}
                 </Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    { value: "french", label: "Français" },
-                    { value: "english", label: "Anglais" },
-                    { value: "arabic", label: "Arabe" },
-                    { value: "spanish", label: "Espagnol" },
-                    { value: "mandarin", label: "Mandarin" },
-                    { value: "other", label: "Autre" },
+                    { value: "french", labelKey: "languagesUsedOptions.french" },
+                    { value: "english", labelKey: "languagesUsedOptions.english" },
+                    { value: "arabic", labelKey: "languagesUsedOptions.arabic" },
+                    { value: "spanish", labelKey: "languagesUsedOptions.spanish" },
+                    { value: "mandarin", labelKey: "languagesUsedOptions.mandarin" },
+                    { value: "other", labelKey: "languagesUsedOptions.other" },
                   ].map((lang) => (
                     <div key={lang.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -519,7 +528,7 @@ export default function ProfessionalSignupPage() {
                         htmlFor={`lang-step0-${lang.value}`}
                         className="text-sm cursor-pointer"
                       >
-                        {lang.label}
+                        {t(lang.labelKey)}
                       </label>
                     </div>
                   ))}
@@ -530,21 +539,21 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label htmlFor="location" className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                Location / Postal Code
+                {t("locationLabel")}
               </Label>
               <Input
                 id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="City, Province or A1A 1A1"
+                placeholder={t("locationPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password" className="flex items-center gap-2">
                 <Lock className="h-4 w-4 text-muted-foreground" />
-                Password <span className="text-red-500">*</span>
+                {t("password")} <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Input
@@ -576,7 +585,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                Confirm Password <span className="text-red-500">*</span>
+                {t("confirmPassword")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="confirmPassword"
@@ -596,10 +605,10 @@ export default function ProfessionalSignupPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label>
-                Catégorie d&apos;âge (sélectionnez toutes celles qui s&apos;appliquent)
+                {t("ageCategoryLabel")}
               </Label>
               <p className="text-xs text-muted-foreground">
-                Cette sélection détermine les listes affichées à l&apos;étape Expertises &amp; Approches.
+                {t("ageCategoryHint")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {AGE_CATEGORIES.map((age) => (
@@ -615,7 +624,7 @@ export default function ProfessionalSignupPage() {
                       htmlFor={`age-${age.value}`}
                       className="text-sm cursor-pointer"
                     >
-                      {age.label}
+                      {t(`ageCategories.${age.value}`)}
                     </label>
                   </div>
                 ))}
@@ -624,19 +633,19 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="specialty">
-                Titre professionnel <span className="text-red-500">*</span>
+                {t("professionalTitleLabel")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.specialty}
                 onValueChange={(val) => handleSelectChange("specialty", val)}
               >
                 <SelectTrigger id="specialty">
-                  <SelectValue placeholder="Choisir votre titre" />
+                  <SelectValue placeholder={t("professionalTitlePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROFESSIONAL_TITLES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>
-                      {t.label}
+                  {PROFESSIONAL_TITLES.map((title) => (
+                    <SelectItem key={title.value} value={title.value}>
+                      {title.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -645,7 +654,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="license">
-                Practice Number / License{" "}
+                {t("licenseLabel")}{" "}
                 <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -653,16 +662,15 @@ export default function ProfessionalSignupPage() {
                 name="license"
                 value={formData.license}
                 onChange={handleChange}
-                placeholder="Enter your practice number or license"
+                placeholder={t("licensePlaceholder")}
               />
               <p className="text-xs text-muted-foreground">
-                Professional license, doctoral student status, or permit by
-                equivalency in progress
+                {t("licenseHint")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="yearsOfExperience">Years of Experience</Label>
+              <Label htmlFor="yearsOfExperience">{t("yearsOfExperience")}</Label>
               <Input
                 id="yearsOfExperience"
                 name="yearsOfExperience"
@@ -675,7 +683,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">Professional Bio</Label>
+              <Label htmlFor="bio">{t("professionalBio")}</Label>
               <Textarea
                 id="bio"
                 name="bio"
@@ -795,9 +803,9 @@ export default function ProfessionalSignupPage() {
           return (
           <div className="space-y-8">
             <div className="space-y-2">
-              <h4 className="font-medium text-foreground">1 – Approches et Thérapies</h4>
+              <h4 className="font-medium text-foreground">{t("approachesTitle")}</h4>
               <Label className="text-muted-foreground">
-                Liste pour tous les profils (sélectionnez tous ceux qui s&apos;appliquent).
+                {t("approachesSubtitle")}
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
                 {APPROACHES_ET_THERAPIES.map((approach) => (
@@ -821,9 +829,9 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-foreground">2 – Problématiques et Mandats</h4>
+              <h4 className="font-medium text-foreground">{t("problematicsTitle")}</h4>
               <Label className="text-muted-foreground">
-                Selon le profil (enfant/ado, adulte ou mixte) – ordre alphabétique.
+                {t("problematicsSubtitle")}
               </Label>
               {problematicsList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
@@ -847,15 +855,15 @@ export default function ProfessionalSignupPage() {
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Veuillez d&apos;abord sélectionner au moins une catégorie d&apos;âge à l&apos;étape « Titres professionnels ».
+                  {t("selectAgeCategoryFirst")}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-foreground">3 – Diagnostics</h4>
+              <h4 className="font-medium text-foreground">{t("diagnosticsTitle")}</h4>
               <Label className="text-muted-foreground">
-                Selon le profil – liste à jour, ordre alphabétique.
+                {t("diagnosticsSubtitle")}
               </Label>
               {diagnosticsList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
@@ -879,7 +887,7 @@ export default function ProfessionalSignupPage() {
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Veuillez d&apos;abord sélectionner au moins une catégorie d&apos;âge à l&apos;étape « Titres professionnels ».
+                  {t("selectAgeCategoryFirst")}
                 </p>
               )}
             </div>
@@ -887,12 +895,12 @@ export default function ProfessionalSignupPage() {
           );
         })();
 
-
+      
       case 4: // Session Types & Modalities
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Session Types (select all that apply)</Label>
+              <Label>{t("sessionTypesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {["Individual", "Couple", "Family", "Group", "Coaching"].map(
                   (type) => (
@@ -917,7 +925,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Modalities (select all that apply)</Label>
+              <Label>{t("modalitiesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "In-Person (Office)",
@@ -945,7 +953,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <p className="text-sm text-muted-foreground">
-              Les langues utilisées sont indiquées à l&apos;étape « Informations de base ».
+              {t("languagesIndicatedEarlier")}
             </p>
           </div>
         );
@@ -955,7 +963,7 @@ export default function ProfessionalSignupPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="individualSessionRate">
-                Tarif souhaité (individuel) $
+                {t("tarifSouhaité")}
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -975,7 +983,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coupleSessionRate">Couple $</Label>
+              <Label htmlFor="coupleSessionRate">{t("couple")}</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   $
@@ -994,7 +1002,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="groupSessionRate">Groupe $</Label>
+              <Label htmlFor="groupSessionRate">{t("groupe")}</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   $
@@ -1014,7 +1022,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="paymentFrequency">
-                Fréquence souhaitée <span className="text-red-500">*</span>
+                {t("paymentFrequencyLabel")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.paymentFrequency}
@@ -1023,18 +1031,18 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="paymentFrequency">
-                  <SelectValue placeholder="Choisir la fréquence" />
+                  <SelectValue placeholder={t("paymentFrequencyPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="weekly">Par semaine</SelectItem>
-                  <SelectItem value="bi-weekly">Aux deux semaines</SelectItem>
-                  <SelectItem value="monthly">Une fois par mois</SelectItem>
+                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
+                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("paymentFrequencyMonthly")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="paymentAgreement">Entente de paiement (optionnel)</Label>
+              <Label htmlFor="paymentAgreement">{t("paymentAgreementLabel")}</Label>
               <Select
                 value={formData.paymentAgreement}
                 onValueChange={(val) =>
@@ -1042,13 +1050,13 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="paymentAgreement">
-                  <SelectValue placeholder="Choisir..." />
+                  <SelectValue placeholder="..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="per-session">Par séance</SelectItem>
-                  <SelectItem value="weekly">Par semaine</SelectItem>
-                  <SelectItem value="bi-weekly">Aux deux semaines</SelectItem>
-                  <SelectItem value="monthly">Par mois</SelectItem>
+                  <SelectItem value="per-session">{t("paymentAgreementPerSession")}</SelectItem>
+                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
+                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("paymentAgreementMonthly")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1059,7 +1067,7 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Available Days (select all that apply)</Label>
+              <Label>{t("availableDaysLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Monday",
@@ -1091,7 +1099,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="sessionDuration">
-                Session Duration (minutes)
+                {t("sessionDurationLabel")}
               </Label>
               <Select
                 value={formData.sessionDuration}
@@ -1114,7 +1122,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="breakDuration">
-                Break Between Sessions (minutes)
+                {t("breakDurationLabel")}
               </Label>
               <Select
                 value={formData.breakDuration}
@@ -1126,7 +1134,7 @@ export default function ProfessionalSignupPage() {
                   <SelectValue placeholder="Select break duration" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">No break</SelectItem>
+                  <SelectItem value="0">{t("noBreak")}</SelectItem>
                   <SelectItem value="5">5 minutes</SelectItem>
                   <SelectItem value="10">10 minutes</SelectItem>
                   <SelectItem value="15">15 minutes</SelectItem>
@@ -1137,8 +1145,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground">
-                You can set detailed availability hours and specific time slots
-                after registration in your dashboard.
+                {t("availabilityHint")}
               </p>
             </div>
           </div>
@@ -1148,11 +1155,11 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Review Your Information</h3>
+              <h3 className="font-semibold text-lg">{t("reviewYourInformation")}</h3>
 
               <div className="space-y-3">
                 <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-medium mb-2">Basic Information</h4>
+                  <h4 className="font-medium mb-2">{t("basicInformation")}</h4>
                   <p className="text-sm text-muted-foreground">
                     {formData.firstName} {formData.lastName}
                   </p>
@@ -1167,23 +1174,23 @@ export default function ProfessionalSignupPage() {
                 </div>
 
                 <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-medium mb-2">Professional Details</h4>
+                  <h4 className="font-medium mb-2">{t("professionalDetailsReview")}</h4>
                   <p className="text-sm text-muted-foreground">
-                    {formData.specialty || "Not specified"}
+                    {formData.specialty || t("notSpecified")}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    License: {formData.license || "Not specified"}
+                    {t("licenseLabelShort")} {formData.license || t("notSpecified")}
                   </p>
                   {formData.yearsOfExperience && (
                     <p className="text-sm text-muted-foreground">
-                      {formData.yearsOfExperience} years of experience
+                      {formData.yearsOfExperience} {t("yearsExperience")}
                     </p>
                   )}
                 </div>
 
                 {formData.degree && (
                   <div className="p-4 bg-muted rounded-lg">
-                    <h4 className="font-medium mb-2">Education</h4>
+                    <h4 className="font-medium mb-2">{t("educationLabel")}</h4>
                     <p className="text-sm text-muted-foreground">
                       {formData.degree}
                     </p>
@@ -1210,21 +1217,21 @@ export default function ProfessionalSignupPage() {
                 htmlFor="agreeToTerms"
                 className="text-sm cursor-pointer leading-tight"
               >
-                I agree to the{" "}
+                {t("agreeToTerms")}{" "}
                 <Link
                   href="/terms"
                   className="text-primary underline"
                   target="_blank"
                 >
-                  Terms of Service
+                  {t("termsOfService")}
                 </Link>{" "}
-                and{" "}
+                {t("and")}{" "}
                 <Link
                   href="/privacy"
                   className="text-primary underline"
                   target="_blank"
                 >
-                  Privacy Policy
+                  {t("privacyPolicy")}
                 </Link>
                 <span className="text-red-500">*</span>
               </label>
@@ -1232,9 +1239,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
               <p className="text-sm text-blue-900 dark:text-blue-100">
-                Your account will be pending approval. Once approved by our
-                team, you&apos;ll be able to access your professional dashboard
-                and start accepting clients.
+                {t("approvalNotice")}
               </p>
             </div>
           </div>
@@ -1251,8 +1256,8 @@ export default function ProfessionalSignupPage() {
     <AuthContainer maxWidth="2xl">
       <AuthHeader
         icon={<Briefcase className="w-8 h-8 text-primary" />}
-        title="Professional Registration"
-        description="Create your professional account and profile"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -1260,7 +1265,7 @@ export default function ProfessionalSignupPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">
-              Step {currentSection + 1} of {sections.length}
+              {t("stepOf", { current: currentSection + 1, total: sections.length })}
             </span>
             <span className="text-sm font-medium text-primary">
               {Math.round(((currentSection + 1) / sections.length) * 100)}%
@@ -1293,7 +1298,7 @@ export default function ProfessionalSignupPage() {
           </div>
           {sections[currentSection].required && (
             <p className="text-sm text-muted-foreground">
-              * Required fields must be completed
+              {t("requiredFieldsHint")}
             </p>
           )}
         </motion.div>
@@ -1344,7 +1349,7 @@ export default function ProfessionalSignupPage() {
                 disabled={isLoading}
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back
+                {t("back")}
               </button>
             ) : (
               <div />
@@ -1357,7 +1362,7 @@ export default function ProfessionalSignupPage() {
                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium transition-colors ml-auto"
                 disabled={isLoading}
               >
-                Next
+                {t("next")}
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
@@ -1369,12 +1374,12 @@ export default function ProfessionalSignupPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating Account...
+                    {t("creating")}
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    Create Account
+                    {t("createAccount")}
                   </>
                 )}
               </button>
@@ -1384,12 +1389,12 @@ export default function ProfessionalSignupPage() {
       </AuthCard>
 
       <AuthFooter>
-        Already have an account?{" "}
+        {t("hasAccount")}{" "}
         <Link
           href="/login"
           className="font-medium text-primary hover:underline"
         >
-          Sign In
+          {t("signIn")}
         </Link>
       </AuthFooter>
     </AuthContainer>

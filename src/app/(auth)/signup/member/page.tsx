@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -130,6 +131,7 @@ interface FormData {
 }
 
 export default function MemberSignupPage() {
+  const t = useTranslations("Auth.memberSignup");
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -194,17 +196,17 @@ export default function MemberSignupPage() {
   });
 
   const sections = [
-    { title: "Informations de base", icon: UserCircle, required: true },
-    { title: "Histoire médicale & Santé", icon: Heart, required: true },
-    { title: "Histoire de santé mentale", icon: Brain, required: true },
-    { title: "Préoccupations actuelles", icon: Activity, required: true },
-    { title: "Symptômes et impact", icon: Activity, required: true },
-    { title: "Thérapies & Objectifs", icon: Target, required: true },
-    { title: "Préférences de rendez-vous", icon: Clock, required: true },
-    { title: "Contact d'urgence", icon: AlertTriangle, required: true },
-    { title: "Préférences du professionnel", icon: Users, required: true },
-    { title: "Mode de paiement", icon: CreditCard, required: true },
-    { title: "Révision et confirmation", icon: CheckCircle2, required: true },
+    { title: t("sections.basicInfo"), icon: UserCircle, required: true },
+    { title: t("sections.healthBackground"), icon: Heart, required: true },
+    { title: t("sections.mentalHealth"), icon: Brain, required: true },
+    { title: t("sections.currentConcerns"), icon: Activity, required: true },
+    { title: t("sections.symptomsImpact"), icon: Activity, required: true },
+    { title: t("sections.goalsPreferences"), icon: Target, required: true },
+    { title: t("sections.appointmentPrefs"), icon: Clock, required: true },
+    { title: t("sections.emergencyContact"), icon: AlertTriangle, required: true },
+    { title: t("sections.professionalPrefs"), icon: Users, required: true },
+    { title: t("sections.paymentMethod"), icon: CreditCard, required: true },
+    { title: t("sections.reviewConfirm"), icon: CheckCircle2, required: true },
   ];
 
   const isChildEvaluation = formData.accountFor === "child" && formData.childServiceType === "evaluation";
@@ -253,11 +255,11 @@ export default function MemberSignupPage() {
   };
 
   const validatePassword = (pwd: string): { ok: boolean; message?: string } => {
-    if (!pwd || pwd.length < 8) return { ok: false, message: "Le mot de passe doit contenir au moins 8 caractères." };
-    if (!/[A-Z]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins une majuscule." };
-    if (!/[a-z]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins une minuscule." };
-    if (!/[0-9]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins un chiffre." };
-    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd)) return { ok: false, message: "Le mot de passe doit contenir au moins un symbole." };
+    if (!pwd || pwd.length < 8) return { ok: false, message: t("errors.passwordMinLength") };
+    if (!/[A-Z]/.test(pwd)) return { ok: false, message: t("errors.passwordUppercase") };
+    if (!/[a-z]/.test(pwd)) return { ok: false, message: t("errors.passwordLowercase") };
+    if (!/[0-9]/.test(pwd)) return { ok: false, message: t("errors.passwordDigit") };
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd)) return { ok: false, message: t("errors.passwordSymbol") };
     return { ok: true };
   };
 
@@ -265,37 +267,37 @@ export default function MemberSignupPage() {
     switch (section) {
       case 0: // Basic Information
         if (!formData.firstName.trim() || !formData.lastName.trim()) {
-          setError("Le prénom et le nom sont requis.");
+          setError(t("errors.firstNameLastNameRequired"));
           return false;
         }
         if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-          setError("Un courriel valide est requis.");
+          setError(t("errors.validEmailRequired"));
           return false;
         }
         const pwdCheck = validatePassword(formData.password);
         if (!pwdCheck.ok) {
-          setError(pwdCheck.message ?? "Mot de passe invalide.");
+          setError(pwdCheck.message ?? "");
           return false;
         }
         if (formData.password !== formData.confirmPassword) {
-          setError("Les mots de passe ne correspondent pas.");
+          setError(t("errors.passwordsDoNotMatch"));
           return false;
         }
         if (!formData.language) {
-          setError("Veuillez sélectionner une langue de préférence.");
+          setError(t("errors.languageRequired"));
           return false;
         }
         if (formData.accountFor === "child") {
           if (!formData.childFirstName.trim() || !formData.childLastName.trim()) {
-            setError("Le prénom et le nom de l'enfant sont requis.");
+            setError(t("errors.childNameRequired"));
             return false;
           }
           if (!formData.childDateOfBirth) {
-            setError("La date de naissance de l'enfant est requise.");
+            setError(t("errors.childDobRequired"));
             return false;
           }
           if (!formData.childServiceType) {
-            setError("Veuillez indiquer si c'est pour une évaluation ou un suivi psychologique.");
+            setError(t("errors.childServiceTypeRequired"));
             return false;
           }
         }
@@ -310,7 +312,7 @@ export default function MemberSignupPage() {
         return true;
       case 5:
         if (!formData.preferredGender) {
-          setError("Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.");
+          setError(t("errors.errorPreferredGender"));
           return false;
         }
         return true;
@@ -322,13 +324,13 @@ export default function MemberSignupPage() {
         return true;
       case 9: // Payment
         if (!formData.paymentMethod) {
-          setError("Veuillez choisir un mode de paiement.");
+          setError(t("errors.paymentMethodRequired"));
           return false;
         }
         return true;
       case 10: // Review & Confirm
         if (!formData.agreeToTerms) {
-          setError("Vous devez accepter les conditions d'utilisation.");
+          setError(t("errors.agreeToTermsRequired"));
           return false;
         }
         return true;
@@ -487,7 +489,7 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  First Name <span className="text-red-500">*</span>
+                  {t("firstName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="firstName"
@@ -501,7 +503,7 @@ export default function MemberSignupPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="flex items-center gap-2">
-                  Last Name <span className="text-red-500">*</span>
+                  {t("lastName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="lastName"
@@ -517,7 +519,7 @@ export default function MemberSignupPage() {
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                Email <span className="text-red-500">*</span>
+                {t("email")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
@@ -589,49 +591,49 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="language" className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  Langue de préférence <span className="text-red-500">*</span>
+                  {t("preferredLanguage")} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.language}
                   onValueChange={(val) => handleSelectChange("language", val)}
                 >
                   <SelectTrigger id="language">
-                    <SelectValue placeholder="Choisir une langue" />
+                    <SelectValue placeholder={t("selectLanguagePlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="french">Français</SelectItem>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="arabic">Arabe</SelectItem>
-                    <SelectItem value="spanish">Espagnol</SelectItem>
-                    <SelectItem value="mandarin">Mandarin</SelectItem>
-                    <SelectItem value="other">Autre</SelectItem>
+                    <SelectItem value="french">{t("french")}</SelectItem>
+                    <SelectItem value="english">{t("english")}</SelectItem>
+                    <SelectItem value="arabic">{t("arabic")}</SelectItem>
+                    <SelectItem value="spanish">{t("spanish")}</SelectItem>
+                    <SelectItem value="mandarin">{t("mandarin")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Ce compte est pour</Label>
+              <Label>{t("accountFor")}</Label>
               <Select
                 value={formData.accountFor}
                 onValueChange={(val) => handleSelectChange("accountFor", val)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Pour moi ou pour mon enfant" />
+                  <SelectValue placeholder={`${t("accountForMe")} / ${t("accountForChild")}`} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="me">Pour moi</SelectItem>
-                  <SelectItem value="child">Pour mon enfant</SelectItem>
+                  <SelectItem value="me">{t("accountForMe")}</SelectItem>
+                  <SelectItem value="child">{t("accountForChild")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {formData.accountFor === "child" && (
               <div className="space-y-4 rounded-lg border border-border/50 p-4 bg-muted/20">
-                <p className="text-sm font-medium text-foreground">Informations concernant l&apos;enfant</p>
+                <p className="text-sm font-medium text-foreground">{t("childInfoTitle")}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="childFirstName">Prénom de l&apos;enfant <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="childFirstName">{t("childFirstName")} <span className="text-red-500">*</span></Label>
                     <Input
                       id="childFirstName"
                       name="childFirstName"
@@ -641,7 +643,7 @@ export default function MemberSignupPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="childLastName">Nom de l&apos;enfant <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="childLastName">{t("childLastName")} <span className="text-red-500">*</span></Label>
                     <Input
                       id="childLastName"
                       name="childLastName"
@@ -651,7 +653,7 @@ export default function MemberSignupPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="childDateOfBirth">Date de naissance de l&apos;enfant <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="childDateOfBirth">{t("childDateOfBirth")} <span className="text-red-500">*</span></Label>
                     <Input
                       id="childDateOfBirth"
                       name="childDateOfBirth"
@@ -663,17 +665,17 @@ export default function MemberSignupPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Souhaitez-vous une évaluation ou un suivi psychologique ? <span className="text-red-500">*</span></Label>
+                  <Label>{t("childServiceTypeQuestion")} <span className="text-red-500">*</span></Label>
                   <Select
                     value={formData.childServiceType}
                     onValueChange={(val) => handleSelectChange("childServiceType", val)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Choisir..." />
+                      <SelectValue placeholder="..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="evaluation">Évaluation</SelectItem>
-                      <SelectItem value="suivi">Suivi psychologique</SelectItem>
+                      <SelectItem value="evaluation">{t("evaluation")}</SelectItem>
+                      <SelectItem value="suivi">{t("psychologicalFollowUp")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -723,13 +725,13 @@ export default function MemberSignupPage() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Au moins 8 caractères, une majuscule, une minuscule, un chiffre et un symbole
+                {t("passwordHintSecure")}
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                Confirm Password <span className="text-red-500">*</span>
+                {t("confirmPassword")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="confirmPassword"
@@ -832,7 +834,7 @@ export default function MemberSignupPage() {
 
             <div className="space-y-2">
               <Label>
-                Indiquez le plus de motifs de consultation pour mieux aiguiller votre demande (jusqu&apos;à 10)
+                {t("consultationMotifsLabel")}
               </Label>
               <MotifSearch
                 value={formData.consultationMotifs}
@@ -844,7 +846,7 @@ export default function MemberSignupPage() {
                 }
                 multiSelect
                 maxSelections={10}
-                placeholder="Rechercher des motifs (anxiété, burnout...)"
+                placeholder={t("consultationMotifsPlaceholder")}
               />
             </div>
 
@@ -1265,7 +1267,7 @@ export default function MemberSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Objectifs de thérapie (recherche, plusieurs choix possibles)</Label>
+              <Label>{t("objectivesLabel")}</Label>
               <MotifSearch
                 value={formData.treatmentGoals}
                 onChange={(v) =>
@@ -1276,12 +1278,12 @@ export default function MemberSignupPage() {
                 }
                 multiSelect
                 maxSelections={10}
-                placeholder="Rechercher des objectifs (gestion du stress, anxiété...)"
+                placeholder={t("objectivesPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Vous souhaitez consulter un professionnel</Label>
+              <Label>{t("preferredProfessionalLabel")}</Label>
               <Select
                 value={formData.preferredGender}
                 onValueChange={(val) =>
@@ -1289,13 +1291,13 @@ export default function MemberSignupPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Choisir..." />
+                  <SelectValue placeholder="..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="noPreference">Pas de préférence</SelectItem>
-                  <SelectItem value="male">Homme</SelectItem>
-                  <SelectItem value="female">Femme</SelectItem>
-                  <SelectItem value="other">Autre</SelectItem>
+                  <SelectItem value="noPreference">{t("noPreference")}</SelectItem>
+                  <SelectItem value="male">{t("preferredProfessionalMale")}</SelectItem>
+                  <SelectItem value="female">{t("preferredProfessionalFemale")}</SelectItem>
+                  <SelectItem value="other">{t("preferredProfessionalOther")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1630,13 +1632,13 @@ export default function MemberSignupPage() {
         return (
           <div className="space-y-6">
             <p className="text-sm text-muted-foreground">
-              Choisissez votre mode de paiement préféré pour les consultations.
+              {t("paymentStepDescription")}
             </p>
             <div className="space-y-3">
               {[
-                { value: "credit_card", label: "Carte de crédit" },
-                { value: "interac", label: "Virement Interac" },
-                { value: "bank_withdrawal", label: "Entente de prélèvement bancaire" },
+                { value: "credit_card", label: t("paymentCreditCard") },
+                { value: "interac", label: t("paymentInterac") },
+                { value: "bank_withdrawal", label: t("paymentBankWithdrawal") },
               ].map((opt) => (
                 <div
                   key={opt.value}
@@ -1673,7 +1675,7 @@ export default function MemberSignupPage() {
           <div className="space-y-6">
             <div className="rounded-xl bg-muted/30 p-6">
               <h3 className="font-serif text-lg mb-4">
-                Révision de vos informations
+                {t("reviewInfoTitle")}
               </h3>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b">
@@ -1721,16 +1723,15 @@ export default function MemberSignupPage() {
                 htmlFor="agreeToTerms"
                 className="text-sm leading-relaxed cursor-pointer"
               >
-                I agree to the{" "}
+                {t("agreeToTerms")}{" "}
                 <Link href="/terms" className="text-primary hover:underline">
-                  Terms of Service
+                  {t("termsOfService")}
                 </Link>{" "}
-                and{" "}
+                {t("and")}{" "}
                 <Link href="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
+                  {t("privacyPolicy")}
                 </Link>
-                . I understand that the information provided will be used to
-                match me with appropriate mental health professionals.
+                . {t("agreeToTermsSuffix")}
               </label>
             </div>
           </div>
@@ -1747,8 +1748,8 @@ export default function MemberSignupPage() {
     <AuthContainer maxWidth="2xl">
       <AuthHeader
         icon={<UserCircle className="w-8 h-8 text-primary" />}
-        title="Join as a Member"
-        description="Start your journey to better mental health"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -1762,12 +1763,12 @@ export default function MemberSignupPage() {
                   {sections[actualSection].title}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Étape {currentSection + 1} sur {totalSteps}
+                  {t("stepOf", { current: currentSection + 1, total: totalSteps })}
                 </p>
               </div>
             </div>
             {sections[actualSection].required && (
-              <span className="text-xs text-red-500">* Obligatoire</span>
+              <span className="text-xs text-red-500">* {t("required")}</span>
             )}
           </div>
           <div className="w-full bg-muted rounded-full h-2">
@@ -1822,7 +1823,7 @@ export default function MemberSignupPage() {
             className="flex items-center gap-2 px-6 py-3 text-foreground font-light transition-opacity disabled:opacity-0 disabled:pointer-events-none hover:text-primary"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
+            <span>{t("back")}</span>
           </button>
 
           {currentSection < totalSteps - 1 ? (
@@ -1831,7 +1832,7 @@ export default function MemberSignupPage() {
               onClick={handleNext}
               className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-light hover:scale-105 transition-transform"
             >
-              <span>Continuer</span>
+              <span>{t("continue")}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           ) : (
@@ -1844,11 +1845,11 @@ export default function MemberSignupPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Création du compte...</span>
+                  <span>{t("creating")}</span>
                 </>
               ) : (
                 <>
-                  <span>Créer le compte</span>
+                  <span>{t("createAccount")}</span>
                   <CheckCircle2 className="w-5 h-5" />
                 </>
               )}
@@ -1859,12 +1860,12 @@ export default function MemberSignupPage() {
 
       <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
-          Already have an account?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </AuthFooter>
@@ -1874,7 +1875,7 @@ export default function MemberSignupPage() {
           href="/"
           className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
         >
-          ← Back to Home
+          {t("backToHome")}
         </Link>
       </AuthFooter>
     </AuthContainer>
