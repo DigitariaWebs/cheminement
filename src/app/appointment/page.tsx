@@ -52,7 +52,7 @@ import { cn } from "@/lib/utils";
 import { MOTIFS } from "@/data/motif";
 import AppointmentForm from "@/components/appointments/AppointmentForm";
 import ProfileSelectionCard from "@/components/appointments/ProfileSelectionCard";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface GuestInfo {
   firstName: string;
@@ -100,8 +100,36 @@ interface MedicalProfileData {
 export default function BookAppointmentPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const t = useTranslations("managedAccounts");
+  const tManaged = useTranslations("managedAccounts");
+  const tB = useTranslations("AppointmentBooking");
   const tHero = useTranslations("HeroSection");
+  const locale = useLocale();
+  const dateLocale = locale === "fr" ? "fr-CA" : "en-CA";
+
+  const describeAvailabilitySlot = (slot: string): string => {
+    const m = /^(\d{4}-\d{2}-\d{2})-(morning|afternoon|evening)$/.exec(slot);
+    if (m) {
+      const d = new Date(`${m[1]}T12:00:00`);
+      const dayStr = d.toLocaleDateString(dateLocale, {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+      });
+      const period =
+        m[2] === "morning"
+          ? tB("morning")
+          : m[2] === "afternoon"
+            ? tB("afternoon")
+            : tB("evening");
+      return `${dayStr} — ${period}`;
+    }
+    if (slot === "Weekday Mornings") return tB("weekdayMornings");
+    if (slot === "Weekday Afternoons") return tB("weekdayAfternoons");
+    if (slot === "Weekday Evenings") return tB("weekdayEvenings");
+    if (slot === "Weekends") return tB("weekends");
+    return slot;
+  };
+
   // Auth state
   const [isGuest, setIsGuest] = useState(false);
   const [authCheckDone, setAuthCheckDone] = useState(false);
@@ -352,13 +380,13 @@ export default function BookAppointmentPage() {
       "image/jpg",
     ];
     if (!allowedTypes.includes(file.type)) {
-      setError("Please upload a PDF, JPEG, or PNG file");
+      setError(tB("errors.uploadType"));
       return;
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError("File size must be less than 10MB");
+      setError(tB("errors.fileSize"));
       return;
     }
 
@@ -386,7 +414,7 @@ export default function BookAppointmentPage() {
         documentName: data.fileName,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to upload file");
+      setError(err instanceof Error ? err.message : tB("errors.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -408,42 +436,42 @@ export default function BookAppointmentPage() {
     // For guest bookings, validate requester info
     if (isGuest) {
       if (!lovedOneInfo.requesterFirstName.trim() || !lovedOneInfo.requesterLastName.trim()) {
-        setError("Please provide your first and last name");
+        setError(tB("errors.nameRequired"));
         return false;
       }
       if (!lovedOneInfo.requesterEmail.trim()) {
-        setError("Please provide your email address");
+        setError(tB("errors.emailRequired"));
         return false;
       }
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(lovedOneInfo.requesterEmail)) {
-        setError("Please enter a valid email address");
+        setError(tB("errors.emailInvalid"));
         return false;
       }
       if (!lovedOneInfo.requesterPhone.trim()) {
-        setError("Please provide your phone number");
+        setError(tB("errors.phoneRequired"));
         return false;
       }
       if (!lovedOneInfo.requesterLocation.trim()) {
-        setError("Please provide your location");
+        setError(tB("errors.locationRequired"));
         return false;
       }
     }
     if (!lovedOneInfo.firstName.trim() || !lovedOneInfo.lastName.trim()) {
-      setError("Please provide the first and last name of your loved one");
+      setError(tB("errors.lovedOneName"));
       return false;
     }
     if (!lovedOneInfo.relationship) {
-      setError("Please select the relationship");
+      setError(tB("errors.relationshipRequired"));
       return false;
     }
     if (!issueType || !Array.isArray(issueType) || issueType.length === 0) {
-      setError("Please select at least one motif/reason for consultation");
+      setError(tB("errors.motifRequired"));
       return false;
     }
     if (issueType.length > 3) {
-      setError("Please select a maximum of 3 motifs");
+      setError(tB("errors.motifMax"));
       return false;
     }
     setError("");
@@ -453,15 +481,15 @@ export default function BookAppointmentPage() {
   // Validate referral info
   const validateReferralInfo = (): boolean => {
     if (!referralInfo.referrerName.trim()) {
-      setError("Please provide the referring professional's name");
+      setError(tB("errors.referrerName"));
       return false;
     }
     if (!issueType || !Array.isArray(issueType) || issueType.length === 0) {
-      setError("Please select at least one motif/reason for referral");
+      setError(tB("errors.referralMotif"));
       return false;
     }
     if (issueType.length > 3) {
-      setError("Please select a maximum of 3 motifs");
+      setError(tB("errors.motifMax"));
       return false;
     }
     setError("");
@@ -483,21 +511,21 @@ export default function BookAppointmentPage() {
       !guestInfo.phone.trim() ||
       !guestInfo.location.trim()
     ) {
-      setError("Please fill in all required fields");
+      setError(tB("errors.fieldsRequired"));
       return;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(guestInfo.email)) {
-      setError("Please enter a valid email address");
+      setError(tB("errors.emailInvalid"));
       return;
     }
 
     // Phone validation (basic)
     const phoneRegex = /^[\d\s\-\+\(\)]+$/;
     if (!phoneRegex.test(guestInfo.phone)) {
-      setError("Please enter a valid phone number");
+      setError(tB("errors.phoneInvalid"));
       return;
     }
 
@@ -589,7 +617,7 @@ export default function BookAppointmentPage() {
       setCurrentStep(5); // Success step
     } catch (err: unknown) {
       console.error("Error booking appointment:", err);
-      setError(err instanceof Error ? err.message : "Failed to submit request");
+      setError(err instanceof Error ? err.message : tB("errors.submitFailed"));
     } finally {
       setLoading(false);
     }
@@ -597,11 +625,11 @@ export default function BookAppointmentPage() {
 
   const handleSubmit = async () => {
     if (!selectedType || !issueType || !Array.isArray(issueType) || issueType.length === 0) {
-      setError("Please fill in all required fields, including at least one motif");
+      setError(tB("errors.motifRequiredSubmit"));
       return;
     }
     if (issueType.length > 3) {
-      setError("Please select a maximum of 3 motifs");
+      setError(tB("errors.motifMax"));
       return;
     }
 
@@ -661,7 +689,7 @@ export default function BookAppointmentPage() {
       setCurrentStep(5); // Success step
     } catch (err: unknown) {
       console.error("Error submitting request:", err);
-      setError(err instanceof Error ? err.message : "Failed to submit request");
+      setError(err instanceof Error ? err.message : tB("errors.submitFailed"));
     } finally {
       setLoading(false);
     }
@@ -671,13 +699,13 @@ export default function BookAppointmentPage() {
     return (
       <div className="bg-card rounded-xl border border-border/40 p-6 space-y-6 sticky top-8">
         <h3 className="font-serif text-lg font-medium border-b border-border/40 pb-4 mb-4">
-          Request Summary
+          {tB("requestSummary")}
         </h3>
 
         {/* Who is this for */}
         <div className={`space-y-1 ${currentStep <= 1 ? "opacity-50" : ""}`}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            For
+            {tB("forLabel")}
           </p>
           <div className="flex items-center gap-2 text-sm">
             {bookingFor && currentStep > 1 ? (
@@ -685,12 +713,18 @@ export default function BookAppointmentPage() {
                 {bookingFor === "self" && <User className="h-4 w-4" />}
                 {bookingFor === "patient" && <User className="h-4 w-4" />}
                 {bookingFor === "loved-one" && <Users className="h-4 w-4" />}
-                <span className="capitalize">
-                  {bookingFor === "loved-one" ? "Loved One" : bookingFor}
+                <span>
+                  {bookingFor === "loved-one"
+                    ? tB("lovedOneLabel")
+                    : bookingFor === "self"
+                      ? tB("selfLabel")
+                      : tB("patientLabel")}
                 </span>
               </>
             ) : (
-              <span className="text-muted-foreground italic">Pending...</span>
+              <span className="text-muted-foreground italic">
+                {tB("pending")}
+              </span>
             )}
           </div>
         </div>
@@ -699,7 +733,7 @@ export default function BookAppointmentPage() {
         {isGuest && (
           <div className={`space-y-1 ${currentStep <= 2 ? "opacity-50" : ""}`}>
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Your Info
+              {tB("yourInfoLabel")}
             </p>
             <div className="text-sm">
               {guestInfo.firstName && currentStep > 2 ? (
@@ -712,7 +746,9 @@ export default function BookAppointmentPage() {
                   </p>
                 </>
               ) : (
-                <span className="text-muted-foreground italic">Pending...</span>
+                <span className="text-muted-foreground italic">
+                  {tB("pending")}
+                </span>
               )}
             </div>
           </div>
@@ -721,7 +757,7 @@ export default function BookAppointmentPage() {
         {/* Details */}
         <div className={`space-y-1 ${currentStep < 3 ? "opacity-50" : ""}`}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Details
+            {tB("detailsLabel")}
           </p>
           <div className="text-sm space-y-1">
             {currentStep >= 3 ? (
@@ -729,7 +765,13 @@ export default function BookAppointmentPage() {
                 {therapyType && (
                   <div className="flex items-center gap-2">
                     <Users className="h-3 w-3" />
-                    <span className="capitalize">{therapyType} Session</span>
+                    <span>
+                      {therapyType === "solo"
+                        ? tB("individualSession")
+                        : therapyType === "couple"
+                          ? tB("coupleSession")
+                          : tB("groupSession")}
+                    </span>
                   </div>
                 )}
                 {selectedType && (
@@ -739,25 +781,35 @@ export default function BookAppointmentPage() {
                       <MapPin className="h-3 w-3" />
                     )}
                     {selectedType === "phone" && <Phone className="h-3 w-3" />}
-                    <span className="capitalize">{selectedType}</span>
+                    <span>
+                      {selectedType === "video"
+                        ? tB("videoCall")
+                        : selectedType === "in-person"
+                          ? tB("inPerson")
+                          : tB("phoneCall")}
+                    </span>
                   </div>
                 )}
                 {issueType && Array.isArray(issueType) && issueType.length > 0 && (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <AlertCircle className="h-3 w-3" />
-                      <span className="font-medium">Motifs:</span>
+                      <span className="font-medium">{tB("motifsLabel")}</span>
                     </div>
                     <ul className="list-disc list-inside ml-5 space-y-1">
                       {issueType.map((motif, index) => (
-                        <li key={index} className="text-sm">{motif}</li>
+                        <li key={index} className="text-sm">
+                          {motif}
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
               </>
             ) : (
-              <span className="text-muted-foreground italic">Pending...</span>
+              <span className="text-muted-foreground italic">
+                {tB("pending")}
+              </span>
             )}
           </div>
         </div>
@@ -765,11 +817,10 @@ export default function BookAppointmentPage() {
         {/* Info box about the new flow */}
         <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-4 border border-blue-200 dark:border-blue-800">
           <p className="text-xs text-blue-800 dark:text-blue-200">
-            <strong>How it works:</strong>
+            <strong>{tB("howItWorks")}</strong>
           </p>
           <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-            After you submit your request, a qualified professional will review
-            and contact you to schedule your appointment.
+            {tB("howItWorksBody")}
           </p>
         </div>
       </div>
@@ -850,17 +901,16 @@ export default function BookAppointmentPage() {
             className="mb-4 gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            {tB("back")}
           </Button>
           <h1 className="text-4xl font-serif font-light text-foreground mb-2">
-            Request an Appointment
+            {tB("requestTitle")}
           </h1>
           <p className="text-muted-foreground text-lg">
-            Submit a request to be matched with a qualified mental health
-            professional
+            {tB("requestSubtitle")}
             {isGuest && (
               <span className="block text-sm mt-1 text-muted-foreground">
-                Booking as guest
+                {tB("bookingAsGuest")}
               </span>
             )}
           </p>
@@ -890,10 +940,10 @@ export default function BookAppointmentPage() {
                 <div className="p-6 border-b border-border/40">
                   <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    How would you like to proceed?
+                    {tB("howProceedTitle")}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Choose how you&apos;d like to submit your request
+                    {tB("howProceedSubtitle")}
                   </p>
                 </div>
                 <div className="p-6">
@@ -907,20 +957,20 @@ export default function BookAppointmentPage() {
                         <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                           <User className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="font-semibold text-lg">Sign In</h3>
+                        <h3 className="font-semibold text-lg">{tB("signIn")}</h3>
                       </div>
                       <div className="space-y-2 text-sm text-muted-foreground">
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Manage all your appointments</span>
+                          <span>{tB("signInBenefit1")}</span>
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Access your appointment history</span>
+                          <span>{tB("signInBenefit2")}</span>
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Pre-filled from your profile</span>
+                          <span>{tB("signInBenefit3")}</span>
                         </div>
                       </div>
                     </div>
@@ -935,21 +985,21 @@ export default function BookAppointmentPage() {
                           <UserPlus className="h-6 w-6 text-accent-foreground" />
                         </div>
                         <h3 className="font-semibold text-lg">
-                          Continue as Guest
+                          {tB("continueAsGuest")}
                         </h3>
                       </div>
                       <div className="space-y-2 text-sm text-muted-foreground">
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Quick request process</span>
+                          <span>{tB("guestBenefit1")}</span>
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>No account needed</span>
+                          <span>{tB("guestBenefit2")}</span>
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <span>Professional will contact you</span>
+                          <span>{tB("guestBenefit3")}</span>
                         </div>
                       </div>
                     </div>
@@ -964,7 +1014,7 @@ export default function BookAppointmentPage() {
                 <div className="p-6 border-b border-border/40">
                   <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    Who is this appointment for?
+                    {tB("whoForTitle")}
                   </h2>
                 </div>
                 <div className="p-6">
@@ -992,11 +1042,10 @@ export default function BookAppointmentPage() {
                             className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
                           >
                             <User className="h-5 w-5 text-primary" />
-                            For Myself
+                            {tB("forMyself")}
                           </Label>
                           <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m requesting this appointment for myself and
-                            will be the one attending the session.
+                            {tB("forMyselfDesc")}
                           </p>
                         </div>
                       </div>
@@ -1018,12 +1067,10 @@ export default function BookAppointmentPage() {
                             className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
                           >
                             <Users className="h-5 w-5 text-primary" />
-                            For a Loved One
+                            {tB("forLovedOneTitle")}
                           </Label>
                           <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m requesting this appointment for a family
-                            member or loved one who will be attending the
-                            session.
+                            {tB("forLovedOneDesc")}
                           </p>
                         </div>
                       </div>
@@ -1045,11 +1092,10 @@ export default function BookAppointmentPage() {
                             className="cursor-pointer text-base font-medium text-foreground flex items-center gap-2"
                           >
                             <Stethoscope className="h-5 w-5 text-primary" />
-                            For a Patient
+                            {tB("forPatientTitle")}
                           </Label>
                           <p className="text-sm text-muted-foreground mt-2">
-                            I&apos;m a healthcare professional requesting on
-                            behalf of my patient.
+                            {tB("forPatientDesc")}
                           </p>
                         </div>
                       </div>
@@ -1061,7 +1107,7 @@ export default function BookAppointmentPage() {
                       onClick={() => setCurrentStep(0)}
                       className={status === "authenticated" ? "hidden" : ""}
                     >
-                      Back
+                      {tB("back")}
                     </Button>
                   </div>
                 </div>
@@ -1076,14 +1122,12 @@ export default function BookAppointmentPage() {
                 <div className="max-w-4xl mx-auto rounded-xl bg-card border border-border/40">
                   <div className="p-6 border-b border-border/40">
                     <h2 className="text-xl font-serif font-light text-foreground">
-                      {bookingFor === "self" && "Your Appointment Details"}
-                      {bookingFor === "patient" &&
-                        "Patient Referral Information"}
-                      {bookingFor === "loved-one" && "Loved One's Information"}
+                      {bookingFor === "self" && tB("detailsSelf")}
+                      {bookingFor === "patient" && tB("detailsPatient")}
+                      {bookingFor === "loved-one" && tB("detailsLovedOne")}
                     </h2>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Please provide the necessary information for this
-                      appointment request
+                      {tB("provideInfoSubtitle")}
                     </p>
                   </div>
                   <div className="p-6">
@@ -1118,7 +1162,7 @@ export default function BookAppointmentPage() {
                   </div>
                   <div className="p-6 border-t border-border/40 flex justify-between">
                     <Button variant="outline" onClick={() => setCurrentStep(0)}>
-                      Back
+                      {tB("back")}
                     </Button>
                   </div>
                 </div>
@@ -1130,18 +1174,18 @@ export default function BookAppointmentPage() {
                 <div className="p-6 border-b border-border/40">
                   <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    Your Information
+                    {tB("yourInfo")}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Please provide your contact information so a professional
-                    can reach out to you
+                    {tB("yourInfoSubtitle")}
                   </p>
                 </div>
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">
-                        First Name <span className="text-red-500">*</span>
+                        {tB("firstName")}{" "}
+                        <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="firstName"
@@ -1152,12 +1196,13 @@ export default function BookAppointmentPage() {
                             firstName: e.target.value,
                           })
                         }
-                        placeholder="Enter your first name"
+                        placeholder={tB("placeholderFirstName")}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName">
-                        Last Name <span className="text-red-500">*</span>
+                        {tB("lastName")}{" "}
+                        <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="lastName"
@@ -1168,14 +1213,14 @@ export default function BookAppointmentPage() {
                             lastName: e.target.value,
                           })
                         }
-                        placeholder="Enter your last name"
+                        placeholder={tB("placeholderLastName")}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="email">
-                      Email Address <span className="text-red-500">*</span>
+                      {tB("email")} <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1186,18 +1231,18 @@ export default function BookAppointmentPage() {
                         onChange={(e) =>
                           setGuestInfo({ ...guestInfo, email: e.target.value })
                         }
-                        placeholder="your.email@example.com"
+                        placeholder="email@example.com"
                         className="pl-10"
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      A professional will contact you at this email
+                      {tB("emailHint")}
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">
-                      Phone Number <span className="text-red-500">*</span>
+                      {tB("phone")} <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1216,7 +1261,8 @@ export default function BookAppointmentPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="location">
-                      Location <span className="text-red-500">*</span>
+                      {tB("location")}{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
                       <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1229,7 +1275,7 @@ export default function BookAppointmentPage() {
                             location: e.target.value,
                           })
                         }
-                        placeholder="City, Province"
+                        placeholder={tB("placeholderCity")}
                         className="pl-10"
                       />
                     </div>
@@ -1237,14 +1283,14 @@ export default function BookAppointmentPage() {
 
                   <div className="flex justify-between pt-4">
                     <Button variant="outline" onClick={() => setCurrentStep(1)}>
-                      Back
+                      {tB("back")}
                     </Button>
                     <Button
                       onClick={handleGuestInfoSubmit}
                       size="lg"
                       className="gap-2"
                     >
-                      Continue
+                      {tB("continue")}
                       <ArrowLeft className="h-4 w-4 rotate-180" />
                     </Button>
                   </div>
@@ -1261,11 +1307,12 @@ export default function BookAppointmentPage() {
                     <div className="p-6 border-b border-border/40">
                       <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                         <Heart className="h-5 w-5 text-pink-500" />
-                        Loved One Information
+                        {tB("lovedOneInfoTitle")}
                       </h2>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Please provide information about the person who will be
-                        attending the session{isGuest && " and your contact information"}
+                        {isGuest
+                          ? tB("lovedOneInfoSubtitleGuest")
+                          : tB("lovedOneInfoSubtitle")}
                       </p>
                     </div>
                     <div className="p-6 space-y-6">
@@ -1274,12 +1321,13 @@ export default function BookAppointmentPage() {
                         <>
                           <div className="pb-4 border-b border-border/40">
                             <h3 className="text-lg font-medium text-foreground mb-4">
-                              Your Contact Information
+                              {tB("yourContact")}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
                                 <Label htmlFor="requesterFirstName">
-                                  Your First Name <span className="text-red-500">*</span>
+                                  {tB("yourFirstName")}{" "}
+                                  <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                   id="requesterFirstName"
@@ -1290,12 +1338,13 @@ export default function BookAppointmentPage() {
                                       requesterFirstName: e.target.value,
                                     })
                                   }
-                                  placeholder="Enter your first name"
+                                  placeholder={tB("placeholderFirstName")}
                                 />
                               </div>
                               <div className="space-y-2">
                                 <Label htmlFor="requesterLastName">
-                                  Your Last Name <span className="text-red-500">*</span>
+                                  {tB("yourLastName")}{" "}
+                                  <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                   id="requesterLastName"
@@ -1306,14 +1355,15 @@ export default function BookAppointmentPage() {
                                       requesterLastName: e.target.value,
                                     })
                                   }
-                                  placeholder="Enter your last name"
+                                  placeholder={tB("placeholderLastName")}
                                 />
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                               <div className="space-y-2">
                                 <Label htmlFor="requesterEmail">
-                                  Your Email <span className="text-red-500">*</span>
+                                  {tB("yourEmail")}{" "}
+                                  <span className="text-red-500">*</span>
                                 </Label>
                                 <div className="relative">
                                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1334,7 +1384,8 @@ export default function BookAppointmentPage() {
                               </div>
                               <div className="space-y-2">
                                 <Label htmlFor="requesterPhone">
-                                  Your Phone <span className="text-red-500">*</span>
+                                  {tB("yourPhone")}{" "}
+                                  <span className="text-red-500">*</span>
                                 </Label>
                                 <div className="relative">
                                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1356,7 +1407,8 @@ export default function BookAppointmentPage() {
                             </div>
                             <div className="mt-4">
                               <Label htmlFor="requesterLocation">
-                                Your Location <span className="text-red-500">*</span>
+                                {tB("yourLocation")}{" "}
+                                <span className="text-red-500">*</span>
                               </Label>
                               <div className="relative">
                                 <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1369,7 +1421,7 @@ export default function BookAppointmentPage() {
                                       requesterLocation: e.target.value,
                                     })
                                   }
-                                  placeholder="City, Province"
+                                  placeholder={tB("placeholderCity")}
                                   className="pl-10"
                                 />
                               </div>
@@ -1377,7 +1429,7 @@ export default function BookAppointmentPage() {
                           </div>
                           <div className="pt-4">
                             <h3 className="text-lg font-medium text-foreground mb-4">
-                              Loved One Information
+                              {tB("lovedOneSection")}
                             </h3>
                           </div>
                         </>
@@ -1385,7 +1437,8 @@ export default function BookAppointmentPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="lovedOneFirstName">
-                            First Name <span className="text-red-500">*</span>
+                            {tB("firstName")}{" "}
+                            <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="lovedOneFirstName"
@@ -1396,12 +1449,13 @@ export default function BookAppointmentPage() {
                                 firstName: e.target.value,
                               })
                             }
-                            placeholder="Enter their first name"
+                            placeholder={tB("placeholderTheirFirst")}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lovedOneLastName">
-                            Last Name <span className="text-red-500">*</span>
+                            {tB("lastName")}{" "}
+                            <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="lovedOneLastName"
@@ -1412,14 +1466,15 @@ export default function BookAppointmentPage() {
                                 lastName: e.target.value,
                               })
                             }
-                            placeholder="Enter their last name"
+                            placeholder={tB("placeholderTheirLast")}
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="relationship">
-                          Relationship <span className="text-red-500">*</span>
+                          {tB("relationship")}{" "}
+                          <span className="text-red-500">*</span>
                         </Label>
                         <Select
                           value={lovedOneInfo.relationship}
@@ -1431,24 +1486,38 @@ export default function BookAppointmentPage() {
                           }
                         >
                           <SelectTrigger id="relationship">
-                            <SelectValue placeholder="Select relationship" />
+                            <SelectValue
+                              placeholder={tB("selectRelationship")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="spouse">
-                              Spouse / Partner
+                              {tB("relSpouse")}
                             </SelectItem>
-                            <SelectItem value="child">Child</SelectItem>
-                            <SelectItem value="parent">Parent</SelectItem>
-                            <SelectItem value="sibling">Sibling</SelectItem>
-                            <SelectItem value="friend">Friend</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                            <SelectItem value="child">
+                              {tB("relChild")}
+                            </SelectItem>
+                            <SelectItem value="parent">
+                              {tB("relParent")}
+                            </SelectItem>
+                            <SelectItem value="sibling">
+                              {tB("relSibling")}
+                            </SelectItem>
+                            <SelectItem value="friend">
+                              {tB("relFriend")}
+                            </SelectItem>
+                            <SelectItem value="other">
+                              {tB("relOther")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="lovedOneDob">Date of Birth</Label>
+                          <Label htmlFor="lovedOneDob">
+                            {tB("dateOfBirth")}
+                          </Label>
                           <Input
                             id="lovedOneDob"
                             type="date"
@@ -1463,7 +1532,7 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lovedOnePhone">
-                            Phone (Optional)
+                            {tB("phoneOptional")}
                           </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1485,7 +1554,9 @@ export default function BookAppointmentPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="lovedOneEmail">Email (Optional)</Label>
+                        <Label htmlFor="lovedOneEmail">
+                          {tB("emailOptional")}
+                        </Label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -1506,7 +1577,7 @@ export default function BookAppointmentPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="lovedOneNotes">
-                          Additional Notes (Optional)
+                          {tB("additionalNotes")}
                         </Label>
                         <Textarea
                           id="lovedOneNotes"
@@ -1517,7 +1588,7 @@ export default function BookAppointmentPage() {
                               notes: e.target.value,
                             })
                           }
-                          placeholder="Any relevant information about your loved one that might help the professional..."
+                          placeholder={tB("notesLovedOnePlaceholder")}
                           rows={3}
                         />
                       </div>
@@ -1525,7 +1596,7 @@ export default function BookAppointmentPage() {
                       {/* Motif Search Section - ADDED HERE */}
                       <div className="space-y-2 pt-4 border-t border-border/40">
                         <Label htmlFor="issueType">
-                          What brings them here?{" "}
+                          {tB("whatBringsThem")}{" "}
                           <span className="text-red-500">*</span>
                         </Label>
                         <MotifSearch
@@ -1533,7 +1604,7 @@ export default function BookAppointmentPage() {
                           onChange={(value) => {
                             setIssueType(Array.isArray(value) ? value : value ? [value] : []);
                           }}
-                          placeholder="Tapez vos motifs ex: anxiété, burnout..."
+                          placeholder={tB("motifPlaceholder")}
                           multiSelect={true}
                           maxSelections={3}
                         />
@@ -1559,10 +1630,10 @@ export default function BookAppointmentPage() {
                                     <User className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                                     <div className="flex-1">
                                       <Label className="text-base font-medium text-foreground">
-                                        {t("accountManager")}
+                                        {tManaged("accountManager")}
                                       </Label>
                                       <p className="text-sm text-muted-foreground mt-1">
-                                        {t("accountManagerDesc")}
+                                        {tManaged("accountManagerDesc")}
                                       </p>
                                     </div>
                                   </div>
@@ -1578,7 +1649,7 @@ export default function BookAppointmentPage() {
                                       htmlFor="linkAsGuardian"
                                       className="text-sm font-normal cursor-pointer"
                                     >
-                                      {t("linkAccountManager")}
+                                      {tManaged("linkAccountManager")}
                                     </Label>
                                   </div>
                                 </div>
@@ -1602,14 +1673,14 @@ export default function BookAppointmentPage() {
                             }
                           }}
                         >
-                          Back
+                          {tB("back")}
                         </Button>
                         <Button
                           onClick={handleSpecificInfoSubmit}
                           size="lg"
                           className="gap-2"
                         >
-                          Continue
+                          {tB("continue")}
                           <ArrowLeft className="h-4 w-4 rotate-180" />
                         </Button>
                       </div>
@@ -1623,18 +1694,17 @@ export default function BookAppointmentPage() {
                     <div className="p-6 border-b border-border/40">
                       <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                         <Stethoscope className="h-5 w-5 text-blue-500" />
-                        Patient Referral Information
+                        {tB("patientReferralTitle")}
                       </h2>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Please provide your professional information and details
-                        about the referral
+                        {tB("patientReferralSubtitle")}
                       </p>
                     </div>
                     <div className="p-6 space-y-6">
                       {/* Referrer Type */}
                       <div className="space-y-2">
                         <Label>
-                          Your Professional Role{" "}
+                          {tB("yourProfessionalRole")}{" "}
                           <span className="text-red-500">*</span>
                         </Label>
                         <Select
@@ -1656,13 +1726,13 @@ export default function BookAppointmentPage() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="doctor">
-                              Doctor / Physician
+                              {tB("roleDoctor")}
                             </SelectItem>
                             <SelectItem value="specialist">
-                              Specialist
+                              {tB("roleSpecialist")}
                             </SelectItem>
                             <SelectItem value="other_professional">
-                              Other Healthcare Professional
+                              {tB("roleOther")}
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -1671,7 +1741,8 @@ export default function BookAppointmentPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="referrerName">
-                            Your Name <span className="text-red-500">*</span>
+                            {tB("yourName")}{" "}
+                            <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="referrerName"
@@ -1682,12 +1753,12 @@ export default function BookAppointmentPage() {
                                 referrerName: e.target.value,
                               })
                             }
-                            placeholder="Dr. John Smith"
+                            placeholder={tB("placeholderDrName")}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="referrerLicense">
-                            License Number (Optional)
+                            {tB("licenseOptional")}
                           </Label>
                           <Input
                             id="referrerLicense"
@@ -1698,7 +1769,7 @@ export default function BookAppointmentPage() {
                                 referrerLicense: e.target.value,
                               })
                             }
-                            placeholder="License #"
+                            placeholder={tB("placeholderLicenseHash")}
                           />
                         </div>
                       </div>
@@ -1706,8 +1777,15 @@ export default function BookAppointmentPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="referrerPhone">
-                            Contact Phone {isGuest && <span className="text-red-500">*</span>}
-                            {!isGuest && <span className="text-muted-foreground">(Optional)</span>}
+                            {tB("contactPhone")}{" "}
+                            {isGuest && (
+                              <span className="text-red-500">*</span>
+                            )}
+                            {!isGuest && (
+                              <span className="text-muted-foreground">
+                                {tB("optional")}
+                              </span>
+                            )}
                           </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1729,8 +1807,15 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="referrerEmail">
-                            Contact Email {isGuest && <span className="text-red-500">*</span>}
-                            {!isGuest && <span className="text-muted-foreground">(Optional)</span>}
+                            {tB("contactEmail")}{" "}
+                            {isGuest && (
+                              <span className="text-red-500">*</span>
+                            )}
+                            {!isGuest && (
+                              <span className="text-muted-foreground">
+                                {tB("optional")}
+                              </span>
+                            )}
                           </Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1754,7 +1839,7 @@ export default function BookAppointmentPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="referralReason">
-                          Reason for Referral (Optional)
+                          {tB("reasonReferral")}
                         </Label>
                         <Textarea
                           id="referralReason"
@@ -1765,7 +1850,7 @@ export default function BookAppointmentPage() {
                               referralReason: e.target.value,
                             })
                           }
-                          placeholder="Brief description of why you are referring this patient..."
+                          placeholder={tB("reasonReferralPlaceholder")}
                           rows={3}
                         />
                       </div>
@@ -1773,7 +1858,7 @@ export default function BookAppointmentPage() {
                       {/* Motif Search Section - ADDED HERE */}
                       <div className="space-y-2 pt-4 border-t border-border/40">
                         <Label htmlFor="issueType">
-                          Primary Issue / Diagnosis{" "}
+                          {tB("primaryIssueDiagnosis")}{" "}
                           <span className="text-red-500">*</span>
                         </Label>
                         <MotifSearch
@@ -1781,7 +1866,7 @@ export default function BookAppointmentPage() {
                           onChange={(value) => {
                             setIssueType(Array.isArray(value) ? value : value ? [value] : []);
                           }}
-                          placeholder="Tapez vos motifs ex: anxiété, burnout..."
+                          placeholder={tB("motifPlaceholder")}
                           multiSelect={true}
                           maxSelections={3}
                         />
@@ -1789,9 +1874,7 @@ export default function BookAppointmentPage() {
 
                       {/* Document Upload Section */}
                       <div className="space-y-3 pt-4 border-t border-border/40">
-                        <Label>
-                          Upload Referral/Prescription Document (Optional)
-                        </Label>
+                        <Label>{tB("uploadReferralDoc")}</Label>
                         <div className="border-2 border-dashed border-border/60 rounded-xl p-6">
                           {referralInfo.documentUrl ? (
                             <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
@@ -1802,7 +1885,7 @@ export default function BookAppointmentPage() {
                                     {referralInfo.documentName}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
-                                    Document uploaded successfully
+                                    {tB("documentUploaded")}
                                   </p>
                                 </div>
                               </div>
@@ -1836,11 +1919,11 @@ export default function BookAppointmentPage() {
                                 )}
                                 <p className="mt-2 text-sm text-muted-foreground">
                                   {uploading
-                                    ? "Uploading..."
-                                    : "Click to upload or drag and drop"}
+                                    ? tB("uploading")
+                                    : tB("clickUpload")}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  PDF, JPG, PNG up to 10MB
+                                  {tB("fileTypes")}
                                 </p>
                               </label>
                             </div>
@@ -1861,7 +1944,7 @@ export default function BookAppointmentPage() {
                             }
                           }}
                         >
-                          Back
+                          {tB("back")}
                         </Button>
                         <Button
                           onClick={handleSpecificInfoSubmit}
@@ -1869,7 +1952,7 @@ export default function BookAppointmentPage() {
                           className="gap-2"
                           disabled={uploading}
                         >
-                          Continue
+                          {tB("continue")}
                           <ArrowLeft className="h-4 w-4 rotate-180" />
                         </Button>
                       </div>
@@ -1885,11 +1968,12 @@ export default function BookAppointmentPage() {
                 <div className="p-6 border-b border-border/40">
                   <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    Appointment Details
+                    {tB("appointmentDetails")}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Tell us about your needs so we can match you with the right
-                    professional{isGuest && bookingFor === "self" && " and provide your contact information"}
+                    {isGuest && bookingFor === "self"
+                      ? tB("appointmentDetailsSubtitleGuest")
+                      : tB("appointmentDetailsSubtitle")}
                   </p>
                 </div>
                 <div className="p-6 space-y-6">
@@ -1898,12 +1982,13 @@ export default function BookAppointmentPage() {
                     <>
                       <div className="pb-4 border-b border-border/40">
                         <h3 className="text-lg font-medium text-foreground mb-4">
-                          Your Contact Information
+                          {tB("yourContactInfo")}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="guestFirstName">
-                              First Name <span className="text-red-500">*</span>
+                              {tB("firstName")}{" "}
+                              <span className="text-red-500">*</span>
                             </Label>
                             <Input
                               id="guestFirstName"
@@ -1914,12 +1999,13 @@ export default function BookAppointmentPage() {
                                   firstName: e.target.value,
                                 })
                               }
-                              placeholder="Enter your first name"
+                              placeholder={tB("placeholderFirstName")}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="guestLastName">
-                              Last Name <span className="text-red-500">*</span>
+                              {tB("lastName")}{" "}
+                              <span className="text-red-500">*</span>
                             </Label>
                             <Input
                               id="guestLastName"
@@ -1930,14 +2016,15 @@ export default function BookAppointmentPage() {
                                   lastName: e.target.value,
                                 })
                               }
-                              placeholder="Enter your last name"
+                              placeholder={tB("placeholderLastName")}
                             />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                           <div className="space-y-2">
                             <Label htmlFor="guestEmail">
-                              Email <span className="text-red-500">*</span>
+                              {tB("email")}{" "}
+                              <span className="text-red-500">*</span>
                             </Label>
                             <div className="relative">
                               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1958,7 +2045,8 @@ export default function BookAppointmentPage() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="guestPhone">
-                              Phone <span className="text-red-500">*</span>
+                              {tB("phone")}{" "}
+                              <span className="text-red-500">*</span>
                             </Label>
                             <div className="relative">
                               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1980,7 +2068,8 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="mt-4">
                           <Label htmlFor="guestLocation">
-                            Location <span className="text-red-500">*</span>
+                            {tB("location")}{" "}
+                            <span className="text-red-500">*</span>
                           </Label>
                           <div className="relative">
                             <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1993,7 +2082,7 @@ export default function BookAppointmentPage() {
                                   location: e.target.value,
                                 })
                               }
-                              placeholder="City, Province"
+                              placeholder={tB("placeholderCity")}
                               className="pl-10"
                             />
                           </div>
@@ -2003,7 +2092,7 @@ export default function BookAppointmentPage() {
                   )}
                   {/* Session Type */}
                   <div className="space-y-2">
-                    <Label>Session Type</Label>
+                    <Label>{tB("sessionType")}</Label>
                     <Select
                       value={therapyType}
                       onValueChange={(value: "solo" | "couple" | "group") =>
@@ -2017,19 +2106,19 @@ export default function BookAppointmentPage() {
                         <SelectItem value="solo">
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            Individual Session
+                            {tB("individualSession")}
                           </div>
                         </SelectItem>
                         <SelectItem value="couple">
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4" />
-                            Couple Session
+                            {tB("coupleSession")}
                           </div>
                         </SelectItem>
                         <SelectItem value="group">
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4" />
-                            Group Session
+                            {tB("groupSession")}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -2038,7 +2127,7 @@ export default function BookAppointmentPage() {
 
                   {/* Appointment Type */}
                   <div className="space-y-2">
-                    <Label>Preferred Appointment Type</Label>
+                    <Label>{tB("preferredAppointmentType")}</Label>
                     <Select
                       value={selectedType}
                       onValueChange={(value: "video" | "in-person" | "phone") =>
@@ -2052,19 +2141,19 @@ export default function BookAppointmentPage() {
                         <SelectItem value="video">
                           <div className="flex items-center gap-2">
                             <Video className="h-4 w-4" />
-                            Video Call
+                            {tB("videoCall")}
                           </div>
                         </SelectItem>
                         <SelectItem value="in-person">
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4" />
-                            In-Person
+                            {tB("inPerson")}
                           </div>
                         </SelectItem>
                         <SelectItem value="phone">
                           <div className="flex items-center gap-2">
                             <Phone className="h-4 w-4" />
-                            Phone Call
+                            {tB("phoneCall")}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -2075,10 +2164,10 @@ export default function BookAppointmentPage() {
                   {(bookingFor === "self" || !issueType || (Array.isArray(issueType) && issueType.length === 0)) && (
                     <div className="space-y-2">
                       <Label htmlFor="issueType">
-                        What brings you here? *
+                        {tB("whatBringsYou")} *
                         {medicalProfile?.primaryIssue && (
                           <span className="text-xs text-muted-foreground ml-2">
-                            (Pre-filled from your profile)
+                            {tB("preFilledProfile")}
                           </span>
                         )}
                       </Label>
@@ -2087,7 +2176,7 @@ export default function BookAppointmentPage() {
                         onChange={(value) => {
                           setIssueType(Array.isArray(value) ? value : value ? [value] : []);
                         }}
-                        placeholder="Tapez vos motifs ex: anxiété, burnout..."
+                        placeholder={tB("motifPlaceholder")}
                         multiSelect={true}
                         maxSelections={3}
                       />
@@ -2097,9 +2186,7 @@ export default function BookAppointmentPage() {
                   {/* Preferred Availability */}
                   {bookingFor === "self" ? (
                     <div className="space-y-2">
-                      <Label>
-                        Select Available Times (Next Week)
-                      </Label>
+                      <Label>{tB("selectTimesNextWeek")}</Label>
                       <Button
                         type="button"
                         variant="outline"
@@ -2108,20 +2195,24 @@ export default function BookAppointmentPage() {
                       >
                         <Calendar className="mr-2 h-4 w-4" />
                         {preferredAvailability.length > 0
-                          ? `${preferredAvailability.length} time slot${preferredAvailability.length > 1 ? 's' : ''} selected`
-                          : "Click to select available times"}
+                          ? tB("timeSlotsSelected", {
+                              count: preferredAvailability.length,
+                            })
+                          : tB("clickSelectTimes")}
                       </Button>
                       <p className="text-xs text-muted-foreground">
-                        Select all time slots that work for you next week
+                        {tB("timeSlotsHint")}
                       </p>
 
                       {/* Calendar Dialog */}
                       <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
                         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Select Available Times (Next Week)</DialogTitle>
+                            <DialogTitle>
+                              {tB("calendarDialogTitle")}
+                            </DialogTitle>
                             <DialogDescription>
-                              Choose the time slots that work for you. You can select multiple slots across different days.
+                              {tB("calendarDialogDesc")}
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4 mt-4">
@@ -2137,8 +2228,8 @@ export default function BookAppointmentPage() {
                               for (let i = 0; i < 7; i++) {
                                 const date = new Date(nextMonday);
                                 date.setDate(nextMonday.getDate() + i);
-                                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-                                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                                const dayName = date.toLocaleDateString(dateLocale, { weekday: 'long' });
+                                const dateStr = date.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' });
                                 weekDays.push({
                                   day: dayName,
                                   date: dateStr,
@@ -2147,9 +2238,9 @@ export default function BookAppointmentPage() {
                               }
                               
                               const timeSlots = [
-                                { label: 'Morning', value: 'morning', time: '9:00 AM - 12:00 PM' },
-                                { label: 'Afternoon', value: 'afternoon', time: '12:00 PM - 5:00 PM' },
-                                { label: 'Evening', value: 'evening', time: '5:00 PM - 8:00 PM' },
+                                { label: tB("morning"), value: 'morning', time: tB("morningTime") },
+                                { label: tB("afternoon"), value: 'afternoon', time: tB("afternoonTime") },
+                                { label: tB("evening"), value: 'evening', time: tB("eveningTime") },
                               ];
                               
                               return weekDays.map((day) => (
@@ -2199,7 +2290,7 @@ export default function BookAppointmentPage() {
                               variant="outline"
                               onClick={() => setCalendarOpen(false)}
                             >
-                              Done
+                              {tB("done")}
                             </Button>
                           </div>
                         </DialogContent>
@@ -2208,52 +2299,54 @@ export default function BookAppointmentPage() {
                   ) : (
                     <div className="space-y-2">
                       <Label>
-                        Preferred Availability
+                        {tB("preferredAvailability")}
                         {medicalProfile?.availability &&
                           medicalProfile.availability.length > 0 && (
                             <span className="text-xs text-muted-foreground ml-2">
-                              (Pre-filled from your profile)
+                              {tB("preFilledProfile")}
                             </span>
                           )}
                       </Label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {[
-                          "Weekday Mornings",
-                          "Weekday Afternoons",
-                          "Weekday Evenings",
-                          "Weekends",
-                        ].map((option) => (
+                        {(
+                          [
+                            { value: "Weekday Mornings", key: "weekdayMornings" },
+                            { value: "Weekday Afternoons", key: "weekdayAfternoons" },
+                            { value: "Weekday Evenings", key: "weekdayEvenings" },
+                            { value: "Weekends", key: "weekends" },
+                          ] as const
+                        ).map(({ value, key }) => (
                           <Button
-                            key={option}
+                            key={value}
                             type="button"
                             variant={
-                              preferredAvailability.includes(option)
+                              preferredAvailability.includes(value)
                                 ? "default"
                                 : "outline"
                             }
                             size="sm"
                             onClick={() => {
-                              if (preferredAvailability.includes(option)) {
+                              if (preferredAvailability.includes(value)) {
                                 setPreferredAvailability(
                                   preferredAvailability.filter(
-                                    (a) => a !== option,
+                                    (a) => a !== value,
                                   ),
                                 );
                               } else {
                                 setPreferredAvailability([
                                   ...preferredAvailability,
-                                  option,
+                                  value,
                                 ]);
                               }
                             }}
                             className="text-xs"
                           >
-                            {option}
+                            {tB(key)}
                           </Button>
                         ))}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Select all time slots that work for you
+                        {tB("availabilityHintGeneric")}
                       </p>
                     </div>
                   )}
@@ -2276,11 +2369,11 @@ export default function BookAppointmentPage() {
 
                   {/* Notes */}
                   <div className="space-y-2">
-                    <Label>Additional Notes (Optional)</Label>
+                    <Label>{tB("notesLabel")}</Label>
                     <Textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Tell us more about what you'd like to discuss, any preferences for your therapist, or anything else you think would be helpful..."
+                      placeholder={tB("notesPlaceholder")}
                       rows={4}
                     />
                   </div>
@@ -2305,7 +2398,7 @@ export default function BookAppointmentPage() {
                         }
                       }}
                     >
-                      Back
+                      {tB("back")}
                     </Button>
                     <Button
                       onClick={() => {
@@ -2313,13 +2406,13 @@ export default function BookAppointmentPage() {
                         if (isGuest && bookingFor === "self") {
                           if (!guestInfo.firstName.trim() || !guestInfo.lastName.trim() || 
                               !guestInfo.email.trim() || !guestInfo.phone.trim() || !guestInfo.location.trim()) {
-                            setError("Please fill in all required contact information");
+                            setError(tB("errors.contactGuest"));
                             return;
                           }
                           // Validate email format
                           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                           if (!emailRegex.test(guestInfo.email)) {
-                            setError("Please enter a valid email address");
+                            setError(tB("errors.emailInvalid"));
                             return;
                           }
                         }
@@ -2328,7 +2421,7 @@ export default function BookAppointmentPage() {
                       }}
                       disabled={!issueType || !Array.isArray(issueType) || issueType.length === 0}
                     >
-                      Review Request
+                      {tB("reviewRequest")}
                     </Button>
                   </div>
                 </div>
@@ -2341,10 +2434,10 @@ export default function BookAppointmentPage() {
                 <div className="p-6 border-b border-border/40">
                   <h2 className="text-xl font-serif font-light text-foreground flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5" />
-                    Review Your Request
+                    {tB("reviewYourRequest")}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Please review your information before submitting
+                    {tB("reviewSubtitle")}
                   </p>
                 </div>
                 <div className="p-6 space-y-6">
@@ -2353,18 +2446,20 @@ export default function BookAppointmentPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">
-                          Booking For
+                          {tB("bookingForLabel")}
                         </p>
-                        <p className="font-medium capitalize">
+                        <p className="font-medium">
                           {bookingFor === "loved-one"
-                            ? "Loved One"
-                            : bookingFor}
+                            ? tB("lovedOneLabel")
+                            : bookingFor === "self"
+                              ? tB("selfLabel")
+                              : tB("patientLabel")}
                         </p>
                       </div>
                       {isGuest && (
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Contact
+                            {tB("contactLabel")}
                           </p>
                           <p className="font-medium">
                             {guestInfo.firstName} {guestInfo.lastName}
@@ -2379,15 +2474,19 @@ export default function BookAppointmentPage() {
                       )}
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">
-                          Session Type
+                          {tB("sessionTypeLabel")}
                         </p>
-                        <p className="font-medium capitalize">
-                          {therapyType} Session
+                        <p className="font-medium">
+                          {therapyType === "solo"
+                            ? tB("individualSession")
+                            : therapyType === "couple"
+                              ? tB("coupleSession")
+                              : tB("groupSession")}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">
-                          Appointment Type
+                          {tB("appointmentTypeLabel")}
                         </p>
                         <div className="flex items-center gap-2">
                           {selectedType === "video" && (
@@ -2399,31 +2498,41 @@ export default function BookAppointmentPage() {
                           {selectedType === "phone" && (
                             <Phone className="h-4 w-4" />
                           )}
-                          <span className="font-medium capitalize">
-                            {selectedType}
+                          <span className="font-medium">
+                            {selectedType === "video"
+                              ? tB("videoCall")
+                              : selectedType === "in-person"
+                                ? tB("inPerson")
+                                : tB("phoneCall")}
                           </span>
                         </div>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">
-                          Topic
+                          {tB("topicLabel")}
                         </p>
-                        <p className="font-medium">{issueType}</p>
+                        <p className="font-medium">
+                          {Array.isArray(issueType)
+                            ? issueType.join(", ")
+                            : String(issueType)}
+                        </p>
                       </div>
                       {preferredAvailability.length > 0 && (
                         <div className="md:col-span-2">
                           <p className="text-xs text-muted-foreground mb-1">
-                            Preferred Availability
+                            {tB("preferredAvailabilityLabel")}
                           </p>
                           <p className="font-medium">
-                            {preferredAvailability.join(", ")}
+                            {preferredAvailability
+                              .map(describeAvailabilitySlot)
+                              .join(", ")}
                           </p>
                         </div>
                       )}
                       {notes && (
                         <div className="md:col-span-2">
                           <p className="text-xs text-muted-foreground mb-1">
-                            Additional Notes
+                            {tB("additionalNotesLabel")}
                           </p>
                           <p className="text-sm">{notes}</p>
                         </div>
@@ -2447,16 +2556,14 @@ export default function BookAppointmentPage() {
                       <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                       <div>
                         <p className="font-medium text-blue-800 dark:text-blue-200">
-                          What happens next?
+                          {tB("whatNext")}
                         </p>
                         <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                          After you submit, a qualified professional will review
-                          your request and contact you via{" "}
-                          {isGuest ? "email or phone" : "your account"} to
-                          schedule your appointment at a time that works for
-                          both of you. Once the appointment is scheduled, you will
-                          be prompted to complete your payment method to confirm
-                          the appointment.
+                          {tB("whatNextBody", {
+                            channel: isGuest
+                              ? tB("channelGuest")
+                              : tB("channelAccount"),
+                          })}
                         </p>
                       </div>
                     </div>
@@ -2464,16 +2571,16 @@ export default function BookAppointmentPage() {
 
                   <div className="flex justify-between pt-4">
                     <Button variant="outline" onClick={() => setCurrentStep(3)}>
-                      Back
+                      {tB("back")}
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>
                       {loading ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Submitting...
+                          {tB("submitting")}
                         </>
                       ) : (
-                        "Submit Request"
+                        tB("submitRequest")
                       )}
                     </Button>
                   </div>
@@ -2489,12 +2596,10 @@ export default function BookAppointmentPage() {
                     <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
                   </div>
                   <h2 className="text-2xl font-serif font-light text-foreground mb-2">
-                    Request Submitted!
+                    {tB("requestSubmitted")}
                   </h2>
                   <p className="text-muted-foreground mb-6">
-                    Your appointment request has been submitted successfully. A
-                    qualified professional will review your request and contact
-                    you soon to schedule your session.
+                    {tB("requestSuccessBody")}
                   </p>
 
                   <div className="space-y-4 text-left bg-muted/30 rounded-lg p-6 mb-6">
@@ -2502,10 +2607,20 @@ export default function BookAppointmentPage() {
                       <User className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="text-sm text-muted-foreground">
-                          Session Type
+                          {tB("sessionTypeLabel")}
                         </p>
-                        <p className="font-medium text-foreground capitalize">
-                          {therapyType} {selectedType} Session
+                        <p className="font-medium text-foreground">
+                          {therapyType === "solo"
+                            ? tB("individualSession")
+                            : therapyType === "couple"
+                              ? tB("coupleSession")
+                              : tB("groupSession")}
+                          {" · "}
+                          {selectedType === "video"
+                            ? tB("videoCall")
+                            : selectedType === "in-person"
+                              ? tB("inPerson")
+                              : tB("phoneCall")}
                         </p>
                       </div>
                     </div>
@@ -2513,9 +2628,13 @@ export default function BookAppointmentPage() {
                       <div className="flex items-start gap-3">
                         <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
                         <div>
-                          <p className="text-sm text-muted-foreground">Topic</p>
+                          <p className="text-sm text-muted-foreground">
+                            {tB("topicLabel")}
+                          </p>
                           <p className="font-medium text-foreground">
-                            {issueType}
+                            {Array.isArray(issueType)
+                              ? issueType.join(", ")
+                              : String(issueType)}
                           </p>
                         </div>
                       </div>
@@ -2526,7 +2645,7 @@ export default function BookAppointmentPage() {
                           <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
                           <div>
                             <p className="text-sm text-muted-foreground">
-                              We&apos;ll contact you at
+                              {tB("wellContactYouAt")}
                             </p>
                             <p className="font-medium text-foreground">
                               {guestInfo.email}
@@ -2542,12 +2661,10 @@ export default function BookAppointmentPage() {
 
                   <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4 mb-6">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      <strong>What happens next?</strong>
+                      <strong>{tB("whatNextShort")}</strong>
                     </p>
                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                      A professional will review your request and reach out to
-                      schedule your appointment. You&apos;ll receive a
-                      confirmation once your session is booked.
+                      {tB("whatNextShortBody")}
                     </p>
                   </div>
 
@@ -2558,7 +2675,7 @@ export default function BookAppointmentPage() {
                       className="gap-2"
                     >
                       <Home className="h-4 w-4" />
-                      Return to Home
+                      {tB("returnHome")}
                     </Button>
                   ) : (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -2569,13 +2686,13 @@ export default function BookAppointmentPage() {
                         className="gap-2"
                       >
                         <Calendar className="h-4 w-4" />
-                        View My Requests
+                        {tB("viewRequests")}
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => router.push("/client/dashboard")}
                       >
-                        Back to Dashboard
+                        {tB("backDashboard")}
                       </Button>
                     </div>
                   )}
