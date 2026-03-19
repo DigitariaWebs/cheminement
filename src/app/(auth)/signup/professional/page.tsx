@@ -220,8 +220,8 @@ export default function ProfessionalSignupPage() {
         if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
         break;
       case 2: // Education
-        if (!formData.degree.trim()) return "Degree is required";
-        if (!formData.institution.trim()) return "Institution is required";
+        if (!formData.degree.trim()) return t("errors.degreeRequired");
+        if (!formData.institution.trim()) return t("errors.institutionRequired");
         break;
     }
     return null;
@@ -248,7 +248,7 @@ export default function ProfessionalSignupPage() {
     e.preventDefault();
 
     if (!formData.agreeToTerms) {
-      setError("You must agree to the terms and conditions");
+      setError(t("errors.agreeToTermsRequired"));
       return;
     }
 
@@ -361,7 +361,7 @@ export default function ProfessionalSignupPage() {
       });
 
       if (result?.error) {
-        setError("Account created but sign in failed. Please try logging in.");
+        setError(t("errors.accountCreatedButSignInFailed"));
         router.push("/login");
       } else {
         router.push("/professional/dashboard");
@@ -370,7 +370,7 @@ export default function ProfessionalSignupPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to create account. Please try again.",
+          : t("errors.failedToCreateAccount"),
       );
     } finally {
       setIsLoading(false);
@@ -410,7 +410,7 @@ export default function ProfessionalSignupPage() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  placeholder="John"
+                  placeholder={t("firstNamePlaceholder")}
                   required
                 />
               </div>
@@ -424,7 +424,7 @@ export default function ProfessionalSignupPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  placeholder="Doe"
+                  placeholder={t("lastNamePlaceholder")}
                   required
                 />
               </div>
@@ -441,7 +441,7 @@ export default function ProfessionalSignupPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 required
               />
             </div>
@@ -450,7 +450,7 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  Phone Number
+                  {t("phone")}
                 </Label>
                 <Input
                   id="phone"
@@ -458,7 +458,7 @@ export default function ProfessionalSignupPage() {
                   type="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder={t("phonePlaceholder")}
                 />
               </div>
 
@@ -468,7 +468,7 @@ export default function ProfessionalSignupPage() {
                   className="flex items-center gap-2"
                 >
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  Date of Birth
+                  {t("dateOfBirth")}
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -562,7 +562,7 @@ export default function ProfessionalSignupPage() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                   required
                   className="pr-10"
                 />
@@ -579,7 +579,7 @@ export default function ProfessionalSignupPage() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                At least 8 characters
+                {t("passwordHint")}
               </p>
             </div>
 
@@ -593,7 +593,7 @@ export default function ProfessionalSignupPage() {
                 type={showPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder={t("passwordPlaceholder")}
                 required
               />
             </div>
@@ -689,7 +689,7 @@ export default function ProfessionalSignupPage() {
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
-                placeholder="Tell us about your professional background and approach..."
+                placeholder={t("professionalBioPlaceholder")}
                 className="min-h-[120px] resize-none"
                 maxLength={1000}
               />
@@ -705,32 +705,32 @@ export default function ProfessionalSignupPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="degree">
-                Degree <span className="text-red-500">*</span>
+                {t("degree")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="degree"
                 name="degree"
                 value={formData.degree}
                 onChange={handleChange}
-                placeholder="e.g., Ph.D. in Clinical Psychology"
+                placeholder={t("degreePlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="institution">
-                Institution <span className="text-red-500">*</span>
+                {t("institution")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="institution"
                 name="institution"
                 value={formData.institution}
                 onChange={handleChange}
-                placeholder="University name"
+                placeholder={t("institutionPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="graduationYear">Graduation Year</Label>
+              <Label htmlFor="graduationYear">{t("graduationYear")}</Label>
               <Input
                 id="graduationYear"
                 name="graduationYear"
@@ -739,12 +739,12 @@ export default function ProfessionalSignupPage() {
                 max={new Date().getFullYear()}
                 value={formData.graduationYear}
                 onChange={handleChange}
-                placeholder="2020"
+                placeholder={t("graduationYearPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Certifications (select all that apply)</Label>
+              <Label>{t("certifications")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "CBT Certified",
@@ -1108,14 +1108,14 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="sessionDuration">
-                  <SelectValue placeholder="Select duration" />
+                  <SelectValue placeholder={t("sessionDurationSelectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="30">30 minutes</SelectItem>
-                  <SelectItem value="45">45 minutes</SelectItem>
-                  <SelectItem value="50">50 minutes</SelectItem>
-                  <SelectItem value="60">60 minutes</SelectItem>
-                  <SelectItem value="90">90 minutes</SelectItem>
+                  <SelectItem value="30">{t("sessionDurationOptions.minutes30")}</SelectItem>
+                  <SelectItem value="45">{t("sessionDurationOptions.minutes45")}</SelectItem>
+                  <SelectItem value="50">{t("sessionDurationOptions.minutes50")}</SelectItem>
+                  <SelectItem value="60">{t("sessionDurationOptions.minutes60")}</SelectItem>
+                  <SelectItem value="90">{t("sessionDurationOptions.minutes90")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1131,14 +1131,14 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="breakDuration">
-                  <SelectValue placeholder="Select break duration" />
+                  <SelectValue placeholder={t("breakDurationSelectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="0">{t("noBreak")}</SelectItem>
-                  <SelectItem value="5">5 minutes</SelectItem>
-                  <SelectItem value="10">10 minutes</SelectItem>
-                  <SelectItem value="15">15 minutes</SelectItem>
-                  <SelectItem value="30">30 minutes</SelectItem>
+                  <SelectItem value="5">{t("breakDurationOptions.minutes5")}</SelectItem>
+                  <SelectItem value="10">{t("breakDurationOptions.minutes10")}</SelectItem>
+                  <SelectItem value="15">{t("breakDurationOptions.minutes15")}</SelectItem>
+                  <SelectItem value="30">{t("breakDurationOptions.minutes30")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

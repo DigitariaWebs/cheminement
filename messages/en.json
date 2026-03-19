@@ -83,6 +83,7 @@
     "whatBringsYou": "What brings you here?",
     "preFilledProfile": "(Pre-filled from your profile)",
     "motifPlaceholder": "Type your reasons e.g. anxiety, burnout...",
+    "motifSearchButton": "Search",
     "appointmentDetails": "Appointment Details",
     "appointmentDetailsSubtitle": "Tell us about your needs so we can match you with the right professional",
     "appointmentDetailsSubtitleGuest": "Tell us about your needs so we can match you with the right professional and provide your contact information",
@@ -678,16 +679,135 @@
         "childDobRequired": "Child's date of birth is required.",
         "childServiceTypeRequired": "Please indicate whether this is for an evaluation or psychological follow-up.",
         "paymentMethodRequired": "Please choose a payment method.",
-        "agreeToTermsRequired": "You must accept the terms and conditions."
+        "agreeToTermsRequired": "You must accept the terms and conditions.",
+        "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
+        "failedToCreateAccount": "Failed to create account. Please try again.",
+        "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
       "objectivesPlaceholder": "Search for objectives (stress management, anxiety...)",
+      "therapyObjectives": [
+        "Reduce symptoms",
+        "Improve relationships",
+        "Better coping skills",
+        "Self-understanding",
+        "Life changes",
+        "Personal growth",
+        "Stress management",
+        "Grief processing"
+      ],
       "preferredProfessionalLabel": "You wish to consult a professional",
       "noPreference": "No preference",
       "preferredProfessionalMale": "Male",
       "preferredProfessionalFemale": "Female",
       "preferredProfessionalOther": "Other",
-      "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference."
+      "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference.",
+      "profile": {
+        "yes": "Yes",
+        "no": "No",
+        "preferences": {
+          "online": "Online",
+          "inPerson": "In-person",
+          "both": "Both"
+        },
+        "matching": {
+          "any": "Any age",
+          "younger": "Younger (25-35)",
+          "middle": "Middle (35-50)",
+          "older": "Older (50+)"
+        },
+        "issueDetails": {
+          "mild": "Mild",
+          "moderate": "Moderate",
+          "severe": "Severe",
+          "lessThanMonth": "Less than a month",
+          "oneToThree": "1-3 months",
+          "threeToSix": "3-6 months",
+          "moreThanSix": "More than 6 months"
+        }
+      },
+      "profileModal": {
+        "step1": {
+          "concernedPerson": "Who is this profile for?",
+          "medicalConditions": "Medical Conditions",
+          "currentMedications": "Current Medications",
+          "substanceUse": "Substance Use",
+          "substanceUsePlaceholder": "Please describe any alcohol, tobacco, or drug use..."
+        },
+        "step2": {
+          "previousTherapy": "Have you had therapy before?",
+          "previousTherapyDetails": "Previous Therapy Details",
+          "previousTherapyDetailsPlaceholder": "Please describe your previous therapy experience...",
+          "psychiatricHospitalization": "Have you ever been hospitalized for psychiatric reasons?",
+          "currentTreatment": "Current Treatment",
+          "currentTreatmentPlaceholder": "Describe any current mental health treatment...",
+          "diagnosedConditions": "Diagnosed Conditions"
+        },
+        "step3": {
+          "primaryIssue": "What brings you to therapy today?",
+          "primaryIssuePlaceholder": "Describe your main concern or reason for seeking help...",
+          "secondaryIssues": "Secondary Issues",
+          "issueDescription": "Detailed Description",
+          "issueDescriptionPlaceholder": "Please provide more details about your concerns...",
+          "severity": "How severe are your symptoms?",
+          "severityPlaceholder": "Select severity",
+          "duration": "How long have you experienced this?",
+          "durationPlaceholder": "Select duration",
+          "triggeringSituation": "Triggering Situation",
+          "triggeringSituationPlaceholder": "What triggered or worsened your current situation?"
+        },
+        "step4": {
+          "symptoms": "Current Symptoms",
+          "dailyLifeImpact": "Impact on Daily Life",
+          "dailyLifeImpactPlaceholder": "Describe how these issues affect your daily activities, work, relationships, etc.?",
+          "sleepQuality": "Sleep Quality",
+          "sleepQualityOptions": {
+            "normal": "Normal",
+            "poor": "Poor quality",
+            "insomnia": "Insomnia",
+            "excessive": "Excessive sleeping"
+          },
+          "appetiteChanges": "Appetite Changes",
+          "appetiteChangesPlaceholder": "e.g., Loss of appetite, overeating..."
+        },
+        "step5": {
+          "concernsAboutTherapy": "Concerns About Therapy",
+          "concernsAboutTherapyPlaceholder": "Any concerns or questions about therapy?"
+        },
+        "step6": {
+          "availability": "Availability",
+          "modality": "Preferred Modality",
+          "sessionFrequency": "Preferred Session Frequency",
+          "sessionFrequencyOptions": {
+            "weekly": "Weekly",
+            "biweekly": "Every two weeks",
+            "monthly": "Monthly"
+          },
+          "notes": "Additional Notes",
+          "notesPlaceholder": "Any other preferences or information we should know..."
+        },
+        "step7": {
+          "subtitle": "Provide emergency contact information",
+          "emergencyContactName": "Emergency Contact Name",
+          "emergencyContactNamePlaceholder": "Full name",
+          "emergencyContactPhone": "Emergency Contact Phone",
+          "emergencyContactPhonePlaceholder": "Phone number",
+          "emergencyContactRelation": "Relationship",
+          "emergencyContactRelationPlaceholder": "e.g., Spouse, Parent",
+          "crisisPlan": "Crisis Plan",
+          "crisisPlanPlaceholder": "Describe your crisis plan",
+          "suicidalThoughts": "Have you experienced suicidal thoughts?",
+          "crisisHotlinesTitle": "If you're in crisis, please call one of these hotlines immediately:"
+        },
+        "step8": {
+          "preferredGender": "Preferred Professional Gender",
+          "preferredGenderPlaceholder": "Select preference",
+          "preferredAge": "Preferred Age Range",
+          "preferredAgePlaceholder": "Select age range",
+          "culturalConsiderations": "Cultural Considerations",
+          "culturalConsiderationsPlaceholder": "Any cultural preferences?"
+        }
+      }
     },
     "professionalSignup": {
       "title": "Join as a Professional",
@@ -776,9 +896,13 @@
       "licenseHint": "Professional license, doctoral student status, or permit by equivalency in progress",
       "yearsOfExperience": "Years of experience",
       "professionalBio": "Professional bio",
+      "professionalBioPlaceholder": "Tell us about your professional background and approach...",
       "degree": "Degree",
+      "degreePlaceholder": "e.g., Ph.D. in Clinical Psychology",
       "institution": "Institution",
+      "institutionPlaceholder": "University name",
       "graduationYear": "Graduation year",
+      "graduationYearPlaceholder": "e.g., 2020",
       "certifications": "Certifications (select all that apply)",
       "approachesTitle": "1 – Approaches and Therapies",
       "approachesSubtitle": "List for all profiles (select all that apply).",
@@ -804,6 +928,21 @@
       "availableDaysLabel": "Available days (select all that apply)",
       "sessionDurationLabel": "Session duration (minutes)",
       "breakDurationLabel": "Break between sessions (minutes)",
+      "sessionDurationSelectPlaceholder": "Select duration",
+      "breakDurationSelectPlaceholder": "Select break duration",
+      "sessionDurationOptions": {
+        "minutes30": "30 minutes",
+        "minutes45": "45 minutes",
+        "minutes50": "50 minutes",
+        "minutes60": "60 minutes",
+        "minutes90": "90 minutes"
+      },
+      "breakDurationOptions": {
+        "minutes5": "5 minutes",
+        "minutes10": "10 minutes",
+        "minutes15": "15 minutes",
+        "minutes30": "30 minutes"
+      },
       "availabilityHint": "You can set detailed availability and time slots after registration in your dashboard.",
       "reviewYourInformation": "Review your information",
       "basicInformation": "Basic information",
@@ -826,7 +965,9 @@
         "degreeRequired": "Degree is required",
         "institutionRequired": "Institution is required",
         "paymentFrequencyRequired": "Desired frequency is required.",
-        "agreeToTermsRequired": "You must agree to the terms and conditions."
+        "agreeToTermsRequired": "You must agree to the terms and conditions.",
+        "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
+        "failedToCreateAccount": "Failed to create account. Please try again."
       },
       "noBreak": "No break",
       "gender": "Gender",
@@ -2327,6 +2468,12 @@
         "dailyLifeImpactPlaceholder": "Describe how this affects your daily life",
         "sleepQuality": "Sleep Quality",
         "sleepQualityPlaceholder": "Select sleep quality",
+        "sleepQualityOptions": {
+          "normal": "Normal",
+          "poor": "Poor quality",
+          "insomnia": "Insomnia",
+          "excessive": "Excessive sleeping"
+        },
         "appetiteChanges": "Appetite Changes",
         "appetiteChangesPlaceholder": "Describe any changes in appetite"
       },
@@ -2351,6 +2498,11 @@
         "modalityPlaceholder": "Select modality",
         "sessionFrequency": "Session Frequency",
         "sessionFrequencyPlaceholder": "Select frequency",
+        "sessionFrequencyOptions": {
+          "weekly": "Weekly",
+          "biweekly": "Every two weeks",
+          "monthly": "Monthly"
+        },
         "location": "Preferred Location",
         "locationPlaceholder": "City or area",
         "notes": "Additional Notes",
@@ -2368,7 +2520,8 @@
         "emergencyContactRelationPlaceholder": "e.g., Spouse, Parent",
         "crisisPlan": "Crisis Plan",
         "crisisPlanPlaceholder": "Describe your crisis plan",
-        "suicidalThoughts": "Have you experienced suicidal thoughts?"
+        "suicidalThoughts": "Have you experienced suicidal thoughts?",
+        "crisisHotlinesTitle": "If you're in crisis, please call one of these hotlines immediately:"
       },
       "step8": {
         "title": "Matching Preferences",
@@ -2379,6 +2532,7 @@
         "preferredAgePlaceholder": "Select age range",
         "languagePreference": "Language Preference",
         "languagePreferencePlaceholder": "Preferred language",
+        "languagePreferenceBilingual": "Bilingual (English & French)",
         "culturalConsiderations": "Cultural Considerations",
         "culturalConsiderationsPlaceholder": "Any cultural preferences?"
       },

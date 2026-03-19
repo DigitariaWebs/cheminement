@@ -83,6 +83,7 @@
     "whatBringsYou": "Qu'est-ce qui vous amène ici ?",
     "preFilledProfile": "(Prérempli depuis votre profil)",
     "motifPlaceholder": "Tapez vos motifs ex. : anxiété, épuisement…",
+    "motifSearchButton": "Rechercher",
     "appointmentDetails": "Détails du rendez-vous",
     "appointmentDetailsSubtitle": "Parlez-nous de vos besoins pour vous jumeler au bon professionnel",
     "appointmentDetailsSubtitleGuest": "Parlez-nous de vos besoins pour vous jumeler au bon professionnel et fournissez vos coordonnées",
@@ -676,16 +677,135 @@
         "childDobRequired": "La date de naissance de l'enfant est requise.",
         "childServiceTypeRequired": "Veuillez indiquer si c'est pour une évaluation ou un suivi psychologique.",
         "paymentMethodRequired": "Veuillez choisir un mode de paiement.",
-        "agreeToTermsRequired": "Vous devez accepter les conditions d'utilisation."
+        "agreeToTermsRequired": "Vous devez accepter les conditions d'utilisation.",
+        "accountCreatedButSignInFailed": "Compte créé mais la connexion a échoué. Veuillez réessayer.",
+        "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer.",
+        "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence."
       },
       "objectivesLabel": "Objectifs de thérapie (recherche, plusieurs choix possibles)",
       "objectivesPlaceholder": "Rechercher des objectifs (gestion du stress, anxiété...)",
+      "therapyObjectives": [
+        "Réduire les symptômes",
+        "Améliorer les relations",
+        "Meilleures stratégies d'adaptation",
+        "Compréhension de soi",
+        "Changements de vie",
+        "Croissance personnelle",
+        "Gestion du stress",
+        "Traverser un deuil"
+      ],
       "preferredProfessionalLabel": "Vous souhaitez consulter un professionnel",
       "noPreference": "Pas de préférence",
       "preferredProfessionalMale": "Homme",
       "preferredProfessionalFemale": "Femme",
       "preferredProfessionalOther": "Autre",
-      "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence."
+      "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.",
+      "profile": {
+        "yes": "Oui",
+        "no": "Non",
+        "preferences": {
+          "online": "En ligne",
+          "inPerson": "En personne",
+          "both": "Les deux"
+        },
+        "matching": {
+          "any": "Aucune",
+          "younger": "Plus jeune (25-35)",
+          "middle": "Moyen (35-50)",
+          "older": "Plus âgé (50+)"
+        },
+        "issueDetails": {
+          "mild": "Léger",
+          "moderate": "Modéré",
+          "severe": "Sévère",
+          "lessThanMonth": "Moins d'un mois",
+          "oneToThree": "1-3 mois",
+          "threeToSix": "3-6 mois",
+          "moreThanSix": "Plus de 6 mois"
+        }
+      },
+      "profileModal": {
+        "step1": {
+          "concernedPerson": "Qui est concerné?",
+          "medicalConditions": "Conditions médicales",
+          "currentMedications": "Médicaments actuels",
+          "substanceUse": "Usage de substances",
+          "substanceUsePlaceholder": "Décrivez tout usage de substances"
+        },
+        "step2": {
+          "previousTherapy": "Expérience de thérapie précédente",
+          "previousTherapyDetails": "Détails de thérapie précédente",
+          "previousTherapyDetailsPlaceholder": "Décrivez votre expérience de thérapie précédente",
+          "psychiatricHospitalization": "Hospitalisation psychiatrique",
+          "currentTreatment": "Traitement actuel",
+          "currentTreatmentPlaceholder": "Décrivez tout traitement actuel",
+          "diagnosedConditions": "Conditions diagnostiquées"
+        },
+        "step3": {
+          "primaryIssue": "Problème principal",
+          "primaryIssuePlaceholder": "Quelle est votre préoccupation principale?",
+          "secondaryIssues": "Problèmes secondaires",
+          "issueDescription": "Description détaillée",
+          "issueDescriptionPlaceholder": "Fournissez plus de détails sur vos préoccupations",
+          "severity": "Niveau de sévérité",
+          "severityPlaceholder": "Sélectionnez la sévérité",
+          "duration": "Durée",
+          "durationPlaceholder": "Depuis combien de temps ressentez-vous cela?",
+          "triggeringSituation": "Situation déclenchante",
+          "triggeringSituationPlaceholder": "Décrivez tout événement déclencheur"
+        },
+        "step4": {
+          "symptoms": "Symptômes actuels",
+          "dailyLifeImpact": "Impact sur la vie quotidienne",
+          "dailyLifeImpactPlaceholder": "Décrivez comment cela affecte votre vie quotidienne",
+          "sleepQuality": "Qualité du sommeil",
+          "sleepQualityOptions": {
+            "normal": "Normal",
+            "poor": "Mauvaise qualité",
+            "insomnia": "Insomnie",
+            "excessive": "Sommeil excessif"
+          },
+          "appetiteChanges": "Changements d'appétit",
+          "appetiteChangesPlaceholder": "Décrivez tout changement d'appétit"
+        },
+        "step5": {
+          "concernsAboutTherapy": "Préoccupations concernant la thérapie",
+          "concernsAboutTherapyPlaceholder": "Des préoccupations ou questions sur la thérapie?"
+        },
+        "step6": {
+          "availability": "Disponibilité",
+          "modality": "Modalité préférée",
+          "sessionFrequency": "Fréquence des séances",
+          "sessionFrequencyOptions": {
+            "weekly": "Chaque semaine",
+            "biweekly": "Aux deux semaines",
+            "monthly": "Chaque mois"
+          },
+          "notes": "Notes supplémentaires",
+          "notesPlaceholder": "Toute autre préférence?"
+        },
+        "step7": {
+          "subtitle": "Fournissez les informations de contact d'urgence",
+          "emergencyContactName": "Nom du contact d'urgence",
+          "emergencyContactNamePlaceholder": "Nom complet",
+          "emergencyContactPhone": "Téléphone du contact d'urgence",
+          "emergencyContactPhonePlaceholder": "Numéro de téléphone",
+          "emergencyContactRelation": "Relation",
+          "emergencyContactRelationPlaceholder": "ex. Conjoint, Parent",
+          "crisisPlan": "Plan de crise",
+          "crisisPlanPlaceholder": "Décrivez votre plan de crise",
+          "suicidalThoughts": "Avez-vous eu des pensées suicidaires?",
+          "crisisHotlinesTitle": "Si vous êtes en crise, veuillez appeler l'une de ces lignes d'urgence immédiatement :"
+        },
+        "step8": {
+          "preferredGender": "Genre du professionnel préféré",
+          "preferredGenderPlaceholder": "Sélectionnez la préférence",
+          "preferredAge": "Tranche d'âge préférée",
+          "preferredAgePlaceholder": "Sélectionnez la tranche d'âge",
+          "culturalConsiderations": "Considérations culturelles",
+          "culturalConsiderationsPlaceholder": "Des préférences culturelles ?"
+        }
+      }
     },
     "professionalSignup": {
       "title": "Rejoindre en tant que professionnel",
@@ -774,9 +894,13 @@
       "licenseHint": "Permis professionnel, statut d'étudiant au doctorat ou permis par équivalence en cours",
       "yearsOfExperience": "Années d'expérience",
       "professionalBio": "Bio professionnelle",
+      "professionalBioPlaceholder": "Décrivez votre parcours professionnel et votre approche...",
       "degree": "Diplôme",
+      "degreePlaceholder": "ex. Ph.D. en psychologie clinique",
       "institution": "Établissement",
+      "institutionPlaceholder": "Nom de l'établissement",
       "graduationYear": "Année d'obtention",
+      "graduationYearPlaceholder": "ex. 2020",
       "certifications": "Certifications (sélectionnez toutes celles qui s'appliquent)",
       "approachesTitle": "1 – Approches et Thérapies",
       "approachesSubtitle": "Liste pour tous les profils (sélectionnez tous ceux qui s'appliquent).",
@@ -802,6 +926,21 @@
       "availableDaysLabel": "Jours disponibles (sélectionnez tous ceux qui s'appliquent)",
       "sessionDurationLabel": "Durée des séances (minutes)",
       "breakDurationLabel": "Pause entre les séances (minutes)",
+      "sessionDurationSelectPlaceholder": "Sélectionner la durée",
+      "breakDurationSelectPlaceholder": "Sélectionner la pause",
+      "sessionDurationOptions": {
+        "minutes30": "30 minutes",
+        "minutes45": "45 minutes",
+        "minutes50": "50 minutes",
+        "minutes60": "60 minutes",
+        "minutes90": "90 minutes"
+      },
+      "breakDurationOptions": {
+        "minutes5": "5 minutes",
+        "minutes10": "10 minutes",
+        "minutes15": "15 minutes",
+        "minutes30": "30 minutes"
+      },
       "availabilityHint": "Vous pourrez définir les créneaux détaillés après l'inscription dans votre tableau de bord.",
       "reviewYourInformation": "Révision de vos informations",
       "basicInformation": "Informations de base",
@@ -824,7 +963,9 @@
         "degreeRequired": "Le diplôme est requis",
         "institutionRequired": "L'établissement est requis",
         "paymentFrequencyRequired": "La fréquence souhaitée est obligatoire.",
-        "agreeToTermsRequired": "Vous devez accepter les conditions générales."
+        "agreeToTermsRequired": "Vous devez accepter les conditions générales.",
+        "accountCreatedButSignInFailed": "Compte créé mais la connexion a échoué. Veuillez réessayer.",
+        "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer."
       },
       "noBreak": "Aucune pause",
       "gender": "Genre",
@@ -1902,7 +2043,7 @@
       "callToAction": "Appelez le 911 ou votre service d'urgence local"
     },
     "joinUs": {
-      "badge": "Rejoignez notre équipe",
+      "badge": "Rejoignez plusieurs professionnels actifs",
       "title": "Vous êtes un professionnel en santé mentale ? Rejoignez notre mission.",
       "description": "Faites partie d'une plateforme collaborative dédiée à la qualité des soins, à une pratique encadrée et à des relations clients significatives. Ensemble, construisons un écosystème de santé mentale plus humain, accessible et professionnel.",
       "highlights": {
@@ -2324,6 +2465,12 @@
         "dailyLifeImpactPlaceholder": "Décrivez comment cela affecte votre vie quotidienne",
         "sleepQuality": "Qualité du sommeil",
         "sleepQualityPlaceholder": "Sélectionnez la qualité du sommeil",
+        "sleepQualityOptions": {
+          "normal": "Normal",
+          "poor": "Mauvaise qualité",
+          "insomnia": "Insomnie",
+          "excessive": "Sommeil excessif"
+        },
         "appetiteChanges": "Changements d'appétit",
         "appetiteChangesPlaceholder": "Décrivez tout changement d'appétit"
       },
@@ -2348,6 +2495,11 @@
         "modalityPlaceholder": "Sélectionnez la modalité",
         "sessionFrequency": "Fréquence des séances",
         "sessionFrequencyPlaceholder": "Sélectionnez la fréquence",
+        "sessionFrequencyOptions": {
+          "weekly": "Chaque semaine",
+          "biweekly": "Aux deux semaines",
+          "monthly": "Chaque mois"
+        },
         "location": "Lieu préféré",
         "locationPlaceholder": "Ville ou région",
         "notes": "Notes supplémentaires",
@@ -2365,7 +2517,8 @@
         "emergencyContactRelationPlaceholder": "ex. Conjoint, Parent",
         "crisisPlan": "Plan de crise",
         "crisisPlanPlaceholder": "Décrivez votre plan de crise",
-        "suicidalThoughts": "Avez-vous eu des pensées suicidaires?"
+        "suicidalThoughts": "Avez-vous eu des pensées suicidaires?",
+        "crisisHotlinesTitle": "Si vous êtes en crise, veuillez appeler l'une de ces lignes d'urgence immédiatement :"
       },
       "step8": {
         "title": "Préférences de jumelage",
@@ -2376,6 +2529,7 @@
         "preferredAgePlaceholder": "Sélectionnez la tranche d'âge",
         "languagePreference": "Préférence linguistique",
         "languagePreferencePlaceholder": "Langue préférée",
+        "languagePreferenceBilingual": "Bilingue (anglais et français)",
         "culturalConsiderations": "Considérations culturelles",
         "culturalConsiderationsPlaceholder": "Des préférences culturelles ?"
       },
