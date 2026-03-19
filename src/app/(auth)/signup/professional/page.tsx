@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -44,6 +45,12 @@ import {
   AuthCard,
   AuthFooter,
 } from "@/components/auth";
+import { APPROACHES_ET_THERAPIES } from "@/data/approaches";
+import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
+import { ADULT_PROBLEMATICS } from "@/data/adultProblematics";
+import { CHILD_DIAGNOSTICS } from "@/data/childDiagnostics";
+import { ADULT_DIAGNOSTICS } from "@/data/adultDiagnostics";
+import { PROFESSIONAL_TITLES, AGE_CATEGORIES } from "@/data/professionalTitles";
 
 interface FormData {
   // Basic Information
@@ -85,6 +92,7 @@ interface FormData {
   individualSessionRate: string;
   coupleSessionRate: string;
   groupSessionRate: string;
+  paymentFrequency: string;
   paymentAgreement: string;
 
   // Availability
@@ -96,6 +104,7 @@ interface FormData {
 }
 
 export default function ProfessionalSignupPage() {
+  const t = useTranslations("Auth.professionalSignup");
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -132,6 +141,7 @@ export default function ProfessionalSignupPage() {
     individualSessionRate: "",
     coupleSessionRate: "",
     groupSessionRate: "",
+    paymentFrequency: "",
     paymentAgreement: "",
     availableDays: [],
     sessionDuration: "",
@@ -140,14 +150,14 @@ export default function ProfessionalSignupPage() {
   });
 
   const sections = [
-    { title: "Basic Information", icon: User, required: true },
-    { title: "Professional Details", icon: Briefcase, required: true },
-    { title: "Education & Credentials", icon: GraduationCap, required: true },
-    { title: "Expertise & Approach", icon: Target, required: false },
-    { title: "Session Types & Modalities", icon: Users, required: false },
-    { title: "Pricing & Payment", icon: DollarSign, required: false },
-    { title: "Availability", icon: Clock, required: false },
-    { title: "Review & Confirm", icon: CheckCircle2, required: true },
+    { title: t("sections.basicInfo"), icon: User, required: true },
+    { title: t("sections.professionalDetails"), icon: Briefcase, required: true },
+    { title: t("sections.education"), icon: GraduationCap, required: true },
+    { title: t("sections.expertise"), icon: Target, required: false },
+    { title: t("sections.sessionTypes"), icon: Users, required: false },
+    { title: t("sections.pricing"), icon: DollarSign, required: false },
+    { title: t("sections.availability"), icon: Clock, required: false },
+    { title: t("sections.review"), icon: CheckCircle2, required: true },
   ];
 
   const handleChange = (
@@ -180,25 +190,38 @@ export default function ProfessionalSignupPage() {
   const validateSection = () => {
     switch (currentSection) {
       case 0: // Basic Information
-        if (!formData.firstName.trim()) return "First name is required";
-        if (!formData.lastName.trim()) return "Last name is required";
-        if (!formData.email.trim()) return "Email is required";
+        if (!formData.firstName.trim()) return t("errors.firstNameRequired");
+        if (!formData.lastName.trim()) return t("errors.lastNameRequired");
+        if (!formData.email.trim()) return t("errors.emailRequired");
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-          return "Invalid email address";
-        if (!formData.password) return "Password is required";
+          return t("errors.invalidEmail");
+        if (!formData.password) return t("errors.passwordRequired");
         if (formData.password.length < 8)
-          return "Password must be at least 8 characters";
+          return t("errors.passwordMinLength");
         if (formData.password !== formData.confirmPassword)
-          return "Passwords do not match";
+          return t("errors.passwordsDoNotMatch");
         break;
-      case 1: // Professional Details
-        if (!formData.specialty) return "Specialty is required";
+      case 1: // Professional Details (Titres + Catégorie d'âge)
+        if (formData.ageCategories.length === 0)
+          return t("errors.ageCategoryRequired");
+        if (!formData.specialty) return t("errors.specialtyRequired");
         if (!formData.license.trim())
-          return "License/Practice number is required";
+          return t("errors.licenseRequired");
+        break;
+      case 2:
+        if (!formData.degree.trim()) return t("errors.degreeRequired");
+        if (!formData.institution.trim()) return t("errors.institutionRequired");
+        break;
+      case 5: // Pricing
+        if (!formData.paymentFrequency)
+          return t("errors.paymentFrequencyRequired");
+        break;
+      case 7:
+        if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
         break;
       case 2: // Education
-        if (!formData.degree.trim()) return "Degree is required";
-        if (!formData.institution.trim()) return "Institution is required";
+        if (!formData.degree.trim()) return t("errors.degreeRequired");
+        if (!formData.institution.trim()) return t("errors.institutionRequired");
         break;
     }
     return null;
@@ -225,7 +248,7 @@ export default function ProfessionalSignupPage() {
     e.preventDefault();
 
     if (!formData.agreeToTerms) {
-      setError("You must agree to the terms and conditions");
+      setError(t("errors.agreeToTermsRequired"));
       return;
     }
 
@@ -242,7 +265,7 @@ export default function ProfessionalSignupPage() {
         phone: formData.phone,
         dateOfBirth: formData.dateOfBirth,
         gender: formData.gender,
-        language: formData.language,
+        language: formData.languages[0] || formData.language,
         location: formData.location,
         professionalProfile: {
           specialty: formData.specialty,
@@ -278,6 +301,7 @@ export default function ProfessionalSignupPage() {
               ? formData.certifications
               : undefined,
           paymentAgreement: formData.paymentAgreement || undefined,
+          paymentFrequency: formData.paymentFrequency || undefined,
           pricing: {
             individualSession: formData.individualSessionRate
               ? Number(formData.individualSessionRate)
@@ -337,7 +361,7 @@ export default function ProfessionalSignupPage() {
       });
 
       if (result?.error) {
-        setError("Account created but sign in failed. Please try logging in.");
+        setError(t("errors.accountCreatedButSignInFailed"));
         router.push("/login");
       } else {
         router.push("/professional/dashboard");
@@ -346,7 +370,7 @@ export default function ProfessionalSignupPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to create account. Please try again.",
+          : t("errors.failedToCreateAccount"),
       );
     } finally {
       setIsLoading(false);
@@ -379,28 +403,28 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  First Name <span className="text-red-500">*</span>
+                  {t("firstName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="firstName"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  placeholder="John"
+                  placeholder={t("firstNamePlaceholder")}
                   required
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="flex items-center gap-2">
-                  Last Name <span className="text-red-500">*</span>
+                  {t("lastName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="lastName"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  placeholder="Doe"
+                  placeholder={t("lastNamePlaceholder")}
                   required
                 />
               </div>
@@ -409,7 +433,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                Email <span className="text-red-500">*</span>
+                {t("email")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
@@ -417,7 +441,7 @@ export default function ProfessionalSignupPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 required
               />
             </div>
@@ -426,7 +450,7 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  Phone Number
+                  {t("phone")}
                 </Label>
                 <Input
                   id="phone"
@@ -434,7 +458,7 @@ export default function ProfessionalSignupPage() {
                   type="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder={t("phonePlaceholder")}
                 />
               </div>
 
@@ -444,7 +468,7 @@ export default function ProfessionalSignupPage() {
                   className="flex items-center gap-2"
                 >
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  Date of Birth
+                  {t("dateOfBirth")}
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -459,63 +483,77 @@ export default function ProfessionalSignupPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
+                <Label htmlFor="gender">{t("gender")}</Label>
                 <Select
                   value={formData.gender}
                   onValueChange={(val) => handleSelectChange("gender", val)}
                 >
                   <SelectTrigger id="gender">
-                    <SelectValue placeholder="Select gender" />
+                    <SelectValue placeholder={t("selectGender")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="male">{t("male")}</SelectItem>
+                    <SelectItem value="female">{t("female")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
                     <SelectItem value="preferNotToSay">
-                      Prefer not to say
+                      {t("preferNotToSay")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="language" className="flex items-center gap-2">
+                <Label className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  Preferred Language
+                  {t("languagesUsed")}
                 </Label>
-                <Select
-                  value={formData.language}
-                  onValueChange={(val) => handleSelectChange("language", val)}
-                >
-                  <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { value: "french", labelKey: "languagesUsedOptions.french" },
+                    { value: "english", labelKey: "languagesUsedOptions.english" },
+                    { value: "arabic", labelKey: "languagesUsedOptions.arabic" },
+                    { value: "spanish", labelKey: "languagesUsedOptions.spanish" },
+                    { value: "mandarin", labelKey: "languagesUsedOptions.mandarin" },
+                    { value: "other", labelKey: "languagesUsedOptions.other" },
+                  ].map((lang) => (
+                    <div key={lang.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`lang-step0-${lang.value}`}
+                        checked={formData.languages.includes(lang.value)}
+                        onCheckedChange={() =>
+                          handleArrayChange("languages", lang.value)
+                        }
+                      />
+                      <label
+                        htmlFor={`lang-step0-${lang.value}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {t(lang.labelKey)}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="location" className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                Location / Postal Code
+                {t("locationLabel")}
               </Label>
               <Input
                 id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="City, Province or A1A 1A1"
+                placeholder={t("locationPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password" className="flex items-center gap-2">
                 <Lock className="h-4 w-4 text-muted-foreground" />
-                Password <span className="text-red-500">*</span>
+                {t("password")} <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Input
@@ -524,7 +562,7 @@ export default function ProfessionalSignupPage() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                    placeholder={t("passwordPlaceholder")}
                   required
                   className="pr-10"
                 />
@@ -541,13 +579,13 @@ export default function ProfessionalSignupPage() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                At least 8 characters
+                {t("passwordHint")}
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                Confirm Password <span className="text-red-500">*</span>
+                {t("confirmPassword")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="confirmPassword"
@@ -555,44 +593,68 @@ export default function ProfessionalSignupPage() {
                 type={showPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder={t("passwordPlaceholder")}
                 required
               />
             </div>
           </div>
         );
 
-      case 1: // Professional Details
+      case 1: // Professional Details (Titres professionnels)
         return (
           <div className="space-y-6">
             <div className="space-y-2">
+              <Label>
+                {t("ageCategoryLabel")}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {t("ageCategoryHint")}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {AGE_CATEGORIES.map((age) => (
+                  <div key={age.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`age-${age.value}`}
+                      checked={formData.ageCategories.includes(age.value)}
+                      onCheckedChange={() =>
+                        handleArrayChange("ageCategories", age.value)
+                      }
+                    />
+                    <label
+                      htmlFor={`age-${age.value}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {t(`ageCategories.${age.value}`)}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="specialty">
-                Profession / Specialty <span className="text-red-500">*</span>
+                {t("professionalTitleLabel")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.specialty}
                 onValueChange={(val) => handleSelectChange("specialty", val)}
               >
                 <SelectTrigger id="specialty">
-                  <SelectValue placeholder="Select your specialty" />
+                  <SelectValue placeholder={t("professionalTitlePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="psychologist">Psychologist</SelectItem>
-                  <SelectItem value="psychotherapist">
-                    Psychotherapist
-                  </SelectItem>
-                  <SelectItem value="counselor">Counselor</SelectItem>
-                  <SelectItem value="socialWorker">Social Worker</SelectItem>
-                  <SelectItem value="psychiatrist">Psychiatrist</SelectItem>
-                  <SelectItem value="coach">Coach</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {PROFESSIONAL_TITLES.map((title) => (
+                    <SelectItem key={title.value} value={title.value}>
+                      {title.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="license">
-                Practice Number / License{" "}
+                {t("licenseLabel")}{" "}
                 <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -600,16 +662,15 @@ export default function ProfessionalSignupPage() {
                 name="license"
                 value={formData.license}
                 onChange={handleChange}
-                placeholder="Enter your practice number or license"
+                placeholder={t("licensePlaceholder")}
               />
               <p className="text-xs text-muted-foreground">
-                Professional license, doctoral student status, or permit by
-                equivalency in progress
+                {t("licenseHint")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="yearsOfExperience">Years of Experience</Label>
+              <Label htmlFor="yearsOfExperience">{t("yearsOfExperience")}</Label>
               <Input
                 id="yearsOfExperience"
                 name="yearsOfExperience"
@@ -622,13 +683,13 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">Professional Bio</Label>
+              <Label htmlFor="bio">{t("professionalBio")}</Label>
               <Textarea
                 id="bio"
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
-                placeholder="Tell us about your professional background and approach..."
+                placeholder={t("professionalBioPlaceholder")}
                 className="min-h-[120px] resize-none"
                 maxLength={1000}
               />
@@ -644,32 +705,32 @@ export default function ProfessionalSignupPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="degree">
-                Degree <span className="text-red-500">*</span>
+                {t("degree")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="degree"
                 name="degree"
                 value={formData.degree}
                 onChange={handleChange}
-                placeholder="e.g., Ph.D. in Clinical Psychology"
+                placeholder={t("degreePlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="institution">
-                Institution <span className="text-red-500">*</span>
+                {t("institution")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="institution"
                 name="institution"
                 value={formData.institution}
                 onChange={handleChange}
-                placeholder="University name"
+                placeholder={t("institutionPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="graduationYear">Graduation Year</Label>
+              <Label htmlFor="graduationYear">{t("graduationYear")}</Label>
               <Input
                 id="graduationYear"
                 name="graduationYear"
@@ -678,12 +739,12 @@ export default function ProfessionalSignupPage() {
                 max={new Date().getFullYear()}
                 value={formData.graduationYear}
                 onChange={handleChange}
-                placeholder="2020"
+                placeholder={t("graduationYearPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Certifications (select all that apply)</Label>
+              <Label>{t("certifications")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "CBT Certified",
@@ -716,274 +777,38 @@ export default function ProfessionalSignupPage() {
           </div>
         );
 
-      case 3: // Expertise & Approach
-        return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label>Issues Handled (select all that apply).</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto p-2">
-                {[
-                  "Intervention auprès des employés des services d'urgence (ambulanciers, policiers, pompiers…)",
-                  "Estime/affirmation de soi",
-                  "Oncologie",
-                  "Accident de la route",
-                  "Accident de travail",
-                  "Adaptation à l'école",
-                  "Adoption internationale",
-                  "Alcoolisme / toxicomanies",
-                  "Aliénation mentale",
-                  "Abus sexuel",
-                  "Anxiété",
-                  "Anxiété de performance",
-                  "Arrêt de travail",
-                  "Retour progressif au travail",
-                  "Approche intégrative",
-                  "Approche humaniste",
-                  "Approche TCC",
-                  "ACT",
-                  "Psychodynamique",
-                  "Pleine conscience",
-                  "Changement organisationnel",
-                  "Changements sociaux",
-                  "Charge mentale",
-                  "Climat de travail",
-                  "Conflits interpersonnels",
-                  "Communication",
-                  "Curatelle publique",
-                  "Déficit de l'attention/hyperactivité",
-                  "Déficience intellectuelle",
-                  "Dépendance affective",
-                  "Dépendance aux jeux de hasard et d'argent (en ligne)",
-                  "Dépendance aux jeux vidéo",
-                  "Dépendance aux contenus pornographiques",
-                  "Difficultés académiques",
-                  "Recherche de sens",
-                  "Relations amoureuses",
-                  "Relations au travail",
-                  "Intervention en milieu de travail",
-                  "Santé psychologique au travail",
-                  "Deuil",
-                  "Diversité culturelle",
-                  "Douance",
-                  "Douleur chronique / fibromyalgie",
-                  "Dynamique organisationnelle",
-                  "EMDR",
-                  "Épuisement professionnel/burnout",
-                  "Estime de soi",
-                  "Étape de la vie",
-                  "Évaluation neuropsychologique",
-                  "Évaluation psychologique",
-                  "Évaluation psychologique milieu scolaire",
-                  "Fertilité / Procréation assistée",
-                  "Garde d'enfants (expertise psychosociale)",
-                  "Gestion de carrière",
-                  "Gestion du stress",
-                  "Gestion de la colère",
-                  "Gestion des émotions",
-                  "Guerre / conflits armés (vétérans)",
-                  "Guerre / conflits armés (victimes)",
-                  "Habiletés de gestion",
-                  "Harcèlement au travail",
-                  "HPI-adulte",
-                  "TSA",
-                  "TSA adulte évaluation",
-                  "TSA adulte intervention",
-                  "Hypnose thérapeutique",
-                  "IMO",
-                  "Immigration",
-                  "Vieillissement",
-                  "Intérêts / Aptitudes au travail",
-                  "Intimidation",
-                  "Violence (agresseurs)",
-                  "Violence (victimes)",
-                  "Maladie dégénératives / sida",
-                  "Maladies physiques / handicaps",
-                  "Médiation familiale",
-                  "Monoparentalité / famille recomposée",
-                  "Orientation scolaire et professionnelle",
-                  "Orientation sexuelle",
-                  "Peur de vomir",
-                  "Peur d'avoir peur",
-                  "Peur de mourir",
-                  "Périnatalité",
-                  "Problématiques propres aux autochtones",
-                  "Problématiques propres aux agriculteurs",
-                  "Problématiques propres aux réfugiés",
-                  "Problèmes relationnels",
-                  "Proche aidant",
-                  "Psychosomatique",
-                  "Psychologie du sport",
-                  "La psychologie gériatrique",
-                  "Relations familiales",
-                  "Sectes",
-                  "Sélection de personnel/réaffectation",
-                  "Séparation/divorce",
-                  "Situations de crise",
-                  "Soins palliatifs",
-                  "Spiritualité",
-                  "Stress post-traumatique",
-                  "Stress financier",
-                  "Transexualité",
-                  "Troubles alimentaires",
-                  "Troubles anxieux, phobies, panique",
-                  "Troubles d'apprentissages",
-                  "Troubles de la personnalité",
-                  "TPL",
-                  "Troubles de l'humeur",
-                  "Troubles du langage",
-                  "Troubles du sommeil",
-                  "Troubles mentaux sévères et persistants",
-                  "Troubles neuropsychologiques",
-                  "Troubles obsessifs-compulsifs",
-                  "Identité de genre / LGBTQ+",
-                  "Addiction sexuelle et hypersexualité",
-                  "Affirmation de soi",
-                  "Anxiété de séparation",
-                  "Anxiété post-partum",
-                  "Asexualité et aromantisme",
-                  "Attachement chez les adultes",
-                  "Autosabotage",
-                  "Blessure morale",
-                  "Boulimie",
-                  "Leadership",
-                  "Gestion d'équipe",
-                  "Rôle de gestionnaire",
-                  "Compétences en matière de résolution de problèmes",
-                  "Compétences parentales",
-                  "Étape ou transition de vie",
-                  "Difficultés masculines",
-                  "Famille recomposée",
-                  "Fugue",
-                  "Gestion de la colère ordonnée par le tribunal",
-                  "Gestion de la douleur chronique",
-                  "Gestion du temps et organisation",
-                  "Grossesse et maternité",
-                  "Identité de genre",
-                  "Insomnie",
-                  "Le mensonge",
-                  "Motivation",
-                  "Perfectionnisme",
-                  "Procrastination",
-                  "Racisme, soutien à la discrimination",
-                  "Relations interpersonnelles",
-                  "Séparation ou divorce",
-                  "Problèmes professionnels",
-                  "Soutien aux réfugiés et aux immigrants",
-                  "Survivre à la maltraitance",
-                  "Fatigue chronique",
-                  "L'agoraphobie",
-                  "L'anxiété liée à la santé",
-                  "Dysrégulation émotionnelle",
-                  "Phobie",
-                  "Colère",
-                  "Personnalité dépendante",
-                  "Traitement du jeu pathologique",
-                  "Interventions/moyens TDAH",
-                  "Accumulation compulsive",
-                  "Traitement du trouble obsessionnel compulsif (TOC)",
-                  "Traitement du trouble panique",
-                  "Traitement pour l'anxiété sociale",
-                  "Trouble affectif saisonnier (TAS)",
-                  "Trouble de l'adaptation",
-                  "Trouble de la dépersonnalisation-déréalisation",
-                  "Troubles de l'attachement",
-                  "Psychose",
-                  "État dépressif",
-                  "Bipolarité",
-                  "Peur de vieillir",
-                  "Exposition mentale",
-                  "Anxiété chez les personnes âgées",
-                  "Fatigabilité",
-                  "Irritabilité",
-                  "Problèmes de sommeil",
-                  "Difficultés de concentration",
-                  "Difficultés à prendre des décisions",
-                  "Déficits des fonctions exécutives",
-                  "Médiation en milieu de travail lorsqu'une personne a un problème de santé mentale",
-                ].map((issue) => (
-                  <div key={issue} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`issue-${issue}`}
-                      checked={formData.problematics.includes(issue)}
-                      onCheckedChange={() =>
-                        handleArrayChange("problematics", issue)
-                      }
-                    />
-                    <label
-                      htmlFor={`issue-${issue}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {issue}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
+      case 3: // Expertise & Approach (Expertises & Approches)
+        return (() => {
+          const treatsChildren = formData.ageCategories.some(
+            (c) => c === "0-12" || c === "13-17",
+          );
+          const treatsAdults = formData.ageCategories.some(
+            (c) => c === "18-64" || c === "65+",
+          );
+          const problematicsList = (() => {
+            let list: string[] = [];
+            if (treatsChildren && treatsAdults) list = [...CHILD_PROBLEMATICS, ...ADULT_PROBLEMATICS];
+            else if (treatsChildren) list = [...CHILD_PROBLEMATICS];
+            else if (treatsAdults) list = [...ADULT_PROBLEMATICS];
+            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
+          })();
+          const diagnosticsList = (() => {
+            let list: string[] = [];
+            if (treatsChildren && treatsAdults) list = [...CHILD_DIAGNOSTICS, ...ADULT_DIAGNOSTICS];
+            else if (treatsChildren) list = [...CHILD_DIAGNOSTICS];
+            else if (treatsAdults) list = [...ADULT_DIAGNOSTICS];
+            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
+          })();
 
+          return (
+          <div className="space-y-8">
             <div className="space-y-2">
-              <Label>
-                Approches et mandats potentiels (sélectionnez tous ceux qui
-                s&apos;appliquent).
+              <h4 className="font-medium text-foreground">{t("approachesTitle")}</h4>
+              <Label className="text-muted-foreground">
+                {t("approachesSubtitle")}
               </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto p-2">
-                {[
-                  "Thérapie individuelle",
-                  "Thérapie de couple",
-                  "Thérapie familiale",
-                  "Thérapie de l'enfant",
-                  "Coaching des parents",
-                  "Thérapie des adolescents",
-                  "Thérapie individuelle pour les personnes âgées",
-                  "Hypnothérapie",
-                  "Coaching pour gestionnaires/cadres",
-                  "Évaluation du TDAH chez l'adulte",
-                  "Zoothérapie",
-                  "Accompagnement des employés avec un HPI,TSA",
-                  "Développement des compétences professionnelles",
-                  "Évaluation des troubles d'apprentissage chez les adultes",
-                  "Orientation professionnelle",
-                  "Évaluation du TDAH chez l'enfant",
-                  "Psychologie en réadaptation",
-                  "Évaluations des troubles d'apprentissage chez les enfants",
-                  "Évaluation psychologique",
-                  "Évaluation psychiatrique",
-                  "L'art-thérapie",
-                  "Supervision clinique en psychologie",
-                  "Supervision clinique pour internat",
-                  "Supervision clinique pour permis par équivalence",
-                  "Évaluations neuropsychologiques pour les enfants",
-                  "Évaluations neuropsychologiques pour les adultes",
-                  "La thérapie d'acceptation et d'engagement (ACT)",
-                  "La thérapie cognitivo-comportementale (TCC)",
-                  "La thérapie comportementale dialectique (TCD)",
-                  "La thérapie psychodynamique",
-                  "La thérapie centrée sur les émotions",
-                  "La thérapie sensorimotrice",
-                  "La psychothérapie analytique fonctionnelle",
-                  "La thérapie basée sur la mentalisation",
-                  "La pleine conscience",
-                  "L'entretien motivationnel (EM)",
-                  "La psychologie positive",
-                  "La schémathérapie",
-                  "La Psychothérapie interpersonnelle",
-                  "La Psychothérapie psychanalytique",
-                  "La thérapie existentielle",
-                  "La thérapie humaniste centrée sur la personne",
-                  "La thérapie narrative",
-                  "La Thérapie par le jeu",
-                  "Thérapie brève centrée sur les solutions",
-                  "Thérapie cognitivo-comportementale pour l'insomnie (TCC-I)",
-                  "Thérapie du rêve",
-                  "Thérapie intégrative",
-                  "Thérapie somatique",
-                  "Thérapie systémique familiale TCC",
-                  "Thérapie du processus cognitif",
-                  "Thérapie de la cohérence",
-                  "Thérapie de schémas",
-                  "Thérapie relationnelle",
-                  "Thérapie systémique-interactionnelle",
-                  "ACT thérapie pour les enfants et adolescents",
-                ].map((approach) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
+                {APPROACHES_ET_THERAPIES.map((approach) => (
                   <div key={approach} className="flex items-center space-x-2">
                     <Checkbox
                       id={`approach-${approach}`}
@@ -1004,189 +829,78 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Age Categories (select all that apply).</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Children (0-12)",
-                  "Adolescents (13-17)",
-                  "Adults (18-64)",
-                  "Seniors (65+)",
-                ].map((age) => (
-                  <div key={age} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`age-${age}`}
-                      checked={formData.ageCategories.includes(age)}
-                      onCheckedChange={() =>
-                        handleArrayChange("ageCategories", age)
-                      }
-                    />
-                    <label
-                      htmlFor={`age-${age}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {age}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <h4 className="font-medium text-foreground">{t("problematicsTitle")}</h4>
+              <Label className="text-muted-foreground">
+                {t("problematicsSubtitle")}
+              </Label>
+              {problematicsList.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
+                  {problematicsList.map((item) => (
+                    <div key={item} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`problematic-${item}`}
+                        checked={formData.problematics.includes(item)}
+                        onCheckedChange={() =>
+                          handleArrayChange("problematics", item)
+                        }
+                      />
+                      <label
+                        htmlFor={`problematic-${item}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {item}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {t("selectAgeCategoryFirst")}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label>
-                Diagnostics traités (sélectionnez tous ceux qui
-                s&apos;appliquent).
+              <h4 className="font-medium text-foreground">{t("diagnosticsTitle")}</h4>
+              <Label className="text-muted-foreground">
+                {t("diagnosticsSubtitle")}
               </Label>
-              <p className="text-xs text-muted-foreground">
-                Sélectionnez les diagnostics que vous traitez selon les
-                catégories d&apos;âge choisies
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
-                {(() => {
-                  // Determine if professional treats children or adults based on ageCategories
-                  const treatsChildren = formData.ageCategories.some(
-                    (cat) =>
-                      cat.toLowerCase().includes("child") ||
-                      cat.toLowerCase().includes("adolescent"),
-                  );
-                  const treatsAdults = formData.ageCategories.some(
-                    (cat) =>
-                      cat.toLowerCase().includes("adult") ||
-                      cat.toLowerCase().includes("senior"),
-                  );
-
-                  // Child diagnosed conditions list
-                  const childDiagnosedConditions = [
-                    "Trouble du langage",
-                    "Handicaps intellectuels",
-                    "Trouble du spectre de l'autisme (TSA)",
-                    "Trouble de l'acquisition de la coordination",
-                    "Tics",
-                    "Syndrome de la Tourette",
-                    "TDAH",
-                    "Dyslexie",
-                    "Dysorthographie",
-                    "Dyscalculie",
-                    "Trouble de la communication sociale (pragmatique)",
-                    "Douance",
-                    "Trouble de dérèglement disruptif de l'humeur",
-                    "Trouble de l'opposition",
-                    "Trouble grave du comportement",
-                    "Trouble d'anxiété de séparation",
-                    "Mutisme sélectif",
-                    "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
-                    "Trouble d'anxiété sociale (Phobie sociale)",
-                    "Trouble panique (avec ou sans agoraphobie)",
-                    "Agoraphobie",
-                    "Trouble d'anxiété généralisée (TAG)",
-                    "Trichotillomanie (arrachage des cheveux)",
-                    "Dermatillomanie (triturage répété de la peau)",
-                    "Trouble réactionnel de l'attachement",
-                    "Trouble de stress post-traumatique (TSPT)",
-                    "Trouble de stress aigu (immédiatement après le choc)",
-                    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
-                    "Pica (ingestion de substances non comestibles)",
-                    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
-                    "Boulimie",
-                    "Accès hyperphagiques",
-                    "Encoprésie",
-                    "Énurésie",
-                    "Attachement",
-                  ];
-
-                  // Adult diagnosed conditions list
-                  const adultDiagnosedConditions = [
-                    "Trouble de la personnalité",
-                    "Trouble délirant",
-                    "Trouble psychotique bref (moins d'un mois)",
-                    "Schizophrénie",
-                    "Trouble schizo-affectif",
-                    "Trouble bipolaire",
-                    "Trouble dépressif majeur (épisode unique ou récurrent)",
-                    "Trouble dépressif persistant (Dysthymie)",
-                    "Trouble dysphorique prémenstruel",
-                    "Trouble de deuil prolongé",
-                    "Trouble d'anxiété généralisée (TAG)",
-                    "Trouble d'anxiété sociale (Phobie sociale)",
-                    "Trouble panique (avec ou sans agoraphobie)",
-                    "Agoraphobie",
-                    "Trouble d'adaptation avec humeur anxiodépressive",
-                    "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
-                    "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
-                    "Thésaurisation pathologique (accumulation)",
-                    "Trouble de stress post-traumatique (TSPT)",
-                    "Trouble de stress aigu (immédiatement après le choc)",
-                    "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse)",
-                    "Pica (ingestion de substances non comestibles)",
-                    "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
-                    "Boulimie",
-                    "Accès hyperphagiques",
-                    "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, Tabac…)",
-                    "Jeu d'argent pathologique",
-                    "Maladie d'Alzheimer",
-                    "Maladie de Parkinson",
-                    "Douance",
-                    "TSA",
-                    "TDAH",
-                    "Traumatisme crânien (TCC)",
-                    "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
-                    "Tumeurs cérébrales",
-                  ];
-
-                  // Combine lists based on what the professional treats
-                  let conditionsList: string[] = [];
-                  if (treatsChildren && treatsAdults) {
-                    // If treats both, show both lists
-                    conditionsList = [
-                      ...childDiagnosedConditions,
-                      ...adultDiagnosedConditions,
-                    ];
-                  } else if (treatsChildren) {
-                    conditionsList = childDiagnosedConditions;
-                  } else if (treatsAdults) {
-                    conditionsList = adultDiagnosedConditions;
-                  }
-                  // If no age categories selected, show empty list
-
-                  return conditionsList.length > 0 ? (
-                    conditionsList.map((condition, index) => (
-                      <div
-                        key={`condition-${index}-${condition}`}
-                        className="flex items-center space-x-2"
+              {diagnosticsList.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
+                  {diagnosticsList.map((diag) => (
+                    <div key={diag} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`diagnosed-${diag}`}
+                        checked={formData.diagnosedConditions.includes(diag)}
+                        onCheckedChange={() =>
+                          handleArrayChange("diagnosedConditions", diag)
+                        }
+                      />
+                      <label
+                        htmlFor={`diagnosed-${diag}`}
+                        className="text-sm cursor-pointer"
                       >
-                        <Checkbox
-                          id={`diagnosed-${condition}`}
-                          checked={formData.diagnosedConditions.includes(
-                            condition,
-                          )}
-                          onCheckedChange={() =>
-                            handleArrayChange("diagnosedConditions", condition)
-                          }
-                        />
-                        <label
-                          htmlFor={`diagnosed-${condition}`}
-                          className="text-sm cursor-pointer"
-                        >
-                          {condition}
-                        </label>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground col-span-2">
-                      Veuillez d&apos;abord sélectionner au moins une catégorie
-                      d&apos;âge ci-dessus
-                    </p>
-                  );
-                })()}
-              </div>
+                        {diag}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {t("selectAgeCategoryFirst")}
+                </p>
+              )}
             </div>
           </div>
-        );
+          );
+        })();
 
+      
       case 4: // Session Types & Modalities
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Session Types (select all that apply)</Label>
+              <Label>{t("sessionTypesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {["Individual", "Couple", "Family", "Group", "Coaching"].map(
                   (type) => (
@@ -1211,7 +925,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Modalities (select all that apply)</Label>
+              <Label>{t("modalitiesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "In-Person (Office)",
@@ -1238,44 +952,18 @@ export default function ProfessionalSignupPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Languages Spoken (select all that apply)</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "English",
-                  "French",
-                  "Spanish",
-                  "Mandarin",
-                  "Arabic",
-                  "Other",
-                ].map((lang) => (
-                  <div key={lang} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`lang-${lang}`}
-                      checked={formData.languages.includes(lang)}
-                      onCheckedChange={() =>
-                        handleArrayChange("languages", lang)
-                      }
-                    />
-                    <label
-                      htmlFor={`lang-${lang}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {lang}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              {t("languagesIndicatedEarlier")}
+            </p>
           </div>
         );
 
-      case 5: // Pricing & Payment
+      case 5: // Pricing & Payment (Tarifs & Paiements)
         return (
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="individualSessionRate">
-                Individual Session Rate (per session)
+                {t("tarifSouhaité")}
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -1295,9 +983,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coupleSessionRate">
-                Couple Session Rate (per session)
-              </Label>
+              <Label htmlFor="coupleSessionRate">{t("couple")}</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   $
@@ -1316,9 +1002,7 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="groupSessionRate">
-                Group Session Rate (per session)
-              </Label>
+              <Label htmlFor="groupSessionRate">{t("groupe")}</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   $
@@ -1337,7 +1021,28 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="paymentAgreement">Payment Agreement</Label>
+              <Label htmlFor="paymentFrequency">
+                {t("paymentFrequencyLabel")} <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={formData.paymentFrequency}
+                onValueChange={(val) =>
+                  handleSelectChange("paymentFrequency", val)
+                }
+              >
+                <SelectTrigger id="paymentFrequency">
+                  <SelectValue placeholder={t("paymentFrequencyPlaceholder")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
+                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("paymentFrequencyMonthly")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="paymentAgreement">{t("paymentAgreementLabel")}</Label>
               <Select
                 value={formData.paymentAgreement}
                 onValueChange={(val) =>
@@ -1345,13 +1050,13 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="paymentAgreement">
-                  <SelectValue placeholder="Select payment frequency" />
+                  <SelectValue placeholder="..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="per-session">Per Session</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="per-session">{t("paymentAgreementPerSession")}</SelectItem>
+                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
+                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("paymentAgreementMonthly")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1362,7 +1067,7 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Available Days (select all that apply)</Label>
+              <Label>{t("availableDaysLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Monday",
@@ -1394,7 +1099,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="sessionDuration">
-                Session Duration (minutes)
+                {t("sessionDurationLabel")}
               </Label>
               <Select
                 value={formData.sessionDuration}
@@ -1403,21 +1108,21 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="sessionDuration">
-                  <SelectValue placeholder="Select duration" />
+                  <SelectValue placeholder={t("sessionDurationSelectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="30">30 minutes</SelectItem>
-                  <SelectItem value="45">45 minutes</SelectItem>
-                  <SelectItem value="50">50 minutes</SelectItem>
-                  <SelectItem value="60">60 minutes</SelectItem>
-                  <SelectItem value="90">90 minutes</SelectItem>
+                  <SelectItem value="30">{t("sessionDurationOptions.minutes30")}</SelectItem>
+                  <SelectItem value="45">{t("sessionDurationOptions.minutes45")}</SelectItem>
+                  <SelectItem value="50">{t("sessionDurationOptions.minutes50")}</SelectItem>
+                  <SelectItem value="60">{t("sessionDurationOptions.minutes60")}</SelectItem>
+                  <SelectItem value="90">{t("sessionDurationOptions.minutes90")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="breakDuration">
-                Break Between Sessions (minutes)
+                {t("breakDurationLabel")}
               </Label>
               <Select
                 value={formData.breakDuration}
@@ -1426,22 +1131,21 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="breakDuration">
-                  <SelectValue placeholder="Select break duration" />
+                  <SelectValue placeholder={t("breakDurationSelectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">No break</SelectItem>
-                  <SelectItem value="5">5 minutes</SelectItem>
-                  <SelectItem value="10">10 minutes</SelectItem>
-                  <SelectItem value="15">15 minutes</SelectItem>
-                  <SelectItem value="30">30 minutes</SelectItem>
+                  <SelectItem value="0">{t("noBreak")}</SelectItem>
+                  <SelectItem value="5">{t("breakDurationOptions.minutes5")}</SelectItem>
+                  <SelectItem value="10">{t("breakDurationOptions.minutes10")}</SelectItem>
+                  <SelectItem value="15">{t("breakDurationOptions.minutes15")}</SelectItem>
+                  <SelectItem value="30">{t("breakDurationOptions.minutes30")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground">
-                You can set detailed availability hours and specific time slots
-                after registration in your dashboard.
+                {t("availabilityHint")}
               </p>
             </div>
           </div>
@@ -1451,11 +1155,11 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Review Your Information</h3>
+              <h3 className="font-semibold text-lg">{t("reviewYourInformation")}</h3>
 
               <div className="space-y-3">
                 <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-medium mb-2">Basic Information</h4>
+                  <h4 className="font-medium mb-2">{t("basicInformation")}</h4>
                   <p className="text-sm text-muted-foreground">
                     {formData.firstName} {formData.lastName}
                   </p>
@@ -1470,23 +1174,23 @@ export default function ProfessionalSignupPage() {
                 </div>
 
                 <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-medium mb-2">Professional Details</h4>
+                  <h4 className="font-medium mb-2">{t("professionalDetailsReview")}</h4>
                   <p className="text-sm text-muted-foreground">
-                    {formData.specialty || "Not specified"}
+                    {formData.specialty || t("notSpecified")}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    License: {formData.license || "Not specified"}
+                    {t("licenseLabelShort")} {formData.license || t("notSpecified")}
                   </p>
                   {formData.yearsOfExperience && (
                     <p className="text-sm text-muted-foreground">
-                      {formData.yearsOfExperience} years of experience
+                      {formData.yearsOfExperience} {t("yearsExperience")}
                     </p>
                   )}
                 </div>
 
                 {formData.degree && (
                   <div className="p-4 bg-muted rounded-lg">
-                    <h4 className="font-medium mb-2">Education</h4>
+                    <h4 className="font-medium mb-2">{t("educationLabel")}</h4>
                     <p className="text-sm text-muted-foreground">
                       {formData.degree}
                     </p>
@@ -1513,21 +1217,21 @@ export default function ProfessionalSignupPage() {
                 htmlFor="agreeToTerms"
                 className="text-sm cursor-pointer leading-tight"
               >
-                I agree to the{" "}
+                {t("agreeToTerms")}{" "}
                 <Link
                   href="/terms"
                   className="text-primary underline"
                   target="_blank"
                 >
-                  Terms of Service
+                  {t("termsOfService")}
                 </Link>{" "}
-                and{" "}
+                {t("and")}{" "}
                 <Link
                   href="/privacy"
                   className="text-primary underline"
                   target="_blank"
                 >
-                  Privacy Policy
+                  {t("privacyPolicy")}
                 </Link>
                 <span className="text-red-500">*</span>
               </label>
@@ -1535,9 +1239,7 @@ export default function ProfessionalSignupPage() {
 
             <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
               <p className="text-sm text-blue-900 dark:text-blue-100">
-                Your account will be pending approval. Once approved by our
-                team, you&apos;ll be able to access your professional dashboard
-                and start accepting clients.
+                {t("approvalNotice")}
               </p>
             </div>
           </div>
@@ -1554,8 +1256,8 @@ export default function ProfessionalSignupPage() {
     <AuthContainer maxWidth="2xl">
       <AuthHeader
         icon={<Briefcase className="w-8 h-8 text-primary" />}
-        title="Professional Registration"
-        description="Create your professional account and profile"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -1563,7 +1265,7 @@ export default function ProfessionalSignupPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">
-              Step {currentSection + 1} of {sections.length}
+              {t("stepOf", { current: currentSection + 1, total: sections.length })}
             </span>
             <span className="text-sm font-medium text-primary">
               {Math.round(((currentSection + 1) / sections.length) * 100)}%
@@ -1596,7 +1298,7 @@ export default function ProfessionalSignupPage() {
           </div>
           {sections[currentSection].required && (
             <p className="text-sm text-muted-foreground">
-              * Required fields must be completed
+              {t("requiredFieldsHint")}
             </p>
           )}
         </motion.div>
@@ -1647,7 +1349,7 @@ export default function ProfessionalSignupPage() {
                 disabled={isLoading}
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back
+                {t("back")}
               </button>
             ) : (
               <div />
@@ -1660,7 +1362,7 @@ export default function ProfessionalSignupPage() {
                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium transition-colors ml-auto"
                 disabled={isLoading}
               >
-                Next
+                {t("next")}
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
@@ -1672,12 +1374,12 @@ export default function ProfessionalSignupPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating Account...
+                    {t("creating")}
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    Create Account
+                    {t("createAccount")}
                   </>
                 )}
               </button>
@@ -1687,12 +1389,12 @@ export default function ProfessionalSignupPage() {
       </AuthCard>
 
       <AuthFooter>
-        Already have an account?{" "}
+        {t("hasAccount")}{" "}
         <Link
           href="/login"
           className="font-medium text-primary hover:underline"
         >
-          Sign In
+          {t("signIn")}
         </Link>
       </AuthFooter>
     </AuthContainer>

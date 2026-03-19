@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +29,7 @@ import {
   Users,
   AlertTriangle,
   CheckCircle2,
+  CreditCard,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -46,6 +48,7 @@ import {
   AuthCard,
   AuthFooter,
 } from "@/components/auth";
+import { MotifSearch } from "@/components/ui/MotifSearch";
 
 interface FormData {
   // User fields
@@ -60,14 +63,21 @@ interface FormData {
   language: string;
   location: string;
 
+  // Compte pour moi ou pour mon enfant
+  accountFor: string;
+  childFirstName: string;
+  childLastName: string;
+  childDateOfBirth: string;
+  childServiceType: string; // "evaluation" | "suivi"
+
   // Medical Profile - Personal Information
   concernedPerson: string;
 
   // Health Background
   medicalConditions: string[];
   currentMedications: string[];
-  allergies: string[];
   substanceUse: string;
+  consultationMotifs: string[]; // motifs de consultation (max 10)
 
   // Mental Health History
   previousTherapy: string;
@@ -111,13 +121,16 @@ interface FormData {
   // Professional Matching Preferences
   preferredGender: string;
   preferredAge: string;
-  languagePreference: string;
   culturalConsiderations: string;
+
+  // Mode de paiement
+  paymentMethod: string;
 
   agreeToTerms: boolean;
 }
 
 export default function MemberSignupPage() {
+  const t = useTranslations("Auth.memberSignup");
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -136,11 +149,16 @@ export default function MemberSignupPage() {
     gender: "",
     language: "",
     location: "",
+    accountFor: "me",
+    childFirstName: "",
+    childLastName: "",
+    childDateOfBirth: "",
+    childServiceType: "",
     concernedPerson: "",
     medicalConditions: [],
     currentMedications: [],
-    allergies: [],
     substanceUse: "",
+    consultationMotifs: [],
     previousTherapy: "",
     previousTherapyDetails: "",
     psychiatricHospitalization: "",
@@ -170,23 +188,29 @@ export default function MemberSignupPage() {
     suicidalThoughts: "",
     preferredGender: "",
     preferredAge: "",
-    languagePreference: "",
     culturalConsiderations: "",
+    paymentMethod: "",
     agreeToTerms: false,
   });
 
   const sections = [
-    { title: "Basic Information", icon: UserCircle, required: true },
-    { title: "Health Background", icon: Heart, required: false },
-    { title: "Mental Health History", icon: Brain, required: false },
-    { title: "Current Concerns", icon: Activity, required: false },
-    { title: "Symptoms & Impact", icon: Activity, required: false },
-    { title: "Treatment Goals", icon: Target, required: false },
-    { title: "Appointment Preferences", icon: Clock, required: false },
-    { title: "Emergency Contact", icon: AlertTriangle, required: false },
-    { title: "Professional Preferences", icon: Users, required: false },
-    { title: "Review & Confirm", icon: CheckCircle2, required: true },
+    { title: t("sections.basicInfo"), icon: UserCircle, required: true },
+    { title: t("sections.healthBackground"), icon: Heart, required: true },
+    { title: t("sections.mentalHealth"), icon: Brain, required: true },
+    { title: t("sections.currentConcerns"), icon: Activity, required: true },
+    { title: t("sections.symptomsImpact"), icon: Activity, required: true },
+    { title: t("sections.goalsPreferences"), icon: Target, required: true },
+    { title: t("sections.appointmentPrefs"), icon: Clock, required: true },
+    { title: t("sections.emergencyContact"), icon: AlertTriangle, required: true },
+    { title: t("sections.professionalPrefs"), icon: Users, required: true },
+    { title: t("sections.paymentMethod"), icon: CreditCard, required: true },
+    { title: t("sections.reviewConfirm"), icon: CheckCircle2, required: true },
   ];
+
+  const isChildEvaluation = formData.accountFor === "child" && formData.childServiceType === "evaluation";
+  const stepIndices = isChildEvaluation ? [0, 1, 2, 3, 4, 6, 7, 8, 9, 10] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const actualSection = stepIndices[currentSection];
+  const totalSteps = stepIndices.length;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -228,47 +252,96 @@ export default function MemberSignupPage() {
     });
   };
 
+  const validatePassword = (pwd: string): { ok: boolean; message?: string } => {
+    if (!pwd || pwd.length < 8) return { ok: false, message: t("errors.passwordMinLength") };
+    if (!/[A-Z]/.test(pwd)) return { ok: false, message: t("errors.passwordUppercase") };
+    if (!/[a-z]/.test(pwd)) return { ok: false, message: t("errors.passwordLowercase") };
+    if (!/[0-9]/.test(pwd)) return { ok: false, message: t("errors.passwordDigit") };
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd)) return { ok: false, message: t("errors.passwordSymbol") };
+    return { ok: true };
+  };
+
   const validateSection = (section: number): boolean => {
     switch (section) {
       case 0: // Basic Information
         if (!formData.firstName.trim() || !formData.lastName.trim()) {
-          setError("First name and last name are required");
+          setError(t("errors.firstNameLastNameRequired"));
           return false;
         }
-        if (
-          !formData.email.trim() ||
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-        ) {
-          setError("Valid email is required");
+        if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+          setError(t("errors.validEmailRequired"));
           return false;
         }
-        if (!formData.password || formData.password.length < 8) {
-          setError("Password must be at least 8 characters");
+        const pwdCheck = validatePassword(formData.password);
+        if (!pwdCheck.ok) {
+          setError(pwdCheck.message ?? "");
           return false;
         }
         if (formData.password !== formData.confirmPassword) {
-          setError("Passwords do not match");
+          setError(t("errors.passwordsDoNotMatch"));
+          return false;
+        }
+        if (!formData.language) {
+          setError(t("errors.languageRequired"));
+          return false;
+        }
+        if (formData.accountFor === "child") {
+          if (!formData.childFirstName.trim() || !formData.childLastName.trim()) {
+            setError(t("errors.childNameRequired"));
+            return false;
+          }
+          if (!formData.childDateOfBirth) {
+            setError(t("errors.childDobRequired"));
+            return false;
+          }
+          if (!formData.childServiceType) {
+            setError(t("errors.childServiceTypeRequired"));
+            return false;
+          }
+        }
+        return true;
+      case 1:
+        return true;
+      case 2:
+        return true;
+      case 3:
+        return true;
+      case 4:
+        return true;
+      case 5:
+        return true;
+      case 6:
+        return true;
+      case 7:
+        return true;
+      case 8:
+        if (!formData.preferredGender) {
+          setError(t("errors.errorPreferredGender"));
           return false;
         }
         return true;
-
-      case 9: // Review & Confirm
+      case 9: // Payment
+        if (!formData.paymentMethod) {
+          setError(t("errors.paymentMethodRequired"));
+          return false;
+        }
+        return true;
+      case 10: // Review & Confirm
         if (!formData.agreeToTerms) {
-          setError("You must agree to the terms and conditions");
+          setError(t("errors.agreeToTermsRequired"));
           return false;
         }
         return true;
-
       default:
-        return true; // Optional sections
+        return true;
     }
   };
 
   const handleNext = () => {
     setError("");
-    if (validateSection(currentSection)) {
+    if (validateSection(actualSection)) {
       setDirection(1);
-      setCurrentSection((prev) => Math.min(prev + 1, sections.length - 1));
+      setCurrentSection((prev) => Math.min(prev + 1, totalSteps - 1));
     }
   };
 
@@ -296,6 +369,11 @@ export default function MemberSignupPage() {
         gender: formData.gender || undefined,
         language: formData.language || undefined,
         location: formData.location || undefined,
+        accountFor: formData.accountFor || undefined,
+        childFirstName: formData.childFirstName || undefined,
+        childLastName: formData.childLastName || undefined,
+        childDateOfBirth: formData.childDateOfBirth || undefined,
+        childServiceType: formData.childServiceType || undefined,
         concernedPerson: formData.concernedPerson || undefined,
         medicalConditions:
           formData.medicalConditions.length > 0
@@ -305,8 +383,10 @@ export default function MemberSignupPage() {
           formData.currentMedications.length > 0
             ? formData.currentMedications
             : undefined,
-        allergies:
-          formData.allergies.length > 0 ? formData.allergies : undefined,
+        consultationMotifs:
+          formData.consultationMotifs.length > 0
+            ? formData.consultationMotifs
+            : undefined,
         substanceUse: formData.substanceUse || undefined,
         previousTherapy: formData.previousTherapy
           ? formData.previousTherapy === "yes"
@@ -357,8 +437,10 @@ export default function MemberSignupPage() {
           : undefined,
         preferredGender: formData.preferredGender || undefined,
         preferredAge: formData.preferredAge || undefined,
-        languagePreference: formData.languagePreference || undefined,
+        // Aligne le jumelage avec la langue choisie à l’étape 1 (infos de base)
+        languagePreference: formData.language || undefined,
         culturalConsiderations: formData.culturalConsiderations || undefined,
+        paymentMethod: formData.paymentMethod || undefined,
       });
 
       const result = await signIn("credentials", {
@@ -368,13 +450,13 @@ export default function MemberSignupPage() {
       });
 
       if (result?.error) {
-        setError("Account created but sign in failed. Please try logging in.");
+        setError(t("errors.accountCreatedButSignInFailed"));
         router.push("/login");
       } else {
         router.push("/client/dashboard");
       }
     } catch {
-      setError("Failed to create account. Please try again.");
+      setError(t("errors.failedToCreateAccount"));
     } finally {
       setIsLoading(false);
     }
@@ -397,8 +479,8 @@ export default function MemberSignupPage() {
     }),
   };
 
-  const renderSection = () => {
-    switch (currentSection) {
+  const renderSection = (sectionIndex: number) => {
+    switch (sectionIndex) {
       case 0: // Basic Information
         return (
           <div className="space-y-6">
@@ -406,28 +488,28 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  First Name <span className="text-red-500">*</span>
+                  {t("firstName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="firstName"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  placeholder="John"
+                  placeholder={t("firstNamePlaceholder")}
                   required
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="flex items-center gap-2">
-                  Last Name <span className="text-red-500">*</span>
+                  {t("lastName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="lastName"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  placeholder="Doe"
+                  placeholder={t("lastNamePlaceholder")}
                   required
                 />
               </div>
@@ -436,7 +518,7 @@ export default function MemberSignupPage() {
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                Email <span className="text-red-500">*</span>
+                {t("email")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
@@ -444,7 +526,7 @@ export default function MemberSignupPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 required
               />
             </div>
@@ -453,7 +535,7 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  Phone Number
+                  {t("phone")}
                 </Label>
                 <Input
                   id="phone"
@@ -461,7 +543,7 @@ export default function MemberSignupPage() {
                   type="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder={t("phonePlaceholder")}
                 />
               </div>
 
@@ -471,7 +553,7 @@ export default function MemberSignupPage() {
                   className="flex items-center gap-2"
                 >
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  Date of Birth
+                  {t("dateOfBirth")}
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -486,20 +568,20 @@ export default function MemberSignupPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
+                <Label htmlFor="gender">{t("gender")}</Label>
                 <Select
                   value={formData.gender}
                   onValueChange={(val) => handleSelectChange("gender", val)}
                 >
                   <SelectTrigger id="gender">
-                    <SelectValue placeholder="Select gender" />
+                    <SelectValue placeholder={t("selectGender")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="male">{t("male")}</SelectItem>
+                    <SelectItem value="female">{t("female")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
                     <SelectItem value="preferNotToSay">
-                      Prefer not to say
+                      {t("preferNotToSay")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -508,41 +590,115 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="language" className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  Preferred Language
+                  {t("preferredLanguage")} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.language}
                   onValueChange={(val) => handleSelectChange("language", val)}
                 >
                   <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder={t("selectLanguagePlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
+                    <SelectItem value="french">{t("french")}</SelectItem>
+                    <SelectItem value="english">{t("english")}</SelectItem>
+                    <SelectItem value="arabic">{t("arabic")}</SelectItem>
+                    <SelectItem value="spanish">{t("spanish")}</SelectItem>
+                    <SelectItem value="mandarin">{t("mandarin")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
+              <Label>{t("accountFor")}</Label>
+              <Select
+                value={formData.accountFor}
+                onValueChange={(val) => handleSelectChange("accountFor", val)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={`${t("accountForMe")} / ${t("accountForChild")}`} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="me">{t("accountForMe")}</SelectItem>
+                  <SelectItem value="child">{t("accountForChild")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.accountFor === "child" && (
+              <div className="space-y-4 rounded-lg border border-border/50 p-4 bg-muted/20">
+                <p className="text-sm font-medium text-foreground">{t("childInfoTitle")}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="childFirstName">{t("childFirstName")} <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="childFirstName"
+                      name="childFirstName"
+                      value={formData.childFirstName}
+                      onChange={handleChange}
+                      placeholder="Prénom"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="childLastName">{t("childLastName")} <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="childLastName"
+                      name="childLastName"
+                      value={formData.childLastName}
+                      onChange={handleChange}
+                      placeholder="Nom"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="childDateOfBirth">{t("childDateOfBirth")} <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="childDateOfBirth"
+                      name="childDateOfBirth"
+                      type="date"
+                      value={formData.childDateOfBirth}
+                      onChange={handleChange}
+                      max={new Date().toISOString().split("T")[0]}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("childServiceTypeQuestion")} <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={formData.childServiceType}
+                    onValueChange={(val) => handleSelectChange("childServiceType", val)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="evaluation">{t("evaluation")}</SelectItem>
+                      <SelectItem value="suivi">{t("psychologicalFollowUp")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-2">
               <Label htmlFor="location" className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                Location / Postal Code
+                {t("location")} / {t("postalCode")}
               </Label>
               <Input
                 id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="City, Province or A1A 1A1"
+                placeholder={`${t("locationPlaceholder")} ou ${t("postalCodePlaceholder")}`}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password" className="flex items-center gap-2">
                 <Lock className="h-4 w-4 text-muted-foreground" />
-                Password <span className="text-red-500">*</span>
+                {t("password")} <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Input
@@ -551,7 +707,7 @@ export default function MemberSignupPage() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                  placeholder={t("passwordPlaceholder")}
                   required
                   className="pr-10"
                 />
@@ -568,13 +724,13 @@ export default function MemberSignupPage() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                At least 8 characters
+                {t("passwordHintSecure")}
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                Confirm Password <span className="text-red-500">*</span>
+                {t("confirmPassword")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="confirmPassword"
@@ -582,7 +738,7 @@ export default function MemberSignupPage() {
                 type={showPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder={t("passwordPlaceholder")}
                 required
               />
             </div>
@@ -593,7 +749,9 @@ export default function MemberSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="concernedPerson">Who is this profile for?</Label>
+              <Label htmlFor="concernedPerson">
+                {t("profileModal.step1.concernedPerson")}
+              </Label>
               <Select
                 value={formData.concernedPerson}
                 onValueChange={(val) =>
@@ -601,20 +759,20 @@ export default function MemberSignupPage() {
                 }
               >
                 <SelectTrigger id="concernedPerson">
-                  <SelectValue placeholder="Select..." />
+                  <SelectValue placeholder={t("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="myself">Myself</SelectItem>
-                  <SelectItem value="child">My child</SelectItem>
-                  <SelectItem value="partner">My partner</SelectItem>
-                  <SelectItem value="parent">My parent</SelectItem>
-                  <SelectItem value="other">Other family member</SelectItem>
+                  <SelectItem value="myself">{t("accountForMe")}</SelectItem>
+                  <SelectItem value="child">{t("accountForChild")}</SelectItem>
+                  <SelectItem value="partner">{t("spouse")}</SelectItem>
+                  <SelectItem value="parent">{t("parent")}</SelectItem>
+                  <SelectItem value="other">{t("other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Medical Conditions (select all that apply)</Label>
+              <Label>{t("profileModal.step1.medicalConditions")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Diabetes",
@@ -645,7 +803,7 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Current Medications (select all that apply)</Label>
+              <Label>{t("profileModal.step1.currentMedications")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Antidepressants",
@@ -676,43 +834,31 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Allergies (select all that apply)</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Penicillin",
-                  "Sulfa drugs",
-                  "Aspirin",
-                  "Latex",
-                  "Food allergies",
-                  "None",
-                ].map((allergy) => (
-                  <div key={allergy} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`allergy-${allergy}`}
-                      checked={formData.allergies.includes(allergy)}
-                      onCheckedChange={() =>
-                        handleArrayChange("allergies", allergy)
-                      }
-                    />
-                    <label
-                      htmlFor={`allergy-${allergy}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {allergy}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <Label>
+                {t("consultationMotifsLabel")}
+              </Label>
+              <MotifSearch
+                value={formData.consultationMotifs}
+                onChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    consultationMotifs: Array.isArray(v) ? v : v ? [v] : [],
+                  }))
+                }
+                multiSelect
+                maxSelections={10}
+                placeholder={t("consultationMotifsPlaceholder")}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="substanceUse">Substance Use</Label>
+              <Label htmlFor="substanceUse">{t("profileModal.step1.substanceUse")}</Label>
               <Textarea
                 id="substanceUse"
                 name="substanceUse"
                 value={formData.substanceUse}
                 onChange={handleChange}
-                placeholder="Please describe any alcohol, tobacco, or drug use..."
+                placeholder={t("profileModal.step1.substanceUsePlaceholder")}
                 className="min-h-[100px] resize-none"
               />
             </div>
@@ -724,7 +870,7 @@ export default function MemberSignupPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="previousTherapy">
-                Have you had therapy before?
+                {t("profileModal.step2.previousTherapy")}
               </Label>
               <Select
                 value={formData.previousTherapy}
@@ -733,11 +879,11 @@ export default function MemberSignupPage() {
                 }
               >
                 <SelectTrigger id="previousTherapy">
-                  <SelectValue placeholder="Select..." />
+                  <SelectValue placeholder={t("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="yes">Yes</SelectItem>
-                  <SelectItem value="no">No</SelectItem>
+                  <SelectItem value="yes">{t("profile.yes")}</SelectItem>
+                  <SelectItem value="no">{t("profile.no")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -745,14 +891,14 @@ export default function MemberSignupPage() {
             {formData.previousTherapy === "yes" && (
               <div className="space-y-2">
                 <Label htmlFor="previousTherapyDetails">
-                  Previous Therapy Details
+                  {t("profileModal.step2.previousTherapyDetails")}
                 </Label>
                 <Textarea
                   id="previousTherapyDetails"
                   name="previousTherapyDetails"
                   value={formData.previousTherapyDetails}
                   onChange={handleChange}
-                  placeholder="Please describe your previous therapy experience..."
+                  placeholder={t("profileModal.step2.previousTherapyDetailsPlaceholder")}
                   className="min-h-[100px] resize-none"
                 />
               </div>
@@ -760,7 +906,7 @@ export default function MemberSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="psychiatricHospitalization">
-                Have you ever been hospitalized for psychiatric reasons?
+                {t("profileModal.step2.psychiatricHospitalization")}
               </Label>
               <Select
                 value={formData.psychiatricHospitalization}
@@ -769,29 +915,29 @@ export default function MemberSignupPage() {
                 }
               >
                 <SelectTrigger id="psychiatricHospitalization">
-                  <SelectValue placeholder="Select..." />
+                  <SelectValue placeholder={t("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="yes">Yes</SelectItem>
-                  <SelectItem value="no">No</SelectItem>
+                  <SelectItem value="yes">{t("profile.yes")}</SelectItem>
+                  <SelectItem value="no">{t("profile.no")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currentTreatment">Current Treatment</Label>
+              <Label htmlFor="currentTreatment">{t("profileModal.step2.currentTreatment")}</Label>
               <Textarea
                 id="currentTreatment"
                 name="currentTreatment"
                 value={formData.currentTreatment}
                 onChange={handleChange}
-                placeholder="Describe any current mental health treatment..."
+                placeholder={t("profileModal.step2.currentTreatmentPlaceholder")}
                 className="min-h-[100px] resize-none"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Diagnosed Conditions (select all that apply)</Label>
+              <Label>{t("profileModal.step2.diagnosedConditions")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
                 {(() => {
                   // Calculate age from dateOfBirth
@@ -918,21 +1064,19 @@ export default function MemberSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="primaryIssue">
-                What brings you to therapy today?
-              </Label>
+              <Label htmlFor="primaryIssue">{t("profileModal.step3.primaryIssue")}</Label>
               <Textarea
                 id="primaryIssue"
                 name="primaryIssue"
                 value={formData.primaryIssue}
                 onChange={handleChange}
-                placeholder="Describe your main concern or reason for seeking help..."
+                placeholder={t("profileModal.step3.primaryIssuePlaceholder")}
                 className="min-h-[120px] resize-none"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Secondary Issues (select all that apply)</Label>
+              <Label>{t("profileModal.step3.secondaryIssues")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Stress",
@@ -964,54 +1108,52 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="issueDescription">Detailed Description</Label>
+              <Label htmlFor="issueDescription">{t("profileModal.step3.issueDescription")}</Label>
               <Textarea
                 id="issueDescription"
                 name="issueDescription"
                 value={formData.issueDescription}
                 onChange={handleChange}
-                placeholder="Please provide more details about your concerns..."
+                placeholder={t("profileModal.step3.issueDescriptionPlaceholder")}
                 className="min-h-[120px] resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="severity">How severe are your symptoms?</Label>
+                <Label htmlFor="severity">{t("profileModal.step3.severity")}</Label>
                 <Select
                   value={formData.severity}
                   onValueChange={(val) => handleSelectChange("severity", val)}
                 >
                   <SelectTrigger id="severity">
-                    <SelectValue placeholder="Select severity" />
+                    <SelectValue placeholder={t("profileModal.step3.severityPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="mild">Mild</SelectItem>
-                    <SelectItem value="moderate">Moderate</SelectItem>
-                    <SelectItem value="severe">Severe</SelectItem>
+                    <SelectItem value="mild">{t("profile.issueDetails.mild")}</SelectItem>
+                    <SelectItem value="moderate">{t("profile.issueDetails.moderate")}</SelectItem>
+                    <SelectItem value="severe">{t("profile.issueDetails.severe")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="duration">
-                  How long have you experienced this?
-                </Label>
+                <Label htmlFor="duration">{t("profileModal.step3.duration")}</Label>
                 <Select
                   value={formData.duration}
                   onValueChange={(val) => handleSelectChange("duration", val)}
                 >
                   <SelectTrigger id="duration">
-                    <SelectValue placeholder="Select duration" />
+                    <SelectValue placeholder={t("profileModal.step3.durationPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="lessThanMonth">
-                      Less than a month
+                      {t("profile.issueDetails.lessThanMonth")}
                     </SelectItem>
-                    <SelectItem value="oneToThree">1-3 months</SelectItem>
-                    <SelectItem value="threeToSix">3-6 months</SelectItem>
+                    <SelectItem value="oneToThree">{t("profile.issueDetails.oneToThree")}</SelectItem>
+                    <SelectItem value="threeToSix">{t("profile.issueDetails.threeToSix")}</SelectItem>
                     <SelectItem value="moreThanSix">
-                      More than 6 months
+                      {t("profile.issueDetails.moreThanSix")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -1019,13 +1161,13 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="triggeringSituation">Triggering Situation</Label>
+              <Label htmlFor="triggeringSituation">{t("profileModal.step3.triggeringSituation")}</Label>
               <Textarea
                 id="triggeringSituation"
                 name="triggeringSituation"
                 value={formData.triggeringSituation}
                 onChange={handleChange}
-                placeholder="What triggered or worsened your current situation?"
+                placeholder={t("profileModal.step3.triggeringSituationPlaceholder")}
                 className="min-h-[100px] resize-none"
               />
             </div>
@@ -1036,7 +1178,7 @@ export default function MemberSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>Current Symptoms (select all that apply)</Label>
+              <Label>{t("profileModal.step4.symptoms")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "Sadness",
@@ -1070,20 +1212,20 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dailyLifeImpact">Impact on Daily Life</Label>
+              <Label htmlFor="dailyLifeImpact">{t("profileModal.step4.dailyLifeImpact")}</Label>
               <Textarea
                 id="dailyLifeImpact"
                 name="dailyLifeImpact"
                 value={formData.dailyLifeImpact}
                 onChange={handleChange}
-                placeholder="How do these issues affect your daily activities, work, relationships, etc.?"
+                placeholder={t("profileModal.step4.dailyLifeImpactPlaceholder")}
                 className="min-h-[120px] resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="sleepQuality">Sleep Quality</Label>
+                <Label htmlFor="sleepQuality">{t("profileModal.step4.sleepQuality")}</Label>
                 <Select
                   value={formData.sleepQuality}
                   onValueChange={(val) =>
@@ -1091,72 +1233,55 @@ export default function MemberSignupPage() {
                   }
                 >
                   <SelectTrigger id="sleepQuality">
-                    <SelectValue placeholder="Select..." />
+                    <SelectValue placeholder={t("select")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="poor">Poor quality</SelectItem>
-                    <SelectItem value="insomnia">Insomnia</SelectItem>
+                    <SelectItem value="normal">{t("profileModal.step4.sleepQualityOptions.normal")}</SelectItem>
+                    <SelectItem value="poor">{t("profileModal.step4.sleepQualityOptions.poor")}</SelectItem>
+                    <SelectItem value="insomnia">{t("profileModal.step4.sleepQualityOptions.insomnia")}</SelectItem>
                     <SelectItem value="excessive">
-                      Excessive sleeping
+                      {t("profileModal.step4.sleepQualityOptions.excessive")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="appetiteChanges">Appetite Changes</Label>
+                <Label htmlFor="appetiteChanges">{t("profileModal.step4.appetiteChanges")}</Label>
                 <Input
                   id="appetiteChanges"
                   name="appetiteChanges"
                   value={formData.appetiteChanges}
                   onChange={handleChange}
-                  placeholder="e.g., Loss of appetite, overeating..."
+                  placeholder={t("profileModal.step4.appetiteChangesPlaceholder")}
                 />
               </div>
             </div>
           </div>
         );
 
-      case 5: // Treatment Goals
+      case 5: // Treatment Goals (skipped when child + evaluation)
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>
-                What are your goals for therapy? (select all that apply)
-              </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Reduce symptoms",
-                  "Improve relationships",
-                  "Better coping skills",
-                  "Self-understanding",
-                  "Life changes",
-                  "Personal growth",
-                  "Stress management",
-                  "Grief processing",
-                ].map((goal) => (
-                  <div key={goal} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`goal-${goal}`}
-                      checked={formData.treatmentGoals.includes(goal)}
-                      onCheckedChange={() =>
-                        handleArrayChange("treatmentGoals", goal)
-                      }
-                    />
-                    <label
-                      htmlFor={`goal-${goal}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {goal}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <Label>{t("objectivesLabel")}</Label>
+              <MotifSearch
+                value={formData.treatmentGoals}
+                onChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    treatmentGoals: Array.isArray(v) ? v : v ? [v] : [],
+                  }))
+                }
+                multiSelect
+                maxSelections={10}
+                placeholder={t("objectivesPlaceholder")}
+                items={t.raw("therapyObjectives") as string[]}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Preferred Therapy Approach (select all that apply)</Label>
+              <Label>Approche de thérapie préférée (optionnel)</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
                   "CBT",
@@ -1189,14 +1314,14 @@ export default function MemberSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="concernsAboutTherapy">
-                Any concerns or questions about therapy?
+                {t("profileModal.step5.concernsAboutTherapy")}
               </Label>
               <Textarea
                 id="concernsAboutTherapy"
                 name="concernsAboutTherapy"
                 value={formData.concernsAboutTherapy}
                 onChange={handleChange}
-                placeholder="Share any concerns, questions, or specific needs..."
+                placeholder={t("profileModal.step5.concernsAboutTherapyPlaceholder")}
                 className="min-h-[120px] resize-none"
               />
             </div>
@@ -1208,7 +1333,7 @@ export default function MemberSignupPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label>
-                When are you typically available? (select all that apply)
+                {t("profileModal.step6.availability")}
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
@@ -1241,19 +1366,19 @@ export default function MemberSignupPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="modality">Preferred Modality</Label>
+                <Label htmlFor="modality">{t("profileModal.step6.modality")}</Label>
                 <Select
                   value={formData.modality}
                   onValueChange={(val) => handleSelectChange("modality", val)}
                 >
                   <SelectTrigger id="modality">
-                    <SelectValue placeholder="Select..." />
+                    <SelectValue placeholder={t("select")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="online">Online only</SelectItem>
-                    <SelectItem value="inPerson">In-person only</SelectItem>
+                    <SelectItem value="online">{t("profile.preferences.online")}</SelectItem>
+                    <SelectItem value="inPerson">{t("profile.preferences.inPerson")}</SelectItem>
                     <SelectItem value="both">
-                      Both online & in-person
+                      {t("profile.preferences.both")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -1261,7 +1386,7 @@ export default function MemberSignupPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="sessionFrequency">
-                  Preferred Session Frequency
+                  {t("profileModal.step6.sessionFrequency")}
                 </Label>
                 <Select
                   value={formData.sessionFrequency}
@@ -1270,25 +1395,25 @@ export default function MemberSignupPage() {
                   }
                 >
                   <SelectTrigger id="sessionFrequency">
-                    <SelectValue placeholder="Select..." />
+                    <SelectValue placeholder={t("select")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="biweekly">Every 2 weeks</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="weekly">{t("profileModal.step6.sessionFrequencyOptions.weekly")}</SelectItem>
+                    <SelectItem value="biweekly">{t("profileModal.step6.sessionFrequencyOptions.biweekly")}</SelectItem>
+                    <SelectItem value="monthly">{t("profileModal.step6.sessionFrequencyOptions.monthly")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes</Label>
+              <Label htmlFor="notes">{t("profileModal.step6.notes")}</Label>
               <Textarea
                 id="notes"
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
-                placeholder="Any other preferences or information we should know..."
+                placeholder={t("profileModal.step6.notesPlaceholder")}
                 className="min-h-[100px] resize-none"
               />
             </div>
@@ -1300,28 +1425,27 @@ export default function MemberSignupPage() {
           <div className="space-y-6">
             <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-900">
               <p className="text-sm text-amber-800 dark:text-amber-200">
-                Emergency contact information helps us provide better care and
-                reach out if needed.
+                {t("profileModal.step7.subtitle")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="emergencyContactName">
-                  Emergency Contact Name
+                  {t("profileModal.step7.emergencyContactName")}
                 </Label>
                 <Input
                   id="emergencyContactName"
                   name="emergencyContactName"
                   value={formData.emergencyContactName}
                   onChange={handleChange}
-                  placeholder="Full name"
+                  placeholder={t("profileModal.step7.emergencyContactNamePlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="emergencyContactPhone">
-                  Emergency Contact Phone
+                  {t("profileModal.step7.emergencyContactPhone")}
                 </Label>
                 <Input
                   id="emergencyContactPhone"
@@ -1329,39 +1453,39 @@ export default function MemberSignupPage() {
                   type="tel"
                   value={formData.emergencyContactPhone}
                   onChange={handleChange}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder={t("profileModal.step7.emergencyContactPhonePlaceholder")}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="emergencyContactRelation">
-                Relationship to Contact
+                {t("profileModal.step7.emergencyContactRelation")}
               </Label>
               <Input
                 id="emergencyContactRelation"
                 name="emergencyContactRelation"
                 value={formData.emergencyContactRelation}
                 onChange={handleChange}
-                placeholder="e.g., Spouse, Parent, Sibling, Friend"
+                placeholder={t("profileModal.step7.emergencyContactRelationPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="crisisPlan">Crisis Plan</Label>
+              <Label htmlFor="crisisPlan">{t("profileModal.step7.crisisPlan")}</Label>
               <Textarea
                 id="crisisPlan"
                 name="crisisPlan"
                 value={formData.crisisPlan}
                 onChange={handleChange}
-                placeholder="What should we do in case of a mental health crisis? Who should we contact?"
+                placeholder={t("profileModal.step7.crisisPlanPlaceholder")}
                 className="min-h-[120px] resize-none"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="suicidalThoughts">
-                Are you currently experiencing suicidal thoughts?
+                {t("profileModal.step7.suicidalThoughts")}
               </Label>
               <Select
                 value={formData.suicidalThoughts}
@@ -1370,18 +1494,17 @@ export default function MemberSignupPage() {
                 }
               >
                 <SelectTrigger id="suicidalThoughts">
-                  <SelectValue placeholder="Select..." />
+                  <SelectValue placeholder={t("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="no">No</SelectItem>
-                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="no">{t("profile.no")}</SelectItem>
+                  <SelectItem value="yes">{t("profile.yes")}</SelectItem>
                 </SelectContent>
               </Select>
               {formData.suicidalThoughts === "yes" && (
                 <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900 mt-4">
                   <p className="text-sm text-red-800 dark:text-red-200 font-medium mb-2">
-                    If you&apos;re in crisis, please call one of these hotlines
-                    immediately:
+                    {t("profileModal.step7.crisisHotlinesTitle")}
                   </p>
                   <ul className="text-sm text-red-800 dark:text-red-200 space-y-1">
                     <li>• Canada Suicide Prevention: 1-833-456-4566</li>
@@ -1397,31 +1520,33 @@ export default function MemberSignupPage() {
       case 8: // Professional Preferences
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="preferredGender">
-                  Preferred Professional Gender
-                </Label>
-                <Select
-                  value={formData.preferredGender}
-                  onValueChange={(val) =>
-                    handleSelectChange("preferredGender", val)
-                  }
-                >
-                  <SelectTrigger id="preferredGender">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="noPreference">No preference</SelectItem>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
+            <div className="space-y-2">
+              <Label>{t("preferredProfessionalLabel")}</Label>
+            </div>
+            <div className="space-y-2">
+              <Select
+                value={formData.preferredGender}
+                onValueChange={(val) =>
+                  handleSelectChange("preferredGender", val)
+                }
+              >
+                <SelectTrigger id="preferredGender">
+                  <SelectValue
+                    placeholder={t("profileModal.step8.preferredGenderPlaceholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="noPreference">{t("noPreference")}</SelectItem>
+                  <SelectItem value="male">{t("preferredProfessionalMale")}</SelectItem>
+                  <SelectItem value="female">{t("preferredProfessionalFemale")}</SelectItem>
+                  <SelectItem value="other">{t("preferredProfessionalOther")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="preferredAge">
-                  Preferred Professional Age Range
+                  {t("profileModal.step8.preferredAge")}
                 </Label>
                 <Select
                   value={formData.preferredAge}
@@ -1430,63 +1555,84 @@ export default function MemberSignupPage() {
                   }
                 >
                   <SelectTrigger id="preferredAge">
-                    <SelectValue placeholder="Select..." />
+                    <SelectValue
+                      placeholder={t("profileModal.step8.preferredAgePlaceholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="any">Any age</SelectItem>
-                    <SelectItem value="younger">Younger (20s-30s)</SelectItem>
-                    <SelectItem value="middle">
-                      Middle-aged (40s-50s)
-                    </SelectItem>
-                    <SelectItem value="older">Older (60+)</SelectItem>
+                    <SelectItem value="any">{t("profile.matching.any")}</SelectItem>
+                    <SelectItem value="younger">{t("profile.matching.younger")}</SelectItem>
+                    <SelectItem value="middle">{t("profile.matching.middle")}</SelectItem>
+                    <SelectItem value="older">{t("profile.matching.older")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="languagePreference">Language Preference</Label>
-              <Select
-                value={formData.languagePreference}
-                onValueChange={(val) =>
-                  handleSelectChange("languagePreference", val)
-                }
-              >
-                <SelectTrigger id="languagePreference">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="english">English</SelectItem>
-                  <SelectItem value="french">French</SelectItem>
-                  <SelectItem value="bilingual">
-                    Bilingual (English & French)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="culturalConsiderations">
-                Cultural Considerations
+                {t("profileModal.step8.culturalConsiderations")}
               </Label>
               <Textarea
                 id="culturalConsiderations"
                 name="culturalConsiderations"
                 value={formData.culturalConsiderations}
                 onChange={handleChange}
-                placeholder="Any cultural, religious, or other considerations we should know when matching you with a professional..."
+                placeholder={t("profileModal.step8.culturalConsiderationsPlaceholder")}
                 className="min-h-[120px] resize-none"
               />
             </div>
           </div>
         );
 
-      case 9: // Review & Confirm
+      case 9: // Mode de paiement
+        return (
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              {t("paymentStepDescription")}
+            </p>
+            <div className="space-y-3">
+              {[
+                { value: "credit_card", label: t("paymentCreditCard") },
+                { value: "interac", label: t("paymentInterac") },
+                { value: "bank_withdrawal", label: t("paymentBankWithdrawal") },
+              ].map((opt) => (
+                <div
+                  key={opt.value}
+                  className="flex items-center space-x-3 rounded-lg border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+                >
+                  <input
+                    type="radio"
+                    id={`payment-${opt.value}`}
+                    name="paymentMethod"
+                    value={opt.value}
+                    checked={formData.paymentMethod === opt.value}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        paymentMethod: e.target.value,
+                      }))
+                    }
+                    className="h-4 w-4 text-primary"
+                  />
+                  <label
+                    htmlFor={`payment-${opt.value}`}
+                    className="text-sm font-medium cursor-pointer"
+                  >
+                    {opt.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 10: // Review & Confirm
         return (
           <div className="space-y-6">
             <div className="rounded-xl bg-muted/30 p-6">
               <h3 className="font-serif text-lg mb-4">
-                Review Your Information
+                {t("reviewInfoTitle")}
               </h3>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b">
@@ -1534,16 +1680,15 @@ export default function MemberSignupPage() {
                 htmlFor="agreeToTerms"
                 className="text-sm leading-relaxed cursor-pointer"
               >
-                I agree to the{" "}
+                {t("agreeToTerms")}{" "}
                 <Link href="/terms" className="text-primary hover:underline">
-                  Terms of Service
+                  {t("termsOfService")}
                 </Link>{" "}
-                and{" "}
+                {t("and")}{" "}
                 <Link href="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
+                  {t("privacyPolicy")}
                 </Link>
-                . I understand that the information provided will be used to
-                match me with appropriate mental health professionals.
+                . {t("agreeToTermsSuffix")}
               </label>
             </div>
           </div>
@@ -1554,14 +1699,14 @@ export default function MemberSignupPage() {
     }
   };
 
-  const CurrentIcon = sections[currentSection].icon;
+  const CurrentIcon = sections[actualSection].icon;
 
   return (
     <AuthContainer maxWidth="2xl">
       <AuthHeader
         icon={<UserCircle className="w-8 h-8 text-primary" />}
-        title="Join as a Member"
-        description="Start your journey to better mental health"
+        title={t("title")}
+        description={t("description")}
       />
 
       <AuthCard>
@@ -1572,15 +1717,15 @@ export default function MemberSignupPage() {
               <CurrentIcon className="w-6 h-6 text-primary" />
               <div>
                 <h3 className="font-serif text-lg">
-                  {sections[currentSection].title}
+                  {sections[actualSection].title}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Step {currentSection + 1} of {sections.length}
+                  {t("stepOf", { current: currentSection + 1, total: totalSteps })}
                 </p>
               </div>
             </div>
-            {sections[currentSection].required && (
-              <span className="text-xs text-red-500">* Required</span>
+            {sections[actualSection].required && (
+              <span className="text-xs text-red-500">* {t("required")}</span>
             )}
           </div>
           <div className="w-full bg-muted rounded-full h-2">
@@ -1588,7 +1733,7 @@ export default function MemberSignupPage() {
               className="bg-primary h-2 rounded-full"
               initial={{ width: 0 }}
               animate={{
-                width: `${((currentSection + 1) / sections.length) * 100}%`,
+                width: `${((currentSection + 1) / totalSteps) * 100}%`,
               }}
               transition={{ duration: 0.3 }}
             />
@@ -1621,7 +1766,7 @@ export default function MemberSignupPage() {
               }}
               className="w-full"
             >
-              {renderSection()}
+              {renderSection(actualSection)}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -1635,16 +1780,16 @@ export default function MemberSignupPage() {
             className="flex items-center gap-2 px-6 py-3 text-foreground font-light transition-opacity disabled:opacity-0 disabled:pointer-events-none hover:text-primary"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
+            <span>{t("back")}</span>
           </button>
 
-          {currentSection < sections.length - 1 ? (
+          {currentSection < totalSteps - 1 ? (
             <button
               type="button"
               onClick={handleNext}
               className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-light hover:scale-105 transition-transform"
             >
-              <span>Continue</span>
+              <span>{t("continue")}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           ) : (
@@ -1657,11 +1802,11 @@ export default function MemberSignupPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Creating account...</span>
+                  <span>{t("creating")}</span>
                 </>
               ) : (
                 <>
-                  <span>Create Account</span>
+                  <span>{t("createAccount")}</span>
                   <CheckCircle2 className="w-5 h-5" />
                 </>
               )}
@@ -1672,12 +1817,12 @@ export default function MemberSignupPage() {
 
       <AuthFooter>
         <p className="text-sm text-muted-foreground font-light">
-          Already have an account?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login"
             className="text-primary hover:text-primary/80 transition-colors"
           >
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </AuthFooter>
@@ -1687,7 +1832,7 @@ export default function MemberSignupPage() {
           href="/"
           className="text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
         >
-          ← Back to Home
+          {t("backToHome")}
         </Link>
       </AuthFooter>
     </AuthContainer>

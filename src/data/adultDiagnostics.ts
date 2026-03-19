@@ -1,0 +1,37 @@
+/**
+ * Liste des diagnostics pour les adultes (profil médical client, etc.).
+ * Ce n'est pas la liste que les professionnels cochent (voir adultProblematics.ts).
+ */
+export const ADULT_DIAGNOSTICS = [
+  "Trouble de la personnalité",
+  "Trouble de la personnalité limite",
+  "Trouble délirant",
+  "Trouble psychotique bref",
+  "Schizophrénie",
+  "Trouble schizo-affectif",
+  "Trouble bipolaire",
+  "Trouble dépressif majeur (épisode unique ou récurrent)",
+  "Trouble dépressif persistant",
+  "Trouble dysphorique prémenstruel",
+  "Trouble de deuil prolongé",
+  "Trouble d'anxiété généralisée",
+  "Trouble d'anxiété sociale",
+  "Trouble panique",
+  "Agoraphobie",
+  "Trouble d'adaptation avec humeur anxio-dépressive",
+  "TOC (avec obsessions de propreté, de vérification, de symétrie, etc.)",
+  "Obsession d'une dysmorphie corporelle (peur d'une imperfection physique)",
+  "Trouble d'accumulation compulsive",
+  "Trouble de stress post-traumatique (TSPT)",
+  "Trouble de stress aigu (immédiatement après le choc)",
+  "Trouble d'adaptation (avec humeur dépressive et/ou anxieuse)",
+  "Anorexie mentale",
+  "Boulimie",
+  "Troubles liés à l'usage (alcool, cannabis, hallucinogènes, opioïdes, sédatifs, stimulants, tabac…).",
+  "Jeu d'argent pathologique",
+  "Douance",
+  "TSA",
+  "TDAH",
+  "Traumatisme crânien (TCC)",
+  "AVC (Accident Vasculaire Cérébral) aphasies/héminégligences",
+];

@@ -24,8 +24,14 @@ export async function POST(req: NextRequest) {
       concernedPerson,
       medicalConditions,
       currentMedications,
-      allergies,
+      consultationMotifs,
       substanceUse,
+      accountFor,
+      childFirstName,
+      childLastName,
+      childDateOfBirth,
+      childServiceType,
+      paymentMethod,
       previousTherapy,
       previousTherapyDetails,
       psychiatricHospitalization,
@@ -93,11 +99,19 @@ export async function POST(req: NextRequest) {
       gender,
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
       language:
-        language === "english"
-          ? "en"
-          : language === "french"
-            ? "fr"
-            : undefined,
+        language === "french"
+          ? "fr"
+          : language === "english"
+            ? "en"
+            : language === "arabic"
+              ? "ar"
+              : language === "spanish"
+                ? "es"
+                : language === "mandarin"
+                  ? "zh"
+                  : language === "other"
+                    ? "other"
+                    : undefined,
       location: location,
     });
 
@@ -127,6 +141,7 @@ export async function POST(req: NextRequest) {
         // Pricing & Payment
         pricing: professionalProfile?.pricing,
         paymentAgreement: professionalProfile?.paymentAgreement,
+        paymentFrequency: professionalProfile?.paymentFrequency,
         // Education
         education: professionalProfile?.education,
         profileCompleted: false,
@@ -143,10 +158,16 @@ export async function POST(req: NextRequest) {
         userId: user._id,
         // Personal Information
         concernedPerson: concernedPerson,
+        // Account for me / child
+        accountFor: accountFor,
+        childFirstName: childFirstName,
+        childLastName: childLastName,
+        childDateOfBirth: childDateOfBirth,
+        childServiceType: childServiceType,
         // Health Background
         medicalConditions: medicalConditions,
         currentMedications: currentMedications,
-        allergies: allergies,
+        consultationMotifs: consultationMotifs,
         substanceUse: substanceUse,
         // Mental Health History
         previousTherapy: previousTherapy,
@@ -186,6 +207,7 @@ export async function POST(req: NextRequest) {
         preferredAge: preferredAge,
         languagePreference: languagePreference,
         culturalConsiderations: culturalConsiderations,
+        paymentMethod: paymentMethod,
         profileCompleted: false,
       });
 

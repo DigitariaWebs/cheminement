@@ -47,7 +47,7 @@ export default function PlatformCTASection() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  href="/book"
+                  href="/appointment"
                   className="inline-flex items-center gap-3 rounded-full border-2 border-foreground px-8 py-4 text-sm font-semibold uppercase tracking-[0.15em] text-foreground transition-all hover:bg-foreground hover:text-background"
                 >
                   <span>{t("demoButton")}</span>

@@ -1,0 +1,36 @@
+/**
+ * Liste des diagnostics pour les enfants (profil médical client, etc.).
+ * Ce n'est pas la liste que les professionnels cochent (voir childProblematics.ts).
+ */
+export const CHILD_DIAGNOSTICS = [
+  "Trouble du spectre de l'autisme (TSA)",
+  "Trouble de l'acquisition de la coordination",
+  "Tics",
+  "Syndrome de la Tourette",
+  "TDAH",
+  "Trouble de la communication sociale",
+  "Douance",
+  "Trouble de dérèglement disruptif de l'humeur",
+  "Trouble de l'opposition",
+  "Trouble grave du comportement",
+  "Trouble d'anxiété de séparation",
+  "Mutisme sélectif",
+  "Phobie spécifique (animaux, environnement naturel, sang/injection, situationnel)",
+  "Trouble d'anxiété sociale (phobie sociale)",
+  "Trouble panique (avec ou sans agoraphobie)",
+  "Trouble d'anxiété généralisée (TAG)",
+  "Trichotillomanie (arrachage des cheveux)",
+  "Dermatillomanie (triturage répété de la peau)",
+  "Trouble réactionnel de l'attachement",
+  "Trouble de stress post-traumatique (TSPT)",
+  "Troubles de l'adaptation (avec humeur dépressive et/ou anxieuse).",
+  "Pica (ingestion de substances non comestibles)",
+  "Anorexie mentale (type restrictif ou avec accès hyperphagiques/purgations)",
+  "Boulimie",
+  "Encoprésie",
+  "Énurésie",
+  "Trouble du langage",
+  "Dyslexie",
+  "Dysorthographie",
+  "Déficience intellectuelle",
+];

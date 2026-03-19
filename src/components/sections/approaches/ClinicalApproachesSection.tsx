@@ -60,6 +60,12 @@ export default function ClinicalApproachesSection() {
       title: t("approaches.coaching.title"),
       description: t("approaches.coaching.description"),
     },
+    // Added to the same grid of "encadrés" for consistent styling
+    {
+      icon: Puzzle,
+      title: t("integrativeApproach.title"),
+      description: t("integrativeApproach.description"),
+    },
   ];
   const cardAnimations: AnimationVariant[] = [
     "fade-right",
@@ -134,27 +140,6 @@ export default function ClinicalApproachesSection() {
             </ScrollReveal>
           ))}
         </div>
-
-        {/* Integrative Approach Box */}
-        <ScrollReveal variant="zoom-in" delayMs={1000} duration={700}>
-          <div className="mt-12 mx-auto max-w-4xl rounded-4xl border border-primary/40 bg-card/90 p-8 shadow-xl">
-            <div className="flex items-start gap-6">
-              <div className="shrink-0">
-                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <Puzzle className="h-7 w-7" />
-                </div>
-              </div>
-              <div className="flex-1 space-y-4">
-                <h3 className="font-serif text-lg font-medium text-foreground">
-                  {t("integrativeApproach.title")}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {t("integrativeApproach.description")}
-                </p>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
 
         <ScrollReveal variant="swing-in" delayMs={1100} duration={700}>
           <div className="mx-auto mt-10 max-w-4xl rounded-4xl border border-dashed border-primary/30 bg-card/70 p-8 text-center shadow-inner">
