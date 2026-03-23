@@ -116,7 +116,6 @@ interface FormData {
   emergencyContactPhone: string;
   emergencyContactRelation: string;
   crisisPlan: string;
-  suicidalThoughts: string;
 
   // Professional Matching Preferences
   preferredGender: string;
@@ -185,7 +184,6 @@ export default function MemberSignupPage() {
     emergencyContactPhone: "",
     emergencyContactRelation: "",
     crisisPlan: "",
-    suicidalThoughts: "",
     preferredGender: "",
     preferredAge: "",
     culturalConsiderations: "",
@@ -432,9 +430,6 @@ export default function MemberSignupPage() {
         emergencyContactRelation:
           formData.emergencyContactRelation || undefined,
         crisisPlan: formData.crisisPlan || undefined,
-        suicidalThoughts: formData.suicidalThoughts
-          ? formData.suicidalThoughts === "yes"
-          : undefined,
         preferredGender: formData.preferredGender || undefined,
         preferredAge: formData.preferredAge || undefined,
         // Aligne le jumelage avec la langue choisie à l’étape 1 (infos de base)
@@ -1483,37 +1478,6 @@ export default function MemberSignupPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="suicidalThoughts">
-                {t("profileModal.step7.suicidalThoughts")}
-              </Label>
-              <Select
-                value={formData.suicidalThoughts}
-                onValueChange={(val) =>
-                  handleSelectChange("suicidalThoughts", val)
-                }
-              >
-                <SelectTrigger id="suicidalThoughts">
-                  <SelectValue placeholder={t("select")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="no">{t("profile.no")}</SelectItem>
-                  <SelectItem value="yes">{t("profile.yes")}</SelectItem>
-                </SelectContent>
-              </Select>
-              {formData.suicidalThoughts === "yes" && (
-                <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900 mt-4">
-                  <p className="text-sm text-red-800 dark:text-red-200 font-medium mb-2">
-                    {t("profileModal.step7.crisisHotlinesTitle")}
-                  </p>
-                  <ul className="text-sm text-red-800 dark:text-red-200 space-y-1">
-                    <li>• Canada Suicide Prevention: 1-833-456-4566</li>
-                    <li>• Quebec Suicide Prevention: 1-866-277-3553</li>
-                    <li>• Crisis Text Line: Text &quot;HOME&quot; to 686868</li>
-                  </ul>
-                </div>
-              )}
-            </div>
           </div>
         );
 
