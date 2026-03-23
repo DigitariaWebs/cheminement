@@ -169,6 +169,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate patient referral contact info when booking for a patient
+    if (data.bookingFor === "patient") {
+      const patientFirstName = data.referralInfo?.patientFirstName?.trim();
+      const patientLastName = data.referralInfo?.patientLastName?.trim();
+      if (!patientFirstName || !patientLastName) {
+        return NextResponse.json(
+          {
+            error:
+              "Patient firstName and lastName are required when booking for a patient",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     // Only validate professional if one is specified
     let profile = null;
     if (data.professionalId) {

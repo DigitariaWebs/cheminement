@@ -40,6 +40,10 @@ export interface IReferralInfo {
   referrerLicense?: string;
   referrerPhone?: string;
   referrerEmail?: string;
+  patientFirstName?: string;
+  patientLastName?: string;
+  patientPhone?: string;
+  patientEmail?: string;
   referralReason?: string;
   documentUrl?: string; // URL to uploaded prescription/referral PDF
   documentName?: string;
@@ -174,6 +178,10 @@ const ReferralInfoSchema = new Schema<IReferralInfo>(
     referrerLicense: String,
     referrerPhone: String,
     referrerEmail: String,
+    patientFirstName: String,
+    patientLastName: String,
+    patientPhone: String,
+    patientEmail: String,
     referralReason: String,
     documentUrl: String,
     documentName: String,

@@ -84,6 +84,10 @@ interface ReferralInfo {
   referrerLicense: string;
   referrerPhone: string;
   referrerEmail: string;
+  patientFirstName: string;
+  patientLastName: string;
+  patientEmail: string;
+  patientPhone: string;
   referralReason: string;
   documentUrl: string;
   documentName: string;
@@ -203,6 +207,10 @@ export default function BookAppointmentPage() {
     referrerLicense: "",
     referrerPhone: "",
     referrerEmail: "",
+    patientFirstName: "",
+    patientLastName: "",
+    patientEmail: "",
+    patientPhone: "",
     referralReason: "",
     documentUrl: "",
     documentName: "",
@@ -483,6 +491,20 @@ export default function BookAppointmentPage() {
     if (!referralInfo.referrerName.trim()) {
       setError(tB("errors.referrerName"));
       return false;
+    }
+    if (
+      !referralInfo.patientFirstName.trim() ||
+      !referralInfo.patientLastName.trim()
+    ) {
+      setError(tB("errors.patientName"));
+      return false;
+    }
+    if (referralInfo.patientEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(referralInfo.patientEmail)) {
+        setError(tB("errors.emailInvalid"));
+        return false;
+      }
     }
     if (!issueType || !Array.isArray(issueType) || issueType.length === 0) {
       setError(tB("errors.referralMotif"));
@@ -1854,6 +1876,91 @@ export default function BookAppointmentPage() {
                           placeholder={tB("reasonReferralPlaceholder")}
                           rows={3}
                         />
+                      </div>
+
+                      {/* Patient Contact Information */}
+                      <div className="space-y-4 pt-4 border-t border-border/40">
+                        <h3 className="text-base font-medium text-foreground">
+                          {tB("patientContactInfo")}
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="patientFirstName">
+                              {tB("firstName")}{" "}
+                              <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                              id="patientFirstName"
+                              value={referralInfo.patientFirstName}
+                              onChange={(e) =>
+                                setReferralInfo({
+                                  ...referralInfo,
+                                  patientFirstName: e.target.value,
+                                })
+                              }
+                              placeholder={tB("placeholderFirstName")}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="patientLastName">
+                              {tB("lastName")}{" "}
+                              <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                              id="patientLastName"
+                              value={referralInfo.patientLastName}
+                              onChange={(e) =>
+                                setReferralInfo({
+                                  ...referralInfo,
+                                  patientLastName: e.target.value,
+                                })
+                              }
+                              placeholder={tB("placeholderLastName")}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="patientEmail">
+                              {tB("contactEmail")}{" "}
+                              <span className="text-muted-foreground">
+                                {tB("optional")}
+                              </span>
+                            </Label>
+                            <Input
+                              id="patientEmail"
+                              type="email"
+                              value={referralInfo.patientEmail}
+                              onChange={(e) =>
+                                setReferralInfo({
+                                  ...referralInfo,
+                                  patientEmail: e.target.value,
+                                })
+                              }
+                              placeholder="patient@email.com"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="patientPhone">
+                              {tB("contactPhone")}{" "}
+                              <span className="text-muted-foreground">
+                                {tB("optional")}
+                              </span>
+                            </Label>
+                            <Input
+                              id="patientPhone"
+                              type="tel"
+                              value={referralInfo.patientPhone}
+                              onChange={(e) =>
+                                setReferralInfo({
+                                  ...referralInfo,
+                                  patientPhone: e.target.value,
+                                })
+                              }
+                              placeholder="+1 (555) 123-4567"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Motif Search Section - ADDED HERE */}
