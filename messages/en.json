@@ -687,6 +687,7 @@
         "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
+      "therapyApproachOptional": "Preferred therapy approach (optional)",
       "objectivesPlaceholder": "Search for objectives (stress management, anxiety...)",
       "therapyObjectives": [
         "Reduce symptoms",
@@ -1077,6 +1078,7 @@
       "approvedDesc": "Your account is active and ready to accept clients.",
       "completeSetupTitle": "Complete Your Professional Profile",
       "completeSetupDesc": "To start matching with clients, please complete your professional profile with your specializations, approaches, and preferences.",
+      "completeSetup": "Complete profile setup",
       "completeNow": "Complete Profile Now",
       "complete": "Complete",
       "basicInfo": "Basic Information",
@@ -2607,6 +2609,55 @@
       },
       "minutes": "min",
       "with": "with"
+    },
+    "AppointmentForm": {
+      "referrerSection": "Referrer",
+      "patientSection": "Patient",
+      "clientSection": "Client",
+      "optional": "optional",
+      "phoneOrEmail": "Phone or email",
+      "professionalName": "Professional name",
+      "patientName": "Patient name"
+    },
+    "medicalProfile": {
+      "loading": "Loading...",
+      "noData": "No profile data available",
+      "sections": {
+        "symptomsDailyLife": "Symptoms & Daily Life Impact",
+        "treatmentGoalsPrefs": "Treatment Goals & Preferences"
+      },
+      "empty": {
+        "noneReported": "None reported",
+        "notReported": "Not reported",
+        "notSpecified": "Not specified",
+        "noDetailsProvided": "No details provided",
+        "noCurrentTreatment": "No current treatment",
+        "noDescriptionProvided": "No description provided",
+        "noChangesReported": "No changes reported",
+        "noConcernsReported": "No concerns reported",
+        "normalSleep": "Normal",
+        "noAdditionalNotes": "No additional notes",
+        "notProvided": "Not provided",
+        "noCrisisPlan": "No crisis plan specified"
+      },
+      "labels": {
+        "triggeringEvent": "Triggering event",
+        "preferredTimeSlots": "Preferred time slots",
+        "sessionModality": "Session modality",
+        "emergencyContactTitle": "Emergency contact information",
+        "emergencyConfidential": "This information is kept confidential and used only in case of emergency.",
+        "contactName": "Contact name",
+        "phoneNumber": "Phone number",
+        "relationship": "Relationship",
+        "crisisPlan": "Crisis plan",
+        "matchingPrefsTitle": "Professional matching preferences",
+        "preferredAgeRange": "Preferred age range",
+        "anyAge": "Any age",
+        "ageYounger": "Younger (20–35)",
+        "ageMiddle": "Middle-aged (36–55)",
+        "ageOlder": "Older (56+)",
+        "suicidalThoughtsWarning": "The client has reported experiencing suicidal thoughts. Immediate attention may be required."
+      }
     },
     "library": {
       "badge": "Resource Library",

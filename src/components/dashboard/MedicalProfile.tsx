@@ -34,6 +34,8 @@ export default function MedicalProfile({
   isEditable = false,
 }: MedicalProfileProps) {
   const t = useTranslations("Client.profile");
+  const tMp = useTranslations("Client.profile.profileModal");
+  const tMv = useTranslations("Client.medicalProfile");
   const [medicalProfile, setMedicalProfile] = useState<IMedicalProfile | null>(
     profile || null,
   );
@@ -74,7 +76,7 @@ export default function MedicalProfile({
     return (
       <div className="rounded-xl bg-card p-6">
         <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{tMv("loading")}</p>
         </div>
       </div>
     );
@@ -84,7 +86,7 @@ export default function MedicalProfile({
     return (
       <div className="rounded-xl bg-card p-6">
         <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-muted-foreground">No profile data available</p>
+          <p className="text-muted-foreground">{tMv("noData")}</p>
         </div>
       </div>
     );
@@ -96,7 +98,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Health Background
+            {tMp("steps.healthBackground")}
           </h2>
           {isEditable && (
             <button
@@ -107,13 +109,13 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Medical Conditions</Label>
+            <Label>{tMp("step1.medicalConditions")}</Label>
             {medicalProfile.medicalConditions &&
             medicalProfile.medicalConditions.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -127,12 +129,14 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">None reported</p>
+              <p className="text-muted-foreground text-sm">
+                {tMv("empty.noneReported")}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Current Medications</Label>
+            <Label>{tMp("step1.currentMedications")}</Label>
             {medicalProfile.currentMedications &&
             medicalProfile.currentMedications.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -146,13 +150,15 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">None reported</p>
+              <p className="text-muted-foreground text-sm">
+                {tMv("empty.noneReported")}
+              </p>
             )}
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Allergies</Label>
+              <Label>{tMp("step1.allergies")}</Label>
               {medicalProfile.allergies &&
               medicalProfile.allergies.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
@@ -166,14 +172,16 @@ export default function MedicalProfile({
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-sm">None reported</p>
+                <p className="text-muted-foreground text-sm">
+                  {tMv("empty.noneReported")}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label>Substance Use</Label>
+              <Label>{tMp("step1.substanceUse")}</Label>
               <p className="text-foreground">
-                {medicalProfile.substanceUse || "Not reported"}
+                {medicalProfile.substanceUse || tMv("empty.notReported")}
               </p>
             </div>
           </div>
@@ -184,7 +192,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Mental Health History
+            {tMp("steps.mentalHealthHistory")}
           </h2>
           {isEditable && (
             <button
@@ -195,38 +203,39 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Previous Therapy Experience</Label>
+              <Label>{tMp("step2.previousTherapy")}</Label>
               <p className="text-foreground">
-                {medicalProfile.previousTherapy ? "Yes" : "No"}
+                {medicalProfile.previousTherapy ? t("yes") : t("no")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Psychiatric Hospitalization</Label>
+              <Label>{tMp("step2.psychiatricHospitalization")}</Label>
               <p className="text-foreground">
-                {medicalProfile.psychiatricHospitalization ? "Yes" : "No"}
+                {medicalProfile.psychiatricHospitalization ? t("yes") : t("no")}
               </p>
             </div>
           </div>
 
           {medicalProfile.previousTherapy && (
             <div className="space-y-2">
-              <Label>Previous Therapy Details</Label>
+              <Label>{tMp("step2.previousTherapyDetails")}</Label>
               <p className="text-foreground leading-relaxed">
-                {medicalProfile.previousTherapyDetails || "No details provided"}
+                {medicalProfile.previousTherapyDetails ||
+                  tMv("empty.noDetailsProvided")}
               </p>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label>Diagnosed Conditions</Label>
+            <Label>{tMp("step2.diagnosedConditions")}</Label>
             {medicalProfile.diagnosedConditions &&
             medicalProfile.diagnosedConditions.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -240,14 +249,17 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">None reported</p>
+              <p className="text-muted-foreground text-sm">
+                {tMv("empty.noneReported")}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Current Treatment</Label>
+            <Label>{tMp("step2.currentTreatment")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.currentTreatment || "No current treatment"}
+              {medicalProfile.currentTreatment ||
+                tMv("empty.noCurrentTreatment")}
             </p>
           </div>
         </div>
@@ -257,7 +269,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Current Concerns
+            {tMp("steps.currentConcerns")}
           </h2>
           {isEditable && (
             <button
@@ -268,20 +280,20 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Primary Issue</Label>
+            <Label>{tMp("step3.primaryIssue")}</Label>
             <p className="text-foreground">
-              {medicalProfile.primaryIssue || "Not specified"}
+              {medicalProfile.primaryIssue || tMv("empty.notSpecified")}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label>Secondary Issues</Label>
+            <Label>{tMp("step3.secondaryIssues")}</Label>
             {medicalProfile.secondaryIssues &&
             medicalProfile.secondaryIssues.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -295,38 +307,42 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">None reported</p>
+              <p className="text-muted-foreground text-sm">
+                {tMv("empty.noneReported")}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Detailed Description</Label>
+            <Label>{tMp("step3.issueDescription")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.issueDescription || "No description provided"}
+              {medicalProfile.issueDescription ||
+                tMv("empty.noDescriptionProvided")}
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
             <div className="space-y-2">
-              <Label>Severity Level</Label>
+              <Label>{tMp("step3.severity")}</Label>
               <p className="text-foreground capitalize">
-                {medicalProfile.severity || "Not specified"}
+                {medicalProfile.severity || tMv("empty.notSpecified")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Duration</Label>
+              <Label>{tMp("step3.duration")}</Label>
               <p className="text-foreground">
                 {medicalProfile.duration
                   ? t(`issueDetails.${medicalProfile.duration}`)
-                  : "Not specified"}
+                  : tMv("empty.notSpecified")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Triggering Event</Label>
+              <Label>{tMv("labels.triggeringEvent")}</Label>
               <p className="text-foreground">
-                {medicalProfile.triggeringSituation || "Not reported"}
+                {medicalProfile.triggeringSituation ||
+                  tMv("empty.notReported")}
               </p>
             </div>
           </div>
@@ -337,7 +353,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Symptoms & Daily Life Impact
+            {tMv("sections.symptomsDailyLife")}
           </h2>
           {isEditable && (
             <button
@@ -348,13 +364,13 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Current Symptoms</Label>
+            <Label>{tMp("step4.symptoms")}</Label>
             {medicalProfile.symptoms && medicalProfile.symptoms.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {medicalProfile.symptoms.map((symptom, index) => (
@@ -367,29 +383,34 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">None reported</p>
+              <p className="text-muted-foreground text-sm">
+                {tMv("empty.noneReported")}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Impact on Daily Life</Label>
+            <Label>{tMp("step4.dailyLifeImpact")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.dailyLifeImpact || "Not specified"}
+              {medicalProfile.dailyLifeImpact || tMv("empty.notSpecified")}
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Sleep Quality</Label>
+              <Label>{tMp("step4.sleepQuality")}</Label>
               <p className="text-foreground capitalize">
-                {medicalProfile.sleepQuality || "Normal"}
+                {medicalProfile.sleepQuality
+                  ? tMp(`step4.sleepQualityOptions.${medicalProfile.sleepQuality}`)
+                  : tMv("empty.normalSleep")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Appetite Changes</Label>
+              <Label>{tMp("step4.appetiteChanges")}</Label>
               <p className="text-foreground">
-                {medicalProfile.appetiteChanges || "No changes reported"}
+                {medicalProfile.appetiteChanges ||
+                  tMv("empty.noChangesReported")}
               </p>
             </div>
           </div>
@@ -400,7 +421,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Treatment Goals & Preferences
+            {tMv("sections.treatmentGoalsPrefs")}
           </h2>
           {isEditable && (
             <button
@@ -411,13 +432,13 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Treatment Goals</Label>
+            <Label>{tMp("step5.treatmentGoals")}</Label>
             {medicalProfile.treatmentGoals &&
             medicalProfile.treatmentGoals.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -431,12 +452,14 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">Not specified</p>
+              <p className="text-muted-foreground text-sm">
+                {tMv("empty.notSpecified")}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Preferred Therapy Approach</Label>
+            <Label>{tMp("step5.therapyApproach")}</Label>
             {medicalProfile.therapyApproach &&
             medicalProfile.therapyApproach.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -450,14 +473,17 @@ export default function MedicalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">No preference</p>
+              <p className="text-muted-foreground text-sm">
+                {t("noPreference")}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Concerns About Therapy</Label>
+            <Label>{tMp("step5.concernsAboutTherapy")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.concernsAboutTherapy || "No concerns reported"}
+              {medicalProfile.concernsAboutTherapy ||
+                tMv("empty.noConcernsReported")}
             </p>
           </div>
         </div>
@@ -467,7 +493,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Appointment Preferences
+            {tMp("step6.title")}
           </h2>
           {isEditable && (
             <button
@@ -478,14 +504,14 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Preferred Time Slots</Label>
+              <Label>{tMv("labels.preferredTimeSlots")}</Label>
               <div className="flex flex-wrap gap-2">
                 {medicalProfile.availability &&
                 medicalProfile.availability.length > 0 ? (
@@ -498,41 +524,47 @@ export default function MedicalProfile({
                     </span>
                   ))
                 ) : (
-                  <p className="text-muted-foreground text-sm">No preference</p>
+                  <p className="text-muted-foreground text-sm">
+                    {t("noPreference")}
+                  </p>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Session Frequency</Label>
+              <Label>{tMp("step6.sessionFrequency")}</Label>
               <p className="text-foreground capitalize">
-                {medicalProfile.sessionFrequency || "Weekly"}
+                {medicalProfile.sessionFrequency
+                  ? tMp(
+                      `step6.sessionFrequencyOptions.${medicalProfile.sessionFrequency}`,
+                    )
+                  : tMv("empty.notSpecified")}
               </p>
             </div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Session Modality</Label>
+              <Label>{tMv("labels.sessionModality")}</Label>
               <p className="text-foreground">
                 {medicalProfile.modality
                   ? t(`preferences.${medicalProfile.modality}`)
-                  : "Not specified"}
+                  : tMv("empty.notSpecified")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Preferred Location</Label>
+              <Label>{tMp("step6.location")}</Label>
               <p className="text-foreground">
-                {medicalProfile.location || "Not specified"}
+                {medicalProfile.location || tMv("empty.notSpecified")}
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Additional Notes</Label>
+            <Label>{tMp("step6.notes")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.notes || "No additional notes"}
+              {medicalProfile.notes || tMv("empty.noAdditionalNotes")}
             </p>
           </div>
         </div>
@@ -542,7 +574,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Emergency Contact Information
+            {tMv("labels.emergencyContactTitle")}
           </h2>
           {isEditable && (
             <button
@@ -553,50 +585,51 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <p className="text-sm text-muted-foreground font-light mb-6">
-          This information is kept confidential and used only in case of
-          emergency
+          {tMv("labels.emergencyConfidential")}
         </p>
         <div className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
             <div className="space-y-2">
-              <Label>Contact Name</Label>
+              <Label>{tMv("labels.contactName")}</Label>
               <p className="text-foreground">
-                {medicalProfile.emergencyContactName || "Not provided"}
+                {medicalProfile.emergencyContactName ||
+                  tMv("empty.notProvided")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Phone Number</Label>
+              <Label>{tMv("labels.phoneNumber")}</Label>
               <p className="text-foreground">
-                {medicalProfile.emergencyContactPhone || "Not provided"}
+                {medicalProfile.emergencyContactPhone ||
+                  tMv("empty.notProvided")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Relationship</Label>
+              <Label>{tMv("labels.relationship")}</Label>
               <p className="text-foreground">
-                {medicalProfile.emergencyContactRelation || "Not specified"}
+                {medicalProfile.emergencyContactRelation ||
+                  tMv("empty.notSpecified")}
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Crisis Plan</Label>
+            <Label>{tMv("labels.crisisPlan")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.crisisPlan || "No crisis plan specified"}
+              {medicalProfile.crisisPlan || tMv("empty.noCrisisPlan")}
             </p>
           </div>
 
           {medicalProfile.suicidalThoughts && (
             <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-4 border border-red-200 dark:border-red-900">
               <p className="text-sm text-red-800 dark:text-red-200 font-light">
-                ⚠️ Client has reported experiencing suicidal thoughts. Immediate
-                attention may be required.
+                ⚠️ {tMv("labels.suicidalThoughtsWarning")}
               </p>
             </div>
           )}
@@ -607,7 +640,7 @@ export default function MedicalProfile({
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-serif text-2xl font-light text-foreground">
-            Professional Matching Preferences
+            {tMv("labels.matchingPrefsTitle")}
           </h2>
           {isEditable && (
             <button
@@ -618,48 +651,49 @@ export default function MedicalProfile({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-lg transition-colors"
             >
               <Edit className="h-4 w-4" />
-              Edit
+              {t("edit")}
             </button>
           )}
         </div>
         <div className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Preferred Professional Gender</Label>
+              <Label>{tMp("step8.preferredGender")}</Label>
               <p className="text-foreground capitalize">
                 {medicalProfile.preferredGender === "noPreference"
-                  ? "No preference"
-                  : medicalProfile.preferredGender || "Not specified"}
+                  ? t("noPreference")
+                  : medicalProfile.preferredGender || tMv("empty.notSpecified")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Preferred Age Range</Label>
+              <Label>{tMv("labels.preferredAgeRange")}</Label>
               <p className="text-foreground">
                 {medicalProfile.preferredAge === "any"
-                  ? "Any Age"
+                  ? tMv("labels.anyAge")
                   : medicalProfile.preferredAge === "younger"
-                    ? "Younger (20-35)"
+                    ? tMv("labels.ageYounger")
                     : medicalProfile.preferredAge === "middle"
-                      ? "Middle-aged (36-55)"
+                      ? tMv("labels.ageMiddle")
                       : medicalProfile.preferredAge === "older"
-                        ? "Older (56+)"
-                        : "Not specified"}
+                        ? tMv("labels.ageOlder")
+                        : tMv("empty.notSpecified")}
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Language Preference</Label>
+            <Label>{tMp("step8.languagePreference")}</Label>
             <p className="text-foreground">
-              {medicalProfile.languagePreference || "Not specified"}
+              {medicalProfile.languagePreference || tMv("empty.notSpecified")}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label>Cultural Considerations</Label>
+            <Label>{tMp("step8.culturalConsiderations")}</Label>
             <p className="text-foreground leading-relaxed">
-              {medicalProfile.culturalConsiderations || "None specified"}
+              {medicalProfile.culturalConsiderations ||
+                tMv("empty.notSpecified")}
             </p>
           </div>
         </div>
