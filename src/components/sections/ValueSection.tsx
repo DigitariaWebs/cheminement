@@ -178,7 +178,7 @@ function ValueCard({
       )}
 
       {/* Description */}
-      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed text-justify whitespace-pre-line">
+      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed whitespace-pre-line">
         {description}
       </p>
 
