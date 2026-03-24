@@ -101,6 +101,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate patient referral contact info when booking for a patient
+    if (appointmentData.bookingFor === "patient") {
+      const patientFirstName = appointmentData.referralInfo?.patientFirstName?.trim();
+      const patientLastName = appointmentData.referralInfo?.patientLastName?.trim();
+      if (!patientFirstName || !patientLastName) {
+        return NextResponse.json(
+          {
+            error:
+              "Patient firstName and lastName are required when booking for a patient",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     // Find or create guest user
     let guestUser = await User.findOne({
       email: email.toLowerCase(),

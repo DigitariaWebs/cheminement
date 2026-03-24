@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { PaymentModal, AddPaymentMethodModal } from "@/components/payments";
+import {
+  PaymentModal,
+  AddPaymentMethodModal,
+  AppointmentConfirmPaymentModal,
+} from "@/components/payments";
 import { apiClient, appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 
@@ -45,6 +49,10 @@ export default function ClientBillingPage() {
   const [selectedAppointment, setSelectedAppointment] =
     useState<AppointmentResponse | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showConfirmAppointmentModal, setShowConfirmAppointmentModal] =
+    useState(false);
+  const [appointmentToConfirm, setAppointmentToConfirm] =
+    useState<AppointmentResponse | null>(null);
   const [showAddPaymentMethod, setShowAddPaymentMethod] = useState(false);
   const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -145,6 +153,11 @@ export default function ClientBillingPage() {
     setShowPaymentModal(true);
   };
 
+  const handleConfirmAppointment = (appointment: AppointmentResponse) => {
+    setAppointmentToConfirm(appointment);
+    setShowConfirmAppointmentModal(true);
+  };
+
   const handleDownloadReceipt = async (appointmentId: string) => {
     try {
       const response = await fetch(
@@ -179,11 +192,32 @@ export default function ClientBillingPage() {
   };
 
   const owedPayments = appointments.filter(
-    (p) => p.payment.status === "pending" || p.payment.status === "processing",
+    (p) =>
+      p.status === "completed" &&
+      (p.payment.status === "pending" || p.payment.status === "processing"),
   );
+
+  const appointmentsNeedingPaymentMethod = appointments.filter(
+    (p) =>
+      p.status === "scheduled" &&
+      p.payment.status !== "paid" &&
+      !p.payment.stripePaymentMethodId,
+  );
+
   const paidPayments = appointments.filter((p) => p.payment.status === "paid");
 
   const totalOwed = owedPayments.reduce((sum, p) => sum + p.payment.price, 0);
+
+  const openActionsCount =
+    appointmentsNeedingPaymentMethod.length + owedPayments.length;
+
+  const displayOwedList = [...appointmentsNeedingPaymentMethod, ...owedPayments].sort(
+    (a, b) => {
+      const da = a.date ? new Date(a.date).getTime() : 0;
+      const db = b.date ? new Date(b.date).getTime() : 0;
+      return db - da;
+    },
+  );
   const totalPaid = paidPayments.reduce((sum, p) => sum + p.payment.price, 0);
 
   const getStatusColor = (status: AppointmentResponse["payment"]["status"]) => {
@@ -227,7 +261,8 @@ export default function ClientBillingPage() {
     });
   };
 
-  const displayPayments = activeTab === "owed" ? owedPayments : paidPayments;
+  const displayPayments =
+    activeTab === "owed" ? displayOwedList : paidPayments;
 
   if (loading) {
     return (
@@ -428,7 +463,7 @@ export default function ClientBillingPage() {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {t("paymentsOwed")} ({owedPayments.length})
+          {t("paymentsOwed")} ({openActionsCount})
         </button>
         <button
           onClick={() => setActiveTab("history")}
@@ -502,7 +537,7 @@ export default function ClientBillingPage() {
                           {t("paymentMethod")}
                         </p>
                         <p className="font-medium text-foreground">
-                          {apt.payment.stripePaymentMethodId}
+                          {t("paymentMethodOnFileShort")}
                         </p>
                       </div>
                     )}
@@ -521,29 +556,38 @@ export default function ClientBillingPage() {
                       </Button>
                     )}
                     {apt.status === "pending" && (
-                      <>
-                        {apt.status === "pending" ? (
-                          <div className="text-sm text-muted-foreground italic">
-                            {t("waitingProfessionalConfirmation") ||
-                              "Waiting for professional to confirm appointment before payment"}
-                          </div>
-                        ) : (
-                          <Button
-                            className="gap-2 rounded-full"
-                            onClick={() => handlePayNow(apt)}
-                          >
-                            <CreditCard className="h-4 w-4" />
-                            {t("payNow")}
-                          </Button>
-                        )}
-                      </>
+                      <div className="text-sm text-muted-foreground italic">
+                        {t("waitingProfessionalConfirmation")}
+                      </div>
                     )}
-                    {apt.payment.status === "pending" &&
-                      apt.status === "pending" && (
-                        <div className="text-sm text-muted-foreground italic">
-                          {t("awaitingConfirmation") ||
-                            "Awaiting professional confirmation before payment"}
+                    {apt.status === "scheduled" &&
+                      apt.payment.status !== "paid" &&
+                      !apt.payment.stripePaymentMethodId && (
+                        <Button
+                          className="gap-2 rounded-full"
+                          onClick={() => handleConfirmAppointment(apt)}
+                        >
+                          <CreditCard className="h-4 w-4" />
+                          {t("confirmWithPaymentMethod")}
+                        </Button>
+                      )}
+                    {apt.status === "scheduled" &&
+                      Boolean(apt.payment.stripePaymentMethodId) &&
+                      apt.payment.status !== "paid" && (
+                        <div className="text-sm text-muted-foreground">
+                          {t("paymentAfterSessionReminder")}
                         </div>
+                      )}
+                    {apt.status === "completed" &&
+                      (apt.payment.status === "pending" ||
+                        apt.payment.status === "processing") && (
+                        <Button
+                          className="gap-2 rounded-full"
+                          onClick={() => handlePayNow(apt)}
+                        >
+                          <CreditCard className="h-4 w-4" />
+                          {t("payNow")}
+                        </Button>
                       )}
                   </div>
                 </div>
@@ -563,6 +607,19 @@ export default function ClientBillingPage() {
           professionalName={`${selectedAppointment.professionalId?.firstName} ${selectedAppointment.professionalId?.lastName}`}
           appointmentDate={selectedAppointment.date}
           onSuccess={handlePaymentSuccess}
+        />
+      )}
+
+      {appointmentToConfirm && (
+        <AppointmentConfirmPaymentModal
+          open={showConfirmAppointmentModal}
+          onOpenChange={setShowConfirmAppointmentModal}
+          appointmentId={appointmentToConfirm._id}
+          onSuccess={() => {
+            fetchAppointments();
+            setShowConfirmAppointmentModal(false);
+            setAppointmentToConfirm(null);
+          }}
         />
       )}
 

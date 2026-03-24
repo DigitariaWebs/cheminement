@@ -163,6 +163,7 @@
     "licenseOptional": "License Number (Optional)",
     "contactPhone": "Contact Phone",
     "contactEmail": "Contact Email",
+    "patientContactInfo": "Patient Contact Information",
     "optional": "(Optional)",
     "reasonReferral": "Reason for Referral (Optional)",
     "reasonReferralPlaceholder": "Brief description of why you are referring this patient...",
@@ -186,6 +187,7 @@
       "motifRequired": "Please select at least one motif/reason for consultation",
       "motifMax": "Please select a maximum of 3 motifs",
       "referrerName": "Please provide the referring professional's name",
+      "patientName": "Please provide the patient's first and last name",
       "referralMotif": "Please select at least one motif/reason for referral",
       "fieldsRequired": "Please fill in all required fields",
       "phoneInvalid": "Please enter a valid phone number",
@@ -685,6 +687,7 @@
         "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
+      "therapyApproachOptional": "Preferred therapy approach (optional)",
       "objectivesPlaceholder": "Search for objectives (stress management, anxiety...)",
       "therapyObjectives": [
         "Reduce symptoms",
@@ -702,6 +705,83 @@
       "preferredProfessionalFemale": "Female",
       "preferredProfessionalOther": "Other",
       "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference.",
+      "conditionLabels": {
+        "tdah": "ADHD",
+        "troubleLangage": "Language disorder",
+        "dyslexie": "Dyslexia",
+        "syndromeTourette": "Tourette syndrome",
+        "tics": "Tics",
+        "tsa": "Autism spectrum disorder (ASD)",
+        "douance": "Giftedness",
+        "anxieteSeparation": "Separation anxiety disorder"
+      },
+      "secondaryIssueOptions": {
+        "stress": "Stress",
+        "relationships": "Relationships",
+        "workSchool": "Work/School",
+        "family": "Family",
+        "grief": "Grief",
+        "trauma": "Trauma",
+        "selfEsteem": "Self-esteem",
+        "lifeTransitions": "Life transitions"
+      },
+      "symptomOptions": {
+        "sadness": "Sadness",
+        "worry": "Worry",
+        "panicAttacks": "Panic attacks",
+        "moodSwings": "Mood swings",
+        "irritability": "Irritability",
+        "fatigue": "Fatigue",
+        "concentrationIssues": "Concentration issues",
+        "memoryProblems": "Memory problems",
+        "nightmares": "Nightmares",
+        "flashbacks": "Flashbacks"
+      },
+      "healthOptions": {
+        "medical": {
+          "diabetes": "Diabetes",
+          "hypertension": "Hypertension",
+          "heartDisease": "Heart disease",
+          "asthma": "Asthma",
+          "thyroidDisorder": "Thyroid disorder",
+          "chronicPain": "Chronic pain",
+          "none": "None"
+        },
+        "medications": {
+          "antidepressants": "Antidepressants",
+          "antiAnxiety": "Anti-anxiety medication",
+          "moodStabilizers": "Mood stabilizers",
+          "antipsychotics": "Antipsychotics",
+          "sleepAids": "Sleep aids",
+          "painMedication": "Pain medication",
+          "none": "None"
+        }
+      },
+      "therapyApproachOptions": {
+        "cbt": "CBT (cognitive behavioral therapy)",
+        "psychodynamic": "Psychodynamic",
+        "mindfulness": "Mindfulness",
+        "solutionFocused": "Solution-focused",
+        "familyTherapy": "Family therapy",
+        "groupTherapy": "Group therapy",
+        "artTherapy": "Art therapy",
+        "noPreference": "No preference"
+      },
+      "availabilityOptions": {
+        "weekdayMornings": "Weekday mornings",
+        "weekdayAfternoons": "Weekday afternoons",
+        "weekdayEvenings": "Weekday evenings",
+        "weekendMornings": "Weekend mornings",
+        "weekendAfternoons": "Weekend afternoons",
+        "weekendEvenings": "Weekend evenings",
+        "flexible": "Flexible"
+      },
+      "review": {
+        "name": "Name:",
+        "email": "Email:",
+        "phone": "Phone:",
+        "primaryConcern": "Primary concern:"
+      },
       "profile": {
         "yes": "Yes",
         "no": "No",
@@ -904,6 +984,40 @@
       "graduationYear": "Graduation year",
       "graduationYearPlaceholder": "e.g., 2020",
       "certifications": "Certifications (select all that apply)",
+      "certificationOptions": {
+        "cbtCertified": "CBT certified",
+        "dbtCertified": "DBT certified",
+        "emdrCertified": "EMDR certified",
+        "familyTherapy": "Family therapy",
+        "traumaInformed": "Trauma-informed care",
+        "substanceAbuse": "Substance use / addictions",
+        "childAdolescent": "Child & adolescent",
+        "couplesTherapy": "Couples therapy"
+      },
+      "sessionTypeOptions": {
+        "individual": "Individual",
+        "couple": "Couple",
+        "family": "Family",
+        "group": "Group",
+        "coaching": "Coaching"
+      },
+      "modalityOptions": {
+        "inPersonOffice": "In-person (office)",
+        "videoCall": "Video call",
+        "phoneCall": "Phone call",
+        "chatMessaging": "Chat / messaging"
+      },
+      "weekdays": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "selectPlaceholder": "Select…",
+      "bioCharacterCount": "{count} / {max} characters",
       "approachesTitle": "1 – Approaches and Therapies",
       "approachesSubtitle": "List for all profiles (select all that apply).",
       "problematicsTitle": "2 – Issues and Mandates",
@@ -1011,6 +1125,10 @@
     "dateOfBirth": "Date of Birth",
     "gender": "Gender",
     "language": "Preferred Language",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "preferNotToSay": "Prefer not to say",
     "save": "Save",
     "cancel": "Cancel",
     "saving": "Saving...",
@@ -1019,7 +1137,19 @@
     "edit": "Edit",
     "subtitle": "Update your personal information",
     "loading": "Loading profile...",
-    "noData": "No profile data found"
+    "noData": "No profile data found",
+    "notAvailable": "N/A",
+    "accountType": "Account Type",
+    "roles": {
+      "guest": "Guest",
+      "client": "Client",
+      "professional": "Professional",
+      "admin": "Admin"
+    },
+    "languages": {
+      "en": "English",
+      "fr": "French"
+    }
   },
   "Dashboard": {
     "sidebar": {
@@ -1075,6 +1205,7 @@
       "approvedDesc": "Your account is active and ready to accept clients.",
       "completeSetupTitle": "Complete Your Professional Profile",
       "completeSetupDesc": "To start matching with clients, please complete your professional profile with your specializations, approaches, and preferences.",
+      "completeSetup": "Complete profile setup",
       "completeNow": "Complete Profile Now",
       "complete": "Complete",
       "basicInfo": "Basic Information",
@@ -1110,7 +1241,28 @@
       "lastName": "Last Name",
       "dateOfBirth": "Date of Birth",
       "gender": "Gender",
-      "language": "Preferred Language"
+      "language": "Preferred Language",
+      "loading": "Loading...",
+      "noData": "No profile data available",
+      "notAvailable": "N/A",
+      "educationCredentials": "Education & credentials",
+      "education": "Education",
+      "certifications": "Certifications",
+      "servicesOffered": "Services offered",
+      "sessionTypes": "Session types",
+      "modalitiesLabel": "Modalities",
+      "languagesSpoken": "Languages spoken",
+      "pricingPayment": "Pricing & payment",
+      "individualSession": "Individual session",
+      "coupleSession": "Couple session",
+      "groupSession": "Group session",
+      "perSession": "per session",
+      "pricingNotSet": "Pricing not set",
+      "paymentAgreement": "Payment agreement",
+      "paymentAgreementPerSession": "Per session",
+      "paymentAgreementWeekly": "Weekly",
+      "paymentAgreementBiWeekly": "Every two weeks",
+      "paymentAgreementMonthly": "Monthly"
     },
     "schedule": {
       "title": "Availability Schedule",
@@ -1192,6 +1344,7 @@
       "completed": "Completed",
       "cancelled": "Cancelled",
       "noShow": "No Show",
+      "ongoing": "In progress",
       "type": "Type",
       "inPerson": "In-Person",
       "video": "Video",
@@ -1208,6 +1361,7 @@
       "actions": "Actions",
       "viewDetails": "View Details",
       "startSession": "Start Session",
+      "joinSession": "Join Session",
       "addNotes": "Add Notes",
       "noSessions": "No sessions found",
       "adjustFilters": "Try adjusting your search or filters",
@@ -1240,7 +1394,17 @@
       "step3": {
         "title": "Age Categories",
         "subtitle": "Select the age groups you work with",
-        "minSelection": "Select at least one age category"
+        "minSelection": "Select at least one age category",
+        "diagnosedConditionsLabel": "Conditions you treat (select all that apply)",
+        "diagnosedConditionsDesc": "Select the diagnoses you treat based on the age categories chosen above.",
+        "selectAgeCategoryFirst": "Please select at least one age category above first.",
+        "ageCategoryLabels": {
+          "children": "Children (0–12)",
+          "adolescents": "Adolescents (13–17)",
+          "youngAdults": "Young adults (18–25)",
+          "adults": "Adults (26–64)",
+          "seniors": "Seniors (65+)"
+        }
       },
       "step4": {
         "title": "Additional Information",
@@ -1253,12 +1417,24 @@
         "bio": "Professional Bio",
         "bioRequired": "*",
         "bioPlaceholder": "Tell us about your approach, experience, and what makes your practice unique...",
-        "bioMinLength": "Bio must be at least 50 characters"
+        "bioMinLength": "Bio must be at least 50 characters",
+        "skillLabels": {
+          "crisisIntervention": "Crisis intervention",
+          "groupTherapy": "Group therapy",
+          "couplesCounseling": "Couples counseling",
+          "familyTherapy": "Family therapy",
+          "neuropsychologicalAssessment": "Neuropsychological assessment",
+          "psychometricTesting": "Psychometric testing",
+          "bilingualFrEn": "Bilingual services (French/English)",
+          "culturalCompetency": "Cultural competency",
+          "lgbtqAffirmative": "LGBTQ+ affirmative therapy"
+        }
       },
       "buttons": {
         "back": "Back",
         "next": "Next",
-        "complete": "Complete Profile"
+        "complete": "Complete Profile",
+        "saveForLater": "Save for Later"
       },
       "selected": "selected"
     },
@@ -1301,7 +1477,8 @@
         "scheduled": "Scheduled",
         "completed": "Completed",
         "cancelled": "Cancelled",
-        "no-show": "No Show"
+        "no-show": "No Show",
+        "ongoing": "In progress"
       },
       "actions": {
         "schedule": "Schedule Session",
@@ -2269,6 +2446,7 @@
     "profile": {
       "title": "My Profile",
       "subtitle": "Manage your personal information and preferences",
+      "loading": "Loading...",
       "edit": "Edit",
       "save": "Save Changes",
       "saving": "Saving...",
@@ -2423,6 +2601,19 @@
         "concernedPersonPlaceholder": "e.g., Myself, My child",
         "medicalConditions": "Medical Conditions",
         "medicalConditionsDesc": "Select any relevant medical conditions",
+        "medicalConditionOptions": {
+          "diabetes": "Diabetes",
+          "hypertension": "Hypertension",
+          "asthma": "Asthma",
+          "heartDisease": "Heart Disease",
+          "cancer": "Cancer",
+          "thyroidDisorders": "Thyroid Disorders",
+          "arthritis": "Arthritis",
+          "chronicPain": "Chronic Pain",
+          "migraines": "Migraines",
+          "epilepsy": "Epilepsy",
+          "other": "Other"
+        },
         "currentMedications": "Current Medications",
         "currentMedicationsPlaceholder": "List medications separated by commas",
         "allergies": "Allergies",
@@ -2440,7 +2631,17 @@
         "currentTreatment": "Current Treatment",
         "currentTreatmentPlaceholder": "Describe any current treatment",
         "diagnosedConditions": "Diagnosed Conditions",
-        "diagnosedConditionsDesc": "Select any diagnosed mental health conditions"
+        "diagnosedConditionsDesc": "Select any diagnosed mental health conditions",
+        "conditionLabels": {
+          "tdah": "ADHD",
+          "troubleLangage": "Language disorder",
+          "dyslexie": "Dyslexia",
+          "syndromeTourette": "Tourette syndrome",
+          "tics": "Tics",
+          "tsa": "Autism spectrum disorder (ASD)",
+          "douance": "Giftedness",
+          "anxieteSeparation": "Separation anxiety disorder"
+        }
       },
       "step3": {
         "title": "Current Concerns",
@@ -2450,6 +2651,21 @@
         "primaryIssuePlaceholder": "What's your main concern?",
         "secondaryIssues": "Secondary Issues",
         "secondaryIssuesDesc": "Select any additional concerns",
+        "secondaryIssueOptions": {
+          "anxiety": "Anxiety",
+          "depression": "Depression",
+          "stress": "Stress",
+          "relationshipProblems": "Relationship Problems",
+          "trauma": "Trauma",
+          "selfEsteemIssues": "Self-Esteem Issues",
+          "addiction": "Addiction",
+          "grief": "Grief",
+          "angerManagement": "Anger Management",
+          "familyIssues": "Family Issues",
+          "workSchoolProblems": "Work/School Problems",
+          "lifeTransitions": "Life transitions",
+          "other": "Other"
+        },
         "issueDescription": "Detailed Description",
         "issueDescriptionPlaceholder": "Provide more details about your concerns",
         "severity": "Severity Level",
@@ -2464,6 +2680,28 @@
         "subtitle": "How are your symptoms affecting your daily life?",
         "symptoms": "Current Symptoms",
         "symptomsDesc": "Select symptoms you're experiencing",
+        "symptomOptions": {
+          "sadness": "Sadness",
+          "worry": "Worry",
+          "persistentSadness": "Persistent Sadness",
+          "anxietyAttacks": "Anxiety Attacks",
+          "sleepProblems": "Sleep Problems",
+          "lossOfInterest": "Loss of Interest",
+          "irritability": "Irritability",
+          "fatigue": "Fatigue",
+          "concentrationIssues": "Concentration Issues",
+          "memoryProblems": "Memory Problems",
+          "nightmares": "Nightmares",
+          "flashbacks": "Flashbacks",
+          "appetiteChanges": "Appetite Changes",
+          "socialWithdrawal": "Social Withdrawal",
+          "panicAttacks": "Panic Attacks",
+          "moodSwings": "Mood Swings",
+          "suicidalThoughts": "Suicidal Thoughts",
+          "hallucinations": "Hallucinations",
+          "delusions": "Delusions",
+          "other": "Other"
+        },
         "dailyLifeImpact": "Impact on Daily Life",
         "dailyLifeImpactPlaceholder": "Describe how this affects your daily life",
         "sleepQuality": "Sleep Quality",
@@ -2483,8 +2721,39 @@
         "subtitle": "What are your treatment goals?",
         "treatmentGoals": "Treatment Goals",
         "treatmentGoalsDesc": "Select your goals for therapy",
+        "treatmentGoalOptions": {
+          "reduceAnxiety": "Reduce Anxiety",
+          "improveMood": "Improve Mood",
+          "betterSleep": "Better Sleep",
+          "increaseSelfEsteem": "Increase Self-Esteem",
+          "manageStress": "Manage Stress",
+          "improveRelationships": "Improve Relationships",
+          "overcomeTrauma": "Overcome Trauma",
+          "developCopingSkills": "Develop Coping Skills",
+          "addressAddiction": "Address Addiction",
+          "weightManagement": "Weight Management",
+          "other": "Other",
+          "reduceSymptoms": "Reduce symptoms",
+          "selfUnderstanding": "Self-understanding",
+          "personalGrowth": "Personal growth"
+        },
         "therapyApproach": "Preferred Therapy Approach",
         "therapyApproachDesc": "Select preferred approaches",
+        "therapyApproachOptions": {
+          "cbt": "Cognitive Behavioral Therapy (CBT)",
+          "psychodynamicTherapy": "Psychodynamic Therapy",
+          "psychodynamic": "Psychodynamic",
+          "humanisticTherapy": "Humanistic Therapy",
+          "dbt": "Dialectical Behavior Therapy (DBT)",
+          "emdr": "EMDR",
+          "solutionFocusedTherapy": "Solution-Focused Therapy",
+          "solutionFocused": "Solution-focused",
+          "mindfulnessBasedTherapy": "Mindfulness-Based Therapy",
+          "familySystemsTherapy": "Family Systems Therapy",
+          "act": "Acceptance and Commitment Therapy (ACT)",
+          "groupTherapy": "Group therapy",
+          "noPreference": "No Preference"
+        },
         "concernsAboutTherapy": "Concerns About Therapy",
         "concernsAboutTherapyPlaceholder": "Any concerns or questions about therapy?"
       },
@@ -2494,6 +2763,14 @@
         "subtitle": "When and how would you like to meet?",
         "availability": "Availability",
         "availabilityDesc": "Select your preferred times",
+        "preferredTimeSlots": "Preferred time slots",
+        "preferredTimeSlotsDesc": "Select your preferred times for sessions",
+        "timeSlotOptions": {
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening",
+          "weekends": "Weekends"
+        },
         "modality": "Preferred Modality",
         "modalityPlaceholder": "Select modality",
         "sessionFrequency": "Session Frequency",
@@ -2528,6 +2805,11 @@
         "subtitle": "Help us find the right professional for you",
         "preferredGender": "Preferred Professional Gender",
         "preferredGenderPlaceholder": "Select preference",
+        "genderOptions": {
+          "noPreference": "No preference",
+          "male": "Male",
+          "female": "Female"
+        },
         "preferredAge": "Preferred Age Range",
         "preferredAgePlaceholder": "Select age range",
         "languagePreference": "Language Preference",
@@ -2571,7 +2853,8 @@
         "completed": "Completed",
         "cancelled": "Cancelled",
         "noShow": "No Show",
-        "pending": "Pending Confirmation"
+        "pending": "Pending Confirmation",
+        "ongoing": "In progress"
       },
       "details": {
         "professional": "Professional",
@@ -2589,6 +2872,7 @@
         "reschedule": "Reschedule",
         "cancel": "Cancel",
         "joinSession": "Join Session",
+        "openMeetingLink": "Open meeting link",
         "addToCalendar": "Add to Calendar",
         "getDirections": "Get Directions",
         "review": "Leave Review"
@@ -2604,7 +2888,89 @@
         "refunded": "Refunded"
       },
       "minutes": "min",
-      "with": "with"
+      "with": "with",
+      "toBeScheduled": "To be scheduled",
+      "concernLabel": "Concern",
+      "cancelDialog": {
+        "title": "Cancel Appointment",
+        "titleSuccess": "Appointment cancelled",
+        "descriptionAt": "{date} at {time}",
+        "successHeading": "Appointment cancelled successfully",
+        "successEmail": "You will receive a confirmation email shortly.",
+        "refundSummary": "Refund summary",
+        "refundDetails": "Refund details",
+        "originalAmount": "Original amount",
+        "cancellationFee": "Cancellation fee",
+        "cancellationFeePercent": "Cancellation fee ({percent}%):",
+        "refundAmount": "Refund amount",
+        "refundNote": "The refund will be processed to your original payment method within 5–10 business days.",
+        "policyTitle": "Cancellation policy",
+        "policyFree": "You can cancel this appointment for free because it is more than {hours} hours away.",
+        "policyFee": "Cancellations within {hours} hours are subject to a {percent}% cancellation fee.",
+        "timeUntilTitle": "Time until appointment",
+        "timeDaysHours": "{days} days, {hours} hours",
+        "timeHoursMinutes": "{hours} hours, {minutes} minutes",
+        "reasonLabel": "Reason for cancellation",
+        "reasonOptional": "(optional)",
+        "reasonPlaceholder": "Let us know why you are cancelling…",
+        "errorTitle": "Error",
+        "keepAppointment": "Keep appointment",
+        "confirmCancel": "Cancel appointment",
+        "cancelling": "Cancelling…",
+        "noReasonProvided": "No reason provided",
+        "failedToCancel": "Failed to cancel appointment",
+        "currencySuffix": "CAD"
+      }
+    },
+    "AppointmentForm": {
+      "referrerSection": "Referrer",
+      "patientSection": "Patient",
+      "clientSection": "Client",
+      "optional": "optional",
+      "phoneOrEmail": "Phone or email",
+      "professionalName": "Professional name",
+      "patientName": "Patient name"
+    },
+    "medicalProfile": {
+      "loading": "Loading...",
+      "noData": "No profile data available",
+      "sections": {
+        "symptomsDailyLife": "Symptoms & Daily Life Impact",
+        "treatmentGoalsPrefs": "Treatment Goals & Preferences"
+      },
+      "empty": {
+        "noneReported": "None reported",
+        "notReported": "Not reported",
+        "notSpecified": "Not specified",
+        "noDetailsProvided": "No details provided",
+        "noCurrentTreatment": "No current treatment",
+        "noDescriptionProvided": "No description provided",
+        "noChangesReported": "No changes reported",
+        "noConcernsReported": "No concerns reported",
+        "normalSleep": "Normal",
+        "noAdditionalNotes": "No additional notes",
+        "notProvided": "Not provided",
+        "noCrisisPlan": "No crisis plan specified"
+      },
+      "labels": {
+        "triggeringEvent": "Triggering event",
+        "preferredTimeSlots": "Preferred time slots",
+        "sessionModality": "Session modality",
+        "emergencyContactTitle": "Emergency contact information",
+        "emergencyConfidential": "This information is kept confidential and used only in case of emergency.",
+        "contactName": "Contact name",
+        "phoneNumber": "Phone number",
+        "relationship": "Relationship",
+        "crisisPlan": "Crisis plan",
+        "matchingPrefsTitle": "Professional matching preferences",
+        "preferredAgeRange": "Preferred age range",
+        "anyAge": "Any age",
+        "ageYounger": "Younger (20–35)",
+        "ageMiddle": "Middle-aged (36–55)",
+        "ageOlder": "Older (56+)",
+        "suicidalThoughtsWarning": "The client has reported experiencing suicidal thoughts. Immediate attention may be required.",
+        "suicidalThoughtsAck": "I have experienced suicidal thoughts"
+      }
     },
     "library": {
       "badge": "Resource Library",
@@ -2658,15 +3024,65 @@
       "hide": "Hide",
       "waitingProfessionalConfirmation": "Waiting for professional to confirm appointment before payment",
       "awaitingConfirmation": "Awaiting professional confirmation before payment",
+      "confirmWithPaymentMethod": "Confirm with payment details",
+      "paymentAfterSessionReminder": "Payment method on file. You will pay after your session is completed.",
+      "paymentMethodOnFileShort": "On file (Stripe)",
+      "appointmentConfirm": {
+        "title": "Confirm your appointment",
+        "description": "Add a card or Canadian pre-authorized debit. No charge is made now — payment runs only after your professional marks the session as completed. Stripe handles your banking details; we do not store them on our platform.",
+        "cardLabel": "Credit or debit card",
+        "cardDescription": "Cards supported by Stripe",
+        "padLabel": "Pre-authorized debit",
+        "padDescription": "Link your Canadian bank account (PAD)",
+        "continue": "Continue",
+        "preparing": "Preparing secure form...",
+        "changeType": "Change method",
+        "padAgreementTitle": "Pre-authorized debit",
+        "padAgreementBody": "You authorize debiting this account for the session fee after your meeting is completed. You can manage this method from Billing.",
+        "submitCard": "Save card and confirm",
+        "submitPad": "Link bank and confirm",
+        "saving": "Saving...",
+        "successTitle": "Appointment confirmed",
+        "successBody": "You can join your session from Appointments when it is time. Complete payment from Billing after your professional marks the session as done.",
+        "successMessage": "Saved successfully",
+        "saveFailed": "Could not save payment method",
+        "incomplete": "Setup not complete",
+        "initFailed": "Failed to start confirmation",
+        "stripeFootnote": "Secured by Stripe. Banking information is not stored on Je Chemine."
+      },
       "status": {
         "paid": "Paid",
         "pending": "Pending",
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "ongoing": "In progress",
         "upcoming": "Upcoming",
         "overdue": "Overdue",
         "processing": "Processing",
         "refunded": "Refunded",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "no-show": "No show"
       }
+    },
+    "guestPay": {
+      "pendingTitle": "Awaiting confirmation",
+      "pendingBody": "Your professional has not confirmed this appointment yet. You will receive an email when it is time to add your payment details.",
+      "setupTitle": "Confirm your appointment",
+      "setupSubtitle": "Add a card or Canadian bank debit (PAD). Interac e-Transfer may be available depending on Stripe options. No charge until after your session is completed.",
+      "scheduledReadyTitle": "You are all set",
+      "scheduledReadyBody": "Your payment method is registered. Join your session from the link your professional shared. You will pay the session fee after the meeting is marked as completed.",
+      "setupSuccessTitle": "Appointment confirmed",
+      "setupSuccessBody": "Your payment details are saved with Stripe. You will receive payment instructions after your session.",
+      "payAfterSessionTitle": "Pay for your completed session",
+      "payAfterSessionSubtitle": "Your professional marked this session as completed. Complete payment below. Card, bank transfer, and PAD options are offered through Stripe.",
+      "backHome": "Return to Home",
+      "interacNote": "Interac e-Transfer and pre-authorized debits are available where supported by Stripe.",
+      "selectMethod": "Select payment method",
+      "continueSecure": "Continue securely",
+      "preparingSetup": "Preparing...",
+      "appointmentDetailsSection": "Appointment details",
+      "notAvailableTitle": "Not available yet",
+      "notAvailableBody": "Payment opens after your session is completed. Use this link again after your professional marks the meeting as done."
     }
   },
   "Review": {
@@ -2674,11 +3090,14 @@
     "description": "Share your experience with {professional}",
     "rating": "Rating",
     "comment": "Comment",
+    "commentOptional": "(optional)",
     "commentPlaceholder": "Tell us about your experience...",
     "anonymous": "Submit anonymously",
     "cancel": "Cancel",
     "submit": "Submit Review",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "ratingRequired": "Please select a rating",
+    "submitFailed": "Failed to submit review"
   },
   "managedAccounts": {
     "title": "Managed Accounts",
@@ -2711,6 +3130,15 @@
       "accountNumber": "Account Number",
       "transitNumber": "Transit Number",
       "bankDetailsNote": "Payments are deposited within 2-3 business days after session completion.",
+      "stripeManagedNote": "Payout and bank details are managed securely by Stripe; we do not store your banking information on this platform.",
+      "notProvided": "—",
+      "noBankOnFile": "No bank account on file yet. Use the button below to add or update your details in Stripe.",
+      "payoutSetupIncomplete": "Your payout setup is not complete yet. Continue in Stripe to finish verification.",
+      "connectLinkError": "Could not open Stripe. Please try again.",
+      "openingStripe": "Opening Stripe…",
+      "setupReturnSuccess": "Stripe setup updated. Your bank details will appear here once they are on file.",
+      "setupRefreshMessage": "The Stripe session was refreshed. Continue setup if prompted.",
+      "dismissBanner": "Dismiss notification",
       "updateBankDetails": "Update Bank Details",
       "receivables": "Receivables",
       "paymentHistory": "Payment History",
@@ -2734,6 +3162,65 @@
         "refunded": "Refunded",
         "scheduled": "Scheduled",
         "cancelled": "Cancelled"
+      }
+    },
+    "proposals": {
+      "title": "Client Proposals",
+      "subtitle": "Review client requests that have been matched to you or browse the general list",
+      "errorPrefix": "Error",
+      "tabProposed": "Proposed to You",
+      "tabGeneral": "General List",
+      "filters": "Filters",
+      "clearAll": "Clear all",
+      "search": "Search",
+      "searchPlaceholder": "Search by name, email, or issue...",
+      "issueType": "Issue Type",
+      "allIssues": "All Issues",
+      "bookingForLabel": "Booking For",
+      "allTypes": "All Types",
+      "bookingFor": {
+        "self": "For Self",
+        "patient": "Patient Referral",
+        "lovedOne": "For Loved One"
+      },
+      "sessionType": {
+        "video": "Video",
+        "inPerson": "In person",
+        "phone": "Phone"
+      },
+      "therapyType": {
+        "solo": "Solo",
+        "couple": "Couple",
+        "group": "Group"
+      },
+      "emptyProposedTitle": "No proposed appointments",
+      "emptyProposedDescription": "New client requests matching your expertise will appear here",
+      "emptyGeneralTitle": "No appointments in general list",
+      "emptyGeneralDescription": "Appointments that haven't been matched or were declined will appear here",
+      "table": {
+        "client": "Client",
+        "type": "Type",
+        "issue": "Issue",
+        "bookingFor": "Booking For",
+        "availability": "Availability",
+        "actions": "Actions"
+      },
+      "flexible": "Flexible",
+      "accept": "Accept",
+      "closeModal": "Close",
+      "scheduleModalTitle": "Accept & Schedule",
+      "selectDate": "Select Date",
+      "chooseDate": "Choose a date",
+      "selectTime": "Select Time",
+      "noSlotsForDate": "No available slots for this date",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "notAvailable": "—",
+      "errors": {
+        "loadFailed": "Failed to load appointments",
+        "acceptFailed": "Failed to accept appointment",
+        "refuseFailed": "Failed to refuse appointment",
+        "scheduleFailed": "Failed to accept and schedule appointment"
       }
     }
   },

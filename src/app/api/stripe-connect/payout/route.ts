@@ -132,8 +132,10 @@ export async function GET() {
       });
     }
 
-    // Get Connect account details
-    const account = await stripe.accounts.retrieve(user.stripeConnectAccountId);
+    // Get Connect account details (external accounts for masked bank display)
+    const account = await stripe.accounts.retrieve(user.stripeConnectAccountId, {
+      expand: ["external_accounts"],
+    });
 
     // Get balance
     const balance = await stripe.balance.retrieve({
@@ -149,6 +151,35 @@ export async function GET() {
       0,
     );
 
+    let bankDetails: {
+      institution?: string;
+      last4?: string;
+      routingNumber?: string;
+      currency?: string;
+    } | null = null;
+
+    const ext = account.external_accounts?.data;
+    if (ext?.length) {
+      const first = ext[0];
+      if (first.object === "bank_account") {
+        bankDetails = {
+          institution: first.bank_name ?? undefined,
+          last4: first.last4 ?? undefined,
+          routingNumber: first.routing_number ?? undefined,
+          currency: first.currency ?? undefined,
+        };
+      }
+    }
+
+    let accountHolder: string | undefined;
+    if (
+      account.business_type === "individual" &&
+      account.individual?.first_name &&
+      account.individual?.last_name
+    ) {
+      accountHolder = `${account.individual.first_name} ${account.individual.last_name}`;
+    }
+
     return NextResponse.json({
       setupComplete: account.charges_enabled && account.payouts_enabled,
       balance: {
@@ -160,6 +191,8 @@ export async function GET() {
         payoutsEnabled: account.payouts_enabled,
         detailsSubmitted: account.details_submitted,
       },
+      bankDetails,
+      accountHolder,
     });
   } catch (error: unknown) {
     console.error(

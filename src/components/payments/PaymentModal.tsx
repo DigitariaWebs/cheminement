@@ -12,13 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import CheckoutForm from "./CheckoutForm";
-import {
-  Loader2,
-  AlertCircle,
-  CreditCard,
-  Building2,
-  Landmark,
-} from "lucide-react";
+import { Loader2, AlertCircle, CreditCard, Landmark } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +20,7 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
-type PaymentMethodType = "card" | "transfer" | "direct_debit";
+type PaymentMethodType = "card" | "direct_debit";
 
 interface PaymentModalProps {
   open: boolean;
@@ -49,12 +43,6 @@ const paymentMethodOptions: {
     label: "Credit/Debit Card",
     description: "Pay instantly with your card",
     icon: <CreditCard className="h-5 w-5" />,
-  },
-  {
-    id: "transfer",
-    label: "Bank Transfer",
-    description: "Transfer from your bank account",
-    icon: <Building2 className="h-5 w-5" />,
   },
   {
     id: "direct_debit",
@@ -124,7 +112,7 @@ export default function PaymentModal({
     const fetchCurrency = async () => {
       try {
         const response = await apiClient.get<{ currency: string }>(
-          "/admin/settings",
+          "/platform/currency",
         );
         setCurrency(response.currency || "CAD");
       } catch (err) {

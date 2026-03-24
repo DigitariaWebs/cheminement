@@ -284,7 +284,7 @@ export default function SessionsPage() {
       cancelled: t("cancelled"),
       "no-show": t("noShow"),
       pending: t("pending"),
-      ongoing: "Ongoing",
+      ongoing: t("ongoing"),
     };
 
     return (
@@ -782,7 +782,7 @@ export default function SessionsPage() {
                       <span className="font-light">{t("pending")}</span>
                     </SelectItem>
                     <SelectItem value="ongoing">
-                      <span className="font-light">Ongoing</span>
+                      <span className="font-light">{t("ongoing")}</span>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -973,7 +973,7 @@ export default function SessionsPage() {
                           className="px-3 py-1.5 bg-primary text-primary-foreground rounded-full font-light text-xs transition-all duration-300 hover:scale-105"
                         >
                           {session.status === "ongoing"
-                            ? "Join Session"
+                            ? t("joinSession")
                             : t("startSession")}
                         </button>
                       )}

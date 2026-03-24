@@ -40,7 +40,7 @@ export function ReviewDialog({
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      setError("Please select a rating");
+      setError(t("ratingRequired"));
       return;
     }
 
@@ -63,7 +63,7 @@ export function ReviewDialog({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to submit review");
+        throw new Error(data.error || t("submitFailed"));
       }
 
       onSuccess();
@@ -73,7 +73,7 @@ export function ReviewDialog({
       setComment("");
       setIsAnonymous(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit review");
+      setError(err instanceof Error ? err.message : t("submitFailed"));
     } finally {
       setLoading(false);
     }
@@ -128,7 +128,8 @@ export function ReviewDialog({
           {/* Comment */}
           <div className="space-y-2">
             <Label htmlFor="comment" className="text-sm font-medium">
-              {t("comment")} <span className="text-muted-foreground">(optional)</span>
+              {t("comment")}{" "}
+              <span className="text-muted-foreground">{t("commentOptional")}</span>
             </Label>
             <Textarea
               id="comment"

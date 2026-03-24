@@ -734,38 +734,38 @@ export async function sendGuestPaymentConfirmation(
   ];
 
   const html = buildEmailHtml({
-    title: "Payment Required",
-    subtitle: "Your appointment has been confirmed",
+    title: "Next step: confirm your appointment",
+    subtitle: "Your professional has confirmed your session",
     theme: "info",
     badge: { text: "✅ Appointment Confirmed", theme: "success" },
     greeting: `Dear ${data.guestName},`,
     intro:
-      "Great news! Your appointment has been confirmed by your professional. Please complete the payment to secure your session.",
+      "Your appointment is confirmed. Open the secure link below to add your payment details (card, Interac e-Transfer where available through Stripe, or Canadian pre-authorized debit). Nothing is charged until after your session has taken place and your professional marks it as completed. Stripe processes your banking information — we do not store it.",
     details,
     detailsBorderColor: branding?.primaryColor,
     price: {
       amount: data.price,
-      note: "Session fee (taxes included)",
+      note: "Session fee (charged after the completed meeting)",
       theme: "info",
       currency,
     },
     button: data.paymentLink
-      ? { text: "Complete Payment", url: data.paymentLink }
+      ? { text: "Confirm with payment details", url: data.paymentLink }
       : undefined,
     infoBox: {
-      title: "Payment Information",
+      title: "Secure payments with Stripe",
       content:
-        "Your payment is secure and processed through Stripe. You'll receive your meeting link after payment is confirmed.",
+        "After your payment method is registered, you can access your meeting link. Payment is processed only once the session is completed.",
     },
     outro:
-      "Please complete your payment within 48 hours to keep your appointment slot.",
+      "If you need help, contact us using the information on our website.",
     branding,
   });
 
   const text = buildEmailText([
-    "Payment Required - Appointment Confirmed",
+    "Confirm your appointment (payment after session)",
     `Dear ${data.guestName},`,
-    "Your appointment has been confirmed. Please complete the payment.",
+    "Your appointment has been confirmed. Use your personal link to add a payment method. You will only be charged after the session is completed. Stripe handles your bank details.",
     "SESSION DETAILS:",
     `Session Type: ${sessionType}`,
     `Appointment Type: ${appointmentType}`,
@@ -779,7 +779,7 @@ export async function sendGuestPaymentConfirmation(
 
   const subject = await getSubject(
     "guest_payment_confirmation",
-    "Payment Required - Your Appointment is Confirmed",
+    "Your appointment is confirmed — next step inside",
   );
 
   return sendEmail(
@@ -968,38 +968,38 @@ export async function sendPaymentInvitation(
   }
 
   const html = buildEmailHtml({
-    title: "Payment Required",
-    subtitle: "Your appointment has been confirmed",
+    title: "Next step: confirm your appointment",
+    subtitle: "Your professional has confirmed your session",
     theme: "info",
     badge: { text: "✅ Appointment Confirmed", theme: "success" },
     greeting: `Dear ${data.clientName},`,
     intro:
-      "Great news! Your appointment has been confirmed by your professional. Please complete the payment to secure your session.",
+      "Your appointment is confirmed. Please add your payment details (card, Interac e-Transfer where available through Stripe, or Canadian pre-authorized debit) to finalize your booking. Nothing is charged until after your session has taken place and your professional marks it as completed. Card and banking data are processed by Stripe — we do not store them on our platform.",
     details,
     detailsBorderColor: branding?.primaryColor,
     price: {
       amount: data.price,
-      note: "Session fee (taxes included)",
+      note: "Session fee (charged after the completed meeting)",
       theme: "info",
       currency,
     },
     button: data.paymentUrl
-      ? { text: "Complete Payment", url: data.paymentUrl }
+      ? { text: "Open billing & confirm", url: data.paymentUrl }
       : { text: "View Appointment", url: dashboardUrl },
     infoBox: {
-      title: "Payment Information",
+      title: "Secure payments with Stripe",
       content:
-        "Your payment is secure and processed through Stripe. You can complete your payment from your dashboard. You'll receive your meeting link after payment is confirmed.",
+        "You will receive your meeting link once your payment method is on file. The amount is collected only after your professional confirms that the session occurred.",
     },
     outro:
-      "Please complete your payment within 48 hours to keep your appointment slot.",
+      "If you have questions, reply to this email or contact support from your dashboard.",
     branding,
   });
 
   const text = buildEmailText([
-    "Payment Required - Appointment Confirmed",
+    "Confirm your appointment (payment after session)",
     `Dear ${data.clientName},`,
-    "Your appointment has been confirmed. Please complete the payment.",
+    "Your appointment has been confirmed. Add your payment method from the link below to confirm your booking. You will only be charged after your session is marked as completed. Stripe handles your card and bank details; we do not store them.",
     "APPOINTMENT DETAILS:",
     `Professional: ${professionalName}`,
     `Date: ${formattedDate}`,
@@ -1013,7 +1013,7 @@ export async function sendPaymentInvitation(
 
   const subject = await getSubject(
     "payment_invitation",
-    "Payment Required - Your Appointment is Confirmed",
+    "Your appointment is confirmed — next step inside",
   );
 
   return sendEmail(

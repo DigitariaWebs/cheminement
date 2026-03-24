@@ -17,7 +17,6 @@ import {
   Mail,
   MapPin,
   Filter,
-  UserCheck,
   Calendar,
   Clock,
   X,
@@ -43,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppointmentDetailsModal from "@/components/dashboard/PatientProfileModal";
 import { apiClient } from "@/lib/api-client";
+import { useLocale, useTranslations } from "next-intl";
 
 interface ClientInfo {
   _id: string;
@@ -106,6 +106,8 @@ interface AvailabilityData {
 }
 
 export default function ProposalsPage() {
+  const t = useTranslations("Professional.proposals");
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<"proposed" | "general">(
     "proposed",
   );
@@ -171,12 +173,12 @@ export default function ProposalsPage() {
       ]);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load appointments",
+        err instanceof Error ? err.message : t("errors.loadFailed"),
       );
     } finally {
       setLoading(false);
     }
-  }, [fetchProposedAppointments, fetchGeneralAppointments]);
+  }, [fetchProposedAppointments, fetchGeneralAppointments, t]);
 
   useEffect(() => {
     fetchAllAppointments();
@@ -229,7 +231,7 @@ export default function ProposalsPage() {
     } catch (err) {
       console.error("Error accepting appointment:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to accept appointment",
+        err instanceof Error ? err.message : t("errors.acceptFailed"),
       );
     } finally {
       setAcceptingId(null);
@@ -245,7 +247,7 @@ export default function ProposalsPage() {
     } catch (err) {
       console.error("Error refusing appointment:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to refuse appointment",
+        err instanceof Error ? err.message : t("errors.refuseFailed"),
       );
     } finally {
       setRefusingId(null);
@@ -259,11 +261,18 @@ export default function ProposalsPage() {
       phone: "bg-purple-100 text-purple-700",
     };
 
+    const label =
+      type === "video"
+        ? t("sessionType.video")
+        : type === "in-person"
+          ? t("sessionType.inPerson")
+          : t("sessionType.phone");
+
     return (
       <span
         className={`px-3 py-1 rounded-full text-xs font-light ${styles[type]}`}
       >
-        {type.charAt(0).toUpperCase() + type.slice(1)}
+        {label}
       </span>
     );
   };
@@ -275,11 +284,18 @@ export default function ProposalsPage() {
       group: "bg-orange-100 text-orange-700",
     };
 
+    const label =
+      type === "solo"
+        ? t("therapyType.solo")
+        : type === "couple"
+          ? t("therapyType.couple")
+          : t("therapyType.group");
+
     return (
       <span
         className={`px-2 py-0.5 rounded-full text-xs font-light ${styles[type]}`}
       >
-        {type.charAt(0).toUpperCase() + type.slice(1)}
+        {label}
       </span>
     );
   };
@@ -290,17 +306,17 @@ export default function ProposalsPage() {
     const config = {
       self: {
         icon: User,
-        label: "For Self",
+        label: t("bookingFor.self"),
         color: "bg-gray-100 text-gray-700",
       },
       patient: {
         icon: Stethoscope,
-        label: "Patient Referral",
+        label: t("bookingFor.patient"),
         color: "bg-blue-100 text-blue-700",
       },
       "loved-one": {
         icon: Heart,
-        label: "For Loved One",
+        label: t("bookingFor.lovedOne"),
         color: "bg-pink-100 text-pink-700",
       },
     };
@@ -346,7 +362,7 @@ export default function ProposalsPage() {
       date.setDate(today.getDate() + i);
       dates.push({
         value: date.toISOString().split("T")[0],
-        label: date.toLocaleDateString("en-US", {
+        label: date.toLocaleDateString(locale, {
           weekday: "short",
           month: "short",
           day: "numeric",
@@ -405,6 +421,9 @@ export default function ProposalsPage() {
       await fetchAllAppointments();
     } catch (err) {
       console.error("Error scheduling appointment:", err);
+      setError(
+        err instanceof Error ? err.message : t("errors.scheduleFailed"),
+      );
     } finally {
       setScheduling(false);
     }
@@ -424,17 +443,16 @@ export default function ProposalsPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-serif font-light text-foreground">
-          Client Proposals
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-light mt-1">
-          Review client requests that have been matched to you or browse the
-          general list
-        </p>
+        <p className="text-muted-foreground font-light mt-1">{t("subtitle")}</p>
       </div>
 
       {error && (
         <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4">
-          <p className="text-red-600 dark:text-red-400">Error: {error}</p>
+          <p className="text-red-600 dark:text-red-400">
+            {t("errorPrefix")}: {error}
+          </p>
         </div>
       )}
 
@@ -446,7 +464,7 @@ export default function ProposalsPage() {
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="proposed" className="gap-2">
             <Star className="h-4 w-4" />
-            Proposed to You
+            {t("tabProposed")}
             {proposedAppointments.length > 0 && (
               <Badge variant="secondary" className="ml-1">
                 {proposedAppointments.length}
@@ -455,7 +473,7 @@ export default function ProposalsPage() {
           </TabsTrigger>
           <TabsTrigger value="general" className="gap-2">
             <Users className="h-4 w-4" />
-            General List
+            {t("tabGeneral")}
             {generalAppointments.length > 0 && (
               <Badge variant="outline" className="ml-1">
                 {generalAppointments.length}
@@ -468,7 +486,7 @@ export default function ProposalsPage() {
         <div className="rounded-xl bg-card p-6 space-y-4 mt-4">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Filters</span>
+            <span className="text-sm font-medium">{t("filters")}</span>
             {hasActiveFilters && (
               <Button
                 variant="ghost"
@@ -476,7 +494,7 @@ export default function ProposalsPage() {
                 onClick={clearFilters}
                 className="ml-auto text-xs"
               >
-                Clear all
+                {t("clearAll")}
               </Button>
             )}
           </div>
@@ -485,12 +503,12 @@ export default function ProposalsPage() {
             {/* Search */}
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">
-                Search
+                {t("search")}
               </Label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by name, email, or issue..."
+                  placeholder={t("searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 font-light"
@@ -501,17 +519,17 @@ export default function ProposalsPage() {
             {/* Issue Type Filter */}
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">
-                Issue Type
+                {t("issueType")}
               </Label>
               <Select
                 value={issueTypeFilter}
                 onValueChange={setIssueTypeFilter}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="All Issues" />
+                  <SelectValue placeholder={t("allIssues")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Issues</SelectItem>
+                  <SelectItem value="all">{t("allIssues")}</SelectItem>
                   {issueTypes.map((type) => (
                     <SelectItem key={type} value={type}>
                       {type}
@@ -524,20 +542,24 @@ export default function ProposalsPage() {
             {/* Booking For Filter */}
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">
-                Booking For
+                {t("bookingForLabel")}
               </Label>
               <Select
                 value={bookingForFilter}
                 onValueChange={setBookingForFilter}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder={t("allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="self">For Self</SelectItem>
-                  <SelectItem value="patient">Patient Referral</SelectItem>
-                  <SelectItem value="loved-one">For Loved One</SelectItem>
+                  <SelectItem value="all">{t("allTypes")}</SelectItem>
+                  <SelectItem value="self">{t("bookingFor.self")}</SelectItem>
+                  <SelectItem value="patient">
+                    {t("bookingFor.patient")}
+                  </SelectItem>
+                  <SelectItem value="loved-one">
+                    {t("bookingFor.lovedOne")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -553,10 +575,10 @@ export default function ProposalsPage() {
             <div className="rounded-xl bg-card p-12 text-center">
               <Star className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground">
-                No proposed appointments
+                {t("emptyProposedTitle")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                New client requests matching your expertise will appear here
+                {t("emptyProposedDescription")}
               </p>
             </div>
           ) : (
@@ -564,13 +586,23 @@ export default function ProposalsPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/30">
-                    <TableHead className="font-light">Client</TableHead>
-                    <TableHead className="font-light">Type</TableHead>
-                    <TableHead className="font-light">Issue</TableHead>
-                    <TableHead className="font-light">Booking For</TableHead>
-                    <TableHead className="font-light">Availability</TableHead>
+                    <TableHead className="font-light">
+                      {t("table.client")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.type")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.issue")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.bookingFor")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.availability")}
+                    </TableHead>
                     <TableHead className="font-light text-right">
-                      Actions
+                      {t("table.actions")}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -605,7 +637,7 @@ export default function ProposalsPage() {
                       </TableCell>
                       <TableCell>
                         <span className="text-sm">
-                          {appointment.issueType || "-"}
+                          {appointment.issueType || t("notAvailable")}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -649,7 +681,7 @@ export default function ProposalsPage() {
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            Flexible
+                            {t("flexible")}
                           </span>
                         )}
                       </TableCell>
@@ -686,7 +718,7 @@ export default function ProposalsPage() {
                             ) : (
                               <>
                                 <Check className="h-4 w-4" />
-                                Accept
+                                {t("accept")}
                               </>
                             )}
                           </Button>
@@ -709,11 +741,10 @@ export default function ProposalsPage() {
             <div className="rounded-xl bg-card p-12 text-center">
               <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground">
-                No appointments in general list
+                {t("emptyGeneralTitle")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Appointments that haven&apos;t been matched or were declined
-                will appear here
+                {t("emptyGeneralDescription")}
               </p>
             </div>
           ) : (
@@ -721,13 +752,23 @@ export default function ProposalsPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/30">
-                    <TableHead className="font-light">Client</TableHead>
-                    <TableHead className="font-light">Type</TableHead>
-                    <TableHead className="font-light">Issue</TableHead>
-                    <TableHead className="font-light">Booking For</TableHead>
-                    <TableHead className="font-light">Availability</TableHead>
+                    <TableHead className="font-light">
+                      {t("table.client")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.type")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.issue")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.bookingFor")}
+                    </TableHead>
+                    <TableHead className="font-light">
+                      {t("table.availability")}
+                    </TableHead>
                     <TableHead className="font-light text-right">
-                      Actions
+                      {t("table.actions")}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -762,7 +803,7 @@ export default function ProposalsPage() {
                       </TableCell>
                       <TableCell>
                         <span className="text-sm">
-                          {appointment.issueType || "-"}
+                          {appointment.issueType || t("notAvailable")}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -806,7 +847,7 @@ export default function ProposalsPage() {
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            Flexible
+                            {t("flexible")}
                           </span>
                         )}
                       </TableCell>
@@ -830,7 +871,7 @@ export default function ProposalsPage() {
                             ) : (
                               <>
                                 <Check className="h-4 w-4" />
-                                Accept
+                                {t("accept")}
                               </>
                             )}
                           </Button>
@@ -854,11 +895,12 @@ export default function ProposalsPage() {
           />
           <div className="relative bg-card rounded-xl border border-border/40 p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-medium">Accept & Schedule</h3>
+              <h3 className="text-lg font-medium">{t("scheduleModalTitle")}</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCloseScheduleModal}
+                aria-label={t("closeModal")}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -872,18 +914,27 @@ export default function ProposalsPage() {
                   {schedulingAppointment.clientId.lastName}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {schedulingAppointment.issueType} •{" "}
-                  {schedulingAppointment.type} •{" "}
-                  {schedulingAppointment.therapyType}
+                  {schedulingAppointment.issueType ?? t("notAvailable")} •{" "}
+                  {schedulingAppointment.type === "video"
+                    ? t("sessionType.video")
+                    : schedulingAppointment.type === "in-person"
+                      ? t("sessionType.inPerson")
+                      : t("sessionType.phone")}{" "}
+                  •{" "}
+                  {schedulingAppointment.therapyType === "solo"
+                    ? t("therapyType.solo")
+                    : schedulingAppointment.therapyType === "couple"
+                      ? t("therapyType.couple")
+                      : t("therapyType.group")}
                 </p>
               </div>
 
               {/* Date Selection */}
               <div>
-                <Label className="text-sm">Select Date</Label>
+                <Label className="text-sm">{t("selectDate")}</Label>
                 <Select value={selectedDate} onValueChange={handleDateChange}>
                   <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="Choose a date" />
+                    <SelectValue placeholder={t("chooseDate")} />
                   </SelectTrigger>
                   <SelectContent>
                     {getAvailableDates().map((date) => (
@@ -898,14 +949,14 @@ export default function ProposalsPage() {
               {/* Time Selection */}
               {selectedDate && (
                 <div>
-                  <Label className="text-sm">Select Time</Label>
+                  <Label className="text-sm">{t("selectTime")}</Label>
                   {loadingSlots ? (
                     <div className="flex items-center justify-center py-4">
                       <Loader2 className="h-5 w-5 animate-spin" />
                     </div>
                   ) : availableSlots.length === 0 ? (
                     <p className="text-sm text-muted-foreground mt-2">
-                      No available slots for this date
+                      {t("noSlotsForDate")}
                     </p>
                   ) : (
                     <div className="grid grid-cols-3 gap-2 mt-2">
@@ -935,7 +986,7 @@ export default function ProposalsPage() {
                   onClick={handleCloseScheduleModal}
                   className="flex-1"
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
                 <Button
                   onClick={handleAcceptAndSchedule}
@@ -947,7 +998,7 @@ export default function ProposalsPage() {
                   ) : (
                     <>
                       <Calendar className="h-4 w-4 mr-2" />
-                      Confirm
+                      {t("confirm")}
                     </>
                   )}
                 </Button>

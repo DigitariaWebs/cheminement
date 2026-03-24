@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import Stripe from "stripe";
 import { authOptions } from "@/lib/auth";
 import { stripe, toCents } from "@/lib/stripe";
 import connectToDatabase from "@/lib/mongodb";
@@ -22,8 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate payment method
-    const validPaymentMethods = ["card", "transfer", "direct_debit"];
+    const validPaymentMethods = ["card", "direct_debit"];
     if (!validPaymentMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: "Invalid payment method" },
@@ -59,12 +59,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if appointment is confirmed by professional
     if (appointment.status === "pending") {
       return NextResponse.json(
         {
           error:
-            "Cannot process payment until professional confirms the appointment",
+            "Your appointment must be confirmed by your professional before any payment step.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (
+      appointment.status === "cancelled" ||
+      appointment.status === "no-show"
+    ) {
+      return NextResponse.json(
+        { error: "This appointment cannot be paid." },
+        { status: 400 },
+      );
+    }
+
+    // Charge only after the professional marks the session as completed
+    if (appointment.status !== "completed") {
+      return NextResponse.json(
+        {
+          error:
+            "Payment is processed only after your professional marks the session as completed. Add a payment method under Billing to confirm your appointment; your card or bank details are handled securely by Stripe.",
         },
         { status: 400 },
       );
@@ -86,10 +106,28 @@ export async function POST(req: NextRequest) {
     };
     const professional = appointment.professionalId as unknown as {
       _id: { toString: () => string };
-      firstName: string;
-      lastName: string;
-    };
+      firstName?: string;
+      lastName?: string;
+    } | null;
+
+    if (!professional?._id) {
+      return NextResponse.json(
+        {
+          error:
+            "This appointment has no professional assigned. Please contact support.",
+        },
+        { status: 400 },
+      );
+    }
+
     const amount = appointment.payment.price;
+
+    if (typeof amount !== "number" || amount <= 0 || !Number.isFinite(amount)) {
+      return NextResponse.json(
+        { error: "Invalid session amount for payment." },
+        { status: 400 },
+      );
+    }
     const platformFee = appointment.payment.platformFee;
     const professionalPayout = appointment.payment.professionalPayout;
 
@@ -120,10 +158,7 @@ export async function POST(req: NextRequest) {
     // Configure payment method types based on selected method
     let paymentMethodTypes: string[] = ["card"];
 
-    if (paymentMethod === "transfer") {
-      // Bank transfer (EFT/ACH style) - using customer_balance for bank transfers
-      paymentMethodTypes = ["customer_balance"];
-    } else if (paymentMethod === "direct_debit") {
+    if (paymentMethod === "direct_debit") {
       // Pre-authorized debit for Canada
       paymentMethodTypes = ["acss_debit"];
     } else {
@@ -148,7 +183,7 @@ export async function POST(req: NextRequest) {
         professionalPayout: professionalPayout.toString(),
         paymentMethod: paymentMethod,
       },
-      description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${appointment.date ? appointment.date.toLocaleDateString() : "TBD"}`,
+      description: `Therapy session with ${professional.firstName ?? ""} ${professional.lastName ?? ""} on ${appointment.date ? appointment.date.toLocaleDateString() : "TBD"}`,
       payment_method_types: paymentMethodTypes,
     };
 
@@ -161,21 +196,6 @@ export async function POST(req: NextRequest) {
             transaction_type: "personal",
           },
           verification_method: "automatic",
-        },
-      };
-    }
-
-    // Add funding instructions for bank transfer
-    if (paymentMethod === "transfer") {
-      paymentIntentConfig.payment_method_data = {
-        type: "customer_balance",
-      };
-      paymentIntentConfig.payment_method_options = {
-        customer_balance: {
-          funding_type: "bank_transfer",
-          bank_transfer: {
-            type: "us_bank_transfer",
-          },
         },
       };
     }
@@ -196,6 +216,24 @@ export async function POST(req: NextRequest) {
       currency: "CAD",
     });
   } catch (error: unknown) {
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error("Create payment intent (Stripe):", error.message, error.code);
+      const status =
+        typeof error.statusCode === "number" &&
+        error.statusCode >= 400 &&
+        error.statusCode < 500
+          ? error.statusCode
+          : 400;
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: error.code,
+          type: error.type,
+        },
+        { status },
+      );
+    }
+
     console.error(
       "Create payment intent error:",
       error instanceof Error ? error.message : error,
@@ -203,7 +241,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to create payment intent",
-        details: error instanceof Error ? error.message : error,
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },
     );

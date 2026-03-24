@@ -155,18 +155,18 @@ export default function BasicInformation({
   };
 
   const formatDate = (date: string | Date | undefined) => {
-    if (!date) return "N/A";
+    if (!date) return t("notAvailable");
     const dateObj = typeof date === "string" ? new Date(date) : date;
     return dateObj.toLocaleDateString();
   };
 
   const formatLanguage = (lang: string | undefined) => {
-    if (!lang) return "N/A";
+    if (!lang) return t("notAvailable");
     switch (lang) {
       case "en":
-        return "English";
+        return t("languages.en");
       case "fr":
-        return "Français";
+        return t("languages.fr");
       default:
         return lang;
     }
@@ -197,25 +197,25 @@ export default function BasicInformation({
       case "guest":
         return (
           <Badge variant="secondary" className="ml-2">
-            Guest
+            {t("roles.guest")}
           </Badge>
         );
       case "client":
         return (
           <Badge variant="default" className="ml-2">
-            Client
+            {t("roles.client")}
           </Badge>
         );
       case "professional":
         return (
           <Badge variant="outline" className="ml-2">
-            Professional
+            {t("roles.professional")}
           </Badge>
         );
       case "admin":
         return (
           <Badge variant="destructive" className="ml-2">
-            Admin
+            {t("roles.admin")}
           </Badge>
         );
       default:
@@ -250,7 +250,7 @@ export default function BasicInformation({
               <User className="h-4 w-4 text-muted-foreground" />
               {t("firstName")}
             </Label>
-            <p className="text-foreground">{user.firstName || "N/A"}</p>
+            <p className="text-foreground">{user.firstName || t("notAvailable")}</p>
           </div>
 
           <div className="space-y-2">
@@ -258,7 +258,7 @@ export default function BasicInformation({
               <User className="h-4 w-4 text-muted-foreground" />
               {t("lastName")}
             </Label>
-            <p className="text-foreground">{user.lastName || "N/A"}</p>
+            <p className="text-foreground">{user.lastName || t("notAvailable")}</p>
           </div>
 
           <div className="space-y-2">
@@ -266,7 +266,7 @@ export default function BasicInformation({
               <Mail className="h-4 w-4 text-muted-foreground" />
               {t("email")}
             </Label>
-            <p className="text-foreground">{user.email || "N/A"}</p>
+            <p className="text-foreground">{user.email || t("notAvailable")}</p>
           </div>
 
           <div className="space-y-2">
@@ -274,7 +274,7 @@ export default function BasicInformation({
               <Phone className="h-4 w-4 text-muted-foreground" />
               {t("phone")}
             </Label>
-            <p className="text-foreground">{user.phone || "N/A"}</p>
+            <p className="text-foreground">{user.phone || t("notAvailable")}</p>
           </div>
 
           <div className="space-y-2">
@@ -282,7 +282,7 @@ export default function BasicInformation({
               <MapPin className="h-4 w-4 text-muted-foreground" />
               {t("location")}
             </Label>
-            <p className="text-foreground">{user.location || "N/A"}</p>
+            <p className="text-foreground">{user.location || t("notAvailable")}</p>
           </div>
 
           <div className="space-y-2">
@@ -295,7 +295,7 @@ export default function BasicInformation({
 
           <div className="space-y-2">
             <Label className="font-light">{t("gender")}</Label>
-            <p className="text-foreground">{user.gender || "N/A"}</p>
+            <p className="text-foreground">{user.gender || t("notAvailable")}</p>
           </div>
 
           <div className="space-y-2">
@@ -306,9 +306,9 @@ export default function BasicInformation({
           <div className="space-y-2">
             <Label className="font-light flex items-center gap-2">
               <UserCheck className="h-4 w-4 text-muted-foreground" />
-              Account Type
+              {t("accountType")}
             </Label>
-            <p className="text-foreground capitalize">{user.role || "N/A"}</p>
+            <p className="text-foreground capitalize">{user.role || t("notAvailable")}</p>
           </div>
         </div>
       </div>
@@ -448,8 +448,8 @@ export default function BasicInformation({
                       <SelectValue placeholder={t("language")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="fr">Français</SelectItem>
+                      <SelectItem value="en">{t("languages.en")}</SelectItem>
+                      <SelectItem value="fr">{t("languages.fr")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

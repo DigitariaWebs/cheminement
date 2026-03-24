@@ -14,7 +14,7 @@ import {
   AlertCircle,
   Star,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -41,6 +41,7 @@ export default function ClientAppointmentsPage() {
   const [managedAccountName, setManagedAccountName] = useState<string | null>(null);
   const t = useTranslations("Client.appointments");
   const tManaged = useTranslations("managedAccounts");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const accountId = searchParams.get("accountId");
@@ -76,9 +77,7 @@ export default function ClientAppointmentsPage() {
       setAppointments(data);
     } catch (err) {
       console.error("Error fetching appointments:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to load appointments",
-      );
+      setError(err instanceof Error ? err.message : t("error"));
     } finally {
       setLoading(false);
     }
@@ -99,12 +98,14 @@ export default function ClientAppointmentsPage() {
     closeCancelDialog();
   };
 
-  // Check if client can join a session
-  // Allow joining if:
-  // 1. Meeting link exists and payment is confirmed
-  // 2. Session is "ongoing" OR session is "scheduled" but within 15 minutes of start time
+  // Join when meeting link exists and either session is paid OR a payment method
+  // is on file (Stripe) to confirm the booking — charge happens after completion.
   const canJoinSession = (appointment: AppointmentResponse): boolean => {
-    if (!appointment.meetingLink || appointment.payment.status !== "paid") {
+    const hasPaymentSecured =
+      appointment.payment.status === "paid" ||
+      Boolean(appointment.payment.stripePaymentMethodId);
+
+    if (!appointment.meetingLink || !hasPaymentSecured) {
       return false;
     }
 
@@ -201,12 +202,33 @@ export default function ClientAppointmentsPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale, {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
+  };
+
+  const appointmentStatusLabel = (status: string) => {
+    const key = status === "no-show" ? "noShow" : status;
+    const statusKeys = new Set([
+      "scheduled",
+      "completed",
+      "cancelled",
+      "noShow",
+      "pending",
+      "ongoing",
+    ]);
+    if (!statusKeys.has(key)) return status;
+    return t(`status.${key}` as "status.scheduled");
+  };
+
+  const appointmentModalityLabel = (type: string) => {
+    if (type === "in-person") return t("modality.inPerson");
+    if (type === "video") return t("modality.video");
+    if (type === "phone") return t("modality.phone");
+    return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
   return (
@@ -314,7 +336,7 @@ export default function ClientAppointmentsPage() {
                       <h3 className="font-serif text-xl font-light text-foreground">
                         {appointment.date
                           ? formatDate(appointment.date)
-                          : "to be scheduled"}
+                          : t("toBeScheduled")}
                       </h3>
                       <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
@@ -329,7 +351,7 @@ export default function ClientAppointmentsPage() {
                             appointment.status,
                           )}`}
                         >
-                          {appointment.status}
+                          {appointmentStatusLabel(appointment.status)}
                         </span>
                       </div>
                     </div>
@@ -357,16 +379,11 @@ export default function ClientAppointmentsPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       {getModalityIcon(appointment.type)}
-                      <span>
-                        {appointment.type === "in-person"
-                          ? "In Person"
-                          : appointment.type.charAt(0).toUpperCase() +
-                            appointment.type.slice(1)}
-                      </span>
+                      <span>{appointmentModalityLabel(appointment.type)}</span>
                     </div>
                     {appointment.issueType && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="font-medium">Concern:</span>
+                        <span className="font-medium">{t("concernLabel")}:</span>
                         <span>{appointment.issueType}</span>
                       </div>
                     )}
@@ -444,7 +461,7 @@ export default function ClientAppointmentsPage() {
                           onClick={() => handleJoinSession(appointment)}
                         >
                           <Video className="mr-2 h-4 w-4" />
-                          Open meeting link
+                          {t("actions.openMeetingLink")}
                         </DropdownMenuItem>
                       )}
                   </DropdownMenuContent>

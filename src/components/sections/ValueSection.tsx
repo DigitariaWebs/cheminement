@@ -84,7 +84,7 @@ export default function ValueSection() {
           <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
             {t("subtitle")}
           </p>
-          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed">
+          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed whitespace-nowrap">
             {t("description", {
               integratedPlatform: t("integratedPlatform"),
             })}
@@ -178,7 +178,7 @@ function ValueCard({
       )}
 
       {/* Description */}
-      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed text-justify whitespace-pre-line">
+      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed whitespace-pre-line">
         {description}
       </p>
 

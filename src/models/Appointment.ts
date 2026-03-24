@@ -13,6 +13,7 @@ export interface IPayment {
     | "cancelled";
   method?: "card" | "transfer" | "direct_debit";
   stripePaymentIntentId?: string;
+  /** Encrypted at rest when FIELD_ENCRYPTION_KEY is set (see `encryptPaymentMethodReference`). */
   stripePaymentMethodId?: string;
   paidAt?: Date;
   refundedAt?: Date;
@@ -40,6 +41,10 @@ export interface IReferralInfo {
   referrerLicense?: string;
   referrerPhone?: string;
   referrerEmail?: string;
+  patientFirstName?: string;
+  patientLastName?: string;
+  patientPhone?: string;
+  patientEmail?: string;
   referralReason?: string;
   documentUrl?: string; // URL to uploaded prescription/referral PDF
   documentName?: string;
@@ -174,6 +179,10 @@ const ReferralInfoSchema = new Schema<IReferralInfo>(
     referrerLicense: String,
     referrerPhone: String,
     referrerEmail: String,
+    patientFirstName: String,
+    patientLastName: String,
+    patientPhone: String,
+    patientEmail: String,
     referralReason: String,
     documentUrl: String,
     documentName: String,

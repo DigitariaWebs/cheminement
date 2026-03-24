@@ -44,8 +44,10 @@ import {
 } from "@/components/ui/card";
 import { AppointmentResponse } from "@/types/api";
 import { appointmentsAPI } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 
 export default function SessionDetailsPage() {
+  const t = useTranslations("Dashboard.sessions");
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
@@ -252,11 +254,20 @@ export default function SessionDetailsPage() {
       ongoing: "bg-purple-100 text-purple-700",
     };
 
+    const labels: Record<AppointmentResponse["status"], string> = {
+      pending: t("pending"),
+      scheduled: t("scheduled"),
+      ongoing: t("ongoing"),
+      completed: t("completed"),
+      cancelled: t("cancelled"),
+      "no-show": t("noShow"),
+    };
+
     return (
       <span
         className={`px-3 py-1 rounded-full text-xs font-medium ${styles[status]}`}
       >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {labels[status]}
       </span>
     );
   };
@@ -387,7 +398,7 @@ export default function SessionDetailsPage() {
               className="gap-2 rounded-full"
             >
               <Video className="h-4 w-4" />
-              Join Session
+              {t("joinSession")}
             </Button>
           )}
         </div>
@@ -695,12 +706,12 @@ export default function SessionDetailsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
-                  <SelectItem value="ongoing">Ongoing</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="no-show">No Show</SelectItem>
+                  <SelectItem value="pending">{t("pending")}</SelectItem>
+                  <SelectItem value="scheduled">{t("scheduled")}</SelectItem>
+                  <SelectItem value="ongoing">{t("ongoing")}</SelectItem>
+                  <SelectItem value="completed">{t("completed")}</SelectItem>
+                  <SelectItem value="cancelled">{t("cancelled")}</SelectItem>
+                  <SelectItem value="no-show">{t("noShow")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

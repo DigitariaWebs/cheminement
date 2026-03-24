@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { encryptPaymentMethodReference } from "@/lib/field-encryption";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
@@ -103,10 +104,12 @@ async function handlePaymentIntentSucceeded(
 
   // Store payment method if available
   if (paymentIntent.payment_method) {
-    appointment.payment.stripePaymentMethodId =
+    const rawPmId =
       typeof paymentIntent.payment_method === "string"
         ? paymentIntent.payment_method
         : paymentIntent.payment_method.id;
+    appointment.payment.stripePaymentMethodId =
+      encryptPaymentMethodReference(rawPmId) ?? rawPmId;
   }
 
   // Clear payment token after successful payment

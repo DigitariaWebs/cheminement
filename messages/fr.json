@@ -163,6 +163,7 @@
     "licenseOptional": "Numéro de permis (optionnel)",
     "contactPhone": "Téléphone de contact",
     "contactEmail": "Courriel de contact",
+    "patientContactInfo": "Coordonnées du patient",
     "optional": "(optionnel)",
     "reasonReferral": "Motif de la référence (optionnel)",
     "reasonReferralPlaceholder": "Brève description du motif de référence…",
@@ -186,6 +187,7 @@
       "motifRequired": "Veuillez sélectionner au moins un motif de consultation",
       "motifMax": "Veuillez sélectionner au maximum 3 motifs",
       "referrerName": "Veuillez indiquer le nom du professionnel référent",
+      "patientName": "Veuillez indiquer le prénom et le nom du patient",
       "referralMotif": "Veuillez sélectionner au moins un motif pour la référence",
       "fieldsRequired": "Veuillez remplir tous les champs obligatoires",
       "phoneInvalid": "Veuillez entrer un numéro de téléphone valide",
@@ -324,7 +326,7 @@
       "description": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques.",
       "topics": "Anxiété, Épuisement, Stress, Dépression, Estime de soi, TDAH, HPI, rôle parental, difficultés d'apprentissage, gestion des émotions, autres problématiques",
       "note": "Ceci n’est pas une liste exhaustive",
-      "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques"
+      "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques."
     },
     "professionalsSection": {
       "title": "Nos professionnels à votre service",
@@ -402,7 +404,10 @@
     "headline": "Concentrez-vous sur ce que vous faites de mieux : aider les gens",
     "description": "Rejoignez notre plateforme et laissez-nous gérer le travail administratif. Connectez-vous avec des clients qui correspondent à votre expertise, optimisez votre pratique et augmentez votre impact.",
     "joinPlatform": "Rejoindre notre plateforme",
-    "learnMore": "En savoir plus"
+    "learnMore": "En savoir plus",
+    "activeProfessionals": "Plusieurs professionnels actifs",
+    "satisfactionRate": "95 % de satisfaction",
+    "platformSupport": "Soutien de la plateforme 24 h sur 24, 7 j sur 7"
   },
   "MatchingSystem": {
     "badge": "SYSTÈME DE JUMELAGE INTELLIGENT",
@@ -683,6 +688,7 @@
         "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence."
       },
       "objectivesLabel": "Objectifs de thérapie (recherche, plusieurs choix possibles)",
+      "therapyApproachOptional": "Approche de thérapie préférée (optionnel)",
       "objectivesPlaceholder": "Rechercher des objectifs (gestion du stress, anxiété...)",
       "therapyObjectives": [
         "Réduire les symptômes",
@@ -700,6 +706,83 @@
       "preferredProfessionalFemale": "Femme",
       "preferredProfessionalOther": "Autre",
       "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.",
+      "conditionLabels": {
+        "tdah": "TDAH",
+        "troubleLangage": "Trouble du langage",
+        "dyslexie": "Dyslexie",
+        "syndromeTourette": "Syndrome de la Tourette",
+        "tics": "Tics",
+        "tsa": "Trouble du spectre de l'autisme (TSA)",
+        "douance": "Douance",
+        "anxieteSeparation": "Trouble d'anxiété de séparation"
+      },
+      "secondaryIssueOptions": {
+        "stress": "Stress",
+        "relationships": "Relations",
+        "workSchool": "Travail/École",
+        "family": "Famille",
+        "grief": "Deuil",
+        "trauma": "Trauma",
+        "selfEsteem": "Estime de soi",
+        "lifeTransitions": "Transitions de vie"
+      },
+      "symptomOptions": {
+        "sadness": "Tristesse",
+        "worry": "Inquiétude",
+        "panicAttacks": "Attaques de panique",
+        "moodSwings": "Sautes d'humeur",
+        "irritability": "Irritabilité",
+        "fatigue": "Fatigue",
+        "concentrationIssues": "Difficultés de concentration",
+        "memoryProblems": "Problèmes de mémoire",
+        "nightmares": "Cauchemars",
+        "flashbacks": "Revécu traumatique"
+      },
+      "healthOptions": {
+        "medical": {
+          "diabetes": "Diabète",
+          "hypertension": "Hypertension",
+          "heartDisease": "Maladie cardiaque",
+          "asthma": "Asthme",
+          "thyroidDisorder": "Trouble thyroïdien",
+          "chronicPain": "Douleur chronique",
+          "none": "Aucune"
+        },
+        "medications": {
+          "antidepressants": "Antidépresseurs",
+          "antiAnxiety": "Anxiolytiques",
+          "moodStabilizers": "Stabilisateurs de l'humeur",
+          "antipsychotics": "Antipsychotiques",
+          "sleepAids": "Somnifères / aide au sommeil",
+          "painMedication": "Antidouleurs",
+          "none": "Aucun"
+        }
+      },
+      "therapyApproachOptions": {
+        "cbt": "TCC (thérapie cognitivo-comportementale)",
+        "psychodynamic": "Psychodynamique",
+        "mindfulness": "Pleine conscience",
+        "solutionFocused": "Centré sur les solutions",
+        "familyTherapy": "Thérapie familiale",
+        "groupTherapy": "Thérapie de groupe",
+        "artTherapy": "Art-thérapie",
+        "noPreference": "Pas de préférence"
+      },
+      "availabilityOptions": {
+        "weekdayMornings": "Matinées en semaine",
+        "weekdayAfternoons": "Après-midis en semaine",
+        "weekdayEvenings": "Soirées en semaine",
+        "weekendMornings": "Matinées de fin de semaine",
+        "weekendAfternoons": "Après-midis de fin de semaine",
+        "weekendEvenings": "Soirées de fin de semaine",
+        "flexible": "Flexible"
+      },
+      "review": {
+        "name": "Nom :",
+        "email": "Courriel :",
+        "phone": "Téléphone :",
+        "primaryConcern": "Préoccupation principale :"
+      },
       "profile": {
         "yes": "Oui",
         "no": "Non",
@@ -902,6 +985,40 @@
       "graduationYear": "Année d'obtention",
       "graduationYearPlaceholder": "ex. 2020",
       "certifications": "Certifications (sélectionnez toutes celles qui s'appliquent)",
+      "certificationOptions": {
+        "cbtCertified": "Certification TCC",
+        "dbtCertified": "Certification TCD",
+        "emdrCertified": "Certification EMDR",
+        "familyTherapy": "Thérapie familiale",
+        "traumaInformed": "Approche sensible au trauma",
+        "substanceAbuse": "Usage de substances / dépendances",
+        "childAdolescent": "Enfants et adolescents",
+        "couplesTherapy": "Thérapie de couple"
+      },
+      "sessionTypeOptions": {
+        "individual": "Individuel",
+        "couple": "Couple",
+        "family": "Famille",
+        "group": "Groupe",
+        "coaching": "Coaching"
+      },
+      "modalityOptions": {
+        "inPersonOffice": "En personne (bureau)",
+        "videoCall": "Vidéoconférence",
+        "phoneCall": "Téléphone",
+        "chatMessaging": "Clavardage / messagerie"
+      },
+      "weekdays": {
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "sunday": "Dimanche"
+      },
+      "selectPlaceholder": "Sélectionner…",
+      "bioCharacterCount": "{count} / {max} caractères",
       "approachesTitle": "1 – Approches et Thérapies",
       "approachesSubtitle": "Liste pour tous les profils (sélectionnez tous ceux qui s'appliquent).",
       "problematicsTitle": "2 – Problématiques et Mandats",
@@ -1009,6 +1126,10 @@
     "dateOfBirth": "Date de naissance",
     "gender": "Genre",
     "language": "Langue préférée",
+    "male": "Homme",
+    "female": "Femme",
+    "other": "Autre",
+    "preferNotToSay": "Préfère ne pas dire",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
@@ -1017,7 +1138,19 @@
     "edit": "Modifier",
     "subtitle": "Mettre à jour vos informations personnelles",
     "loading": "Chargement du profil...",
-    "noData": "Aucune donnée de profil trouvée"
+    "noData": "Aucune donnée de profil trouvée",
+    "notAvailable": "N/D",
+    "accountType": "Type de compte",
+    "roles": {
+      "guest": "Invité",
+      "client": "Client",
+      "professional": "Professionnel",
+      "admin": "Admin"
+    },
+    "languages": {
+      "en": "Anglais",
+      "fr": "Français"
+    }
   },
   "Dashboard": {
     "sidebar": {
@@ -1108,7 +1241,28 @@
       "lastName": "Nom de famille",
       "dateOfBirth": "Date de naissance",
       "gender": "Genre",
-      "language": "Langue préférée"
+      "language": "Langue préférée",
+      "loading": "Chargement...",
+      "noData": "Aucune donnée de profil disponible",
+      "notAvailable": "N/D",
+      "educationCredentials": "Formation et titres",
+      "education": "Formation",
+      "certifications": "Certifications",
+      "servicesOffered": "Services offerts",
+      "sessionTypes": "Types de séance",
+      "modalitiesLabel": "Modalités",
+      "languagesSpoken": "Langues parlées",
+      "pricingPayment": "Tarification et paiement",
+      "individualSession": "Séance individuelle",
+      "coupleSession": "Séance de couple",
+      "groupSession": "Séance de groupe",
+      "perSession": "par séance",
+      "pricingNotSet": "Tarifs non renseignés",
+      "paymentAgreement": "Entente de paiement",
+      "paymentAgreementPerSession": "À la séance",
+      "paymentAgreementWeekly": "Chaque semaine",
+      "paymentAgreementBiWeekly": "Aux deux semaines",
+      "paymentAgreementMonthly": "Mensuel"
     },
     "schedule": {
       "title": "Horaire de disponibilité",
@@ -1190,6 +1344,7 @@
       "completed": "Complétée",
       "cancelled": "Annulée",
       "noShow": "Absence",
+      "ongoing": "En cours",
       "type": "Type",
       "inPerson": "En personne",
       "video": "Vidéo",
@@ -1206,6 +1361,7 @@
       "actions": "Actions",
       "viewDetails": "Voir les détails",
       "startSession": "Démarrer la séance",
+      "joinSession": "Rejoindre la séance",
       "addNotes": "Ajouter des notes",
       "noSessions": "Aucune séance trouvée",
       "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
@@ -1238,7 +1394,17 @@
       "step3": {
         "title": "Catégories d'âge",
         "subtitle": "Sélectionnez les groupes d'âge avec lesquels vous travaillez",
-        "minSelection": "Sélectionnez au moins une catégorie d'âge"
+        "minSelection": "Sélectionnez au moins une catégorie d'âge",
+        "diagnosedConditionsLabel": "Diagnostics traités (sélectionnez tous ceux qui s’appliquent)",
+        "diagnosedConditionsDesc": "Sélectionnez les diagnostics que vous traitez selon les catégories d’âge choisies.",
+        "selectAgeCategoryFirst": "Veuillez d’abord sélectionner au moins une catégorie d’âge ci-dessus.",
+        "ageCategoryLabels": {
+          "children": "Enfants (0–12 ans)",
+          "adolescents": "Adolescents (13–17 ans)",
+          "youngAdults": "Jeunes adultes (18–25 ans)",
+          "adults": "Adultes (26–64 ans)",
+          "seniors": "Aînés (65 ans et +)"
+        }
       },
       "step4": {
         "title": "Informations supplémentaires",
@@ -1251,12 +1417,24 @@
         "bio": "Biographie professionnelle",
         "bioRequired": "*",
         "bioPlaceholder": "Parlez-nous de votre approche, de votre expérience et de ce qui rend votre pratique unique...",
-        "bioMinLength": "La biographie doit contenir au moins 50 caractères"
+        "bioMinLength": "La biographie doit contenir au moins 50 caractères",
+        "skillLabels": {
+          "crisisIntervention": "Intervention de crise",
+          "groupTherapy": "Thérapie de groupe",
+          "couplesCounseling": "Thérapie de couple",
+          "familyTherapy": "Thérapie familiale",
+          "neuropsychologicalAssessment": "Évaluation neuropsychologique",
+          "psychometricTesting": "Tests psychométriques",
+          "bilingualFrEn": "Services bilingues (français/anglais)",
+          "culturalCompetency": "Compétence culturelle",
+          "lgbtqAffirmative": "Thérapie affirmative LGBTQ+"
+        }
       },
       "buttons": {
         "back": "Retour",
         "next": "Suivant",
-        "complete": "Compléter le profil"
+        "complete": "Compléter le profil",
+        "saveForLater": "Enregistrer pour plus tard"
       },
       "selected": "sélectionné"
     },
@@ -1299,7 +1477,8 @@
         "scheduled": "Planifié",
         "completed": "Complété",
         "cancelled": "Annulé",
-        "no-show": "Absence"
+        "no-show": "Absence",
+        "ongoing": "En cours"
       },
       "actions": {
         "schedule": "Planifier une séance",
@@ -1524,7 +1703,7 @@
           "details": "Plus de barrières géographiques, plus d'obstacles logistiques."
         },
         "office": {
-          "title": "Consultations en bureau",
+          "title": "Consultations au bureau",
           "description": "Un accueil chaleureux et professionnel pour celles et ceux qui privilégient le contact humain direct.",
           "details": "Des espaces pensés pour votre confort, votre confidentialité et votre bien-être."
         },
@@ -1598,15 +1777,15 @@
       "imageAlt": "Séance de soutien professionnel en santé mentale",
       "adult": {
         "title": "Psychothérapie adulte",
-        "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
+        "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété, une dépression, des problèmes relationnels et des transitions de la vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
         "highlight": "Plans de traitement personnalisés",
         "features": [
-          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes.",
-          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste).",
-          "Gestion de l'anxiété, de la dépression et du stress.",
-          "Évaluation du TDAH et soutien continu.",
-          "Consultations en lien avec les défis relationnels et l'estime de soi.",
-          "Soutien aux transitions et à l'adaptation de vie."
+          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes",
+          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste)",
+          "Gestion de l'anxiété, de la dépression et du stress",
+          "Évaluation du TDAH et soutien continu",
+          "Consultations en lien avec les défis relationnels et l'estime de soi",
+          "Soutien aux transitions et à l'adaptation de vie"
         ]
       },
       "child": {
@@ -1614,13 +1793,13 @@
         "description": "Soutien thérapeutique spécialisé conçu pour les besoins développement aux uniques des enfants et des adolescents. Nous aidons les jeunes à mieux composer avec les défis émotionnels, les difficultés comportementales et les transitions développementales.",
         "highlight": "Interventions adaptées à l'âge",
         "features": [
-          "Thérapie par le jeu et techniques adaptées à l'âge.",
-          "Évaluation du TDAH et stratégies comportementales.",
-          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle.",
-          "Développement des habiletés sociales.",
-          "Difficultés scolaires et soutien à l'apprentissage.",
-          "Cyberdépendance et dépendances aux substances.",
-          "Collaboration et guidance parentale."
+          "Thérapie par le jeu et techniques adaptées à l'âge",
+          "Évaluation du TDAH et stratégies comportementales",
+          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle",
+          "Développement des habiletés sociales",
+          "Difficultés scolaires et soutien à l'apprentissage",
+          "Cyberdépendance et dépendances aux substances",
+          "Collaboration et guidance parentale"
         ]
       },
       "family": {
@@ -1628,12 +1807,12 @@
         "description": "Renforcez les liens familiaux et améliorez la communication grâce à des séances thérapeutiques guidées. Nous aidons les familles et les couples à naviguer à travers les conflits, à reconstruire la confiance et à créer des dynamiques relationnelles plus saines.",
         "highlight": "Communication améliorée",
         "features": [
-          "Thérapie de couple.",
-          "Évaluation et intervention sur les dynamiques familiales.",
-          "Stratégies de résolution de conflits.",
-          "Développement des compétences en communication.",
-          "Soutien aux familles recomposées.",
-          "Coaching parental et guidance en coparentalité."
+          "Thérapie de couple",
+          "Évaluation et intervention sur les dynamiques familiales",
+          "Stratégies de résolution de conflits",
+          "Développement des compétences en communication",
+          "Soutien aux familles recomposées",
+          "Coaching parental et guidance en coparentalité"
         ]
       },
       "workplace": {
@@ -1641,12 +1820,12 @@
         "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les employés à naviguer à travers l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel.",
         "highlight": "Soutien au retour au travail",
         "features": [
-          "Évaluation de l'épuisement et planification du rétablissement.",
-          "Soutien à la transition de retour au travail.",
-          "Gestion du stress et de la charge de travail.",
-          "Reconstruction de l'identité professionnelle et de la confiance.",
-          "Stratégies d'équilibre vie personnelle-travail.",
-          "Consultations en lien avec une transition de carrière."
+          "Évaluation de l'épuisement et planification du rétablissement",
+          "Soutien à la transition de retour au travail",
+          "Gestion du stress et de la charge de travail",
+          "Reconstruction de l'identité professionnelle et de la confiance",
+          "Stratégies d'équilibre vie personnelle-travail",
+          "Consultations en lien avec une transition de carrière"
         ]
       },
       "schoolAnxiety": {
@@ -1667,7 +1846,7 @@
       "badge": "2 · Santé mentale au travail",
       "title": "Section dédiée aux entreprises",
       "description": "Un accompagnement structuré pour soutenir les employés et les organisations, sans changer le fond de votre offre.",
-      "contactButton": "Nous contacter directement"
+      "contactButton": "Nous rejoindre"
     },
     "enterpriseCta": {
       "title": "Gestionnaire d'entreprise ?",
@@ -1685,8 +1864,8 @@
       "companyPlaceholder": "Nom de votre entreprise",
       "position": "Fonction",
       "positionPlaceholder": "Votre fonction",
-      "coordinates": "Coordonnées",
-      "coordinatesPlaceholder": "Adresse ou autres coordonnées (optionnel)",
+      "coordinates": "Message",
+      "coordinatesPlaceholder": "Message",
       "submitButton": "Contacter un conseiller",
       "submitting": "Envoi en cours...",
       "successMessage": "Votre demande a été envoyée avec succès. Un conseiller vous contactera sous peu.",
@@ -1925,7 +2104,7 @@
           ]
         },
         "office": {
-          "title": "Consultations en bureau",
+          "title": "Consultations au bureau",
           "bullets": [
             "Rencontres en personne dans un cadre chaleureux",
             "Pour ceux qui préfèrent un contact direct",
@@ -2144,6 +2323,11 @@
           "title": "En bureau",
           "description": "Profitez d'un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
           "highlight": "Un espace accueillant, confidentiel et serein."
+        },
+        "walk": {
+          "title": "Thérapie en marche",
+          "description": "Vivez la thérapie en mouvement — des séances de marche en pleine nature qui combinent mouvement, air frais et échanges significatifs.",
+          "highlight": "Une alternative revitalisante pour les esprits actifs."
         }
       },
       "platform": {
@@ -2267,6 +2451,7 @@
     "profile": {
       "title": "Mon profil",
       "subtitle": "Gérez vos informations personnelles et préférences",
+      "loading": "Chargement...",
       "edit": "Modifier",
       "save": "Enregistrer les modifications",
       "saving": "Enregistrement...",
@@ -2416,10 +2601,24 @@
       },
       "step1": {
         "title": "Antécédents de santé",
+        "subtitle": "Parlez-nous de vos antécédents de santé",
         "concernedPerson": "Qui est concerné?",
         "concernedPersonPlaceholder": "ex. Moi-même, Mon enfant",
         "medicalConditions": "Conditions médicales",
         "medicalConditionsDesc": "Sélectionnez toute condition médicale pertinente",
+        "medicalConditionOptions": {
+          "diabetes": "Diabète",
+          "hypertension": "Hypertension",
+          "asthma": "Asthme",
+          "heartDisease": "Maladie cardiaque",
+          "cancer": "Cancer",
+          "thyroidDisorders": "Troubles de la thyroïde",
+          "arthritis": "Arthrite",
+          "chronicPain": "Douleur chronique",
+          "migraines": "Migraines",
+          "epilepsy": "Épilepsie",
+          "other": "Autre"
+        },
         "currentMedications": "Médicaments actuels",
         "currentMedicationsPlaceholder": "Listez les médicaments séparés par des virgules",
         "allergies": "Allergies",
@@ -2437,7 +2636,17 @@
         "currentTreatment": "Traitement actuel",
         "currentTreatmentPlaceholder": "Décrivez tout traitement actuel",
         "diagnosedConditions": "Conditions diagnostiquées",
-        "diagnosedConditionsDesc": "Sélectionnez toute condition de santé mentale diagnostiquée"
+        "diagnosedConditionsDesc": "Sélectionnez toute condition de santé mentale diagnostiquée",
+        "conditionLabels": {
+          "tdah": "TDAH",
+          "troubleLangage": "Trouble du langage",
+          "dyslexie": "Dyslexie",
+          "syndromeTourette": "Syndrome de la Tourette",
+          "tics": "Tics",
+          "tsa": "Trouble du spectre de l'autisme (TSA)",
+          "douance": "Douance",
+          "anxieteSeparation": "Trouble d'anxiété de séparation"
+        }
       },
       "step3": {
         "title": "Préoccupations actuelles",
@@ -2447,6 +2656,21 @@
         "primaryIssuePlaceholder": "Quelle est votre préoccupation principale?",
         "secondaryIssues": "Problèmes secondaires",
         "secondaryIssuesDesc": "Sélectionnez toute préoccupation supplémentaire",
+        "secondaryIssueOptions": {
+          "anxiety": "Anxiété",
+          "depression": "Dépression",
+          "stress": "Stress",
+          "relationshipProblems": "Problèmes relationnels",
+          "trauma": "Trauma",
+          "selfEsteemIssues": "Problèmes d'estime de soi",
+          "addiction": "Dépendance",
+          "grief": "Deuil",
+          "angerManagement": "Gestion de la colère",
+          "familyIssues": "Problèmes familiaux",
+          "workSchoolProblems": "Problèmes au travail/à l'école",
+          "lifeTransitions": "Transitions de vie",
+          "other": "Autre"
+        },
         "issueDescription": "Description détaillée",
         "issueDescriptionPlaceholder": "Fournissez plus de détails sur vos préoccupations",
         "severity": "Niveau de sévérité",
@@ -2461,6 +2685,28 @@
         "subtitle": "Comment vos symptômes affectent-ils votre vie quotidienne?",
         "symptoms": "Symptômes actuels",
         "symptomsDesc": "Sélectionnez les symptômes que vous ressentez",
+        "symptomOptions": {
+          "sadness": "Tristesse",
+          "worry": "Inquiétude",
+          "persistentSadness": "Tristesse persistante",
+          "anxietyAttacks": "Crises d'anxiété",
+          "sleepProblems": "Problèmes de sommeil",
+          "lossOfInterest": "Perte d'intérêt",
+          "irritability": "Irritabilité",
+          "fatigue": "Fatigue",
+          "concentrationIssues": "Difficultés de concentration",
+          "memoryProblems": "Problèmes de mémoire",
+          "nightmares": "Cauchemars",
+          "flashbacks": "Revécu traumatique",
+          "appetiteChanges": "Changements d'appétit",
+          "socialWithdrawal": "Retrait social",
+          "panicAttacks": "Attaques de panique",
+          "moodSwings": "Sautes d'humeur",
+          "suicidalThoughts": "Pensées suicidaires",
+          "hallucinations": "Hallucinations",
+          "delusions": "Délires",
+          "other": "Autre"
+        },
         "dailyLifeImpact": "Impact sur la vie quotidienne",
         "dailyLifeImpactPlaceholder": "Décrivez comment cela affecte votre vie quotidienne",
         "sleepQuality": "Qualité du sommeil",
@@ -2480,8 +2726,39 @@
         "subtitle": "Quels sont vos objectifs de traitement?",
         "treatmentGoals": "Objectifs de traitement",
         "treatmentGoalsDesc": "Sélectionnez vos objectifs pour la thérapie",
+        "treatmentGoalOptions": {
+          "reduceAnxiety": "Réduire l'anxiété",
+          "improveMood": "Améliorer l'humeur",
+          "betterSleep": "Mieux dormir",
+          "increaseSelfEsteem": "Augmenter l'estime de soi",
+          "manageStress": "Gérer le stress",
+          "improveRelationships": "Améliorer les relations",
+          "overcomeTrauma": "Surmonter un trauma",
+          "developCopingSkills": "Développer des stratégies d'adaptation",
+          "addressAddiction": "Traiter une dépendance",
+          "weightManagement": "Gestion du poids",
+          "other": "Autre",
+          "reduceSymptoms": "Réduire les symptômes",
+          "selfUnderstanding": "Compréhension de soi",
+          "personalGrowth": "Croissance personnelle"
+        },
         "therapyApproach": "Approche thérapeutique préférée",
         "therapyApproachDesc": "Sélectionnez les approches préférées",
+        "therapyApproachOptions": {
+          "cbt": "Thérapie cognitivo-comportementale (TCC)",
+          "psychodynamicTherapy": "Thérapie psychodynamique",
+          "psychodynamic": "Psychodynamique",
+          "humanisticTherapy": "Thérapie humaniste",
+          "dbt": "Thérapie comportementale dialectique (TCD)",
+          "emdr": "EMDR",
+          "solutionFocusedTherapy": "Thérapie orientée vers les solutions",
+          "solutionFocused": "Approche orientée solutions",
+          "mindfulnessBasedTherapy": "Thérapie basée sur la pleine conscience",
+          "familySystemsTherapy": "Thérapie systémique familiale",
+          "act": "Thérapie d'acceptation et d'engagement (ACT)",
+          "groupTherapy": "Thérapie de groupe",
+          "noPreference": "Aucune préférence"
+        },
         "concernsAboutTherapy": "Préoccupations concernant la thérapie",
         "concernsAboutTherapyPlaceholder": "Des préoccupations ou questions sur la thérapie?"
       },
@@ -2491,6 +2768,14 @@
         "subtitle": "Quand et comment souhaitez-vous vous rencontrer?",
         "availability": "Disponibilité",
         "availabilityDesc": "Sélectionnez vos heures préférées",
+        "preferredTimeSlots": "Créneaux préférés",
+        "preferredTimeSlotsDesc": "Sélectionnez vos créneaux préférés pour les séances",
+        "timeSlotOptions": {
+          "morning": "Matin",
+          "afternoon": "Après-midi",
+          "evening": "Soir",
+          "weekends": "Week-ends"
+        },
         "modality": "Modalité préférée",
         "modalityPlaceholder": "Sélectionnez la modalité",
         "sessionFrequency": "Fréquence des séances",
@@ -2525,6 +2810,11 @@
         "subtitle": "Aidez-nous à trouver le bon professionnel pour vous",
         "preferredGender": "Genre du professionnel préféré",
         "preferredGenderPlaceholder": "Sélectionnez la préférence",
+        "genderOptions": {
+          "noPreference": "Aucune préférence",
+          "male": "Homme",
+          "female": "Femme"
+        },
         "preferredAge": "Tranche d'âge préférée",
         "preferredAgePlaceholder": "Sélectionnez la tranche d'âge",
         "languagePreference": "Préférence linguistique",
@@ -2556,12 +2846,15 @@
       "noUpcoming": "Aucun rendez-vous à venir",
       "noPast": "Aucun rendez-vous passé",
       "requestNew": "Demander un nouveau rendez-vous",
+      "error": "Impossible de charger les rendez-vous",
+      "retry": "Réessayer",
       "status": {
         "scheduled": "Planifié",
         "completed": "Complété",
         "cancelled": "Annulé",
         "noShow": "Absence",
-        "pending": "En attente de confirmation"
+        "pending": "En attente de confirmation",
+        "ongoing": "En cours"
       },
       "details": {
         "professional": "Professionnel",
@@ -2579,6 +2872,7 @@
         "reschedule": "Replanifier",
         "cancel": "Annuler",
         "joinSession": "Rejoindre la séance",
+        "openMeetingLink": "Ouvrir le lien de la réunion",
         "addToCalendar": "Ajouter au calendrier",
         "getDirections": "Obtenir l'itinéraire",
         "review": "Laisser un avis"
@@ -2599,7 +2893,39 @@
       "confirmCancelMessage": "Êtes-vous sûr de vouloir annuler ce rendez-vous ? Cette action ne peut pas être annulée.",
       "cancelling": "Annulation...",
       "confirmCancel": "Oui, annuler le rendez-vous",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "toBeScheduled": "À planifier",
+      "concernLabel": "Préoccupation",
+      "cancelDialog": {
+        "title": "Annuler le rendez-vous",
+        "titleSuccess": "Rendez-vous annulé",
+        "descriptionAt": "{date} à {time}",
+        "successHeading": "Rendez-vous annulé avec succès",
+        "successEmail": "Vous recevrez un courriel de confirmation sous peu.",
+        "refundSummary": "Résumé du remboursement",
+        "refundDetails": "Détails du remboursement",
+        "originalAmount": "Montant initial",
+        "cancellationFee": "Frais d'annulation",
+        "cancellationFeePercent": "Frais d'annulation ({percent} %) :",
+        "refundAmount": "Montant remboursé",
+        "refundNote": "Le remboursement sera traité sur votre mode de paiement d'origine sous 5 à 10 jours ouvrables.",
+        "policyTitle": "Politique d'annulation",
+        "policyFree": "Vous pouvez annuler ce rendez-vous sans frais, car il est à plus de {hours} heures.",
+        "policyFee": "Les annulations moins de {hours} heures avant sont assujetties à des frais d'annulation de {percent} %.",
+        "timeUntilTitle": "Temps avant le rendez-vous",
+        "timeDaysHours": "{days} j, {hours} h",
+        "timeHoursMinutes": "{hours} h {minutes} min",
+        "reasonLabel": "Motif de l'annulation",
+        "reasonOptional": "(facultatif)",
+        "reasonPlaceholder": "Indiquez pourquoi vous annulez…",
+        "errorTitle": "Erreur",
+        "keepAppointment": "Conserver le rendez-vous",
+        "confirmCancel": "Annuler le rendez-vous",
+        "cancelling": "Annulation…",
+        "noReasonProvided": "Aucun motif fourni",
+        "failedToCancel": "Impossible d'annuler le rendez-vous",
+        "currencySuffix": "CAD"
+      }
     },
     "AppointmentForm": {
       "referrerSection": "Le Référent",
@@ -2609,6 +2935,47 @@
       "phoneOrEmail": "Téléphone ou Email",
       "professionalName": "Nom du professionnel",
       "patientName": "Nom du patient"
+    },
+    "medicalProfile": {
+      "loading": "Chargement...",
+      "noData": "Aucune donnée de profil disponible",
+      "sections": {
+        "symptomsDailyLife": "Symptômes et impact sur la vie quotidienne",
+        "treatmentGoalsPrefs": "Objectifs de traitement et préférences"
+      },
+      "empty": {
+        "noneReported": "Aucun renseignement",
+        "notReported": "Non renseigné",
+        "notSpecified": "Non précisé",
+        "noDetailsProvided": "Aucun détail fourni",
+        "noCurrentTreatment": "Aucun traitement en cours",
+        "noDescriptionProvided": "Aucune description fournie",
+        "noChangesReported": "Aucun changement signalé",
+        "noConcernsReported": "Aucune préoccupation signalée",
+        "normalSleep": "Normal",
+        "noAdditionalNotes": "Aucune note supplémentaire",
+        "notProvided": "Non fourni",
+        "noCrisisPlan": "Aucun plan de crise indiqué"
+      },
+      "labels": {
+        "triggeringEvent": "Événement déclencheur",
+        "preferredTimeSlots": "Plages horaires préférées",
+        "sessionModality": "Modalité de séance",
+        "emergencyContactTitle": "Personne à contacter en cas d'urgence",
+        "emergencyConfidential": "Ces renseignements sont confidentiels et utilisés uniquement en cas d'urgence.",
+        "contactName": "Nom du contact",
+        "phoneNumber": "Numéro de téléphone",
+        "relationship": "Lien",
+        "crisisPlan": "Plan de crise",
+        "matchingPrefsTitle": "Préférences de jumelage avec un professionnel",
+        "preferredAgeRange": "Tranche d'âge préférée",
+        "anyAge": "Tout âge",
+        "ageYounger": "Plus jeune (20–35 ans)",
+        "ageMiddle": "Milieu de vie (36–55 ans)",
+        "ageOlder": "Plus âgé (56 ans et +)",
+        "suicidalThoughtsWarning": "Le client a indiqué avoir eu des pensées suicidaires. Une attention immédiate peut être nécessaire.",
+        "suicidalThoughtsAck": "J'ai déjà eu des pensées suicidaires"
+      }
     },
     "library": {
       "badge": "Bibliothèque de ressources",
@@ -2662,15 +3029,65 @@
       "confirmDeletePaymentMethod": "Êtes-vous sûr de vouloir supprimer cette méthode de paiement?",
       "waitingProfessionalConfirmation": "En attente de la confirmation du professionnel avant le paiement",
       "awaitingConfirmation": "En attente de la confirmation du professionnel avant le paiement",
+      "confirmWithPaymentMethod": "Confirmer avec les coordonnées de paiement",
+      "paymentAfterSessionReminder": "Moyen de paiement enregistré. Le paiement aura lieu après la séance complétée.",
+      "paymentMethodOnFileShort": "Enregistré (Stripe)",
+      "appointmentConfirm": {
+        "title": "Confirmer votre rendez-vous",
+        "description": "Ajoutez une carte ou un prélèvement préautorisé canadien. Aucun débit maintenant — le paiement n'est effectué qu'après que votre professionnel a marqué la séance comme terminée. Stripe gère vos données bancaires ; nous ne les stockons pas sur la plateforme.",
+        "cardLabel": "Carte de crédit ou de débit",
+        "cardDescription": "Cartes prises en charge par Stripe",
+        "padLabel": "Prélèvement préautorisé",
+        "padDescription": "Relier votre compte bancaire canadien (PAD)",
+        "continue": "Continuer",
+        "preparing": "Préparation du formulaire sécurisé...",
+        "changeType": "Changer de méthode",
+        "padAgreementTitle": "Prélèvement préautorisé",
+        "padAgreementBody": "Vous autorisez le débit de ce compte pour les honoraires de séance après la rencontre. Vous pouvez gérer ce moyen dans Facturation.",
+        "submitCard": "Enregistrer la carte et confirmer",
+        "submitPad": "Relier la banque et confirmer",
+        "saving": "Enregistrement...",
+        "successTitle": "Rendez-vous confirmé",
+        "successBody": "Vous pourrez rejoindre la séance depuis Rendez-vous au moment prévu. Effectuez le paiement dans Facturation une fois la séance marquée comme terminée.",
+        "successMessage": "Enregistrement réussi",
+        "saveFailed": "Impossible d'enregistrer le moyen de paiement",
+        "incomplete": "Configuration incomplète",
+        "initFailed": "Impossible de démarrer la confirmation",
+        "stripeFootnote": "Sécurisé par Stripe. Les informations bancaires ne sont pas stockées sur Je Chemine."
+      },
       "status": {
         "paid": "Payé",
         "pending": "En attente",
+        "scheduled": "Confirmé",
+        "completed": "Terminé",
+        "ongoing": "En cours",
         "upcoming": "À venir",
         "overdue": "En retard",
         "processing": "En cours",
         "refunded": "Remboursé",
-        "cancelled": "Annulé"
+        "cancelled": "Annulé",
+        "no-show": "Absence"
       }
+    },
+    "guestPay": {
+      "pendingTitle": "En attente de confirmation",
+      "pendingBody": "Votre professionnel n'a pas encore confirmé ce rendez-vous. Vous recevrez un courriel lorsqu'il sera temps d'ajouter vos coordonnées de paiement.",
+      "setupTitle": "Confirmer votre rendez-vous",
+      "setupSubtitle": "Ajoutez une carte ou un prélèvement bancaire canadien (PAD). Le virement Interac peut être offert selon les options Stripe. Aucun débit tant que la séance n'est pas terminée.",
+      "scheduledReadyTitle": "Tout est prêt",
+      "scheduledReadyBody": "Votre moyen de paiement est enregistré. Rejoignez la séance via le lien fourni par votre professionnel. Les honoraires seront payés après la rencontre marquée comme effectuée.",
+      "setupSuccessTitle": "Rendez-vous confirmé",
+      "setupSuccessBody": "Vos coordonnées sont enregistrées chez Stripe. Vous pourrez finaliser le paiement après la séance.",
+      "payAfterSessionTitle": "Payer votre séance complétée",
+      "payAfterSessionSubtitle": "Votre professionnel a indiqué que la séance a eu lieu. Finalisez le paiement ci-dessous. Carte, virement et PAD sont proposés via Stripe.",
+      "backHome": "Retour à l'accueil",
+      "interacNote": "Virement Interac et prélèvements bancaires sont offerts lorsque Stripe les prend en charge.",
+      "selectMethod": "Choisir le moyen de paiement",
+      "continueSecure": "Continuer en toute sécurité",
+      "preparingSetup": "Préparation...",
+      "appointmentDetailsSection": "Détails du rendez-vous",
+      "notAvailableTitle": "Pas encore disponible",
+      "notAvailableBody": "Le paiement s'ouvre après la séance. Réutilisez ce lien lorsque votre professionnel aura indiqué que la rencontre a eu lieu."
     }
   },
   "Review": {
@@ -2678,11 +3095,14 @@
     "description": "Partagez votre expérience avec {professional}",
     "rating": "Évaluation",
     "comment": "Commentaire",
+    "commentOptional": "(facultatif)",
     "commentPlaceholder": "Parlez-nous de votre expérience...",
     "anonymous": "Soumettre anonymement",
     "cancel": "Annuler",
     "submit": "Soumettre l'avis",
-    "submitting": "Soumission..."
+    "submitting": "Soumission...",
+    "ratingRequired": "Veuillez sélectionner une note",
+    "submitFailed": "Impossible d'envoyer l'avis"
   },
   "managedAccounts": {
     "title": "Comptes gérés",
@@ -2715,6 +3135,15 @@
       "accountNumber": "Numéro de compte",
       "transitNumber": "Numéro de transit",
       "bankDetailsNote": "Les paiements sont déposés dans les 2-3 jours ouvrables suivant la fin de la séance.",
+      "stripeManagedNote": "Les versements et les coordonnées bancaires sont gérés de façon sécurisée par Stripe ; nous ne stockons pas vos informations bancaires sur cette plateforme.",
+      "notProvided": "—",
+      "noBankOnFile": "Aucun compte bancaire enregistré pour le moment. Utilisez le bouton ci-dessous pour ajouter ou modifier vos coordonnées dans Stripe.",
+      "payoutSetupIncomplete": "La configuration des versements n'est pas encore terminée. Poursuivez dans Stripe pour finaliser la vérification.",
+      "connectLinkError": "Impossible d'ouvrir Stripe. Veuillez réessayer.",
+      "openingStripe": "Ouverture de Stripe…",
+      "setupReturnSuccess": "Mise à jour Stripe effectuée. Vos coordonnées bancaires s'afficheront ici une fois enregistrées.",
+      "setupRefreshMessage": "La session Stripe a été actualisée. Poursuivez la configuration si demandé.",
+      "dismissBanner": "Fermer la notification",
       "updateBankDetails": "Mettre à jour les coordonnées bancaires",
       "receivables": "Créances",
       "paymentHistory": "Historique des paiements",
@@ -2727,13 +3156,76 @@
       "netAmount": "Montant net",
       "paidDate": "Date de paiement",
       "downloadInvoice": "Télécharger la facture",
+      "cancelReason": "Motif d'annulation",
       "show": "Afficher",
       "hide": "Masquer",
       "status": {
         "paid": "Payé",
         "pending": "En attente",
         "upcoming": "À venir",
-        "processing": "En traitement"
+        "processing": "En traitement",
+        "refunded": "Remboursé",
+        "scheduled": "Planifié",
+        "cancelled": "Annulé"
+      }
+    },
+    "proposals": {
+      "title": "Propositions de clients",
+      "subtitle": "Consultez les demandes qui vous ont été proposées ou parcourez la liste générale",
+      "errorPrefix": "Erreur",
+      "tabProposed": "Proposées pour vous",
+      "tabGeneral": "Liste générale",
+      "filters": "Filtres",
+      "clearAll": "Tout effacer",
+      "search": "Recherche",
+      "searchPlaceholder": "Rechercher par nom, courriel ou sujet...",
+      "issueType": "Type de problématique",
+      "allIssues": "Toutes les problématiques",
+      "bookingForLabel": "Réservation pour",
+      "allTypes": "Tous les types",
+      "bookingFor": {
+        "self": "Pour soi",
+        "patient": "Référence patient",
+        "lovedOne": "Pour un proche"
+      },
+      "sessionType": {
+        "video": "Vidéo",
+        "inPerson": "En personne",
+        "phone": "Téléphone"
+      },
+      "therapyType": {
+        "solo": "Individuel",
+        "couple": "Couple",
+        "group": "Groupe"
+      },
+      "emptyProposedTitle": "Aucune proposition",
+      "emptyProposedDescription": "Les nouvelles demandes correspondant à votre expertise apparaîtront ici",
+      "emptyGeneralTitle": "Aucun rendez-vous dans la liste générale",
+      "emptyGeneralDescription": "Les rendez-vous non jumelés ou refusés apparaîtront ici",
+      "table": {
+        "client": "Client",
+        "type": "Type",
+        "issue": "Problématique",
+        "bookingFor": "Réservation pour",
+        "availability": "Disponibilité",
+        "actions": "Actions"
+      },
+      "flexible": "Flexible",
+      "accept": "Accepter",
+      "closeModal": "Fermer",
+      "scheduleModalTitle": "Accepter et planifier",
+      "selectDate": "Choisir la date",
+      "chooseDate": "Choisir une date",
+      "selectTime": "Choisir l'heure",
+      "noSlotsForDate": "Aucun créneau disponible pour cette date",
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "notAvailable": "—",
+      "errors": {
+        "loadFailed": "Échec du chargement des rendez-vous",
+        "acceptFailed": "Impossible d'accepter le rendez-vous",
+        "refuseFailed": "Impossible de refuser le rendez-vous",
+        "scheduleFailed": "Impossible d'accepter et de planifier le rendez-vous"
       }
     }
   },

@@ -29,6 +29,7 @@ export default function ClientDashboardPage() {
   const [hasManagedAccounts, setHasManagedAccounts] = useState(false);
   const { data: session, status } = useSession();
   const t = useTranslations("Client.overview");
+  const tApptStatus = useTranslations("Client.appointments.status");
 
   useEffect(() => {
     const fetchUpcomingAppointments = async () => {
@@ -79,12 +80,12 @@ export default function ClientDashboardPage() {
     }
   };
 
-  // Check if client can join a session
-  // Allow joining if:
-  // 1. Meeting link exists and payment is confirmed
-  // 2. Session is "ongoing" OR session is "scheduled" but within 15 minutes of start time
   const canJoinSession = (appointment: AppointmentResponse): boolean => {
-    if (!appointment.meetingLink || appointment.payment.status !== "paid") {
+    const hasPaymentSecured =
+      appointment.payment.status === "paid" ||
+      Boolean(appointment.payment.stripePaymentMethodId);
+
+    if (!appointment.meetingLink || !hasPaymentSecured) {
       return false;
     }
 
@@ -360,7 +361,7 @@ export default function ClientDashboardPage() {
                               </h3>
                               {appointment.status === "ongoing" && (
                                 <span className="rounded-full bg-purple-500 px-2 py-0.5 text-xs font-medium text-white">
-                                  Ongoing
+                                  {tApptStatus("ongoing")}
                                 </span>
                               )}
                             </div>
