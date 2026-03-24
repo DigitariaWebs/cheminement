@@ -706,6 +706,38 @@
       "preferredProfessionalFemale": "Femme",
       "preferredProfessionalOther": "Autre",
       "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.",
+      "conditionLabels": {
+        "tdah": "TDAH",
+        "troubleLangage": "Trouble du langage",
+        "dyslexie": "Dyslexie",
+        "syndromeTourette": "Syndrome de la Tourette",
+        "tics": "Tics",
+        "tsa": "Trouble du spectre de l'autisme (TSA)",
+        "douance": "Douance",
+        "anxieteSeparation": "Trouble d'anxiété de séparation"
+      },
+      "secondaryIssueOptions": {
+        "stress": "Stress",
+        "relationships": "Relations",
+        "workSchool": "Travail/École",
+        "family": "Famille",
+        "grief": "Deuil",
+        "trauma": "Trauma",
+        "selfEsteem": "Estime de soi",
+        "lifeTransitions": "Transitions de vie"
+      },
+      "symptomOptions": {
+        "sadness": "Tristesse",
+        "worry": "Inquiétude",
+        "panicAttacks": "Attaques de panique",
+        "moodSwings": "Sautes d'humeur",
+        "irritability": "Irritabilité",
+        "fatigue": "Fatigue",
+        "concentrationIssues": "Difficultés de concentration",
+        "memoryProblems": "Problèmes de mémoire",
+        "nightmares": "Cauchemars",
+        "flashbacks": "Revécu traumatique"
+      },
       "profile": {
         "yes": "Oui",
         "no": "Non",
@@ -1015,6 +1047,10 @@
     "dateOfBirth": "Date de naissance",
     "gender": "Genre",
     "language": "Langue préférée",
+    "male": "Homme",
+    "female": "Femme",
+    "other": "Autre",
+    "preferNotToSay": "Préfère ne pas dire",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
@@ -1023,7 +1059,19 @@
     "edit": "Modifier",
     "subtitle": "Mettre à jour vos informations personnelles",
     "loading": "Chargement du profil...",
-    "noData": "Aucune donnée de profil trouvée"
+    "noData": "Aucune donnée de profil trouvée",
+    "notAvailable": "N/D",
+    "accountType": "Type de compte",
+    "roles": {
+      "guest": "Invité",
+      "client": "Client",
+      "professional": "Professionnel",
+      "admin": "Admin"
+    },
+    "languages": {
+      "en": "Anglais",
+      "fr": "Français"
+    }
   },
   "Dashboard": {
     "sidebar": {
@@ -2278,6 +2326,7 @@
     "profile": {
       "title": "Mon profil",
       "subtitle": "Gérez vos informations personnelles et préférences",
+      "loading": "Chargement...",
       "edit": "Modifier",
       "save": "Enregistrer les modifications",
       "saving": "Enregistrement...",
@@ -2432,6 +2481,19 @@
         "concernedPersonPlaceholder": "ex. Moi-même, Mon enfant",
         "medicalConditions": "Conditions médicales",
         "medicalConditionsDesc": "Sélectionnez toute condition médicale pertinente",
+        "medicalConditionOptions": {
+          "diabetes": "Diabète",
+          "hypertension": "Hypertension",
+          "asthma": "Asthme",
+          "heartDisease": "Maladie cardiaque",
+          "cancer": "Cancer",
+          "thyroidDisorders": "Troubles de la thyroïde",
+          "arthritis": "Arthrite",
+          "chronicPain": "Douleur chronique",
+          "migraines": "Migraines",
+          "epilepsy": "Épilepsie",
+          "other": "Autre"
+        },
         "currentMedications": "Médicaments actuels",
         "currentMedicationsPlaceholder": "Listez les médicaments séparés par des virgules",
         "allergies": "Allergies",
@@ -2449,7 +2511,17 @@
         "currentTreatment": "Traitement actuel",
         "currentTreatmentPlaceholder": "Décrivez tout traitement actuel",
         "diagnosedConditions": "Conditions diagnostiquées",
-        "diagnosedConditionsDesc": "Sélectionnez toute condition de santé mentale diagnostiquée"
+        "diagnosedConditionsDesc": "Sélectionnez toute condition de santé mentale diagnostiquée",
+        "conditionLabels": {
+          "tdah": "TDAH",
+          "troubleLangage": "Trouble du langage",
+          "dyslexie": "Dyslexie",
+          "syndromeTourette": "Syndrome de la Tourette",
+          "tics": "Tics",
+          "tsa": "Trouble du spectre de l'autisme (TSA)",
+          "douance": "Douance",
+          "anxieteSeparation": "Trouble d'anxiété de séparation"
+        }
       },
       "step3": {
         "title": "Préoccupations actuelles",
@@ -2459,6 +2531,21 @@
         "primaryIssuePlaceholder": "Quelle est votre préoccupation principale?",
         "secondaryIssues": "Problèmes secondaires",
         "secondaryIssuesDesc": "Sélectionnez toute préoccupation supplémentaire",
+        "secondaryIssueOptions": {
+          "anxiety": "Anxiété",
+          "depression": "Dépression",
+          "stress": "Stress",
+          "relationshipProblems": "Problèmes relationnels",
+          "trauma": "Trauma",
+          "selfEsteemIssues": "Problèmes d'estime de soi",
+          "addiction": "Dépendance",
+          "grief": "Deuil",
+          "angerManagement": "Gestion de la colère",
+          "familyIssues": "Problèmes familiaux",
+          "workSchoolProblems": "Problèmes au travail/à l'école",
+          "lifeTransitions": "Transitions de vie",
+          "other": "Autre"
+        },
         "issueDescription": "Description détaillée",
         "issueDescriptionPlaceholder": "Fournissez plus de détails sur vos préoccupations",
         "severity": "Niveau de sévérité",
@@ -2473,6 +2560,28 @@
         "subtitle": "Comment vos symptômes affectent-ils votre vie quotidienne?",
         "symptoms": "Symptômes actuels",
         "symptomsDesc": "Sélectionnez les symptômes que vous ressentez",
+        "symptomOptions": {
+          "sadness": "Tristesse",
+          "worry": "Inquiétude",
+          "persistentSadness": "Tristesse persistante",
+          "anxietyAttacks": "Crises d'anxiété",
+          "sleepProblems": "Problèmes de sommeil",
+          "lossOfInterest": "Perte d'intérêt",
+          "irritability": "Irritabilité",
+          "fatigue": "Fatigue",
+          "concentrationIssues": "Difficultés de concentration",
+          "memoryProblems": "Problèmes de mémoire",
+          "nightmares": "Cauchemars",
+          "flashbacks": "Revécu traumatique",
+          "appetiteChanges": "Changements d'appétit",
+          "socialWithdrawal": "Retrait social",
+          "panicAttacks": "Attaques de panique",
+          "moodSwings": "Sautes d'humeur",
+          "suicidalThoughts": "Pensées suicidaires",
+          "hallucinations": "Hallucinations",
+          "delusions": "Délires",
+          "other": "Autre"
+        },
         "dailyLifeImpact": "Impact sur la vie quotidienne",
         "dailyLifeImpactPlaceholder": "Décrivez comment cela affecte votre vie quotidienne",
         "sleepQuality": "Qualité du sommeil",
@@ -2492,8 +2601,39 @@
         "subtitle": "Quels sont vos objectifs de traitement?",
         "treatmentGoals": "Objectifs de traitement",
         "treatmentGoalsDesc": "Sélectionnez vos objectifs pour la thérapie",
+        "treatmentGoalOptions": {
+          "reduceAnxiety": "Réduire l'anxiété",
+          "improveMood": "Améliorer l'humeur",
+          "betterSleep": "Mieux dormir",
+          "increaseSelfEsteem": "Augmenter l'estime de soi",
+          "manageStress": "Gérer le stress",
+          "improveRelationships": "Améliorer les relations",
+          "overcomeTrauma": "Surmonter un trauma",
+          "developCopingSkills": "Développer des stratégies d'adaptation",
+          "addressAddiction": "Traiter une dépendance",
+          "weightManagement": "Gestion du poids",
+          "other": "Autre",
+          "reduceSymptoms": "Réduire les symptômes",
+          "selfUnderstanding": "Compréhension de soi",
+          "personalGrowth": "Croissance personnelle"
+        },
         "therapyApproach": "Approche thérapeutique préférée",
         "therapyApproachDesc": "Sélectionnez les approches préférées",
+        "therapyApproachOptions": {
+          "cbt": "Thérapie cognitivo-comportementale (TCC)",
+          "psychodynamicTherapy": "Thérapie psychodynamique",
+          "psychodynamic": "Psychodynamique",
+          "humanisticTherapy": "Thérapie humaniste",
+          "dbt": "Thérapie comportementale dialectique (TCD)",
+          "emdr": "EMDR",
+          "solutionFocusedTherapy": "Thérapie orientée vers les solutions",
+          "solutionFocused": "Approche orientée solutions",
+          "mindfulnessBasedTherapy": "Thérapie basée sur la pleine conscience",
+          "familySystemsTherapy": "Thérapie systémique familiale",
+          "act": "Thérapie d'acceptation et d'engagement (ACT)",
+          "groupTherapy": "Thérapie de groupe",
+          "noPreference": "Aucune préférence"
+        },
         "concernsAboutTherapy": "Préoccupations concernant la thérapie",
         "concernsAboutTherapyPlaceholder": "Des préoccupations ou questions sur la thérapie?"
       },
@@ -2537,6 +2677,11 @@
         "subtitle": "Aidez-nous à trouver le bon professionnel pour vous",
         "preferredGender": "Genre du professionnel préféré",
         "preferredGenderPlaceholder": "Sélectionnez la préférence",
+        "genderOptions": {
+          "noPreference": "Aucune préférence",
+          "male": "Homme",
+          "female": "Femme"
+        },
         "preferredAge": "Tranche d'âge préférée",
         "preferredAgePlaceholder": "Sélectionnez la tranche d'âge",
         "languagePreference": "Préférence linguistique",

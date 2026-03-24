@@ -1030,7 +1030,26 @@ export default function MemberSignupPage() {
                     "Tumeurs cérébrales",
                   ];
 
-                  const conditionsList = isChild ? childDiagnosedConditions : adultDiagnosedConditions;
+                  const conditionsList = isChild
+                    ? childDiagnosedConditions
+                    : adultDiagnosedConditions;
+
+                  const translatedConditionLabels: Record<string, string> = {
+                    TDAH: t("conditionLabels.tdah"),
+                    "Trouble du langage": t("conditionLabels.troubleLangage"),
+                    Dyslexie: t("conditionLabels.dyslexie"),
+                    "Syndrome de la Tourette": t(
+                      "conditionLabels.syndromeTourette",
+                    ),
+                    Tics: t("conditionLabels.tics"),
+                    "Trouble du spectre de l'autisme (TSA)": t(
+                      "conditionLabels.tsa",
+                    ),
+                    Douance: t("conditionLabels.douance"),
+                    "Trouble d'anxiété de séparation": t(
+                      "conditionLabels.anxieteSeparation",
+                    ),
+                  };
 
                   return conditionsList.map((condition) => (
                     <div key={condition} className="flex items-center space-x-2">
@@ -1045,7 +1064,7 @@ export default function MemberSignupPage() {
                         htmlFor={`diagnosed-${condition}`}
                         className="text-sm cursor-pointer"
                       >
-                        {condition}
+                        {translatedConditionLabels[condition] ?? condition}
                       </label>
                     </div>
                   ));
@@ -1074,28 +1093,28 @@ export default function MemberSignupPage() {
               <Label>{t("profileModal.step3.secondaryIssues")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
-                  "Stress",
-                  "Relationships",
-                  "Work/School",
-                  "Family",
-                  "Grief",
-                  "Trauma",
-                  "Self-esteem",
-                  "Life transitions",
+                  { key: "stress", value: "Stress" },
+                  { key: "relationships", value: "Relationships" },
+                  { key: "workSchool", value: "Work/School" },
+                  { key: "family", value: "Family" },
+                  { key: "grief", value: "Grief" },
+                  { key: "trauma", value: "Trauma" },
+                  { key: "selfEsteem", value: "Self-esteem" },
+                  { key: "lifeTransitions", value: "Life transitions" },
                 ].map((issue) => (
-                  <div key={issue} className="flex items-center space-x-2">
+                  <div key={issue.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`issue-${issue}`}
-                      checked={formData.secondaryIssues.includes(issue)}
+                      id={`issue-${issue.value}`}
+                      checked={formData.secondaryIssues.includes(issue.value)}
                       onCheckedChange={() =>
-                        handleArrayChange("secondaryIssues", issue)
+                        handleArrayChange("secondaryIssues", issue.value)
                       }
                     />
                     <label
-                      htmlFor={`issue-${issue}`}
+                      htmlFor={`issue-${issue.value}`}
                       className="text-sm cursor-pointer"
                     >
-                      {issue}
+                      {t(`secondaryIssueOptions.${issue.key}`)}
                     </label>
                   </div>
                 ))}
@@ -1176,30 +1195,30 @@ export default function MemberSignupPage() {
               <Label>{t("profileModal.step4.symptoms")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {[
-                  "Sadness",
-                  "Worry",
-                  "Panic attacks",
-                  "Mood swings",
-                  "Irritability",
-                  "Fatigue",
-                  "Concentration issues",
-                  "Memory problems",
-                  "Nightmares",
-                  "Flashbacks",
+                  { key: "sadness", value: "Sadness" },
+                  { key: "worry", value: "Worry" },
+                  { key: "panicAttacks", value: "Panic attacks" },
+                  { key: "moodSwings", value: "Mood swings" },
+                  { key: "irritability", value: "Irritability" },
+                  { key: "fatigue", value: "Fatigue" },
+                  { key: "concentrationIssues", value: "Concentration issues" },
+                  { key: "memoryProblems", value: "Memory problems" },
+                  { key: "nightmares", value: "Nightmares" },
+                  { key: "flashbacks", value: "Flashbacks" },
                 ].map((symptom) => (
-                  <div key={symptom} className="flex items-center space-x-2">
+                  <div key={symptom.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`symptom-${symptom}`}
-                      checked={formData.symptoms.includes(symptom)}
+                      id={`symptom-${symptom.value}`}
+                      checked={formData.symptoms.includes(symptom.value)}
                       onCheckedChange={() =>
-                        handleArrayChange("symptoms", symptom)
+                        handleArrayChange("symptoms", symptom.value)
                       }
                     />
                     <label
-                      htmlFor={`symptom-${symptom}`}
+                      htmlFor={`symptom-${symptom.value}`}
                       className="text-sm cursor-pointer"
                     >
-                      {symptom}
+                      {t(`symptomOptions.${symptom.key}`)}
                     </label>
                   </div>
                 ))}

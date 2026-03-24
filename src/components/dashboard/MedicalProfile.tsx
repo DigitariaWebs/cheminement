@@ -34,7 +34,7 @@ export default function MedicalProfile({
   isEditable = false,
 }: MedicalProfileProps) {
   const t = useTranslations("Client.profile");
-  const tMp = useTranslations("Client.profile.profileModal");
+  const tMp = useTranslations("Client.profileModal");
   const tMv = useTranslations("Client.medicalProfile");
   const [medicalProfile, setMedicalProfile] = useState<IMedicalProfile | null>(
     profile || null,
@@ -92,6 +92,158 @@ export default function MedicalProfile({
     );
   }
 
+  const secondaryIssueKeyByValue: Record<string, string> = {
+    Anxiety: "anxiety",
+    Depression: "depression",
+    Stress: "stress",
+    "Relationship Problems": "relationshipProblems",
+    Trauma: "trauma",
+    "Self-Esteem Issues": "selfEsteemIssues",
+    Addiction: "addiction",
+    Grief: "grief",
+    "Anger Management": "angerManagement",
+    "Family Issues": "familyIssues",
+    "Work/School Problems": "workSchoolProblems",
+    Other: "other",
+    Relationships: "relationshipProblems",
+    Family: "familyIssues",
+    "Work/School": "workSchoolProblems",
+    "Life transitions": "lifeTransitions",
+    "Self-esteem": "selfEsteemIssues",
+  };
+
+  const symptomKeyByValue: Record<string, string> = {
+    Sadness: "sadness",
+    Worry: "worry",
+    "Panic attacks": "panicAttacks",
+    "Mood swings": "moodSwings",
+    Irritability: "irritability",
+    Fatigue: "fatigue",
+    "Concentration issues": "concentrationIssues",
+    "Memory problems": "memoryProblems",
+    Nightmares: "nightmares",
+    Flashbacks: "flashbacks",
+    "Persistent Sadness": "persistentSadness",
+    "Anxiety Attacks": "anxietyAttacks",
+    "Sleep Problems": "sleepProblems",
+    "Loss of Interest": "lossOfInterest",
+    "Concentration Issues": "concentrationIssues",
+    "Appetite Changes": "appetiteChanges",
+    "Social Withdrawal": "socialWithdrawal",
+    "Panic Attacks": "panicAttacks",
+    "Suicidal Thoughts": "suicidalThoughts",
+    Hallucinations: "hallucinations",
+    Delusions: "delusions",
+    Other: "other",
+  };
+
+  const normalizeCondition = (value: string): string =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[’']/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+
+  const diagnosedConditionKeyByValue: Record<string, string> = {
+    "tdah": "tdah",
+    "trouble du langage": "troubleLangage",
+    "dyslexie": "dyslexie",
+    "syndrome de la tourette": "syndromeTourette",
+    "syndrome de la tourette sgt": "syndromeTourette",
+    "tics": "tics",
+    "trouble du spectre de lautisme tsa": "tsa",
+    "douance": "douance",
+    "trouble danxiete de separation": "anxieteSeparation",
+    "trouble de lanxiete de separation": "anxieteSeparation",
+  };
+
+  const translateSecondaryIssue = (value: string): string => {
+    const key = secondaryIssueKeyByValue[value];
+    return key ? tMp(`step3.secondaryIssueOptions.${key}`) : value;
+  };
+
+  const translateSymptom = (value: string): string => {
+    const key = symptomKeyByValue[value];
+    return key ? tMp(`step4.symptomOptions.${key}`) : value;
+  };
+
+  const translateDiagnosedCondition = (value: string): string => {
+    const normalized = normalizeCondition(value);
+    let key = diagnosedConditionKeyByValue[normalized];
+
+    // Fallback matching for noisy persisted values
+    if (!key) {
+      if (normalized.includes("tdah")) key = "tdah";
+      else if (normalized.includes("trouble du langage")) key = "troubleLangage";
+      else if (normalized.includes("dyslexie")) key = "dyslexie";
+      else if (
+        normalized.includes("syndrome de la tourette") ||
+        normalized.includes("tourette")
+      )
+        key = "syndromeTourette";
+      else if (normalized === "tics" || normalized.includes(" tics ")) key = "tics";
+      else if (
+        normalized.includes("spectre de lautisme") ||
+        normalized.includes("autisme tsa") ||
+        normalized.includes("tsa")
+      )
+        key = "tsa";
+      else if (normalized.includes("douance")) key = "douance";
+      else if (
+        normalized.includes("anxiete de separation") ||
+        normalized.includes("anxiete separation")
+      )
+        key = "anxieteSeparation";
+    }
+
+    return key ? tMp(`step2.conditionLabels.${key}`) : value;
+  };
+
+  const treatmentGoalKeyByValue: Record<string, string> = {
+    "Reduce Anxiety": "reduceAnxiety",
+    "Improve Mood": "improveMood",
+    "Better Sleep": "betterSleep",
+    "Increase Self-Esteem": "increaseSelfEsteem",
+    "Manage Stress": "manageStress",
+    "Improve Relationships": "improveRelationships",
+    "Overcome Trauma": "overcomeTrauma",
+    "Develop Coping Skills": "developCopingSkills",
+    "Address Addiction": "addressAddiction",
+    "Weight Management": "weightManagement",
+    Other: "other",
+    "Reduce symptoms": "reduceSymptoms",
+    "Self-understanding": "selfUnderstanding",
+    "Personal growth": "personalGrowth",
+  };
+
+  const translateTreatmentGoal = (value: string): string => {
+    const key = treatmentGoalKeyByValue[value];
+    return key ? tMp(`step5.treatmentGoalOptions.${key}`) : value;
+  };
+
+  const therapyApproachKeyByValue: Record<string, string> = {
+    "Cognitive Behavioral Therapy (CBT)": "cbt",
+    "Psychodynamic Therapy": "psychodynamicTherapy",
+    Psychodynamic: "psychodynamic",
+    "Humanistic Therapy": "humanisticTherapy",
+    "Dialectical Behavior Therapy (DBT)": "dbt",
+    EMDR: "emdr",
+    "Solution-Focused Therapy": "solutionFocusedTherapy",
+    "Solution-focused": "solutionFocused",
+    "Mindfulness-Based Therapy": "mindfulnessBasedTherapy",
+    "Family Systems Therapy": "familySystemsTherapy",
+    "Acceptance and Commitment Therapy (ACT)": "act",
+    "Group therapy": "groupTherapy",
+    "No Preference": "noPreference",
+  };
+
+  const translateTherapyApproach = (value: string): string => {
+    const key = therapyApproachKeyByValue[value];
+    return key ? tMp(`step5.therapyApproachOptions.${key}`) : value;
+  };
+
   return (
     <>
       {/* Health Background */}
@@ -124,7 +276,7 @@ export default function MedicalProfile({
                     key={index}
                     className="px-3 py-1.5 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 rounded-full text-sm font-light"
                   >
-                    {condition}
+                    {translateDiagnosedCondition(condition)}
                   </span>
                 ))}
               </div>
@@ -302,7 +454,7 @@ export default function MedicalProfile({
                     key={index}
                     className="px-3 py-1.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-300 rounded-full text-sm font-light"
                   >
-                    {issue}
+                    {translateSecondaryIssue(issue)}
                   </span>
                 ))}
               </div>
@@ -378,7 +530,7 @@ export default function MedicalProfile({
                     key={index}
                     className="px-3 py-1.5 bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-300 rounded-full text-sm font-light"
                   >
-                    {symptom}
+                    {translateSymptom(symptom)}
                   </span>
                 ))}
               </div>
@@ -447,7 +599,7 @@ export default function MedicalProfile({
                     key={index}
                     className="px-3 py-1.5 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300 rounded-full text-sm font-light"
                   >
-                    {goal}
+                    {translateTreatmentGoal(goal)}
                   </span>
                 ))}
               </div>
@@ -468,7 +620,7 @@ export default function MedicalProfile({
                     key={index}
                     className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-light"
                   >
-                    {approach}
+                    {translateTherapyApproach(approach)}
                   </span>
                 ))}
               </div>
@@ -728,6 +880,104 @@ function MedicalProfileModal({
   profile,
   setMedicalProfile,
 }: MedicalProfileModalProps) {
+  const tMp = useTranslations("Client.profileModal");
+  const tProfile = useTranslations("Client.profile");
+
+  const normalizeCondition = (value: string): string =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[’']/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+
+  const diagnosedConditionKeyByValue: Record<string, string> = {
+    "tdah": "tdah",
+    "trouble du langage": "troubleLangage",
+    "dyslexie": "dyslexie",
+    "syndrome de la tourette": "syndromeTourette",
+    "syndrome de la tourette sgt": "syndromeTourette",
+    "tics": "tics",
+    "trouble du spectre de lautisme tsa": "tsa",
+    "douance": "douance",
+    "trouble danxiete de separation": "anxieteSeparation",
+    "trouble de lanxiete de separation": "anxieteSeparation",
+  };
+
+  const translateDiagnosedCondition = (value: string): string => {
+    const normalized = normalizeCondition(value);
+    let key = diagnosedConditionKeyByValue[normalized];
+
+    // Fallback matching for noisy persisted values
+    if (!key) {
+      if (normalized.includes("tdah")) key = "tdah";
+      else if (normalized.includes("trouble du langage")) key = "troubleLangage";
+      else if (normalized.includes("dyslexie")) key = "dyslexie";
+      else if (
+        normalized.includes("syndrome de la tourette") ||
+        normalized.includes("tourette")
+      )
+        key = "syndromeTourette";
+      else if (normalized === "tics" || normalized.includes(" tics ")) key = "tics";
+      else if (
+        normalized.includes("spectre de lautisme") ||
+        normalized.includes("autisme tsa") ||
+        normalized.includes("tsa")
+      )
+        key = "tsa";
+      else if (normalized.includes("douance")) key = "douance";
+      else if (
+        normalized.includes("anxiete de separation") ||
+        normalized.includes("anxiete separation")
+      )
+        key = "anxieteSeparation";
+    }
+
+    return key ? tMp(`step2.conditionLabels.${key}`) : value;
+  };
+
+  const treatmentGoalsOptions = [
+    { key: "reduceAnxiety", value: "Reduce Anxiety" },
+    { key: "improveMood", value: "Improve Mood" },
+    { key: "betterSleep", value: "Better Sleep" },
+    { key: "increaseSelfEsteem", value: "Increase Self-Esteem" },
+    { key: "manageStress", value: "Manage Stress" },
+    { key: "improveRelationships", value: "Improve Relationships" },
+    { key: "overcomeTrauma", value: "Overcome Trauma" },
+    { key: "developCopingSkills", value: "Develop Coping Skills" },
+    { key: "addressAddiction", value: "Address Addiction" },
+    { key: "weightManagement", value: "Weight Management" },
+    { key: "other", value: "Other" },
+  ];
+
+  const therapyApproachOptions = [
+    { key: "cbt", value: "Cognitive Behavioral Therapy (CBT)" },
+    { key: "psychodynamicTherapy", value: "Psychodynamic Therapy" },
+    { key: "humanisticTherapy", value: "Humanistic Therapy" },
+    { key: "dbt", value: "Dialectical Behavior Therapy (DBT)" },
+    { key: "emdr", value: "EMDR" },
+    { key: "solutionFocusedTherapy", value: "Solution-Focused Therapy" },
+    { key: "mindfulnessBasedTherapy", value: "Mindfulness-Based Therapy" },
+    { key: "familySystemsTherapy", value: "Family Systems Therapy" },
+    { key: "act", value: "Acceptance and Commitment Therapy (ACT)" },
+    { key: "noPreference", value: "No Preference" },
+  ];
+
+  const medicalConditionOptions = [
+    { key: "diabetes", value: "Diabetes" },
+    { key: "hypertension", value: "Hypertension" },
+    { key: "asthma", value: "Asthma" },
+    { key: "heartDisease", value: "Heart Disease" },
+    { key: "cancer", value: "Cancer" },
+    { key: "thyroidDisorders", value: "Thyroid Disorders" },
+    { key: "arthritis", value: "Arthritis" },
+    { key: "chronicPain", value: "Chronic Pain" },
+    { key: "migraines", value: "Migraines" },
+    { key: "epilepsy", value: "Epilepsy" },
+    { key: "other", value: "Other" },
+  ];
+
   // State for each tab's form data, initialized with profile data
   const [healthBackgroundData, setHealthBackgroundData] = useState({
     concernedPerson: profile?.concernedPerson || "",
@@ -820,10 +1070,10 @@ function MedicalProfileModal({
         <div className="sticky top-0 z-10 bg-background border-b border-border/40 px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-serif font-light text-foreground">
-              Edit Medical Profile
+              {tMp("title")}
             </h2>
             <p className="text-sm text-muted-foreground font-light mt-1">
-              Update your information across different sections
+              {tMp("subtitle")}
             </p>
           </div>
           <button
@@ -838,26 +1088,28 @@ function MedicalProfileModal({
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
               <TabsTrigger value="health-background">
-                Health Background
+                {tMp("steps.healthBackground")}
               </TabsTrigger>
               <TabsTrigger value="mental-health-history">
-                Mental Health History
+                {tMp("steps.mentalHealthHistory")}
               </TabsTrigger>
               <TabsTrigger value="current-concerns">
-                Current Concerns
+                {tMp("steps.currentConcerns")}
               </TabsTrigger>
               <TabsTrigger value="symptoms-impact">
-                Symptoms & Impact
+                {tMp("steps.symptomsImpact")}
               </TabsTrigger>
               <TabsTrigger value="goals-preferences">
-                Goals & Preferences
+                {tMp("steps.goalsPreferences")}
               </TabsTrigger>
               <TabsTrigger value="appointment-preferences">
-                Appointment Preferences
+                {tMp("steps.appointmentPreferences")}
               </TabsTrigger>
-              <TabsTrigger value="emergency-info">Emergency Info</TabsTrigger>
+              <TabsTrigger value="emergency-info">
+                {tMp("steps.emergencyInfo")}
+              </TabsTrigger>
               <TabsTrigger value="matching-preferences">
-                Matching Preferences
+                {tMp("steps.matchingPreferences")}
               </TabsTrigger>
             </TabsList>
 
@@ -869,7 +1121,7 @@ function MedicalProfileModal({
                     htmlFor="concernedPerson"
                     className="font-light mb-3 text-base"
                   >
-                    Concerned Person
+                    {tMp("step1.concernedPerson")}
                   </Label>
                   <Input
                     id="concernedPerson"
@@ -881,58 +1133,46 @@ function MedicalProfileModal({
                         concernedPerson: e.target.value,
                       }))
                     }
-                    placeholder="Who is concerned about your health?"
+                    placeholder={tMp("step1.concernedPersonPlaceholder")}
                   />
                 </div>
 
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Medical Conditions
+                    {tMp("step1.medicalConditions")}
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
-                    Select any medical conditions you have been diagnosed with
+                    {tMp("step1.medicalConditionsDesc")}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {[
-                      "Diabetes",
-                      "Hypertension",
-                      "Asthma",
-                      "Heart Disease",
-                      "Cancer",
-                      "Thyroid Disorders",
-                      "Arthritis",
-                      "Chronic Pain",
-                      "Migraines",
-                      "Epilepsy",
-                      "Other",
-                    ].map((item) => (
+                    {medicalConditionOptions.map((item) => (
                       <button
-                        key={item}
+                        key={item.value}
                         type="button"
                         onClick={() => {
                           const current =
                             healthBackgroundData.medicalConditions;
-                          if (current.includes(item)) {
+                          if (current.includes(item.value)) {
                             setHealthBackgroundData((prev) => ({
                               ...prev,
                               medicalConditions: current.filter(
-                                (v) => v !== item,
+                                (v) => v !== item.value,
                               ),
                             }));
                           } else {
                             setHealthBackgroundData((prev) => ({
                               ...prev,
-                              medicalConditions: [...current, item],
+                              medicalConditions: [...current, item.value],
                             }));
                           }
                         }}
                         className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                          healthBackgroundData.medicalConditions.includes(item)
+                          healthBackgroundData.medicalConditions.includes(item.value)
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted/50 text-foreground hover:bg-muted"
                         }`}
                       >
-                        {item}
+                        {tMp(`step1.medicalConditionOptions.${item.key}`)}
                       </button>
                     ))}
                   </div>
@@ -943,7 +1183,7 @@ function MedicalProfileModal({
                     htmlFor="currentMedications"
                     className="font-light mb-3 text-base"
                   >
-                    Current Medications
+                    {tMp("step1.currentMedications")}
                   </Label>
                   <Input
                     id="currentMedications"
@@ -957,7 +1197,7 @@ function MedicalProfileModal({
                           .filter(Boolean),
                       }))
                     }
-                    placeholder="List your current medications"
+                    placeholder={tMp("step1.currentMedicationsPlaceholder")}
                   />
                 </div>
 
@@ -966,7 +1206,7 @@ function MedicalProfileModal({
                     htmlFor="allergies"
                     className="font-light mb-3 text-base"
                   >
-                    Allergies
+                    {tMp("step1.allergies")}
                   </Label>
                   <Input
                     id="allergies"
@@ -978,7 +1218,7 @@ function MedicalProfileModal({
                         allergies: e.target.value.split(", ").filter(Boolean),
                       }))
                     }
-                    placeholder="List any allergies"
+                    placeholder={tMp("step1.allergiesPlaceholder")}
                   />
                 </div>
 
@@ -987,7 +1227,7 @@ function MedicalProfileModal({
                     htmlFor="substanceUse"
                     className="font-light mb-3 text-base"
                   >
-                    Substance Use
+                    {tMp("step1.substanceUse")}
                   </Label>
                   <Input
                     id="substanceUse"
@@ -999,7 +1239,7 @@ function MedicalProfileModal({
                         substanceUse: e.target.value,
                       }))
                     }
-                    placeholder="Describe any substance use"
+                    placeholder={tMp("step1.substanceUsePlaceholder")}
                   />
                 </div>
               </div>
@@ -1011,7 +1251,7 @@ function MedicalProfileModal({
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Previous Therapy Experience
+                      {tMp("step2.previousTherapy")}
                     </Label>
                     <div className="flex gap-4">
                       <label className="flex items-center gap-2">
@@ -1028,7 +1268,7 @@ function MedicalProfileModal({
                             }))
                           }
                         />
-                        <span className="text-sm font-light">Yes</span>
+                        <span className="text-sm font-light">{tProfile("yes")}</span>
                       </label>
                       <label className="flex items-center gap-2">
                         <input
@@ -1044,7 +1284,7 @@ function MedicalProfileModal({
                             }))
                           }
                         />
-                        <span className="text-sm font-light">No</span>
+                        <span className="text-sm font-light">{tProfile("no")}</span>
                       </label>
                     </div>
                   </div>
@@ -1069,7 +1309,7 @@ function MedicalProfileModal({
                             }))
                           }
                         />
-                        <span className="text-sm font-light">Yes</span>
+                        <span className="text-sm font-light">{tProfile("yes")}</span>
                       </label>
                       <label className="flex items-center gap-2">
                         <input
@@ -1086,7 +1326,7 @@ function MedicalProfileModal({
                             }))
                           }
                         />
-                        <span className="text-sm font-light">No</span>
+                        <span className="text-sm font-light">{tProfile("no")}</span>
                       </label>
                     </div>
                   </div>
@@ -1098,7 +1338,7 @@ function MedicalProfileModal({
                       htmlFor="previousTherapyDetails"
                       className="font-light mb-3 text-base"
                     >
-                      Previous Therapy Details
+                      {tMp("step2.previousTherapyDetails")}
                     </Label>
                     <Textarea
                       id="previousTherapyDetails"
@@ -1111,7 +1351,7 @@ function MedicalProfileModal({
                         }))
                       }
                       rows={4}
-                      placeholder="Describe your previous therapy experience"
+                      placeholder={tMp("step2.previousTherapyDetailsPlaceholder")}
                     />
                   </div>
                 )}
@@ -1121,7 +1361,7 @@ function MedicalProfileModal({
                     htmlFor="currentTreatment"
                     className="font-light mb-3 text-base"
                   >
-                    Current Treatment
+                    {tMp("step2.currentTreatment")}
                   </Label>
                   <Input
                     id="currentTreatment"
@@ -1133,16 +1373,16 @@ function MedicalProfileModal({
                         currentTreatment: e.target.value,
                       }))
                     }
-                    placeholder="Describe any current treatment"
+                    placeholder={tMp("step2.currentTreatmentPlaceholder")}
                   />
                 </div>
 
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Diagnosed Conditions
+                    {tMp("step2.diagnosedConditions")}
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
-                    Select any diagnosed mental health conditions
+                    {tMp("step2.diagnosedConditionsDesc")}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
                     {(() => {
@@ -1187,7 +1427,7 @@ function MedicalProfileModal({
                               : "bg-muted/50 text-foreground hover:bg-muted"
                           }`}
                         >
-                          {item}
+                          {translateDiagnosedCondition(item)}
                         </button>
                       ));
                     })()}
@@ -1203,7 +1443,8 @@ function MedicalProfileModal({
                     htmlFor="primaryIssue"
                     className="font-light mb-3 text-base"
                   >
-                    Primary Issue <span className="text-primary ml-1">*</span>
+                    {tMp("step3.primaryIssue")}{" "}
+                    <span className="text-primary ml-1">*</span>
                   </Label>
                   <Input
                     id="primaryIssue"
@@ -1215,58 +1456,58 @@ function MedicalProfileModal({
                         primaryIssue: e.target.value,
                       }))
                     }
-                    placeholder="What is your main concern?"
+                    placeholder={tMp("step3.primaryIssuePlaceholder")}
                   />
                 </div>
 
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Secondary Issues
+                    {tMp("step3.secondaryIssues")}
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
-                    Select any additional issues yo&apos;re experiencing
+                    {tMp("step3.secondaryIssuesDesc")}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {[
-                      "Anxiety",
-                      "Depression",
-                      "Stress",
-                      "Relationship Problems",
-                      "Trauma",
-                      "Self-Esteem Issues",
-                      "Addiction",
-                      "Grief",
-                      "Anger Management",
-                      "Family Issues",
-                      "Work/School Problems",
-                      "Other",
+                      { key: "anxiety", value: "Anxiety" },
+                      { key: "depression", value: "Depression" },
+                      { key: "stress", value: "Stress" },
+                      { key: "relationshipProblems", value: "Relationship Problems" },
+                      { key: "trauma", value: "Trauma" },
+                      { key: "selfEsteemIssues", value: "Self-Esteem Issues" },
+                      { key: "addiction", value: "Addiction" },
+                      { key: "grief", value: "Grief" },
+                      { key: "angerManagement", value: "Anger Management" },
+                      { key: "familyIssues", value: "Family Issues" },
+                      { key: "workSchoolProblems", value: "Work/School Problems" },
+                      { key: "other", value: "Other" },
                     ].map((item) => (
                       <button
-                        key={item}
+                        key={item.value}
                         type="button"
                         onClick={() => {
                           const current = currentConcernsData.secondaryIssues;
-                          if (current.includes(item)) {
+                          if (current.includes(item.value)) {
                             setCurrentConcernsData((prev) => ({
                               ...prev,
                               secondaryIssues: current.filter(
-                                (v) => v !== item,
+                                (v) => v !== item.value,
                               ),
                             }));
                           } else {
                             setCurrentConcernsData((prev) => ({
                               ...prev,
-                              secondaryIssues: [...current, item],
+                              secondaryIssues: [...current, item.value],
                             }));
                           }
                         }}
                         className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                          currentConcernsData.secondaryIssues.includes(item)
+                          currentConcernsData.secondaryIssues.includes(item.value)
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted/50 text-foreground hover:bg-muted"
                         }`}
                       >
-                        {item}
+                        {tMp(`step3.secondaryIssueOptions.${item.key}`)}
                       </button>
                     ))}
                   </div>
@@ -1277,7 +1518,7 @@ function MedicalProfileModal({
                     htmlFor="issueDescription"
                     className="font-light mb-3 text-base"
                   >
-                    Detailed Description
+                    {tMp("step3.issueDescription")}
                   </Label>
                   <Textarea
                     id="issueDescription"
@@ -1290,14 +1531,14 @@ function MedicalProfileModal({
                       }))
                     }
                     rows={4}
-                    placeholder="Describe your concerns in detail"
+                    placeholder={tMp("step3.issueDescriptionPlaceholder")}
                   />
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Severity
+                      {tMp("step3.severity")}
                     </Label>
                     <Select
                       value={currentConcernsData.severity}
@@ -1309,19 +1550,19 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select severity" />
+                        <SelectValue placeholder={tMp("step3.severityPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="mild">Mild</SelectItem>
-                        <SelectItem value="moderate">Moderate</SelectItem>
-                        <SelectItem value="severe">Severe</SelectItem>
+                        <SelectItem value="mild">{tProfile("issueDetails.mild")}</SelectItem>
+                        <SelectItem value="moderate">{tProfile("issueDetails.moderate")}</SelectItem>
+                        <SelectItem value="severe">{tProfile("issueDetails.severe")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Duration
+                      {tMp("step3.duration")}
                     </Label>
                     <Select
                       value={currentConcernsData.duration}
@@ -1333,16 +1574,16 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select duration" />
+                        <SelectValue placeholder={tMp("step3.durationPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="lessThanMonth">
-                          Less than a month
+                          {tProfile("issueDetails.lessThanMonth")}
                         </SelectItem>
-                        <SelectItem value="oneToThree">1-3 months</SelectItem>
-                        <SelectItem value="threeToSix">3-6 months</SelectItem>
+                        <SelectItem value="oneToThree">{tProfile("issueDetails.oneToThree")}</SelectItem>
+                        <SelectItem value="threeToSix">{tProfile("issueDetails.threeToSix")}</SelectItem>
                         <SelectItem value="moreThanSix">
-                          More than 6 months
+                          {tProfile("issueDetails.moreThanSix")}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -1353,7 +1594,7 @@ function MedicalProfileModal({
                       htmlFor="triggeringSituation"
                       className="font-light mb-3 text-base"
                     >
-                      Triggering Situation
+                      {tMp("step3.triggeringSituation")}
                     </Label>
                     <Input
                       id="triggeringSituation"
@@ -1365,7 +1606,7 @@ function MedicalProfileModal({
                           triggeringSituation: e.target.value,
                         }))
                       }
-                      placeholder="What triggered this?"
+                    placeholder={tMp("step3.triggeringSituationPlaceholder")}
                     />
                   </div>
                 </div>
@@ -1376,53 +1617,53 @@ function MedicalProfileModal({
               <div className="space-y-6">
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Current Symptoms
+                    {tMp("step4.symptoms")}
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
-                    Select symptoms you&apos;re experiencing
+                    {tMp("step4.symptomsDesc")}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {[
-                      "Persistent Sadness",
-                      "Anxiety Attacks",
-                      "Sleep Problems",
-                      "Loss of Interest",
-                      "Irritability",
-                      "Fatigue",
-                      "Concentration Issues",
-                      "Appetite Changes",
-                      "Social Withdrawal",
-                      "Panic Attacks",
-                      "Mood Swings",
-                      "Suicidal Thoughts",
-                      "Hallucinations",
-                      "Delusions",
-                      "Other",
+                      { key: "persistentSadness", value: "Persistent Sadness" },
+                      { key: "anxietyAttacks", value: "Anxiety Attacks" },
+                      { key: "sleepProblems", value: "Sleep Problems" },
+                      { key: "lossOfInterest", value: "Loss of Interest" },
+                      { key: "irritability", value: "Irritability" },
+                      { key: "fatigue", value: "Fatigue" },
+                      { key: "concentrationIssues", value: "Concentration Issues" },
+                      { key: "appetiteChanges", value: "Appetite Changes" },
+                      { key: "socialWithdrawal", value: "Social Withdrawal" },
+                      { key: "panicAttacks", value: "Panic Attacks" },
+                      { key: "moodSwings", value: "Mood Swings" },
+                      { key: "suicidalThoughts", value: "Suicidal Thoughts" },
+                      { key: "hallucinations", value: "Hallucinations" },
+                      { key: "delusions", value: "Delusions" },
+                      { key: "other", value: "Other" },
                     ].map((item) => (
                       <button
-                        key={item}
+                        key={item.value}
                         type="button"
                         onClick={() => {
                           const current = symptomsImpactData.symptoms;
-                          if (current.includes(item)) {
+                          if (current.includes(item.value)) {
                             setSymptomsImpactData((prev) => ({
                               ...prev,
-                              symptoms: current.filter((v) => v !== item),
+                              symptoms: current.filter((v) => v !== item.value),
                             }));
                           } else {
                             setSymptomsImpactData((prev) => ({
                               ...prev,
-                              symptoms: [...current, item],
+                              symptoms: [...current, item.value],
                             }));
                           }
                         }}
                         className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                          symptomsImpactData.symptoms.includes(item)
+                          symptomsImpactData.symptoms.includes(item.value)
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted/50 text-foreground hover:bg-muted"
                         }`}
                       >
-                        {item}
+                        {tMp(`step4.symptomOptions.${item.key}`)}
                       </button>
                     ))}
                   </div>
@@ -1433,7 +1674,7 @@ function MedicalProfileModal({
                     htmlFor="dailyLifeImpact"
                     className="font-light mb-3 text-base"
                   >
-                    Impact on Daily Life
+                    {tMp("step4.dailyLifeImpact")}
                   </Label>
                   <Textarea
                     id="dailyLifeImpact"
@@ -1446,14 +1687,14 @@ function MedicalProfileModal({
                       }))
                     }
                     rows={4}
-                    placeholder="Describe how these symptoms affect your daily life"
+                    placeholder={tMp("step4.dailyLifeImpactPlaceholder")}
                   />
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Sleep Quality
+                      {tMp("step4.sleepQuality")}
                     </Label>
                     <Select
                       value={symptomsImpactData.sleepQuality}
@@ -1465,13 +1706,13 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select sleep quality" />
+                        <SelectValue placeholder={tMp("step4.sleepQualityPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="poor">Poor</SelectItem>
-                        <SelectItem value="insomnia">Insomnia</SelectItem>
-                        <SelectItem value="excessive">Excessive</SelectItem>
+                        <SelectItem value="normal">{tMp("step4.sleepQualityOptions.normal")}</SelectItem>
+                        <SelectItem value="poor">{tMp("step4.sleepQualityOptions.poor")}</SelectItem>
+                        <SelectItem value="insomnia">{tMp("step4.sleepQualityOptions.insomnia")}</SelectItem>
+                        <SelectItem value="excessive">{tMp("step4.sleepQualityOptions.excessive")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1481,7 +1722,7 @@ function MedicalProfileModal({
                       htmlFor="appetiteChanges"
                       className="font-light mb-3 text-base"
                     >
-                      Appetite Changes
+                      {tMp("step4.appetiteChanges")}
                     </Label>
                     <Input
                       id="appetiteChanges"
@@ -1493,7 +1734,7 @@ function MedicalProfileModal({
                           appetiteChanges: e.target.value,
                         }))
                       }
-                      placeholder="Describe any changes in appetite"
+                    placeholder={tMp("step4.appetiteChangesPlaceholder")}
                     />
                   </div>
                 </div>
@@ -1504,49 +1745,38 @@ function MedicalProfileModal({
               <div className="space-y-6">
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Treatment Goals <span className="text-primary ml-1">*</span>
+                    {tMp("step5.treatmentGoals")}{" "}
+                    <span className="text-primary ml-1">*</span>
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
-                    Select your main goals for therapy
+                    {tMp("step5.treatmentGoalsDesc")}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {[
-                      "Reduce Anxiety",
-                      "Improve Mood",
-                      "Better Sleep",
-                      "Increase Self-Esteem",
-                      "Manage Stress",
-                      "Improve Relationships",
-                      "Overcome Trauma",
-                      "Develop Coping Skills",
-                      "Address Addiction",
-                      "Weight Management",
-                      "Other",
-                    ].map((item) => (
+                    {treatmentGoalsOptions.map((item) => (
                       <button
-                        key={item}
+                        key={item.value}
                         type="button"
                         onClick={() => {
                           const current = goalsPreferencesData.treatmentGoals;
-                          if (current.includes(item)) {
+                          if (current.includes(item.value)) {
                             setGoalsPreferencesData((prev) => ({
                               ...prev,
-                              treatmentGoals: current.filter((v) => v !== item),
+                              treatmentGoals: current.filter((v) => v !== item.value),
                             }));
                           } else {
                             setGoalsPreferencesData((prev) => ({
                               ...prev,
-                              treatmentGoals: [...current, item],
+                              treatmentGoals: [...current, item.value],
                             }));
                           }
                         }}
                         className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                          goalsPreferencesData.treatmentGoals.includes(item)
+                          goalsPreferencesData.treatmentGoals.includes(item.value)
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted/50 text-foreground hover:bg-muted"
                         }`}
                       >
-                        {item}
+                        {tMp(`step5.treatmentGoalOptions.${item.key}`)}
                       </button>
                     ))}
                   </div>
@@ -1554,50 +1784,39 @@ function MedicalProfileModal({
 
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Preferred Therapy Approach
+                    {tMp("step5.therapyApproach")}
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
                     Select preferred therapeutic approaches
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[
-                      "Cognitive Behavioral Therapy (CBT)",
-                      "Psychodynamic Therapy",
-                      "Humanistic Therapy",
-                      "Dialectical Behavior Therapy (DBT)",
-                      "EMDR",
-                      "Solution-Focused Therapy",
-                      "Mindfulness-Based Therapy",
-                      "Family Systems Therapy",
-                      "Acceptance and Commitment Therapy (ACT)",
-                      "No Preference",
-                    ].map((item) => (
+                    {therapyApproachOptions.map((item) => (
                       <button
-                        key={item}
+                        key={item.value}
                         type="button"
                         onClick={() => {
                           const current = goalsPreferencesData.therapyApproach;
-                          if (current.includes(item)) {
+                          if (current.includes(item.value)) {
                             setGoalsPreferencesData((prev) => ({
                               ...prev,
                               therapyApproach: current.filter(
-                                (v) => v !== item,
+                                (v) => v !== item.value,
                               ),
                             }));
                           } else {
                             setGoalsPreferencesData((prev) => ({
                               ...prev,
-                              therapyApproach: [...current, item],
+                              therapyApproach: [...current, item.value],
                             }));
                           }
                         }}
                         className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                          goalsPreferencesData.therapyApproach.includes(item)
+                          goalsPreferencesData.therapyApproach.includes(item.value)
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted/50 text-foreground hover:bg-muted"
                         }`}
                       >
-                        {item}
+                        {tMp(`step5.therapyApproachOptions.${item.key}`)}
                       </button>
                     ))}
                   </div>
@@ -1621,7 +1840,7 @@ function MedicalProfileModal({
                       }))
                     }
                     rows={4}
-                    placeholder="Any concerns or questions about therapy?"
+                    placeholder={tMp("step5.concernsAboutTherapyPlaceholder")}
                   />
                 </div>
               </div>
@@ -1688,12 +1907,12 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select modality" />
+                        <SelectValue placeholder={tMp("step6.modalityPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="inPerson">In-Person</SelectItem>
-                        <SelectItem value="both">Both</SelectItem>
+                        <SelectItem value="online">{tProfile("preferences.online")}</SelectItem>
+                        <SelectItem value="inPerson">{tProfile("preferences.inPerson")}</SelectItem>
+                        <SelectItem value="both">{tProfile("preferences.both")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1712,12 +1931,12 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select frequency" />
+                        <SelectValue placeholder={tMp("step6.sessionFrequencyPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                        <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="weekly">{tMp("step6.sessionFrequencyOptions.weekly")}</SelectItem>
+                        <SelectItem value="biweekly">{tMp("step6.sessionFrequencyOptions.biweekly")}</SelectItem>
+                        <SelectItem value="monthly">{tMp("step6.sessionFrequencyOptions.monthly")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1739,7 +1958,7 @@ function MedicalProfileModal({
                           location: e.target.value,
                         }))
                       }
-                      placeholder="Preferred location for in-person sessions"
+                      placeholder={tMp("step6.locationPlaceholder")}
                     />
                   </div>
                 </div>
@@ -1759,7 +1978,7 @@ function MedicalProfileModal({
                       }))
                     }
                     rows={4}
-                    placeholder="Any additional preferences or notes"
+                    placeholder={tMp("step6.notesPlaceholder")}
                   />
                 </div>
               </div>
@@ -1773,7 +1992,7 @@ function MedicalProfileModal({
                       htmlFor="emergencyContactName"
                       className="font-light mb-3 text-base"
                     >
-                      Emergency Contact Name{" "}
+                      {tMp("step7.emergencyContactName")}{" "}
                       <span className="text-primary ml-1">*</span>
                     </Label>
                     <Input
@@ -1786,7 +2005,7 @@ function MedicalProfileModal({
                           emergencyContactName: e.target.value,
                         }))
                       }
-                      placeholder="Full name of emergency contact"
+                      placeholder={tMp("step7.emergencyContactNamePlaceholder")}
                     />
                   </div>
 
@@ -1795,7 +2014,7 @@ function MedicalProfileModal({
                       htmlFor="emergencyContactPhone"
                       className="font-light mb-3 text-base"
                     >
-                      Emergency Contact Phone{" "}
+                      {tMp("step7.emergencyContactPhone")}{" "}
                       <span className="text-primary ml-1">*</span>
                     </Label>
                     <Input
@@ -1808,7 +2027,7 @@ function MedicalProfileModal({
                           emergencyContactPhone: e.target.value,
                         }))
                       }
-                      placeholder="Phone number"
+                      placeholder={tMp("step7.emergencyContactPhonePlaceholder")}
                     />
                   </div>
 
@@ -1817,7 +2036,7 @@ function MedicalProfileModal({
                       htmlFor="emergencyContactRelation"
                       className="font-light mb-3 text-base"
                     >
-                      Relationship
+                      {tMp("step7.emergencyContactRelation")}
                     </Label>
                     <Input
                       id="emergencyContactRelation"
@@ -1829,7 +2048,7 @@ function MedicalProfileModal({
                           emergencyContactRelation: e.target.value,
                         }))
                       }
-                      placeholder="e.g., Parent, Spouse, Friend"
+                    placeholder={tMp("step7.emergencyContactRelationPlaceholder")}
                     />
                   </div>
                 </div>
@@ -1839,7 +2058,7 @@ function MedicalProfileModal({
                     htmlFor="crisisPlan"
                     className="font-light mb-3 text-base"
                   >
-                    Crisis Plan
+                    {tMp("step7.crisisPlan")}
                   </Label>
                   <Textarea
                     id="crisisPlan"
@@ -1852,7 +2071,7 @@ function MedicalProfileModal({
                       }))
                     }
                     rows={4}
-                    placeholder="Describe your crisis plan or coping strategies"
+                    placeholder={tMp("step7.crisisPlanPlaceholder")}
                   />
                 </div>
 
@@ -1894,14 +2113,18 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select gender preference" />
+                        <SelectValue placeholder={tMp("step8.preferredGenderPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="noPreference">
-                          No preference
+                          {tMp("step8.genderOptions.noPreference")}
                         </SelectItem>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="male">
+                          {tMp("step8.genderOptions.male")}
+                        </SelectItem>
+                        <SelectItem value="female">
+                          {tMp("step8.genderOptions.female")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1920,15 +2143,15 @@ function MedicalProfileModal({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select age preference" />
+                        <SelectValue placeholder={tMp("step8.preferredAgePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="any">Any Age</SelectItem>
-                        <SelectItem value="younger">Younger (20-35)</SelectItem>
+                        <SelectItem value="any">{tProfile("matching.any")}</SelectItem>
+                        <SelectItem value="younger">{tProfile("matching.younger")}</SelectItem>
                         <SelectItem value="middle">
                           Middle-aged (36-55)
                         </SelectItem>
-                        <SelectItem value="older">Older (56+)</SelectItem>
+                        <SelectItem value="older">{tProfile("matching.older")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1939,7 +2162,7 @@ function MedicalProfileModal({
                     htmlFor="languagePreference"
                     className="font-light mb-3 text-base"
                   >
-                    Language Preference
+                    {tMp("step8.languagePreference")}
                   </Label>
                   <Input
                     id="languagePreference"
@@ -1951,7 +2174,7 @@ function MedicalProfileModal({
                         languagePreference: e.target.value,
                       }))
                     }
-                    placeholder="Preferred language for sessions"
+                    placeholder={tMp("step8.languagePreferencePlaceholder")}
                   />
                 </div>
 
@@ -1960,7 +2183,7 @@ function MedicalProfileModal({
                     htmlFor="culturalConsiderations"
                     className="font-light mb-3 text-base"
                   >
-                    Cultural Considerations
+                    {tMp("step8.culturalConsiderations")}
                   </Label>
                   <Textarea
                     id="culturalConsiderations"
@@ -1973,7 +2196,7 @@ function MedicalProfileModal({
                       }))
                     }
                     rows={4}
-                    placeholder="Any cultural or religious considerations"
+                    placeholder={tMp("step8.culturalConsiderationsPlaceholder")}
                   />
                 </div>
               </div>
@@ -1983,9 +2206,9 @@ function MedicalProfileModal({
 
         <div className="sticky bottom-0 bg-background border-t border-border/40 px-6 py-4 flex items-center justify-end gap-3">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {tProfile("cancel")}
           </Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+          <Button onClick={handleSave}>{tProfile("save")}</Button>
         </div>
       </div>
     </div>

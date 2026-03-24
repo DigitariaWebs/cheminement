@@ -169,36 +169,36 @@ export default function MedicalProfileCompletionModal({
   const diagnosedConditions = isChild ? childDiagnosedConditions : adultDiagnosedConditions;
 
   const secondaryIssues = [
-    "Anxiety",
-    "Depression",
-    "Stress",
-    "Relationship Problems",
-    "Trauma",
-    "Self-Esteem Issues",
-    "Addiction",
-    "Grief",
-    "Anger Management",
-    "Family Issues",
-    "Work/School Problems",
-    "Other",
+    { key: "anxiety", value: "Anxiety" },
+    { key: "depression", value: "Depression" },
+    { key: "stress", value: "Stress" },
+    { key: "relationshipProblems", value: "Relationship Problems" },
+    { key: "trauma", value: "Trauma" },
+    { key: "selfEsteemIssues", value: "Self-Esteem Issues" },
+    { key: "addiction", value: "Addiction" },
+    { key: "grief", value: "Grief" },
+    { key: "angerManagement", value: "Anger Management" },
+    { key: "familyIssues", value: "Family Issues" },
+    { key: "workSchoolProblems", value: "Work/School Problems" },
+    { key: "other", value: "Other" },
   ];
 
   const symptoms = [
-    "Persistent Sadness",
-    "Anxiety Attacks",
-    "Sleep Problems",
-    "Loss of Interest",
-    "Irritability",
-    "Fatigue",
-    "Concentration Issues",
-    "Appetite Changes",
-    "Social Withdrawal",
-    "Panic Attacks",
-    "Mood Swings",
-    "Suicidal Thoughts",
-    "Hallucinations",
-    "Delusions",
-    "Other",
+    { key: "persistentSadness", value: "Persistent Sadness" },
+    { key: "anxietyAttacks", value: "Anxiety Attacks" },
+    { key: "sleepProblems", value: "Sleep Problems" },
+    { key: "lossOfInterest", value: "Loss of Interest" },
+    { key: "irritability", value: "Irritability" },
+    { key: "fatigue", value: "Fatigue" },
+    { key: "concentrationIssues", value: "Concentration Issues" },
+    { key: "appetiteChanges", value: "Appetite Changes" },
+    { key: "socialWithdrawal", value: "Social Withdrawal" },
+    { key: "panicAttacks", value: "Panic Attacks" },
+    { key: "moodSwings", value: "Mood Swings" },
+    { key: "suicidalThoughts", value: "Suicidal Thoughts" },
+    { key: "hallucinations", value: "Hallucinations" },
+    { key: "delusions", value: "Delusions" },
+    { key: "other", value: "Other" },
   ];
 
   const treatmentGoals = [
@@ -707,16 +707,18 @@ export default function MedicalProfileCompletionModal({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {secondaryIssues.map((item) => (
                     <button
-                      key={item}
+                      key={item.value}
                       type="button"
-                      onClick={() => handleMultiSelect("secondaryIssues", item)}
+                      onClick={() =>
+                        handleMultiSelect("secondaryIssues", item.value)
+                      }
                       className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                        formData.secondaryIssues.includes(item)
+                        formData.secondaryIssues.includes(item.value)
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted/50 text-foreground hover:bg-muted"
                       }`}
                     >
-                      {item}
+                      {t(`step3.secondaryIssueOptions.${item.key}`)}
                     </button>
                   ))}
                 </div>
@@ -820,16 +822,16 @@ export default function MedicalProfileCompletionModal({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {symptoms.map((item) => (
                     <button
-                      key={item}
+                      key={item.value}
                       type="button"
-                      onClick={() => handleMultiSelect("symptoms", item)}
+                      onClick={() => handleMultiSelect("symptoms", item.value)}
                       className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                        formData.symptoms.includes(item)
+                        formData.symptoms.includes(item.value)
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted/50 text-foreground hover:bg-muted"
                       }`}
                     >
-                      {item}
+                      {t(`step4.symptomOptions.${item.key}`)}
                     </button>
                   ))}
                 </div>

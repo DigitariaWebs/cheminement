@@ -19,7 +19,6 @@ export default function ClientProfilePage() {
       if (profileData) {
         setProfile(profileData as IMedicalProfile);
       }
-      console.log(profile);
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {
@@ -34,7 +33,7 @@ export default function ClientProfilePage() {
   if (isLoading || !profile) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground font-light">Loading...</p>
+        <p className="text-muted-foreground font-light">{t("loading")}</p>
       </div>
     );
   }
