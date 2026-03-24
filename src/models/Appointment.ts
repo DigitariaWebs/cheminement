@@ -13,6 +13,7 @@ export interface IPayment {
     | "cancelled";
   method?: "card" | "transfer" | "direct_debit";
   stripePaymentIntentId?: string;
+  /** Encrypted at rest when FIELD_ENCRYPTION_KEY is set (see `encryptPaymentMethodReference`). */
   stripePaymentMethodId?: string;
   paidAt?: Date;
   refundedAt?: Date;

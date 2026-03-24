@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
+import { encryptPaymentMethodReference } from "@/lib/field-encryption";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
@@ -110,7 +111,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    appointment.payment.stripePaymentMethodId = paymentMethodId;
+    appointment.payment.stripePaymentMethodId =
+      encryptPaymentMethodReference(paymentMethodId) ?? paymentMethodId;
     if (appointment.payment.status === "processing") {
       appointment.payment.status = "pending";
     }
