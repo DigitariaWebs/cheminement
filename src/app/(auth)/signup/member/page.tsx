@@ -128,6 +128,54 @@ interface FormData {
   agreeToTerms: boolean;
 }
 
+/** Stored values stay in English for API compatibility; labels use `Auth.memberSignup.healthOptions`. */
+const MEMBER_SIGNUP_MEDICAL_OPTIONS = [
+  { value: "Diabetes", msgKey: "diabetes" },
+  { value: "Hypertension", msgKey: "hypertension" },
+  { value: "Heart Disease", msgKey: "heartDisease" },
+  { value: "Asthma", msgKey: "asthma" },
+  { value: "Thyroid Disorder", msgKey: "thyroidDisorder" },
+  { value: "Chronic Pain", msgKey: "chronicPain" },
+  { value: "None", msgKey: "none" },
+] as const;
+
+const MEMBER_SIGNUP_MEDICATION_OPTIONS = [
+  { value: "Antidepressants", msgKey: "antidepressants" },
+  { value: "Anti-anxiety", msgKey: "antiAnxiety" },
+  { value: "Mood stabilizers", msgKey: "moodStabilizers" },
+  { value: "Antipsychotics", msgKey: "antipsychotics" },
+  { value: "Sleep aids", msgKey: "sleepAids" },
+  { value: "Pain medication", msgKey: "painMedication" },
+  { value: "None", msgKey: "none" },
+] as const;
+
+const MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS = [
+  { value: "CBT", msgKey: "cbt" },
+  { value: "Psychodynamic", msgKey: "psychodynamic" },
+  { value: "Mindfulness", msgKey: "mindfulness" },
+  { value: "Solution-focused", msgKey: "solutionFocused" },
+  { value: "Family therapy", msgKey: "familyTherapy" },
+  { value: "Group therapy", msgKey: "groupTherapy" },
+  { value: "Art therapy", msgKey: "artTherapy" },
+  { value: "No preference", msgKey: "noPreference" },
+] as const;
+
+const MEMBER_SIGNUP_AVAILABILITY_OPTIONS = [
+  { value: "Weekday mornings", msgKey: "weekdayMornings" },
+  { value: "Weekday afternoons", msgKey: "weekdayAfternoons" },
+  { value: "Weekday evenings", msgKey: "weekdayEvenings" },
+  { value: "Weekend mornings", msgKey: "weekendMornings" },
+  { value: "Weekend afternoons", msgKey: "weekendAfternoons" },
+  { value: "Weekend evenings", msgKey: "weekendEvenings" },
+  { value: "Flexible", msgKey: "flexible" },
+] as const;
+
+const EXCLUSIVE_MULTISELECT_VALUES = new Set([
+  "None",
+  "No preference",
+  "Flexible",
+]);
+
 export default function MemberSignupPage() {
   const t = useTranslations("Auth.memberSignup");
   const router = useRouter();
@@ -231,22 +279,20 @@ export default function MemberSignupPage() {
     setFormData((prev) => {
       const currentArray = prev[name] as string[];
 
-      // Special handling for "None" option
-      if (value === "None") {
-        // If "None" is clicked, clear all other selections
-        if (currentArray.includes("None")) {
+      if (EXCLUSIVE_MULTISELECT_VALUES.has(value)) {
+        if (currentArray.includes(value)) {
           return { ...prev, [name]: [] };
-        } else {
-          return { ...prev, [name]: ["None"] };
         }
-      } else {
-        // If any other option is clicked, remove "None" if it exists
-        const withoutNone = currentArray.filter((item) => item !== "None");
-        const newArray = withoutNone.includes(value)
-          ? withoutNone.filter((item) => item !== value)
-          : [...withoutNone, value];
-        return { ...prev, [name]: newArray };
+        return { ...prev, [name]: [value] };
       }
+
+      const withoutExclusive = currentArray.filter(
+        (item) => !EXCLUSIVE_MULTISELECT_VALUES.has(item),
+      );
+      const newArray = withoutExclusive.includes(value)
+        ? withoutExclusive.filter((item) => item !== value)
+        : [...withoutExclusive, value];
+      return { ...prev, [name]: newArray };
     });
   };
 
@@ -633,7 +679,7 @@ export default function MemberSignupPage() {
                       name="childFirstName"
                       value={formData.childFirstName}
                       onChange={handleChange}
-                      placeholder="Prénom"
+                      placeholder={t("firstNamePlaceholder")}
                     />
                   </div>
                   <div className="space-y-2">
@@ -643,7 +689,7 @@ export default function MemberSignupPage() {
                       name="childLastName"
                       value={formData.childLastName}
                       onChange={handleChange}
-                      placeholder="Nom"
+                      placeholder={t("lastNamePlaceholder")}
                     />
                   </div>
                   <div className="space-y-2">
@@ -665,7 +711,7 @@ export default function MemberSignupPage() {
                     onValueChange={(val) => handleSelectChange("childServiceType", val)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="..." />
+                      <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="evaluation">{t("evaluation")}</SelectItem>
@@ -769,28 +815,20 @@ export default function MemberSignupPage() {
             <div className="space-y-2">
               <Label>{t("profileModal.step1.medicalConditions")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Diabetes",
-                  "Hypertension",
-                  "Heart Disease",
-                  "Asthma",
-                  "Thyroid Disorder",
-                  "Chronic Pain",
-                  "None",
-                ].map((condition) => (
-                  <div key={condition} className="flex items-center space-x-2">
+                {MEMBER_SIGNUP_MEDICAL_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`condition-${condition}`}
-                      checked={formData.medicalConditions.includes(condition)}
+                      id={`condition-${value}`}
+                      checked={formData.medicalConditions.includes(value)}
                       onCheckedChange={() =>
-                        handleArrayChange("medicalConditions", condition)
+                        handleArrayChange("medicalConditions", value)
                       }
                     />
                     <label
-                      htmlFor={`condition-${condition}`}
+                      htmlFor={`condition-${value}`}
                       className="text-sm cursor-pointer"
                     >
-                      {condition}
+                      {t(`healthOptions.medical.${msgKey}`)}
                     </label>
                   </div>
                 ))}
@@ -800,28 +838,20 @@ export default function MemberSignupPage() {
             <div className="space-y-2">
               <Label>{t("profileModal.step1.currentMedications")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Antidepressants",
-                  "Anti-anxiety",
-                  "Mood stabilizers",
-                  "Antipsychotics",
-                  "Sleep aids",
-                  "Pain medication",
-                  "None",
-                ].map((med) => (
-                  <div key={med} className="flex items-center space-x-2">
+                {MEMBER_SIGNUP_MEDICATION_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`med-${med}`}
-                      checked={formData.currentMedications.includes(med)}
+                      id={`med-${value}`}
+                      checked={formData.currentMedications.includes(value)}
                       onCheckedChange={() =>
-                        handleArrayChange("currentMedications", med)
+                        handleArrayChange("currentMedications", value)
                       }
                     />
                     <label
-                      htmlFor={`med-${med}`}
+                      htmlFor={`med-${value}`}
                       className="text-sm cursor-pointer"
                     >
-                      {med}
+                      {t(`healthOptions.medications.${msgKey}`)}
                     </label>
                   </div>
                 ))}
@@ -1297,32 +1327,25 @@ export default function MemberSignupPage() {
             <div className="space-y-2">
               <Label>{t("therapyApproachOptional")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "CBT",
-                  "Psychodynamic",
-                  "Mindfulness",
-                  "Solution-focused",
-                  "Family therapy",
-                  "Group therapy",
-                  "Art therapy",
-                  "No preference",
-                ].map((approach) => (
-                  <div key={approach} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`approach-${approach}`}
-                      checked={formData.therapyApproach.includes(approach)}
-                      onCheckedChange={() =>
-                        handleArrayChange("therapyApproach", approach)
-                      }
-                    />
-                    <label
-                      htmlFor={`approach-${approach}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {approach}
-                    </label>
-                  </div>
-                ))}
+                {MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
+                  ({ value, msgKey }) => (
+                    <div key={value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`approach-${value}`}
+                        checked={formData.therapyApproach.includes(value)}
+                        onCheckedChange={() =>
+                          handleArrayChange("therapyApproach", value)
+                        }
+                      />
+                      <label
+                        htmlFor={`approach-${value}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {t(`therapyApproachOptions.${msgKey}`)}
+                      </label>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
 
@@ -1350,28 +1373,20 @@ export default function MemberSignupPage() {
                 {t("profileModal.step6.availability")}
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Weekday mornings",
-                  "Weekday afternoons",
-                  "Weekday evenings",
-                  "Weekend mornings",
-                  "Weekend afternoons",
-                  "Weekend evenings",
-                  "Flexible",
-                ].map((time) => (
-                  <div key={time} className="flex items-center space-x-2">
+                {MEMBER_SIGNUP_AVAILABILITY_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`availability-${time}`}
-                      checked={formData.availability.includes(time)}
+                      id={`availability-${value}`}
+                      checked={formData.availability.includes(value)}
                       onCheckedChange={() =>
-                        handleArrayChange("availability", time)
+                        handleArrayChange("availability", value)
                       }
                     />
                     <label
-                      htmlFor={`availability-${time}`}
+                      htmlFor={`availability-${value}`}
                       className="text-sm cursor-pointer"
                     >
-                      {time}
+                      {t(`availabilityOptions.${msgKey}`)}
                     </label>
                   </div>
                 ))}
@@ -1619,25 +1634,25 @@ export default function MemberSignupPage() {
               </h3>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b">
-                  <span className="text-muted-foreground">Name:</span>
+                  <span className="text-muted-foreground">{t("review.name")}</span>
                   <span className="font-medium">
                     {formData.firstName} {formData.lastName}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 pb-2 border-b">
-                  <span className="text-muted-foreground">Email:</span>
+                  <span className="text-muted-foreground">{t("review.email")}</span>
                   <span className="font-medium">{formData.email}</span>
                 </div>
                 {formData.phone && (
                   <div className="grid grid-cols-2 gap-2 pb-2 border-b">
-                    <span className="text-muted-foreground">Phone:</span>
+                    <span className="text-muted-foreground">{t("review.phone")}</span>
                     <span className="font-medium">{formData.phone}</span>
                   </div>
                 )}
                 {formData.primaryIssue && (
                   <div className="grid grid-cols-2 gap-2 pb-2 border-b">
                     <span className="text-muted-foreground">
-                      Primary Concern:
+                      {t("review.primaryConcern")}
                     </span>
                     <span className="font-medium">
                       {formData.primaryIssue.substring(0, 100)}

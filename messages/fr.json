@@ -738,6 +738,51 @@
         "nightmares": "Cauchemars",
         "flashbacks": "Revécu traumatique"
       },
+      "healthOptions": {
+        "medical": {
+          "diabetes": "Diabète",
+          "hypertension": "Hypertension",
+          "heartDisease": "Maladie cardiaque",
+          "asthma": "Asthme",
+          "thyroidDisorder": "Trouble thyroïdien",
+          "chronicPain": "Douleur chronique",
+          "none": "Aucune"
+        },
+        "medications": {
+          "antidepressants": "Antidépresseurs",
+          "antiAnxiety": "Anxiolytiques",
+          "moodStabilizers": "Stabilisateurs de l'humeur",
+          "antipsychotics": "Antipsychotiques",
+          "sleepAids": "Somnifères / aide au sommeil",
+          "painMedication": "Antidouleurs",
+          "none": "Aucun"
+        }
+      },
+      "therapyApproachOptions": {
+        "cbt": "TCC (thérapie cognitivo-comportementale)",
+        "psychodynamic": "Psychodynamique",
+        "mindfulness": "Pleine conscience",
+        "solutionFocused": "Centré sur les solutions",
+        "familyTherapy": "Thérapie familiale",
+        "groupTherapy": "Thérapie de groupe",
+        "artTherapy": "Art-thérapie",
+        "noPreference": "Pas de préférence"
+      },
+      "availabilityOptions": {
+        "weekdayMornings": "Matinées en semaine",
+        "weekdayAfternoons": "Après-midis en semaine",
+        "weekdayEvenings": "Soirées en semaine",
+        "weekendMornings": "Matinées de fin de semaine",
+        "weekendAfternoons": "Après-midis de fin de semaine",
+        "weekendEvenings": "Soirées de fin de semaine",
+        "flexible": "Flexible"
+      },
+      "review": {
+        "name": "Nom :",
+        "email": "Courriel :",
+        "phone": "Téléphone :",
+        "primaryConcern": "Préoccupation principale :"
+      },
       "profile": {
         "yes": "Oui",
         "no": "Non",
@@ -940,6 +985,40 @@
       "graduationYear": "Année d'obtention",
       "graduationYearPlaceholder": "ex. 2020",
       "certifications": "Certifications (sélectionnez toutes celles qui s'appliquent)",
+      "certificationOptions": {
+        "cbtCertified": "Certification TCC",
+        "dbtCertified": "Certification TCD",
+        "emdrCertified": "Certification EMDR",
+        "familyTherapy": "Thérapie familiale",
+        "traumaInformed": "Approche sensible au trauma",
+        "substanceAbuse": "Usage de substances / dépendances",
+        "childAdolescent": "Enfants et adolescents",
+        "couplesTherapy": "Thérapie de couple"
+      },
+      "sessionTypeOptions": {
+        "individual": "Individuel",
+        "couple": "Couple",
+        "family": "Famille",
+        "group": "Groupe",
+        "coaching": "Coaching"
+      },
+      "modalityOptions": {
+        "inPersonOffice": "En personne (bureau)",
+        "videoCall": "Vidéoconférence",
+        "phoneCall": "Téléphone",
+        "chatMessaging": "Clavardage / messagerie"
+      },
+      "weekdays": {
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "sunday": "Dimanche"
+      },
+      "selectPlaceholder": "Sélectionner…",
+      "bioCharacterCount": "{count} / {max} caractères",
       "approachesTitle": "1 – Approches et Thérapies",
       "approachesSubtitle": "Liste pour tous les profils (sélectionnez tous ceux qui s'appliquent).",
       "problematicsTitle": "2 – Problématiques et Mandats",
@@ -1265,6 +1344,7 @@
       "completed": "Complétée",
       "cancelled": "Annulée",
       "noShow": "Absence",
+      "ongoing": "En cours",
       "type": "Type",
       "inPerson": "En personne",
       "video": "Vidéo",
@@ -1281,6 +1361,7 @@
       "actions": "Actions",
       "viewDetails": "Voir les détails",
       "startSession": "Démarrer la séance",
+      "joinSession": "Rejoindre la séance",
       "addNotes": "Ajouter des notes",
       "noSessions": "Aucune séance trouvée",
       "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
@@ -1396,7 +1477,8 @@
         "scheduled": "Planifié",
         "completed": "Complété",
         "cancelled": "Annulé",
-        "no-show": "Absence"
+        "no-show": "Absence",
+        "ongoing": "En cours"
       },
       "actions": {
         "schedule": "Planifier une séance",
@@ -3085,6 +3167,65 @@
         "refunded": "Remboursé",
         "scheduled": "Planifié",
         "cancelled": "Annulé"
+      }
+    },
+    "proposals": {
+      "title": "Propositions de clients",
+      "subtitle": "Consultez les demandes qui vous ont été proposées ou parcourez la liste générale",
+      "errorPrefix": "Erreur",
+      "tabProposed": "Proposées pour vous",
+      "tabGeneral": "Liste générale",
+      "filters": "Filtres",
+      "clearAll": "Tout effacer",
+      "search": "Recherche",
+      "searchPlaceholder": "Rechercher par nom, courriel ou sujet...",
+      "issueType": "Type de problématique",
+      "allIssues": "Toutes les problématiques",
+      "bookingForLabel": "Réservation pour",
+      "allTypes": "Tous les types",
+      "bookingFor": {
+        "self": "Pour soi",
+        "patient": "Référence patient",
+        "lovedOne": "Pour un proche"
+      },
+      "sessionType": {
+        "video": "Vidéo",
+        "inPerson": "En personne",
+        "phone": "Téléphone"
+      },
+      "therapyType": {
+        "solo": "Individuel",
+        "couple": "Couple",
+        "group": "Groupe"
+      },
+      "emptyProposedTitle": "Aucune proposition",
+      "emptyProposedDescription": "Les nouvelles demandes correspondant à votre expertise apparaîtront ici",
+      "emptyGeneralTitle": "Aucun rendez-vous dans la liste générale",
+      "emptyGeneralDescription": "Les rendez-vous non jumelés ou refusés apparaîtront ici",
+      "table": {
+        "client": "Client",
+        "type": "Type",
+        "issue": "Problématique",
+        "bookingFor": "Réservation pour",
+        "availability": "Disponibilité",
+        "actions": "Actions"
+      },
+      "flexible": "Flexible",
+      "accept": "Accepter",
+      "closeModal": "Fermer",
+      "scheduleModalTitle": "Accepter et planifier",
+      "selectDate": "Choisir la date",
+      "chooseDate": "Choisir une date",
+      "selectTime": "Choisir l'heure",
+      "noSlotsForDate": "Aucun créneau disponible pour cette date",
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "notAvailable": "—",
+      "errors": {
+        "loadFailed": "Échec du chargement des rendez-vous",
+        "acceptFailed": "Impossible d'accepter le rendez-vous",
+        "refuseFailed": "Impossible de refuser le rendez-vous",
+        "scheduleFailed": "Impossible d'accepter et de planifier le rendez-vous"
       }
     }
   },

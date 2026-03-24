@@ -103,6 +103,43 @@ interface FormData {
   agreeToTerms: boolean;
 }
 
+/** Stored `value` strings are sent to the API; labels use `Auth.professionalSignup.*Options`. */
+const PROFESSIONAL_SIGNUP_CERT_OPTIONS = [
+  { value: "CBT Certified", msgKey: "cbtCertified" },
+  { value: "DBT Certified", msgKey: "dbtCertified" },
+  { value: "EMDR Certified", msgKey: "emdrCertified" },
+  { value: "Family Therapy", msgKey: "familyTherapy" },
+  { value: "Trauma-Informed", msgKey: "traumaInformed" },
+  { value: "Substance Abuse", msgKey: "substanceAbuse" },
+  { value: "Child & Adolescent", msgKey: "childAdolescent" },
+  { value: "Couples Therapy", msgKey: "couplesTherapy" },
+] as const;
+
+const PROFESSIONAL_SESSION_TYPE_OPTIONS = [
+  { value: "Individual", msgKey: "individual" },
+  { value: "Couple", msgKey: "couple" },
+  { value: "Family", msgKey: "family" },
+  { value: "Group", msgKey: "group" },
+  { value: "Coaching", msgKey: "coaching" },
+] as const;
+
+const PROFESSIONAL_MODALITY_OPTIONS = [
+  { value: "In-Person (Office)", msgKey: "inPersonOffice" },
+  { value: "Video Call", msgKey: "videoCall" },
+  { value: "Phone Call", msgKey: "phoneCall" },
+  { value: "Chat/Messaging", msgKey: "chatMessaging" },
+] as const;
+
+const PROFESSIONAL_WEEKDAY_OPTIONS = [
+  { value: "Monday", msgKey: "monday" },
+  { value: "Tuesday", msgKey: "tuesday" },
+  { value: "Wednesday", msgKey: "wednesday" },
+  { value: "Thursday", msgKey: "thursday" },
+  { value: "Friday", msgKey: "friday" },
+  { value: "Saturday", msgKey: "saturday" },
+  { value: "Sunday", msgKey: "sunday" },
+] as const;
+
 export default function ProfessionalSignupPage() {
   const t = useTranslations("Auth.professionalSignup");
   const router = useRouter();
@@ -694,7 +731,10 @@ export default function ProfessionalSignupPage() {
                 maxLength={1000}
               />
               <p className="text-xs text-muted-foreground">
-                {formData.bio.length}/1000 characters
+                {t("bioCharacterCount", {
+                  count: formData.bio.length,
+                  max: 1000,
+                })}
               </p>
             </div>
           </div>
@@ -746,29 +786,20 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label>{t("certifications")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "CBT Certified",
-                  "DBT Certified",
-                  "EMDR Certified",
-                  "Family Therapy",
-                  "Trauma-Informed",
-                  "Substance Abuse",
-                  "Child & Adolescent",
-                  "Couples Therapy",
-                ].map((cert) => (
-                  <div key={cert} className="flex items-center space-x-2">
+                {PROFESSIONAL_SIGNUP_CERT_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`cert-${cert}`}
-                      checked={formData.certifications.includes(cert)}
+                      id={`cert-${msgKey}`}
+                      checked={formData.certifications.includes(value)}
                       onCheckedChange={() =>
-                        handleArrayChange("certifications", cert)
+                        handleArrayChange("certifications", value)
                       }
                     />
                     <label
-                      htmlFor={`cert-${cert}`}
+                      htmlFor={`cert-${msgKey}`}
                       className="text-sm cursor-pointer"
                     >
-                      {cert}
+                      {t(`certificationOptions.${msgKey}`)}
                     </label>
                   </div>
                 ))}
@@ -902,50 +933,43 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label>{t("sessionTypesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {["Individual", "Couple", "Family", "Group", "Coaching"].map(
-                  (type) => (
-                    <div key={type} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`session-${type}`}
-                        checked={formData.sessionTypes.includes(type)}
-                        onCheckedChange={() =>
-                          handleArrayChange("sessionTypes", type)
-                        }
-                      />
-                      <label
-                        htmlFor={`session-${type}`}
-                        className="text-sm cursor-pointer"
-                      >
-                        {type}
-                      </label>
-                    </div>
-                  ),
-                )}
+                {PROFESSIONAL_SESSION_TYPE_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`session-${msgKey}`}
+                      checked={formData.sessionTypes.includes(value)}
+                      onCheckedChange={() =>
+                        handleArrayChange("sessionTypes", value)
+                      }
+                    />
+                    <label
+                      htmlFor={`session-${msgKey}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {t(`sessionTypeOptions.${msgKey}`)}
+                    </label>
+                  </div>
+                ))}
               </div>
             </div>
 
             <div className="space-y-2">
               <Label>{t("modalitiesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "In-Person (Office)",
-                  "Video Call",
-                  "Phone Call",
-                  "Chat/Messaging",
-                ].map((modality) => (
-                  <div key={modality} className="flex items-center space-x-2">
+                {PROFESSIONAL_MODALITY_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`modality-${modality}`}
-                      checked={formData.modalities.includes(modality)}
+                      id={`modality-${msgKey}`}
+                      checked={formData.modalities.includes(value)}
                       onCheckedChange={() =>
-                        handleArrayChange("modalities", modality)
+                        handleArrayChange("modalities", value)
                       }
                     />
                     <label
-                      htmlFor={`modality-${modality}`}
+                      htmlFor={`modality-${msgKey}`}
                       className="text-sm cursor-pointer"
                     >
-                      {modality}
+                      {t(`modalityOptions.${msgKey}`)}
                     </label>
                   </div>
                 ))}
@@ -1050,7 +1074,7 @@ export default function ProfessionalSignupPage() {
                 }
               >
                 <SelectTrigger id="paymentAgreement">
-                  <SelectValue placeholder="..." />
+                  <SelectValue placeholder={t("selectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="per-session">{t("paymentAgreementPerSession")}</SelectItem>
@@ -1069,28 +1093,20 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <Label>{t("availableDaysLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
-                  "Sunday",
-                ].map((day) => (
-                  <div key={day} className="flex items-center space-x-2">
+                {PROFESSIONAL_WEEKDAY_OPTIONS.map(({ value, msgKey }) => (
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`day-${day}`}
-                      checked={formData.availableDays.includes(day)}
+                      id={`day-${msgKey}`}
+                      checked={formData.availableDays.includes(value)}
                       onCheckedChange={() =>
-                        handleArrayChange("availableDays", day)
+                        handleArrayChange("availableDays", value)
                       }
                     />
                     <label
-                      htmlFor={`day-${day}`}
+                      htmlFor={`day-${msgKey}`}
                       className="text-sm cursor-pointer"
                     >
-                      {day}
+                      {t(`weekdays.${msgKey}`)}
                     </label>
                   </div>
                 ))}

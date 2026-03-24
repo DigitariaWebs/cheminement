@@ -737,6 +737,51 @@
         "nightmares": "Nightmares",
         "flashbacks": "Flashbacks"
       },
+      "healthOptions": {
+        "medical": {
+          "diabetes": "Diabetes",
+          "hypertension": "Hypertension",
+          "heartDisease": "Heart disease",
+          "asthma": "Asthma",
+          "thyroidDisorder": "Thyroid disorder",
+          "chronicPain": "Chronic pain",
+          "none": "None"
+        },
+        "medications": {
+          "antidepressants": "Antidepressants",
+          "antiAnxiety": "Anti-anxiety medication",
+          "moodStabilizers": "Mood stabilizers",
+          "antipsychotics": "Antipsychotics",
+          "sleepAids": "Sleep aids",
+          "painMedication": "Pain medication",
+          "none": "None"
+        }
+      },
+      "therapyApproachOptions": {
+        "cbt": "CBT (cognitive behavioral therapy)",
+        "psychodynamic": "Psychodynamic",
+        "mindfulness": "Mindfulness",
+        "solutionFocused": "Solution-focused",
+        "familyTherapy": "Family therapy",
+        "groupTherapy": "Group therapy",
+        "artTherapy": "Art therapy",
+        "noPreference": "No preference"
+      },
+      "availabilityOptions": {
+        "weekdayMornings": "Weekday mornings",
+        "weekdayAfternoons": "Weekday afternoons",
+        "weekdayEvenings": "Weekday evenings",
+        "weekendMornings": "Weekend mornings",
+        "weekendAfternoons": "Weekend afternoons",
+        "weekendEvenings": "Weekend evenings",
+        "flexible": "Flexible"
+      },
+      "review": {
+        "name": "Name:",
+        "email": "Email:",
+        "phone": "Phone:",
+        "primaryConcern": "Primary concern:"
+      },
       "profile": {
         "yes": "Yes",
         "no": "No",
@@ -939,6 +984,40 @@
       "graduationYear": "Graduation year",
       "graduationYearPlaceholder": "e.g., 2020",
       "certifications": "Certifications (select all that apply)",
+      "certificationOptions": {
+        "cbtCertified": "CBT certified",
+        "dbtCertified": "DBT certified",
+        "emdrCertified": "EMDR certified",
+        "familyTherapy": "Family therapy",
+        "traumaInformed": "Trauma-informed care",
+        "substanceAbuse": "Substance use / addictions",
+        "childAdolescent": "Child & adolescent",
+        "couplesTherapy": "Couples therapy"
+      },
+      "sessionTypeOptions": {
+        "individual": "Individual",
+        "couple": "Couple",
+        "family": "Family",
+        "group": "Group",
+        "coaching": "Coaching"
+      },
+      "modalityOptions": {
+        "inPersonOffice": "In-person (office)",
+        "videoCall": "Video call",
+        "phoneCall": "Phone call",
+        "chatMessaging": "Chat / messaging"
+      },
+      "weekdays": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "selectPlaceholder": "Select…",
+      "bioCharacterCount": "{count} / {max} characters",
       "approachesTitle": "1 – Approaches and Therapies",
       "approachesSubtitle": "List for all profiles (select all that apply).",
       "problematicsTitle": "2 – Issues and Mandates",
@@ -1265,6 +1344,7 @@
       "completed": "Completed",
       "cancelled": "Cancelled",
       "noShow": "No Show",
+      "ongoing": "In progress",
       "type": "Type",
       "inPerson": "In-Person",
       "video": "Video",
@@ -1281,6 +1361,7 @@
       "actions": "Actions",
       "viewDetails": "View Details",
       "startSession": "Start Session",
+      "joinSession": "Join Session",
       "addNotes": "Add Notes",
       "noSessions": "No sessions found",
       "adjustFilters": "Try adjusting your search or filters",
@@ -1396,7 +1477,8 @@
         "scheduled": "Scheduled",
         "completed": "Completed",
         "cancelled": "Cancelled",
-        "no-show": "No Show"
+        "no-show": "No Show",
+        "ongoing": "In progress"
       },
       "actions": {
         "schedule": "Schedule Session",
@@ -3080,6 +3162,65 @@
         "refunded": "Refunded",
         "scheduled": "Scheduled",
         "cancelled": "Cancelled"
+      }
+    },
+    "proposals": {
+      "title": "Client Proposals",
+      "subtitle": "Review client requests that have been matched to you or browse the general list",
+      "errorPrefix": "Error",
+      "tabProposed": "Proposed to You",
+      "tabGeneral": "General List",
+      "filters": "Filters",
+      "clearAll": "Clear all",
+      "search": "Search",
+      "searchPlaceholder": "Search by name, email, or issue...",
+      "issueType": "Issue Type",
+      "allIssues": "All Issues",
+      "bookingForLabel": "Booking For",
+      "allTypes": "All Types",
+      "bookingFor": {
+        "self": "For Self",
+        "patient": "Patient Referral",
+        "lovedOne": "For Loved One"
+      },
+      "sessionType": {
+        "video": "Video",
+        "inPerson": "In person",
+        "phone": "Phone"
+      },
+      "therapyType": {
+        "solo": "Solo",
+        "couple": "Couple",
+        "group": "Group"
+      },
+      "emptyProposedTitle": "No proposed appointments",
+      "emptyProposedDescription": "New client requests matching your expertise will appear here",
+      "emptyGeneralTitle": "No appointments in general list",
+      "emptyGeneralDescription": "Appointments that haven't been matched or were declined will appear here",
+      "table": {
+        "client": "Client",
+        "type": "Type",
+        "issue": "Issue",
+        "bookingFor": "Booking For",
+        "availability": "Availability",
+        "actions": "Actions"
+      },
+      "flexible": "Flexible",
+      "accept": "Accept",
+      "closeModal": "Close",
+      "scheduleModalTitle": "Accept & Schedule",
+      "selectDate": "Select Date",
+      "chooseDate": "Choose a date",
+      "selectTime": "Select Time",
+      "noSlotsForDate": "No available slots for this date",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "notAvailable": "—",
+      "errors": {
+        "loadFailed": "Failed to load appointments",
+        "acceptFailed": "Failed to accept appointment",
+        "refuseFailed": "Failed to refuse appointment",
+        "scheduleFailed": "Failed to accept and schedule appointment"
       }
     }
   },
