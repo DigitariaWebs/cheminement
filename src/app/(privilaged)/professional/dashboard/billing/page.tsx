@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Download,
   Eye,
@@ -12,13 +12,36 @@ import {
   DollarSign,
   Loader2,
   AlertCircle,
+  X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 
+type ConnectPayoutResponse = {
+  setupComplete: boolean;
+  balance: { available: number; pending: number };
+  accountStatus?: {
+    chargesEnabled: boolean;
+    payoutsEnabled: boolean;
+    detailsSubmitted: boolean;
+  };
+  bankDetails?: {
+    institution?: string;
+    last4?: string;
+    routingNumber?: string;
+    currency?: string;
+  } | null;
+  accountHolder?: string;
+};
+
 export default function ProfessionalBillingPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"receivables" | "history">(
     "receivables",
   );
@@ -26,12 +49,64 @@ export default function ProfessionalBillingPage() {
   const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [connectStatus, setConnectStatus] =
+    useState<ConnectPayoutResponse | null>(null);
+  const [connectLoading, setConnectLoading] = useState(true);
+  const [connectError, setConnectError] = useState<string | null>(null);
+  const [linkLoading, setLinkLoading] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [setupBanner, setSetupBanner] = useState<string | null>(null);
   const t = useTranslations("Professional.billing");
 
-  // Fetch real appointments from API
+  const fetchConnectStatus = useCallback(async () => {
+    try {
+      setConnectError(null);
+      setConnectLoading(true);
+      const res = await fetch("/api/stripe-connect/payout");
+      const data = (await res.json()) as ConnectPayoutResponse & {
+        error?: string;
+      };
+      if (!res.ok) {
+        throw new Error(
+          typeof data.error === "string"
+            ? data.error
+            : "Failed to load payout status",
+        );
+      }
+      setConnectStatus(data);
+    } catch (err: unknown) {
+      console.error("Connect status error:", err);
+      setConnectError(
+        err instanceof Error ? err.message : "Failed to load payout status",
+      );
+      setConnectStatus(null);
+    } finally {
+      setConnectLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    fetchConnectStatus();
+  }, [fetchConnectStatus]);
+
+  useEffect(() => {
+    const setup = searchParams.get("setup");
+    if (setup === "success") {
+      setSetupBanner(t("setupReturnSuccess"));
+      void fetchConnectStatus();
+      router.replace("/professional/dashboard/billing", { scroll: false });
+      return;
+    }
+    if (setup === "refresh") {
+      setSetupBanner(t("setupRefreshMessage"));
+      void fetchConnectStatus();
+      router.replace("/professional/dashboard/billing", { scroll: false });
+    }
+  }, [searchParams, router, fetchConnectStatus, t]);
 
   const fetchAppointments = async () => {
     try {
@@ -121,6 +196,33 @@ export default function ProfessionalBillingPage() {
     });
   };
 
+  const handleUpdateBankDetails = async () => {
+    setLinkError(null);
+    setLinkLoading(true);
+    try {
+      const res = await fetch("/api/stripe-connect/account-link", {
+        method: "POST",
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        throw new Error(
+          typeof data.error === "string" ? data.error : t("connectLinkError"),
+        );
+      }
+      if (data.url) {
+        window.location.assign(data.url);
+        return;
+      }
+      throw new Error(t("connectLinkError"));
+    } catch (err: unknown) {
+      setLinkError(
+        err instanceof Error ? err.message : t("connectLinkError"),
+      );
+    } finally {
+      setLinkLoading(false);
+    }
+  };
+
   const handleDownloadReceipt = async (appointmentId: string) => {
     try {
       const response = await fetch(
@@ -149,6 +251,21 @@ export default function ProfessionalBillingPage() {
 
   const displayPayments =
     activeTab === "receivables" ? receivablePayments : paidPayments;
+
+  const hasConnectAccount =
+    connectStatus?.accountStatus !== undefined &&
+    connectStatus.accountStatus !== null;
+  const bank = connectStatus?.bankDetails;
+  const holderDisplay =
+    connectStatus?.accountHolder?.trim() ||
+    session?.user?.name?.trim() ||
+    t("notProvided");
+  const institutionDisplay = bank?.institution?.trim() || t("notProvided");
+  const accountDisplay = bank?.last4
+    ? `••••${bank.last4}`
+    : t("notProvided");
+  const transitDisplay =
+    bank?.routingNumber?.trim() || t("notProvided");
 
   if (loading) {
     return (
@@ -185,6 +302,23 @@ export default function ProfessionalBillingPage() {
           <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
       </div>
+
+      {setupBanner && (
+        <div
+          role="status"
+          className="flex items-start justify-between gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground"
+        >
+          <p>{setupBanner}</p>
+          <button
+            type="button"
+            onClick={() => setSetupBanner(null)}
+            className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-background/80 hover:text-foreground"
+            aria-label={t("dismissBanner")}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-3">
@@ -259,44 +393,99 @@ export default function ProfessionalBillingPage() {
 
         {showBankDetails && (
           <div className="mt-6 space-y-4">
+            {!connectError && !connectLoading && (
+              <>
+                {!hasConnectAccount && (
+                  <p className="text-sm text-muted-foreground">
+                    {t("noBankOnFile")}
+                  </p>
+                )}
+                {hasConnectAccount && !connectStatus?.setupComplete && (
+                  <p className="text-sm text-amber-700 dark:text-amber-400">
+                    {t("payoutSetupIncomplete")}
+                  </p>
+                )}
+                {hasConnectAccount &&
+                  connectStatus?.setupComplete &&
+                  !bank?.last4 &&
+                  !bank?.institution && (
+                    <p className="text-sm text-muted-foreground">
+                      {t("noBankOnFile")}
+                    </p>
+                  )}
+              </>
+            )}
             <div className="rounded-2xl border border-border/20 bg-card/70 p-5">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {t("accountHolder")}
-                  </p>
-                  <p className="font-medium text-foreground">
-                    Dr. Marie Dubois
-                  </p>
+              {connectError && (
+                <p className="py-4 text-center text-sm text-red-600 dark:text-red-400">
+                  {connectError}
+                </p>
+              )}
+              {!connectError && !connectLoading && (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      {t("accountHolder")}
+                    </p>
+                    <p className="font-medium text-foreground">
+                      {holderDisplay}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      {t("institution")}
+                    </p>
+                    <p className="font-medium text-foreground">
+                      {institutionDisplay}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      {t("accountNumber")}
+                    </p>
+                    <p className="font-medium text-foreground">
+                      {accountDisplay}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      {t("transitNumber")}
+                    </p>
+                    <p className="font-medium text-foreground">
+                      {transitDisplay}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {t("institution")}
-                  </p>
-                  <p className="font-medium text-foreground">
-                    Banque Nationale
-                  </p>
+              )}
+              {!connectError && connectLoading && (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {t("accountNumber")}
-                  </p>
-                  <p className="font-medium text-foreground">••••••1234</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {t("transitNumber")}
-                  </p>
-                  <p className="font-medium text-foreground">00123</p>
-                </div>
-              </div>
+              )}
             </div>
             <p className="text-sm text-muted-foreground">
               {t("bankDetailsNote")}
             </p>
-            <Button className="gap-2 rounded-full" variant="outline">
-              <Wallet className="h-4 w-4" />
-              {t("updateBankDetails")}
+            <p className="text-sm text-muted-foreground">
+              {t("stripeManagedNote")}
+            </p>
+            {linkError && (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {linkError}
+              </p>
+            )}
+            <Button
+              className="gap-2 rounded-full"
+              variant="outline"
+              onClick={() => void handleUpdateBankDetails()}
+              disabled={linkLoading}
+            >
+              {linkLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Wallet className="h-4 w-4" />
+              )}
+              {linkLoading ? t("openingStripe") : t("updateBankDetails")}
             </Button>
           </div>
         )}
