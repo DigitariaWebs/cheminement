@@ -186,6 +186,7 @@ export async function PATCH(
 
       const clientUser = await User.findById(client._id);
       const dashboardUrl = `${getBaseUrl()}/client/dashboard/appointments`;
+      const billingUrl = `${getBaseUrl()}/client/dashboard/billing`;
 
       if (clientUser && clientUser.role === "guest") {
         // Generate payment token for guest user
@@ -234,7 +235,7 @@ export async function PATCH(
           meetingLink: appointment.meetingLink,
           location: appointment.location,
           price: appointment.payment.price,
-          paymentUrl: dashboardUrl, // Link to dashboard where they can complete payment
+          paymentUrl: billingUrl, // Billing: add payment method to confirm; charge after session
         }).catch((err) =>
           console.error("Error sending payment invitation:", err),
         );

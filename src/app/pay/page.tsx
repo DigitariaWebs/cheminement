@@ -20,18 +20,19 @@ import {
   Shield,
   Home,
   Download,
-  Building2,
   Landmark,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { GuestPaySetupFlow } from "@/components/payments";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
-type PaymentMethodType = "card" | "transfer" | "direct_debit";
+type PaymentMethodType = "card" | "direct_debit";
 
 interface AppointmentDetails {
   appointmentId: string;
@@ -46,7 +47,11 @@ interface AppointmentDetails {
   professionalName: string;
   alreadyPaid?: boolean;
   paidAt?: string;
+  appointmentStatus?: string;
+  hasPaymentMethodOnFile?: boolean;
 }
+
+type GuestSetupPaymentType = "card" | "acss_debit";
 
 interface CheckoutFormProps {
   amount: number;
@@ -66,12 +71,6 @@ const paymentMethodOptions: {
     label: "Credit/Debit Card",
     description: "Pay instantly with your card",
     icon: <CreditCard className="h-5 w-5" />,
-  },
-  {
-    id: "transfer",
-    label: "Bank Transfer",
-    description: "Transfer from your bank account",
-    icon: <Building2 className="h-5 w-5" />,
   },
   {
     id: "direct_debit",
@@ -134,8 +133,6 @@ function CheckoutForm({
 
   const getPaymentMethodIcon = () => {
     switch (paymentMethod) {
-      case "transfer":
-        return <Building2 className="h-5 w-5 text-primary" />;
       case "direct_debit":
         return <Landmark className="h-5 w-5 text-primary" />;
       default:
@@ -145,8 +142,6 @@ function CheckoutForm({
 
   const getPaymentMethodLabel = () => {
     switch (paymentMethod) {
-      case "transfer":
-        return "Bank Transfer";
       case "direct_debit":
         return "Pre-authorized Debit";
       default:
@@ -168,25 +163,6 @@ function CheckoutForm({
           <span>{getPaymentMethodLabel()}</span>
         </div>
       </div>
-
-      {/* Payment Method Instructions */}
-      {paymentMethod === "transfer" && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800 p-4 space-y-3">
-          <div className="flex items-start gap-2">
-            <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                Bank Transfer Instructions
-              </p>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                Complete the payment form below to receive bank transfer
-                instructions. Your appointment will be confirmed once we receive
-                the funds (typically 1-3 business days).
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {paymentMethod === "direct_debit" && (
         <div className="rounded-lg border border-purple-200 bg-purple-50 dark:bg-purple-950/20 dark:border-purple-800 p-4 space-y-3">
@@ -242,11 +218,6 @@ function CheckoutForm({
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Processing...
           </>
-        ) : paymentMethod === "transfer" ? (
-          <>
-            <Building2 className="mr-2 h-4 w-4" />
-            Get Transfer Instructions - ${amount.toFixed(2)} CAD
-          </>
         ) : paymentMethod === "direct_debit" ? (
           <>
             <Landmark className="mr-2 h-4 w-4" />
@@ -263,11 +234,9 @@ function CheckoutForm({
       <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
         <Shield className="h-4 w-4" />
         <span>
-          {paymentMethod === "transfer"
-            ? "You'll receive bank transfer instructions after submitting."
-            : paymentMethod === "direct_debit"
-              ? "By authorizing, you agree to a one-time debit from your account."
-              : "Secured by Stripe"}
+          {paymentMethod === "direct_debit"
+            ? "By authorizing, you agree to a one-time debit from your account."
+            : "Secured by Stripe"}
         </span>
       </div>
     </form>
@@ -278,6 +247,7 @@ function GuestPaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
+  const t = useTranslations("Client.guestPay");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -292,6 +262,12 @@ function GuestPaymentContent() {
     useState<PaymentMethodType>("card");
   const [paymentMethodSelected, setPaymentMethodSelected] = useState(false);
   const [creatingIntent, setCreatingIntent] = useState(false);
+  const [guestSetupType, setGuestSetupType] =
+    useState<GuestSetupPaymentType>("card");
+  const [guestSetupSecret, setGuestSetupSecret] = useState<string | null>(null);
+  const [guestSetupStarted, setGuestSetupStarted] = useState(false);
+  const [creatingGuestSetup, setCreatingGuestSetup] = useState(false);
+  const [methodSetupSuccess, setMethodSetupSuccess] = useState(false);
 
   const fetchAppointment = useCallback(async () => {
     if (!token) {
@@ -376,6 +352,46 @@ function GuestPaymentContent() {
 
   const handlePaymentSuccess = () => {
     setPaymentSuccess(true);
+  };
+
+  const createGuestSetupIntent = async () => {
+    if (!token) return;
+    try {
+      setCreatingGuestSetup(true);
+      setError(null);
+      const res = await fetch("/api/payments/guest-appointment-setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          paymentMethodType: guestSetupType,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to start setup");
+      }
+      setGuestSetupSecret(data.clientSecret);
+      setGuestSetupStarted(true);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to start setup",
+      );
+    } finally {
+      setCreatingGuestSetup(false);
+    }
+  };
+
+  const handleGuestSetupSuccess = () => {
+    setMethodSetupSuccess(true);
+    setGuestSetupStarted(false);
+    setGuestSetupSecret(null);
+    if (appointment) {
+      setAppointment({
+        ...appointment,
+        hasPaymentMethodOnFile: true,
+      });
+    }
   };
 
   const handlePaymentError = (errorMessage: string) => {
@@ -543,6 +559,243 @@ function GuestPaymentContent() {
     );
   }
 
+  if (methodSetupSuccess && appointment) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
+        <div className="max-w-md w-full rounded-xl bg-card border border-border/40 p-8 text-center">
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+          </div>
+          <h1 className="text-2xl font-serif font-light text-foreground mb-2">
+            {t("setupSuccessTitle")}
+          </h1>
+          <p className="text-muted-foreground mb-6">{t("setupSuccessBody")}</p>
+          <Button variant="outline" onClick={() => router.push("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            {t("backHome")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (appointment?.appointmentStatus === "pending" && !alreadyPaid) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
+        <div className="max-w-md w-full rounded-xl bg-card border border-border/40 p-8 text-center">
+          <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h1 className="text-2xl font-serif font-light text-foreground mb-2">
+            {t("pendingTitle")}
+          </h1>
+          <p className="text-muted-foreground mb-6">{t("pendingBody")}</p>
+          <Button variant="outline" onClick={() => router.push("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            {t("backHome")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    appointment &&
+    appointment.appointmentStatus === "scheduled" &&
+    appointment.hasPaymentMethodOnFile &&
+    !alreadyPaid
+  ) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
+        <div className="max-w-md w-full rounded-xl bg-card border border-border/40 p-8 text-center">
+          <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-serif font-light text-foreground mb-2">
+            {t("scheduledReadyTitle")}
+          </h1>
+          <p className="text-muted-foreground mb-6">{t("scheduledReadyBody")}</p>
+          <p className="text-xs text-muted-foreground mb-6">{t("interacNote")}</p>
+          <Button variant="outline" onClick={() => router.push("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            {t("backHome")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    appointment &&
+    appointment.appointmentStatus === "scheduled" &&
+    !appointment.hasPaymentMethodOnFile
+  ) {
+    const guestSetupOptions: {
+      id: GuestSetupPaymentType;
+      label: string;
+      description: string;
+      icon: React.ReactNode;
+    }[] = [
+      {
+        id: "card",
+        label: "Credit / debit card",
+        description: "Secured by Stripe",
+        icon: <CreditCard className="h-5 w-5" />,
+      },
+      {
+        id: "acss_debit",
+        label: "Pre-authorized debit (Canada)",
+        description: "PAD via Stripe",
+        icon: <Landmark className="h-5 w-5" />,
+      },
+    ];
+
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20 py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-serif font-light text-foreground mb-2">
+              {t("setupTitle")}
+            </h1>
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              {t("setupSubtitle")}
+            </p>
+          </div>
+
+          {appointment && (
+            <div className="rounded-xl bg-card border border-border/40 p-6 mb-6">
+              <h2 className="text-lg font-medium text-foreground mb-4">
+                Appointment Details
+              </h2>
+              <div className="space-y-3 text-left text-sm">
+                <p>
+                  <span className="text-muted-foreground">Professional: </span>
+                  <span className="font-medium">{appointment.professionalName}</span>
+                </p>
+                <p>
+                  <span className="text-muted-foreground">When: </span>
+                  <span className="font-medium">
+                    {formatDate(appointment.date)} {appointment.time}
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-xl bg-card border border-border/40 p-6">
+            {!guestSetupStarted ? (
+              <div className="space-y-4">
+                <h2 className="text-lg font-medium text-foreground mb-4">
+                  {t("selectMethod")}
+                </h2>
+                <div className="space-y-3">
+                  {guestSetupOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setGuestSetupType(option.id)}
+                      className={cn(
+                        "w-full flex items-center gap-4 p-4 rounded-lg border transition-all text-left",
+                        guestSetupType === option.id
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border/40 bg-card/50 hover:bg-accent/50",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "rounded-full p-2.5",
+                          guestSetupType === option.id
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {option.icon}
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{option.label}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {option.description}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 p-4 flex gap-3">
+                    <AlertCircle className="h-5 w-5 shrink-0 text-red-600" />
+                    <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+                  </div>
+                )}
+                <Button
+                  className="w-full"
+                  size="lg"
+                  disabled={creatingGuestSetup}
+                  onClick={createGuestSetupIntent}
+                >
+                  {creatingGuestSetup ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("preparingSetup")}
+                    </>
+                  ) : (
+                    t("continueSecure")
+                  )}
+                </Button>
+              </div>
+            ) : (
+              guestSetupSecret &&
+              token && (
+                <div className="space-y-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGuestSetupStarted(false);
+                      setGuestSetupSecret(null);
+                      setError(null);
+                    }}
+                    className="text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    ← Change method
+                  </button>
+                  <GuestPaySetupFlow
+                    token={token}
+                    clientSecret={guestSetupSecret}
+                    paymentMethodType={guestSetupType}
+                    onSuccess={handleGuestSetupSuccess}
+                    onError={(msg) => setError(msg)}
+                  />
+                </div>
+              )
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground text-center mt-6">
+            {t("interacNote")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    appointment &&
+    appointment.appointmentStatus &&
+    appointment.appointmentStatus !== "completed" &&
+    !alreadyPaid
+  ) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
+        <div className="max-w-md w-full rounded-xl bg-card border border-border/40 p-8 text-center">
+          <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h1 className="text-xl font-serif font-light text-foreground mb-2">
+            {t("notAvailableTitle")}
+          </h1>
+          <p className="text-muted-foreground mb-6">{t("notAvailableBody")}</p>
+          <Button variant="outline" onClick={() => router.push("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            {t("backHome")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (paymentSuccess) {
     return (
       <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
@@ -551,18 +804,14 @@ function GuestPaymentContent() {
             <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
           <h1 className="text-2xl font-serif font-light text-foreground mb-2">
-            {selectedPaymentMethod === "transfer"
-              ? "Transfer Instructions Sent!"
-              : selectedPaymentMethod === "direct_debit"
-                ? "Pre-authorized Debit Set Up!"
-                : "Payment Successful!"}
+            {selectedPaymentMethod === "direct_debit"
+              ? "Pre-authorized Debit Set Up!"
+              : "Payment Successful!"}
           </h1>
           <p className="text-muted-foreground mb-6">
-            {selectedPaymentMethod === "transfer"
-              ? "Please complete the bank transfer to confirm your appointment. You will receive the transfer instructions via email."
-              : selectedPaymentMethod === "direct_debit"
-                ? "Your pre-authorized debit has been set up. Your appointment will be confirmed once the payment is processed."
-                : "Your payment has been processed successfully. You will receive a confirmation email with your session details shortly."}
+            {selectedPaymentMethod === "direct_debit"
+              ? "Your pre-authorized debit has been set up. Your appointment will be confirmed once the payment is processed."
+              : "Your payment has been processed successfully. You will receive a confirmation email with your session details shortly."}
           </p>
 
           {appointment && (
@@ -611,11 +860,10 @@ function GuestPaymentContent() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-serif font-light text-foreground mb-2">
-            Complete Your Payment
+            {t("payAfterSessionTitle")}
           </h1>
-          <p className="text-muted-foreground">
-            Your appointment has been confirmed. Complete your payment to secure
-            your session.
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            {t("payAfterSessionSubtitle")}
           </p>
         </div>
 
@@ -757,9 +1005,6 @@ function GuestPaymentContent() {
                   <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
                     {selectedPaymentMethod === "card" && (
                       <CreditCard className="h-5 w-5" />
-                    )}
-                    {selectedPaymentMethod === "transfer" && (
-                      <Building2 className="h-5 w-5" />
                     )}
                     {selectedPaymentMethod === "direct_debit" && (
                       <Landmark className="h-5 w-5" />

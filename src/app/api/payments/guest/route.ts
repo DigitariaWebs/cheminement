@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
@@ -48,9 +49,9 @@ export async function GET(req: NextRequest) {
     };
 
     const professional = appointment.professionalId as unknown as {
-      firstName: string;
-      lastName: string;
-    };
+      firstName?: string;
+      lastName?: string;
+    } | null;
 
     return NextResponse.json({
       appointmentId: appointment._id,
@@ -62,9 +63,16 @@ export async function GET(req: NextRequest) {
       price: appointment.payment.price,
       guestName: `${client.firstName} ${client.lastName}`,
       guestEmail: client.email,
-      professionalName: `${professional.firstName} ${professional.lastName}`,
+      professionalName: professional
+        ? `${professional.firstName ?? ""} ${professional.lastName ?? ""}`.trim() ||
+          "Professional"
+        : "Professional",
       alreadyPaid: appointment.payment.status === "paid",
       paidAt: appointment.payment.paidAt,
+      appointmentStatus: appointment.status,
+      hasPaymentMethodOnFile: Boolean(
+        appointment.payment.stripePaymentMethodId,
+      ),
     });
   } catch (error) {
     console.error("Error fetching guest appointment:", error);
@@ -89,8 +97,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate payment method
-    const validPaymentMethods = ["card", "transfer", "direct_debit"];
+    const validPaymentMethods = ["card", "direct_debit"];
     if (!validPaymentMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: "Invalid payment method" },
@@ -120,10 +127,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if appointment is confirmed (scheduled)
-    if (appointment.status !== "scheduled") {
+    if (appointment.status === "pending") {
+      return NextResponse.json(
+        {
+          error:
+            "This appointment is not yet confirmed by your professional.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (
+      appointment.status === "cancelled" ||
+      appointment.status === "no-show"
+    ) {
       return NextResponse.json(
         { error: "This appointment is not available for payment" },
+        { status: 400 },
+      );
+    }
+
+    // Guest pays the session fee only after it is marked completed
+    if (appointment.status !== "completed") {
+      return NextResponse.json(
+        {
+          error:
+            "Payment opens after your session is completed. Use the same link to register a payment method first, then pay once your professional has marked the meeting as done.",
+        },
         { status: 400 },
       );
     }
@@ -138,11 +168,29 @@ export async function POST(req: NextRequest) {
 
     const professional = appointment.professionalId as unknown as {
       _id: { toString: () => string };
-      firstName: string;
-      lastName: string;
-    };
+      firstName?: string;
+      lastName?: string;
+    } | null;
+
+    if (!professional?._id) {
+      return NextResponse.json(
+        {
+          error:
+            "This appointment has no professional assigned. Please contact support.",
+        },
+        { status: 400 },
+      );
+    }
 
     const amount = appointment.payment.price;
+
+    if (typeof amount !== "number" || amount <= 0 || !Number.isFinite(amount)) {
+      return NextResponse.json(
+        { error: "Invalid session amount for payment." },
+        { status: 400 },
+      );
+    }
+
     const platformFee = appointment.payment.platformFee;
     const professionalPayout = appointment.payment.professionalPayout;
 
@@ -178,9 +226,7 @@ export async function POST(req: NextRequest) {
     // Configure payment method types based on selected method
     let paymentMethodTypes: string[] = ["card"];
 
-    if (paymentMethod === "transfer") {
-      paymentMethodTypes = ["customer_balance"];
-    } else if (paymentMethod === "direct_debit") {
+    if (paymentMethod === "direct_debit") {
       paymentMethodTypes = ["acss_debit"];
     } else {
       paymentMethodTypes = ["card"];
@@ -205,7 +251,7 @@ export async function POST(req: NextRequest) {
         type: "guest_payment",
         paymentMethod: paymentMethod,
       },
-      description: `Therapy session with ${professional.firstName} ${professional.lastName} on ${appointment.date ? appointment.date.toLocaleDateString() : "TBD"}`,
+      description: `Therapy session with ${professional.firstName ?? ""} ${professional.lastName ?? ""} on ${appointment.date ? appointment.date.toLocaleDateString() : "TBD"}`,
       payment_method_types: paymentMethodTypes,
     };
 
@@ -218,21 +264,6 @@ export async function POST(req: NextRequest) {
             transaction_type: "personal",
           },
           verification_method: "automatic",
-        },
-      };
-    }
-
-    // Add funding instructions for bank transfer
-    if (paymentMethod === "transfer") {
-      paymentIntentConfig.payment_method_data = {
-        type: "customer_balance",
-      };
-      paymentIntentConfig.payment_method_options = {
-        customer_balance: {
-          funding_type: "bank_transfer",
-          bank_transfer: {
-            type: "us_bank_transfer",
-          },
         },
       };
     }
@@ -252,10 +283,30 @@ export async function POST(req: NextRequest) {
       amount: amount,
       currency: "CAD",
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error("Guest payment intent (Stripe):", error.message, error.code);
+      const status =
+        typeof error.statusCode === "number" &&
+        error.statusCode >= 400 &&
+        error.statusCode < 500
+          ? error.statusCode
+          : 400;
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: error.code,
+          type: error.type,
+        },
+        { status },
+      );
+    }
     console.error("Error creating guest payment intent:", error);
     return NextResponse.json(
-      { error: "Failed to create payment intent" },
+      {
+        error: "Failed to create payment intent",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }

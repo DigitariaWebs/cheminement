@@ -38,8 +38,29 @@ class ApiClient {
       const response = await fetch(`${this.baseURL}${endpoint}`, config);
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "An error occurred");
+        let body: {
+          error?: string;
+          details?: string | unknown;
+          code?: string;
+        } = {};
+        try {
+          body = await response.json();
+        } catch {
+          // Non-JSON error body
+        }
+        const main = body.error || "An error occurred";
+        const detail =
+          typeof body.details === "string"
+            ? body.details
+            : body.details != null
+              ? JSON.stringify(body.details)
+              : "";
+        const suffix = detail
+          ? `: ${detail}`
+          : body.code
+            ? ` (${body.code})`
+            : "";
+        throw new Error(`${main}${suffix}`);
       }
 
       return await response.json();
