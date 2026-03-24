@@ -1162,7 +1162,28 @@
       "lastName": "Nom de famille",
       "dateOfBirth": "Date de naissance",
       "gender": "Genre",
-      "language": "Langue préférée"
+      "language": "Langue préférée",
+      "loading": "Chargement...",
+      "noData": "Aucune donnée de profil disponible",
+      "notAvailable": "N/D",
+      "educationCredentials": "Formation et titres",
+      "education": "Formation",
+      "certifications": "Certifications",
+      "servicesOffered": "Services offerts",
+      "sessionTypes": "Types de séance",
+      "modalitiesLabel": "Modalités",
+      "languagesSpoken": "Langues parlées",
+      "pricingPayment": "Tarification et paiement",
+      "individualSession": "Séance individuelle",
+      "coupleSession": "Séance de couple",
+      "groupSession": "Séance de groupe",
+      "perSession": "par séance",
+      "pricingNotSet": "Tarifs non renseignés",
+      "paymentAgreement": "Entente de paiement",
+      "paymentAgreementPerSession": "À la séance",
+      "paymentAgreementWeekly": "Chaque semaine",
+      "paymentAgreementBiWeekly": "Aux deux semaines",
+      "paymentAgreementMonthly": "Mensuel"
     },
     "schedule": {
       "title": "Horaire de disponibilité",
@@ -1292,7 +1313,17 @@
       "step3": {
         "title": "Catégories d'âge",
         "subtitle": "Sélectionnez les groupes d'âge avec lesquels vous travaillez",
-        "minSelection": "Sélectionnez au moins une catégorie d'âge"
+        "minSelection": "Sélectionnez au moins une catégorie d'âge",
+        "diagnosedConditionsLabel": "Diagnostics traités (sélectionnez tous ceux qui s’appliquent)",
+        "diagnosedConditionsDesc": "Sélectionnez les diagnostics que vous traitez selon les catégories d’âge choisies.",
+        "selectAgeCategoryFirst": "Veuillez d’abord sélectionner au moins une catégorie d’âge ci-dessus.",
+        "ageCategoryLabels": {
+          "children": "Enfants (0–12 ans)",
+          "adolescents": "Adolescents (13–17 ans)",
+          "youngAdults": "Jeunes adultes (18–25 ans)",
+          "adults": "Adultes (26–64 ans)",
+          "seniors": "Aînés (65 ans et +)"
+        }
       },
       "step4": {
         "title": "Informations supplémentaires",
@@ -1305,12 +1336,24 @@
         "bio": "Biographie professionnelle",
         "bioRequired": "*",
         "bioPlaceholder": "Parlez-nous de votre approche, de votre expérience et de ce qui rend votre pratique unique...",
-        "bioMinLength": "La biographie doit contenir au moins 50 caractères"
+        "bioMinLength": "La biographie doit contenir au moins 50 caractères",
+        "skillLabels": {
+          "crisisIntervention": "Intervention de crise",
+          "groupTherapy": "Thérapie de groupe",
+          "couplesCounseling": "Thérapie de couple",
+          "familyTherapy": "Thérapie familiale",
+          "neuropsychologicalAssessment": "Évaluation neuropsychologique",
+          "psychometricTesting": "Tests psychométriques",
+          "bilingualFrEn": "Services bilingues (français/anglais)",
+          "culturalCompetency": "Compétence culturelle",
+          "lgbtqAffirmative": "Thérapie affirmative LGBTQ+"
+        }
       },
       "buttons": {
         "back": "Retour",
         "next": "Suivant",
-        "complete": "Compléter le profil"
+        "complete": "Compléter le profil",
+        "saveForLater": "Enregistrer pour plus tard"
       },
       "selected": "sélectionné"
     },
@@ -2643,6 +2686,14 @@
         "subtitle": "Quand et comment souhaitez-vous vous rencontrer?",
         "availability": "Disponibilité",
         "availabilityDesc": "Sélectionnez vos heures préférées",
+        "preferredTimeSlots": "Créneaux préférés",
+        "preferredTimeSlotsDesc": "Sélectionnez vos créneaux préférés pour les séances",
+        "timeSlotOptions": {
+          "morning": "Matin",
+          "afternoon": "Après-midi",
+          "evening": "Soir",
+          "weekends": "Week-ends"
+        },
         "modality": "Modalité préférée",
         "modalityPlaceholder": "Sélectionnez la modalité",
         "sessionFrequency": "Fréquence des séances",
@@ -2720,7 +2771,8 @@
         "completed": "Complété",
         "cancelled": "Annulé",
         "noShow": "Absence",
-        "pending": "En attente de confirmation"
+        "pending": "En attente de confirmation",
+        "ongoing": "En cours"
       },
       "details": {
         "professional": "Professionnel",
@@ -2738,6 +2790,7 @@
         "reschedule": "Replanifier",
         "cancel": "Annuler",
         "joinSession": "Rejoindre la séance",
+        "openMeetingLink": "Ouvrir le lien de la réunion",
         "addToCalendar": "Ajouter au calendrier",
         "getDirections": "Obtenir l'itinéraire",
         "review": "Laisser un avis"
@@ -2758,7 +2811,39 @@
       "confirmCancelMessage": "Êtes-vous sûr de vouloir annuler ce rendez-vous ? Cette action ne peut pas être annulée.",
       "cancelling": "Annulation...",
       "confirmCancel": "Oui, annuler le rendez-vous",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "toBeScheduled": "À planifier",
+      "concernLabel": "Préoccupation",
+      "cancelDialog": {
+        "title": "Annuler le rendez-vous",
+        "titleSuccess": "Rendez-vous annulé",
+        "descriptionAt": "{date} à {time}",
+        "successHeading": "Rendez-vous annulé avec succès",
+        "successEmail": "Vous recevrez un courriel de confirmation sous peu.",
+        "refundSummary": "Résumé du remboursement",
+        "refundDetails": "Détails du remboursement",
+        "originalAmount": "Montant initial",
+        "cancellationFee": "Frais d'annulation",
+        "cancellationFeePercent": "Frais d'annulation ({percent} %) :",
+        "refundAmount": "Montant remboursé",
+        "refundNote": "Le remboursement sera traité sur votre mode de paiement d'origine sous 5 à 10 jours ouvrables.",
+        "policyTitle": "Politique d'annulation",
+        "policyFree": "Vous pouvez annuler ce rendez-vous sans frais, car il est à plus de {hours} heures.",
+        "policyFee": "Les annulations moins de {hours} heures avant sont assujetties à des frais d'annulation de {percent} %.",
+        "timeUntilTitle": "Temps avant le rendez-vous",
+        "timeDaysHours": "{days} j, {hours} h",
+        "timeHoursMinutes": "{hours} h {minutes} min",
+        "reasonLabel": "Motif de l'annulation",
+        "reasonOptional": "(facultatif)",
+        "reasonPlaceholder": "Indiquez pourquoi vous annulez…",
+        "errorTitle": "Erreur",
+        "keepAppointment": "Conserver le rendez-vous",
+        "confirmCancel": "Annuler le rendez-vous",
+        "cancelling": "Annulation…",
+        "noReasonProvided": "Aucun motif fourni",
+        "failedToCancel": "Impossible d'annuler le rendez-vous",
+        "currencySuffix": "CAD"
+      }
     },
     "AppointmentForm": {
       "referrerSection": "Le Référent",
@@ -2806,7 +2891,8 @@
         "ageYounger": "Plus jeune (20–35 ans)",
         "ageMiddle": "Milieu de vie (36–55 ans)",
         "ageOlder": "Plus âgé (56 ans et +)",
-        "suicidalThoughtsWarning": "Le client a indiqué avoir eu des pensées suicidaires. Une attention immédiate peut être nécessaire."
+        "suicidalThoughtsWarning": "Le client a indiqué avoir eu des pensées suicidaires. Une attention immédiate peut être nécessaire.",
+        "suicidalThoughtsAck": "J'ai déjà eu des pensées suicidaires"
       }
     },
     "library": {
@@ -2927,11 +3013,14 @@
     "description": "Partagez votre expérience avec {professional}",
     "rating": "Évaluation",
     "comment": "Commentaire",
+    "commentOptional": "(facultatif)",
     "commentPlaceholder": "Parlez-nous de votre expérience...",
     "anonymous": "Soumettre anonymement",
     "cancel": "Annuler",
     "submit": "Soumettre l'avis",
-    "submitting": "Soumission..."
+    "submitting": "Soumission...",
+    "ratingRequired": "Veuillez sélectionner une note",
+    "submitFailed": "Impossible d'envoyer l'avis"
   },
   "managedAccounts": {
     "title": "Comptes gérés",

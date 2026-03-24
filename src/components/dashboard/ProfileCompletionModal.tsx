@@ -240,24 +240,53 @@ export default function ProfileCompletionModal({
 
   const therapeuticApproaches = APPROACHES_ET_THERAPIES;
 
-  const ageCategories = [
-    "Children (0-12)",
-    "Adolescents (13-17)",
-    "Young Adults (18-25)",
-    "Adults (26-64)",
-    "Seniors (65+)",
+  const ageCategoryOptions: {
+    value: string;
+    labelKey:
+      | "children"
+      | "adolescents"
+      | "youngAdults"
+      | "adults"
+      | "seniors";
+  }[] = [
+    { value: "Children (0-12)", labelKey: "children" },
+    { value: "Adolescents (13-17)", labelKey: "adolescents" },
+    { value: "Young Adults (18-25)", labelKey: "youngAdults" },
+    { value: "Adults (26-64)", labelKey: "adults" },
+    { value: "Seniors (65+)", labelKey: "seniors" },
   ];
 
-  const skills = [
-    "Crisis Intervention",
-    "Group Therapy",
-    "Couples Counseling",
-    "Family Therapy",
-    "Neuropsychological Assessment",
-    "Psychometric Testing",
-    "Bilingual Services (French/English)",
-    "Cultural Competency",
-    "LGBTQ+ Affirmative Therapy",
+  const skillOptions: {
+    value: string;
+    labelKey:
+      | "crisisIntervention"
+      | "groupTherapy"
+      | "couplesCounseling"
+      | "familyTherapy"
+      | "neuropsychologicalAssessment"
+      | "psychometricTesting"
+      | "bilingualFrEn"
+      | "culturalCompetency"
+      | "lgbtqAffirmative";
+  }[] = [
+    { value: "Crisis Intervention", labelKey: "crisisIntervention" },
+    { value: "Group Therapy", labelKey: "groupTherapy" },
+    { value: "Couples Counseling", labelKey: "couplesCounseling" },
+    { value: "Family Therapy", labelKey: "familyTherapy" },
+    {
+      value: "Neuropsychological Assessment",
+      labelKey: "neuropsychologicalAssessment",
+    },
+    { value: "Psychometric Testing", labelKey: "psychometricTesting" },
+    {
+      value: "Bilingual Services (French/English)",
+      labelKey: "bilingualFrEn",
+    },
+    { value: "Cultural Competency", labelKey: "culturalCompetency" },
+    {
+      value: "LGBTQ+ Affirmative Therapy",
+      labelKey: "lgbtqAffirmative",
+    },
   ];
 
   const handleMultiSelect = (field: keyof ProfileData, value: string) => {
@@ -433,18 +462,18 @@ export default function ProfileCompletionModal({
                 </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {ageCategories.map((item) => (
+                {ageCategoryOptions.map(({ value, labelKey }) => (
                   <button
-                    key={item}
+                    key={value}
                     type="button"
-                    onClick={() => handleMultiSelect("ageCategories", item)}
+                    onClick={() => handleMultiSelect("ageCategories", value)}
                     className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                      formData.ageCategories.includes(item)
+                      formData.ageCategories.includes(value)
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted/50 text-foreground hover:bg-muted"
                     }`}
                   >
-                    {item}
+                    {t(`step3.ageCategoryLabels.${labelKey}`)}
                   </button>
                 ))}
               </div>
@@ -452,12 +481,10 @@ export default function ProfileCompletionModal({
               {/* Diagnosed Conditions Selection */}
               <div className="space-y-2 mt-6">
                 <Label className="font-light mb-3 text-base">
-                  Diagnostics traités (sélectionnez tous ceux qui
-                  s&apos;appliquent)
+                  {t("step3.diagnosedConditionsLabel")}
                 </Label>
                 <p className="text-sm text-muted-foreground font-light mb-4">
-                  Sélectionnez les diagnostics que vous traitez selon les
-                  catégories d&apos;âge choisies
+                  {t("step3.diagnosedConditionsDesc")}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto">
                   {(() => {
@@ -479,14 +506,20 @@ export default function ProfileCompletionModal({
                     // Problématiques et mandats (adultes)
                     const adultDiagnosedConditions = ADULT_PROBLEMATICS;
 
-                    // Combine lists based on what the professional treats
+                    // Combine lists based on what the professional treats.
+                    // Deduplicate when merging: child/adult lists may share identical labels.
                     let conditionsList: string[] = [];
                     if (treatsChildren && treatsAdults) {
-                      // If treats both, show both lists
-                      conditionsList = [
+                      const seen = new Set<string>();
+                      for (const entry of [
                         ...childDiagnosedConditions,
                         ...adultDiagnosedConditions,
-                      ];
+                      ]) {
+                        if (!seen.has(entry)) {
+                          seen.add(entry);
+                          conditionsList.push(entry);
+                        }
+                      }
                     } else if (treatsChildren) {
                       conditionsList = childDiagnosedConditions;
                     } else if (treatsAdults) {
@@ -512,8 +545,7 @@ export default function ProfileCompletionModal({
                       ))
                     ) : (
                       <p className="text-sm text-muted-foreground col-span-3">
-                        Veuillez d&apos;abord sélectionner au moins une
-                        catégorie d&apos;âge ci-dessus
+                        {t("step3.selectAgeCategoryFirst")}
                       </p>
                     );
                   })()}
@@ -566,18 +598,18 @@ export default function ProfileCompletionModal({
                   {t("step4.additionalSkillsDesc")}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {skills.map((item) => (
+                  {skillOptions.map(({ value, labelKey }) => (
                     <button
-                      key={item}
+                      key={value}
                       type="button"
-                      onClick={() => handleMultiSelect("skills", item)}
+                      onClick={() => handleMultiSelect("skills", value)}
                       className={`rounded-lg px-4 py-3 text-sm font-light text-left transition-all ${
-                        formData.skills.includes(item)
+                        formData.skills.includes(value)
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted/50 text-foreground hover:bg-muted"
                       }`}
                     >
-                      {item}
+                      {t(`step4.skillLabels.${labelKey}`)}
                     </button>
                   ))}
                 </div>
@@ -625,7 +657,7 @@ export default function ProfileCompletionModal({
               onClick={onClose}
               className="px-6 py-3 text-foreground font-light transition-colors hover:text-muted-foreground"
             >
-              Save for Later
+              {t("buttons.saveForLater")}
             </button>
             {currentStep < STEPS.length - 1 ? (
               <button

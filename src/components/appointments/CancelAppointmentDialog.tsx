@@ -21,6 +21,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 
 interface CancelAppointmentDialogProps {
   open: boolean;
@@ -46,6 +47,7 @@ export default function CancelAppointmentDialog({
   isPaid,
   onSuccess,
 }: CancelAppointmentDialogProps) {
+  const t = useTranslations("Client.appointments.cancelDialog");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +91,7 @@ export default function CancelAppointmentDialog({
 
       await apiClient.patch(`/appointments/${appointmentId}`, {
         status: "cancelled",
-        cancelReason: reason || "No reason provided",
+        cancelReason: reason || t("noReasonProvided"),
       });
 
       // Show success state with calculated refund details
@@ -113,7 +115,7 @@ export default function CancelAppointmentDialog({
     } catch (err) {
       console.error("Error cancelling appointment:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to cancel appointment",
+        err instanceof Error ? err.message : t("failedToCancel"),
       );
     } finally {
       setLoading(false);
@@ -125,10 +127,13 @@ export default function CancelAppointmentDialog({
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl font-serif font-light">
-            {success ? "Appointment Cancelled" : "Cancel Appointment"}
+            {success ? t("titleSuccess") : t("title")}
           </DialogTitle>
           <DialogDescription>
-            {appointmentDate} at {appointmentTime}
+            {t("descriptionAt", {
+              date: appointmentDate ?? "",
+              time: appointmentTime ?? "",
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -140,10 +145,10 @@ export default function CancelAppointmentDialog({
                   <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
                   <div>
                     <p className="text-lg font-medium text-green-800 dark:text-green-200">
-                      Appointment Cancelled Successfully
+                      {t("successHeading")}
                     </p>
                     <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      You will receive a confirmation email shortly
+                      {t("successEmail")}
                     </p>
                   </div>
                 </div>
@@ -153,36 +158,39 @@ export default function CancelAppointmentDialog({
                 <div className="rounded-lg border border-border/40 bg-muted/30 p-4 space-y-3">
                   <div className="flex items-center gap-3 mb-2">
                     <DollarSign className="h-5 w-5 text-primary" />
-                    <span className="text-sm font-medium">Refund Summary</span>
+                    <span className="text-sm font-medium">{t("refundSummary")}</span>
                   </div>
 
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">
-                        Original Amount:
+                        {t("originalAmount")}:
                       </span>
                       <span className="font-medium text-foreground">
-                        ${refundDetails.originalAmount.toFixed(2)} CAD
+                        ${refundDetails.originalAmount.toFixed(2)}{" "}
+                        {t("currencySuffix")}
                       </span>
                     </div>
 
                     {refundDetails.cancellationFee > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">
-                          Cancellation Fee:
+                          {t("cancellationFee")}:
                         </span>
                         <span className="font-medium text-red-600 dark:text-red-400">
-                          -${refundDetails.cancellationFee.toFixed(2)} CAD
+                          -${refundDetails.cancellationFee.toFixed(2)}{" "}
+                          {t("currencySuffix")}
                         </span>
                       </div>
                     )}
 
                     <div className="flex items-center justify-between pt-2 border-t border-border/40">
                       <span className="font-medium text-foreground">
-                        Refund Amount:
+                        {t("refundAmount")}:
                       </span>
                       <span className="text-lg font-semibold text-green-600 dark:text-green-400">
-                        ${refundDetails.refundAmount.toFixed(2)} CAD
+                        ${refundDetails.refundAmount.toFixed(2)}{" "}
+                        {t("currencySuffix")}
                       </span>
                     </div>
                   </div>
@@ -190,8 +198,7 @@ export default function CancelAppointmentDialog({
                   <div className="flex items-start gap-2 mt-3 pt-3 border-t border-border/40">
                     <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <p className="text-xs text-muted-foreground">
-                      The refund will be processed to your original payment
-                      method within 5-10 business days.
+                      {t("refundNote")}
                     </p>
                   </div>
                 </div>
@@ -205,22 +212,17 @@ export default function CancelAppointmentDialog({
                   <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 mt-0.5 shrink-0" />
                   <div className="flex-1">
                     <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-                      Cancellation Policy
+                      {t("policyTitle")}
                     </p>
                     <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                      {isFreeCancel ? (
-                        <>
-                          You can cancel this appointment for free since
-                          it&apos;s more than {HOURS_FOR_FREE_CANCELLATION}{" "}
-                          hours away.
-                        </>
-                      ) : (
-                        <>
-                          Cancellations within {HOURS_FOR_FREE_CANCELLATION}{" "}
-                          hours are subject to a {CANCELLATION_FEE_PERCENTAGE}%
-                          cancellation fee.
-                        </>
-                      )}
+                      {isFreeCancel
+                        ? t("policyFree", {
+                            hours: HOURS_FOR_FREE_CANCELLATION,
+                          })
+                        : t("policyFee", {
+                            hours: HOURS_FOR_FREE_CANCELLATION,
+                            percent: CANCELLATION_FEE_PERCENTAGE,
+                          })}
                     </p>
                   </div>
                 </div>
@@ -231,13 +233,19 @@ export default function CancelAppointmentDialog({
                 <div className="flex items-center gap-3 mb-3">
                   <Clock className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium">
-                    Time Until Appointment
+                    {t("timeUntilTitle")}
                   </span>
                 </div>
                 <p className="text-2xl font-semibold text-foreground">
                   {hoursUntilAppointment >= 24
-                    ? `${Math.floor(hoursUntilAppointment / 24)} days, ${Math.floor(hoursUntilAppointment % 24)} hours`
-                    : `${Math.floor(hoursUntilAppointment)} hours, ${Math.floor((hoursUntilAppointment % 1) * 60)} minutes`}
+                    ? t("timeDaysHours", {
+                        days: Math.floor(hoursUntilAppointment / 24),
+                        hours: Math.floor(hoursUntilAppointment % 24),
+                      })
+                    : t("timeHoursMinutes", {
+                        hours: Math.floor(hoursUntilAppointment),
+                        minutes: Math.floor((hoursUntilAppointment % 1) * 60),
+                      })}
                 </p>
               </div>
 
@@ -246,36 +254,40 @@ export default function CancelAppointmentDialog({
                 <div className="rounded-lg border border-border/40 bg-muted/30 p-4 space-y-3">
                   <div className="flex items-center gap-3 mb-3">
                     <DollarSign className="h-5 w-5 text-primary" />
-                    <span className="text-sm font-medium">Refund Details</span>
+                    <span className="text-sm font-medium">
+                      {t("refundDetails")}
+                    </span>
                   </div>
 
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">
-                        Original Amount:
+                        {t("originalAmount")}:
                       </span>
                       <span className="font-medium text-foreground">
-                        ${amount.toFixed(2)} CAD
+                        ${amount.toFixed(2)} {t("currencySuffix")}
                       </span>
                     </div>
 
                     {!isFreeCancel && (
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">
-                          Cancellation Fee ({CANCELLATION_FEE_PERCENTAGE}%):
+                          {t("cancellationFeePercent", {
+                            percent: CANCELLATION_FEE_PERCENTAGE,
+                          })}
                         </span>
                         <span className="font-medium text-red-600 dark:text-red-400">
-                          -${cancellationFee.toFixed(2)} CAD
+                          -${cancellationFee.toFixed(2)} {t("currencySuffix")}
                         </span>
                       </div>
                     )}
 
                     <div className="flex items-center justify-between pt-2 border-t border-border/40">
                       <span className="font-medium text-foreground">
-                        Refund Amount:
+                        {t("refundAmount")}:
                       </span>
                       <span className="text-lg font-semibold text-green-600 dark:text-green-400">
-                        ${refundAmount.toFixed(2)} CAD
+                        ${refundAmount.toFixed(2)} {t("currencySuffix")}
                       </span>
                     </div>
                   </div>
@@ -283,8 +295,7 @@ export default function CancelAppointmentDialog({
                   <div className="flex items-start gap-2 mt-3 pt-3 border-t border-border/40">
                     <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <p className="text-xs text-muted-foreground">
-                      The refund will be processed to your original payment
-                      method within 5-10 business days.
+                      {t("refundNote")}
                     </p>
                   </div>
                 </div>
@@ -293,12 +304,14 @@ export default function CancelAppointmentDialog({
               {/* Cancellation Reason */}
               <div className="space-y-2">
                 <Label htmlFor="reason">
-                  Reason for Cancellation{" "}
-                  <span className="text-muted-foreground">(Optional)</span>
+                  {t("reasonLabel")}{" "}
+                  <span className="text-muted-foreground">
+                    {t("reasonOptional")}
+                  </span>
                 </Label>
                 <Textarea
                   id="reason"
-                  placeholder="Let us know why you're cancelling..."
+                  placeholder={t("reasonPlaceholder")}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   rows={3}
@@ -313,7 +326,7 @@ export default function CancelAppointmentDialog({
                     <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-red-800 dark:text-red-200">
-                        Error
+                        {t("errorTitle")}
                       </p>
                       <p className="text-sm text-red-700 dark:text-red-300 mt-1">
                         {error}
@@ -333,7 +346,7 @@ export default function CancelAppointmentDialog({
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
-              Keep Appointment
+              {t("keepAppointment")}
             </Button>
             <Button
               variant="destructive"
@@ -341,7 +354,7 @@ export default function CancelAppointmentDialog({
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Cancelling..." : "Cancel Appointment"}
+              {loading ? t("cancelling") : t("confirmCancel")}
             </Button>
           </DialogFooter>
         )}

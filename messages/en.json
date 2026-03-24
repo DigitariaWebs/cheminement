@@ -1162,7 +1162,28 @@
       "lastName": "Last Name",
       "dateOfBirth": "Date of Birth",
       "gender": "Gender",
-      "language": "Preferred Language"
+      "language": "Preferred Language",
+      "loading": "Loading...",
+      "noData": "No profile data available",
+      "notAvailable": "N/A",
+      "educationCredentials": "Education & credentials",
+      "education": "Education",
+      "certifications": "Certifications",
+      "servicesOffered": "Services offered",
+      "sessionTypes": "Session types",
+      "modalitiesLabel": "Modalities",
+      "languagesSpoken": "Languages spoken",
+      "pricingPayment": "Pricing & payment",
+      "individualSession": "Individual session",
+      "coupleSession": "Couple session",
+      "groupSession": "Group session",
+      "perSession": "per session",
+      "pricingNotSet": "Pricing not set",
+      "paymentAgreement": "Payment agreement",
+      "paymentAgreementPerSession": "Per session",
+      "paymentAgreementWeekly": "Weekly",
+      "paymentAgreementBiWeekly": "Every two weeks",
+      "paymentAgreementMonthly": "Monthly"
     },
     "schedule": {
       "title": "Availability Schedule",
@@ -1292,7 +1313,17 @@
       "step3": {
         "title": "Age Categories",
         "subtitle": "Select the age groups you work with",
-        "minSelection": "Select at least one age category"
+        "minSelection": "Select at least one age category",
+        "diagnosedConditionsLabel": "Conditions you treat (select all that apply)",
+        "diagnosedConditionsDesc": "Select the diagnoses you treat based on the age categories chosen above.",
+        "selectAgeCategoryFirst": "Please select at least one age category above first.",
+        "ageCategoryLabels": {
+          "children": "Children (0–12)",
+          "adolescents": "Adolescents (13–17)",
+          "youngAdults": "Young adults (18–25)",
+          "adults": "Adults (26–64)",
+          "seniors": "Seniors (65+)"
+        }
       },
       "step4": {
         "title": "Additional Information",
@@ -1305,12 +1336,24 @@
         "bio": "Professional Bio",
         "bioRequired": "*",
         "bioPlaceholder": "Tell us about your approach, experience, and what makes your practice unique...",
-        "bioMinLength": "Bio must be at least 50 characters"
+        "bioMinLength": "Bio must be at least 50 characters",
+        "skillLabels": {
+          "crisisIntervention": "Crisis intervention",
+          "groupTherapy": "Group therapy",
+          "couplesCounseling": "Couples counseling",
+          "familyTherapy": "Family therapy",
+          "neuropsychologicalAssessment": "Neuropsychological assessment",
+          "psychometricTesting": "Psychometric testing",
+          "bilingualFrEn": "Bilingual services (French/English)",
+          "culturalCompetency": "Cultural competency",
+          "lgbtqAffirmative": "LGBTQ+ affirmative therapy"
+        }
       },
       "buttons": {
         "back": "Back",
         "next": "Next",
-        "complete": "Complete Profile"
+        "complete": "Complete Profile",
+        "saveForLater": "Save for Later"
       },
       "selected": "selected"
     },
@@ -2638,6 +2681,14 @@
         "subtitle": "When and how would you like to meet?",
         "availability": "Availability",
         "availabilityDesc": "Select your preferred times",
+        "preferredTimeSlots": "Preferred time slots",
+        "preferredTimeSlotsDesc": "Select your preferred times for sessions",
+        "timeSlotOptions": {
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening",
+          "weekends": "Weekends"
+        },
         "modality": "Preferred Modality",
         "modalityPlaceholder": "Select modality",
         "sessionFrequency": "Session Frequency",
@@ -2720,7 +2771,8 @@
         "completed": "Completed",
         "cancelled": "Cancelled",
         "noShow": "No Show",
-        "pending": "Pending Confirmation"
+        "pending": "Pending Confirmation",
+        "ongoing": "In progress"
       },
       "details": {
         "professional": "Professional",
@@ -2738,6 +2790,7 @@
         "reschedule": "Reschedule",
         "cancel": "Cancel",
         "joinSession": "Join Session",
+        "openMeetingLink": "Open meeting link",
         "addToCalendar": "Add to Calendar",
         "getDirections": "Get Directions",
         "review": "Leave Review"
@@ -2753,7 +2806,39 @@
         "refunded": "Refunded"
       },
       "minutes": "min",
-      "with": "with"
+      "with": "with",
+      "toBeScheduled": "To be scheduled",
+      "concernLabel": "Concern",
+      "cancelDialog": {
+        "title": "Cancel Appointment",
+        "titleSuccess": "Appointment cancelled",
+        "descriptionAt": "{date} at {time}",
+        "successHeading": "Appointment cancelled successfully",
+        "successEmail": "You will receive a confirmation email shortly.",
+        "refundSummary": "Refund summary",
+        "refundDetails": "Refund details",
+        "originalAmount": "Original amount",
+        "cancellationFee": "Cancellation fee",
+        "cancellationFeePercent": "Cancellation fee ({percent}%):",
+        "refundAmount": "Refund amount",
+        "refundNote": "The refund will be processed to your original payment method within 5–10 business days.",
+        "policyTitle": "Cancellation policy",
+        "policyFree": "You can cancel this appointment for free because it is more than {hours} hours away.",
+        "policyFee": "Cancellations within {hours} hours are subject to a {percent}% cancellation fee.",
+        "timeUntilTitle": "Time until appointment",
+        "timeDaysHours": "{days} days, {hours} hours",
+        "timeHoursMinutes": "{hours} hours, {minutes} minutes",
+        "reasonLabel": "Reason for cancellation",
+        "reasonOptional": "(optional)",
+        "reasonPlaceholder": "Let us know why you are cancelling…",
+        "errorTitle": "Error",
+        "keepAppointment": "Keep appointment",
+        "confirmCancel": "Cancel appointment",
+        "cancelling": "Cancelling…",
+        "noReasonProvided": "No reason provided",
+        "failedToCancel": "Failed to cancel appointment",
+        "currencySuffix": "CAD"
+      }
     },
     "AppointmentForm": {
       "referrerSection": "Referrer",
@@ -2801,7 +2886,8 @@
         "ageYounger": "Younger (20–35)",
         "ageMiddle": "Middle-aged (36–55)",
         "ageOlder": "Older (56+)",
-        "suicidalThoughtsWarning": "The client has reported experiencing suicidal thoughts. Immediate attention may be required."
+        "suicidalThoughtsWarning": "The client has reported experiencing suicidal thoughts. Immediate attention may be required.",
+        "suicidalThoughtsAck": "I have experienced suicidal thoughts"
       }
     },
     "library": {
@@ -2922,11 +3008,14 @@
     "description": "Share your experience with {professional}",
     "rating": "Rating",
     "comment": "Comment",
+    "commentOptional": "(optional)",
     "commentPlaceholder": "Tell us about your experience...",
     "anonymous": "Submit anonymously",
     "cancel": "Cancel",
     "submit": "Submit Review",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "ratingRequired": "Please select a rating",
+    "submitFailed": "Failed to submit review"
   },
   "managedAccounts": {
     "title": "Managed Accounts",

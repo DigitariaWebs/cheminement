@@ -28,6 +28,42 @@ const isProfileCompleted = (profile: IProfile | null): boolean => {
   );
 };
 
+function translatePaymentAgreement(
+  value: string,
+  t: (key: string) => string,
+): string {
+  const key = value.toLowerCase().trim().replace(/\s+/g, "-");
+  if (key === "per-session") return t("paymentAgreementPerSession");
+  if (key === "weekly") return t("paymentAgreementWeekly");
+  if (key === "bi-weekly" || key === "biweekly")
+    return t("paymentAgreementBiWeekly");
+  if (key === "monthly") return t("paymentAgreementMonthly");
+  return value.replace(/-/g, " ");
+}
+
+const AGE_CATEGORY_LABEL_KEYS: Record<
+  string,
+  "children" | "adolescents" | "youngAdults" | "adults" | "seniors"
+> = {
+  "Children (0-12)": "children",
+  "Adolescents (13-17)": "adolescents",
+  "Young Adults (18-25)": "youngAdults",
+  "Adults (26-64)": "adults",
+  "Seniors (65+)": "seniors",
+};
+
+const SKILL_LABEL_KEYS: Record<string, string> = {
+  "Crisis Intervention": "crisisIntervention",
+  "Group Therapy": "groupTherapy",
+  "Couples Counseling": "couplesCounseling",
+  "Family Therapy": "familyTherapy",
+  "Neuropsychological Assessment": "neuropsychologicalAssessment",
+  "Psychometric Testing": "psychometricTesting",
+  "Bilingual Services (French/English)": "bilingualFrEn",
+  "Cultural Competency": "culturalCompetency",
+  "LGBTQ+ Affirmative Therapy": "lgbtqAffirmative",
+};
+
 export default function ProfessionalProfile({
   profile,
   userId,
@@ -35,6 +71,17 @@ export default function ProfessionalProfile({
   isEditable = false,
 }: ProfessionalProfileProps) {
   const t = useTranslations("Dashboard.profile");
+  const tModal = useTranslations("Dashboard.profileModal");
+
+  const translateAgeCategoryLabel = (value: string) => {
+    const key = AGE_CATEGORY_LABEL_KEYS[value];
+    return key ? tModal(`step3.ageCategoryLabels.${key}`) : value;
+  };
+
+  const translateSkillLabel = (value: string) => {
+    const key = SKILL_LABEL_KEYS[value];
+    return key ? tModal(`step4.skillLabels.${key}`) : value;
+  };
   const [professionalProfile, setProfessionalProfile] =
     useState<IProfile | null>(profile || null);
   const [isLoading, setIsLoading] = useState(!profile);
@@ -75,7 +122,7 @@ export default function ProfessionalProfile({
     return (
       <div className="rounded-xl bg-card p-6">
         <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t("loading")}</p>
         </div>
       </div>
     );
@@ -85,7 +132,7 @@ export default function ProfessionalProfile({
     return (
       <div className="rounded-xl bg-card p-6">
         <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-muted-foreground">No profile data available</p>
+          <p className="text-muted-foreground">{t("noData")}</p>
         </div>
       </div>
     );
@@ -122,14 +169,14 @@ export default function ProfessionalProfile({
           <div>
             <Label className="font-light mb-2">{t("license")}</Label>
             <p className="text-foreground">
-              {professionalProfile?.license || "N/A"}
+              {professionalProfile?.license || t("notAvailable")}
             </p>
           </div>
 
           <div>
             <Label className="font-light mb-2">{t("specialty")}</Label>
             <p className="text-foreground capitalize">
-              {professionalProfile?.specialty || "N/A"}
+              {professionalProfile?.specialty || t("notAvailable")}
             </p>
           </div>
         </div>
@@ -173,7 +220,7 @@ export default function ProfessionalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
 
@@ -194,7 +241,7 @@ export default function ProfessionalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
 
@@ -210,12 +257,12 @@ export default function ProfessionalProfile({
                     key={item}
                     className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-light"
                   >
-                    {item}
+                    {translateAgeCategoryLabel(item)}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
 
@@ -231,12 +278,12 @@ export default function ProfessionalProfile({
                     key={item}
                     className="px-3 py-1.5 bg-muted text-foreground rounded-full text-sm font-light"
                   >
-                    {item}
+                    {translateSkillLabel(item)}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
         </div>
@@ -254,7 +301,7 @@ export default function ProfessionalProfile({
           <div>
             <Label className="font-light mb-2 text-base">{t("yearsExp")}</Label>
             <p className="text-foreground">
-              {professionalProfile.yearsOfExperience || "N/A"}{" "}
+              {professionalProfile.yearsOfExperience || t("notAvailable")}{" "}
               {professionalProfile.yearsOfExperience ? t("years") : ""}
             </p>
           </div>
@@ -262,7 +309,7 @@ export default function ProfessionalProfile({
           <div>
             <Label className="font-light mb-2 text-base">{t("bio")}</Label>
             <p className="text-foreground leading-relaxed">
-              {professionalProfile?.bio || "N/A"}
+              {professionalProfile?.bio || t("notAvailable")}
             </p>
           </div>
         </div>
@@ -271,14 +318,16 @@ export default function ProfessionalProfile({
       {/* Education & Certifications */}
       <div className="rounded-xl bg-card p-6">
         <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          Education & Credentials
+          {t("educationCredentials")}
         </h2>
 
         <div className="space-y-6">
           {professionalProfile?.education &&
           professionalProfile.education.length > 0 ? (
             <div>
-              <Label className="font-light mb-3 text-base">Education</Label>
+              <Label className="font-light mb-3 text-base">
+                {t("education")}
+              </Label>
               <div className="space-y-3">
                 {professionalProfile.education.map((edu, index) => (
                   <div key={index} className="p-4 bg-muted/30 rounded-lg">
@@ -297,8 +346,8 @@ export default function ProfessionalProfile({
             </div>
           ) : (
             <div>
-              <Label className="font-light mb-3 text-base">Education</Label>
-              <p className="text-muted-foreground">N/A</p>
+              <Label className="font-light mb-3 text-base">{t("education")}</Label>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             </div>
           )}
 
@@ -306,7 +355,7 @@ export default function ProfessionalProfile({
           professionalProfile.certifications.length > 0 ? (
             <div>
               <Label className="font-light mb-3 text-base">
-                Certifications
+                {t("certifications")}
               </Label>
               <div className="flex flex-wrap gap-2">
                 {professionalProfile.certifications.map((cert) => (
@@ -322,9 +371,9 @@ export default function ProfessionalProfile({
           ) : (
             <div>
               <Label className="font-light mb-3 text-base">
-                Certifications
+                {t("certifications")}
               </Label>
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             </div>
           )}
         </div>
@@ -333,12 +382,14 @@ export default function ProfessionalProfile({
       {/* Session Types & Modalities */}
       <div className="rounded-xl bg-card p-6">
         <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          Services Offered
+          {t("servicesOffered")}
         </h2>
 
         <div className="space-y-6">
           <div>
-            <Label className="font-light mb-3 text-base">Session Types</Label>
+            <Label className="font-light mb-3 text-base">
+              {t("sessionTypes")}
+            </Label>
             {professionalProfile?.sessionTypes &&
             professionalProfile.sessionTypes.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -352,12 +403,14 @@ export default function ProfessionalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
 
           <div>
-            <Label className="font-light mb-3 text-base">Modalities</Label>
+            <Label className="font-light mb-3 text-base">
+              {t("modalitiesLabel")}
+            </Label>
             {professionalProfile?.modalities &&
             professionalProfile.modalities.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -371,13 +424,13 @@ export default function ProfessionalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
 
           <div>
             <Label className="font-light mb-3 text-base">
-              Languages Spoken
+              {t("languagesSpoken")}
             </Label>
             {professionalProfile?.languages &&
             professionalProfile.languages.length > 0 ? (
@@ -392,7 +445,7 @@ export default function ProfessionalProfile({
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">N/A</p>
+              <p className="text-muted-foreground">{t("notAvailable")}</p>
             )}
           </div>
         </div>
@@ -401,7 +454,7 @@ export default function ProfessionalProfile({
       {/* Pricing & Payment */}
       <div className="rounded-xl bg-card p-6">
         <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          Pricing & Payment
+          {t("pricingPayment")}
         </h2>
 
         <div className="space-y-4">
@@ -410,36 +463,42 @@ export default function ProfessionalProfile({
               {professionalProfile.pricing.individualSession && (
                 <div className="p-4 bg-muted/30 rounded-lg">
                   <Label className="font-light mb-1 text-sm">
-                    Individual Session
+                    {t("individualSession")}
                   </Label>
                   <p className="text-2xl font-medium text-foreground">
                     ${professionalProfile.pricing.individualSession}
                   </p>
-                  <p className="text-xs text-muted-foreground">per session</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("perSession")}
+                  </p>
                 </div>
               )}
 
               {professionalProfile.pricing.coupleSession && (
                 <div className="p-4 bg-muted/30 rounded-lg">
                   <Label className="font-light mb-1 text-sm">
-                    Couple Session
+                    {t("coupleSession")}
                   </Label>
                   <p className="text-2xl font-medium text-foreground">
                     ${professionalProfile.pricing.coupleSession}
                   </p>
-                  <p className="text-xs text-muted-foreground">per session</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("perSession")}
+                  </p>
                 </div>
               )}
 
               {professionalProfile.pricing.groupSession && (
                 <div className="p-4 bg-muted/30 rounded-lg">
                   <Label className="font-light mb-1 text-sm">
-                    Group Session
+                    {t("groupSession")}
                   </Label>
                   <p className="text-2xl font-medium text-foreground">
                     ${professionalProfile.pricing.groupSession}
                   </p>
-                  <p className="text-xs text-muted-foreground">per session</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("perSession")}
+                  </p>
                 </div>
               )}
             </div>
@@ -448,16 +507,16 @@ export default function ProfessionalProfile({
           {!professionalProfile?.pricing?.individualSession &&
             !professionalProfile?.pricing?.coupleSession &&
             !professionalProfile?.pricing?.groupSession && (
-              <p className="text-muted-foreground">Pricing not set</p>
+              <p className="text-muted-foreground">{t("pricingNotSet")}</p>
             )}
 
           {professionalProfile?.paymentAgreement && (
             <div>
               <Label className="font-light mb-2 text-base">
-                Payment Agreement
+                {t("paymentAgreement")}
               </Label>
-              <p className="text-foreground capitalize">
-                {professionalProfile.paymentAgreement.replace(/-/g, " ")}
+              <p className="text-foreground">
+                {translatePaymentAgreement(professionalProfile.paymentAgreement, t)}
               </p>
             </div>
           )}

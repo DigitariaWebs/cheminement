@@ -882,6 +882,7 @@ function MedicalProfileModal({
 }: MedicalProfileModalProps) {
   const tMp = useTranslations("Client.profileModal");
   const tProfile = useTranslations("Client.profile");
+  const tMv = useTranslations("Client.medicalProfile");
 
   const normalizeCondition = (value: string): string =>
     value
@@ -1291,7 +1292,7 @@ function MedicalProfileModal({
 
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Psychiatric Hospitalization
+                      {tMp("step2.psychiatricHospitalization")}
                     </Label>
                     <div className="flex gap-4">
                       <label className="flex items-center gap-2">
@@ -1827,7 +1828,7 @@ function MedicalProfileModal({
                     htmlFor="concernsAboutTherapy"
                     className="font-light mb-3 text-base"
                   >
-                    Concerns About Therapy
+                    {tMp("step5.concernsAboutTherapy")}
                   </Label>
                   <Textarea
                     id="concernsAboutTherapy"
@@ -1850,14 +1851,14 @@ function MedicalProfileModal({
               <div className="space-y-6">
                 <div>
                   <Label className="font-light mb-3 text-base">
-                    Preferred Time Slots{" "}
-                    <span className="text-primary ml-1">*</span>
+                    {tMp("step6.preferredTimeSlots")}{" "}
+                    <span className="text-primary ml-1">{tMp("step6.required")}</span>
                   </Label>
                   <p className="text-sm text-muted-foreground font-light mb-4">
-                    Select your preferred times for sessions
+                    {tMp("step6.preferredTimeSlotsDesc")}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {["morning", "afternoon", "evening", "weekends"].map(
+                    {(["morning", "afternoon", "evening", "weekends"] as const).map(
                       (item) => (
                         <button
                           key={item}
@@ -1885,7 +1886,7 @@ function MedicalProfileModal({
                               : "bg-muted/50 text-foreground hover:bg-muted"
                           }`}
                         >
-                          {item.charAt(0).toUpperCase() + item.slice(1)}
+                          {tMp(`step6.timeSlotOptions.${item}`)}
                         </button>
                       ),
                     )}
@@ -1895,7 +1896,7 @@ function MedicalProfileModal({
                 <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Session Modality
+                      {tMp("step6.modality")}
                     </Label>
                     <Select
                       value={appointmentPreferencesData.modality}
@@ -1919,7 +1920,7 @@ function MedicalProfileModal({
 
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Session Frequency
+                      {tMp("step6.sessionFrequency")}
                     </Label>
                     <Select
                       value={appointmentPreferencesData.sessionFrequency}
@@ -1946,7 +1947,7 @@ function MedicalProfileModal({
                       htmlFor="location"
                       className="font-light mb-3 text-base"
                     >
-                      Preferred Location
+                      {tMp("step6.location")}
                     </Label>
                     <Input
                       id="location"
@@ -1965,7 +1966,7 @@ function MedicalProfileModal({
 
                 <div>
                   <Label htmlFor="notes" className="font-light mb-3 text-base">
-                    Additional Notes
+                    {tMp("step6.notes")}
                   </Label>
                   <Textarea
                     id="notes"
@@ -2089,7 +2090,7 @@ function MedicalProfileModal({
                       }
                     />
                     <span className="text-sm font-light">
-                      I have experienced suicidal thoughts
+                      {tMv("labels.suicidalThoughtsAck")}
                     </span>
                   </label>
                 </div>
@@ -2101,7 +2102,7 @@ function MedicalProfileModal({
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Preferred Professional Gender
+                      {tMp("step8.preferredGender")}
                     </Label>
                     <Select
                       value={matchingPreferencesData.preferredGender}
@@ -2131,7 +2132,7 @@ function MedicalProfileModal({
 
                   <div>
                     <Label className="font-light mb-3 text-base">
-                      Preferred Age Range
+                      {tMp("step8.preferredAge")}
                     </Label>
                     <Select
                       value={matchingPreferencesData.preferredAge}
@@ -2149,7 +2150,7 @@ function MedicalProfileModal({
                         <SelectItem value="any">{tProfile("matching.any")}</SelectItem>
                         <SelectItem value="younger">{tProfile("matching.younger")}</SelectItem>
                         <SelectItem value="middle">
-                          Middle-aged (36-55)
+                          {tProfile("matching.middle")}
                         </SelectItem>
                         <SelectItem value="older">{tProfile("matching.older")}</SelectItem>
                       </SelectContent>
