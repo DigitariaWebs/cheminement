@@ -326,7 +326,7 @@
       "description": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques.",
       "topics": "Anxiété, Épuisement, Stress, Dépression, Estime de soi, TDAH, HPI, rôle parental, difficultés d'apprentissage, gestion des émotions, autres problématiques",
       "note": "Ceci n’est pas une liste exhaustive",
-      "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques"
+      "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques."
     },
     "professionalsSection": {
       "title": "Nos professionnels à votre service",
@@ -1604,15 +1604,15 @@
       "imageAlt": "Séance de soutien professionnel en santé mentale",
       "adult": {
         "title": "Psychothérapie adulte",
-        "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété et la dépression aux problèmes relationnels et aux transitions de vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
+        "description": "Soutien en santé mentale pour les adultes confrontés aux défis de la vie. De l'anxiété, une dépression, des problèmes relationnels et des transitions de la vie, nos professionnels offrent des soins thérapeutiques personnalisés.",
         "highlight": "Plans de traitement personnalisés",
         "features": [
-          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes.",
-          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste).",
-          "Gestion de l'anxiété, de la dépression et du stress.",
-          "Évaluation du TDAH et soutien continu.",
-          "Consultations en lien avec les défis relationnels et l'estime de soi.",
-          "Soutien aux transitions et à l'adaptation de vie."
+          "Séances de thérapie individuelle avec des psychologues ou des psychothérapeutes",
+          "Traitements fondés sur des données probantes (TCC, psychodynamique, humaniste)",
+          "Gestion de l'anxiété, de la dépression et du stress",
+          "Évaluation du TDAH et soutien continu",
+          "Consultations en lien avec les défis relationnels et l'estime de soi",
+          "Soutien aux transitions et à l'adaptation de vie"
         ]
       },
       "child": {
@@ -1620,13 +1620,13 @@
         "description": "Soutien thérapeutique spécialisé conçu pour les besoins développement aux uniques des enfants et des adolescents. Nous aidons les jeunes à mieux composer avec les défis émotionnels, les difficultés comportementales et les transitions développementales.",
         "highlight": "Interventions adaptées à l'âge",
         "features": [
-          "Thérapie par le jeu et techniques adaptées à l'âge.",
-          "Évaluation du TDAH et stratégies comportementales.",
-          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle.",
-          "Développement des habiletés sociales.",
-          "Difficultés scolaires et soutien à l'apprentissage.",
-          "Cyberdépendance et dépendances aux substances.",
-          "Collaboration et guidance parentale."
+          "Thérapie par le jeu et techniques adaptées à l'âge",
+          "Évaluation du TDAH et stratégies comportementales",
+          "Soutien pour mieux composer avec l’anxiété et améliorer la régulation émotionnelle",
+          "Développement des habiletés sociales",
+          "Difficultés scolaires et soutien à l'apprentissage",
+          "Cyberdépendance et dépendances aux substances",
+          "Collaboration et guidance parentale"
         ]
       },
       "family": {
@@ -1634,12 +1634,12 @@
         "description": "Renforcez les liens familiaux et améliorez la communication grâce à des séances thérapeutiques guidées. Nous aidons les familles et les couples à naviguer à travers les conflits, à reconstruire la confiance et à créer des dynamiques relationnelles plus saines.",
         "highlight": "Communication améliorée",
         "features": [
-          "Thérapie de couple.",
-          "Évaluation et intervention sur les dynamiques familiales.",
-          "Stratégies de résolution de conflits.",
-          "Développement des compétences en communication.",
-          "Soutien aux familles recomposées.",
-          "Coaching parental et guidance en coparentalité."
+          "Thérapie de couple",
+          "Évaluation et intervention sur les dynamiques familiales",
+          "Stratégies de résolution de conflits",
+          "Développement des compétences en communication",
+          "Soutien aux familles recomposées",
+          "Coaching parental et guidance en coparentalité"
         ]
       },
       "workplace": {
@@ -1647,12 +1647,12 @@
         "description": "Soutien spécialisé pour les défis de santé mentale liés au travail. Nous aidons les employés à naviguer à travers l'épuisement, à gérer les transitions de retour au travail et à développer des stratégies durables pour le bien-être professionnel.",
         "highlight": "Soutien au retour au travail",
         "features": [
-          "Évaluation de l'épuisement et planification du rétablissement.",
-          "Soutien à la transition de retour au travail.",
-          "Gestion du stress et de la charge de travail.",
-          "Reconstruction de l'identité professionnelle et de la confiance.",
-          "Stratégies d'équilibre vie personnelle-travail.",
-          "Consultations en lien avec une transition de carrière."
+          "Évaluation de l'épuisement et planification du rétablissement",
+          "Soutien à la transition de retour au travail",
+          "Gestion du stress et de la charge de travail",
+          "Reconstruction de l'identité professionnelle et de la confiance",
+          "Stratégies d'équilibre vie personnelle-travail",
+          "Consultations en lien avec une transition de carrière"
         ]
       },
       "schoolAnxiety": {
