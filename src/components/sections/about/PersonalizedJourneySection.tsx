@@ -51,8 +51,8 @@ export default function PersonalizedJourneySection() {
                     delayMs={500 + index * 100}
                     duration={600}
                   >
-                    <li className="flex items-start gap-3 rounded-2xl bg-card/80 p-4 text-base text-card-foreground shadow-sm">
-                      <div className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                    <li className="flex items-center gap-3 rounded-2xl bg-card/80 p-4 text-base text-card-foreground shadow-sm">
+                      <div className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden />
                       <span className="leading-relaxed">{point}</span>
                     </li>
                   </ScrollReveal>
