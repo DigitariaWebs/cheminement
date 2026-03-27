@@ -23,7 +23,7 @@ export function Footer() {
                 height={256}
                 src="/Logo.png"
                 alt="Je Chemine"
-                className="h-12 w-auto"
+                className="h-8 w-auto"
               />
             </Link>
             <p className="text-primary-foreground/60 text-sm leading-relaxed">
