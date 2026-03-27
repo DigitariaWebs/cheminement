@@ -19,7 +19,8 @@ export default function ReasonsTimelineSection() {
     {
       id: t("timeline.qualified.id"),
       title: t("timeline.qualified.title"),
-      description: t("timeline.qualified.description"),
+      descriptionLead: t("timeline.qualified.descriptionLead"),
+      descriptionBody: t("timeline.qualified.descriptionBody"),
       chips: t.raw("timeline.qualified.chips"),
       icon: Award,
     },
@@ -62,7 +63,18 @@ export default function ReasonsTimelineSection() {
 
           <div className="space-y-10">
             {reasons.map(
-              ({ id, title, description, chips, icon: Icon }, index) => (
+              (
+                {
+                  id,
+                  title,
+                  description,
+                  descriptionLead,
+                  descriptionBody,
+                  chips,
+                  icon: Icon,
+                },
+                index,
+              ) => (
                 <ScrollReveal
                   key={id}
                   variant={cardAnimations[index % cardAnimations.length]}
@@ -88,7 +100,17 @@ export default function ReasonsTimelineSection() {
                           {title}
                         </h3>
                         <p className="text-base leading-relaxed text-muted-foreground">
-                          {description}
+                          {descriptionLead != null &&
+                          descriptionBody != null ? (
+                            <>
+                              <span className="whitespace-nowrap">
+                                {descriptionLead}
+                              </span>{" "}
+                              {descriptionBody}
+                            </>
+                          ) : (
+                            description
+                          )}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {chips.map((chip: string) => (

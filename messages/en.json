@@ -1724,9 +1724,9 @@
       "foundations": {
         "title": "Our Foundations",
         "items": [
-          "Qualified experts for every issue.",
-          "Intelligent matching for quick support.",
-          "A simple and reassuring platform to track your journey."
+          "Qualified experts for every issue",
+          "Intelligent matching for quick support",
+          "A simple and reassuring platform to track your journey"
         ]
       }
     },
@@ -2004,7 +2004,7 @@
       "bookAppointment": "Book an Appointment"
     },
     "clinicalApproaches": {
-      "badge": "2 · Recognized and Regulated Approaches",
+      "badge": "2 · A Recognized and Supervised Approach",
       "title": "Validated clinical models, carried by recognized experts.",
       "description": "Our professionals practice according to scientifically recognized approaches regulated by their professional orders. Each method is specifically chosen for your situation.",
       "imageAlt": "Therapist and client in a professional consultation setting",
@@ -2087,7 +2087,7 @@
       }
     },
     "flexibility": {
-      "badge": "4 · Flexibility: Where and When You Want",
+      "badge": "3 · Flexibility: Where and When You Want",
       "title": "Choose the support mode that fits your reality.",
       "modalities": {
         "online": {
@@ -2114,7 +2114,7 @@
       }
     },
     "matching": {
-      "badge": "5 · Intelligent Matching",
+      "badge": "4 · Intelligent Matching",
       "title": "The right professional, for the right person, at the right time.",
       "description": "Our matching process saves time and provides high-quality support. You are connected to a professional who matches your clinical needs, relationship expectations, and daily reality.",
       "highlight": "A major strength of Je chemine",
@@ -2155,9 +2155,9 @@
       "expectations": {
         "title": "What You Can Expect",
         "items": [
-          "Attentive listening and a personalized response.",
-          "Support to clarify your needs.",
-          "Solutions adapted to your reality."
+          "Attentive listening and a personalized response",
+          "Support to clarify your needs",
+          "Solutions adapted to your reality"
         ]
       }
     },
@@ -2168,7 +2168,7 @@
       "email": "Coming soon",
       "phoneLabel": "Phone",
       "phone": "Coming soon",
-      "formButton": "Fill in the contact form",
+      "formButton": "Fill out the contact form",
       "inquiries": {
         "services": {
           "title": "Services and Approaches",
@@ -2285,7 +2285,8 @@
         "qualified": {
           "id": "02",
           "title": "Qualified and Supervised Professionals",
-          "description": "Psychologists, psychotherapists, psychoeducators, and other specialists: you are supported by experts whose practice is recognized and rigorously regulated by their professional order.",
+          "descriptionLead": "Psychologists, psychotherapists, psychoeducators, and other specialists:",
+          "descriptionBody": "you are supported by experts whose practice is recognized and rigorously regulated by their professional order.",
           "chips": [
             "Clinical competence",
             "Continuous supervision",

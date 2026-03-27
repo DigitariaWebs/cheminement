@@ -1724,9 +1724,9 @@
       "foundations": {
         "title": "Nos fondations",
         "items": [
-          "Des experts qualifiés pour chaque problématique.",
-          "Un jumelage intelligent pour un accompagnement rapide.",
-          "Une plateforme simple pour amorcer rapidement votre cheminement."
+          "Des experts qualifiés pour chaque problématique",
+          "Un jumelage intelligent pour un accompagnement rapide",
+          "Une plateforme simple pour amorcer rapidement votre cheminement"
         ]
       }
     },
@@ -2010,7 +2010,7 @@
       "bookAppointment": "Prendre un rendez-vous"
     },
     "clinicalApproaches": {
-      "badge": "2 · Approches reconnues et encadrées",
+      "badge": "2 · Une approche reconnue et encadrée",
       "title": "Des modèles cliniques validés, portés par des experts reconnus.",
       "description": "Nos professionnels pratiquent selon des approches scientifiquement reconnues et encadrées par leurs ordres professionnels. Chaque méthode est choisie spécifiquement pour votre situation.",
       "imageAlt": "Thérapeute et client dans un cadre de consultation professionnelle",
@@ -2093,7 +2093,7 @@
       }
     },
     "flexibility": {
-      "badge": "4 · Flexibilité : où et quand vous le souhaitez",
+      "badge": "3 · Flexibilité : où et quand vous le souhaitez",
       "title": "Choisissez le mode d'accompagnement qui correspond à votre réalité.",
       "modalities": {
         "online": {
@@ -2120,7 +2120,7 @@
       }
     },
     "matching": {
-      "badge": "5 · Le jumelage intelligent",
+      "badge": "4 · Jumelage intelligent",
       "title": "Le bon professionnel, pour la bonne personne, au bon moment.",
       "description": "Notre processus de jumelage permet de faire gagner du temps et d'offrir un accompagnement de grande qualité. Vous êtes relié à un professionnel qui correspond à vos besoins cliniques, vos attentes relationnelles et votre réalité quotidienne.",
       "highlight": "Une force majeure de Je chemine",
@@ -2161,9 +2161,9 @@
       "expectations": {
         "title": "Ce que vous pouvez attendre",
         "items": [
-          "Une écoute attentive et une réponse personnalisée.",
-          "Un accompagnement pour clarifier vos besoins.",
-          "Des solutions adaptées à votre réalité."
+          "Une écoute attentive et une réponse personnalisée",
+          "Un accompagnement pour clarifier vos besoins",
+          "Des solutions adaptées à votre réalité"
         ]
       }
     },
@@ -2174,7 +2174,7 @@
       "email": "À venir",
       "phoneLabel": "Téléphone",
       "phone": "À venir",
-      "formButton": "Remplir le formulaire de contact",
+      "formButton": "Remplissez le formulaire de contact",
       "inquiries": {
         "services": {
           "title": "Services et approches",
@@ -2291,7 +2291,8 @@
         "qualified": {
           "id": "02",
           "title": "Des professionnels qualifiés et encadrés",
-          "description": "Psychologues, psychothérapeutes, psychoéducateurs et autres spécialistes : vous êtes accompagné par des experts dont la pratique est reconnue et rigoureusement encadrée par leur ordre professionnel.",
+          "descriptionLead": "Psychologues, psychothérapeutes, psychoéducateurs et autres spécialistes\u202F:",
+          "descriptionBody": "vous êtes accompagné par des experts dont la pratique est reconnue et rigoureusement encadrée par leur ordre professionnel.",
           "chips": [
             "Compétence clinique",
             "Supervision continue",
@@ -2321,7 +2322,7 @@
           "highlight": "Souplesse totale et continuité des suivis."
         },
         "office": {
-          "title": "En bureau",
+          "title": "Au bureau",
           "description": "Profitez d'un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
           "highlight": "Un espace accueillant, confidentiel et serein."
         },
