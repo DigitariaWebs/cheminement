@@ -1724,9 +1724,9 @@
       "foundations": {
         "title": "Nos fondations",
         "items": [
-          "Des experts qualifiés pour chaque problématique.",
-          "Un jumelage intelligent pour un accompagnement rapide.",
-          "Une plateforme simple pour amorcer rapidement votre cheminement."
+          "Des experts qualifiés pour chaque problématique",
+          "Un jumelage intelligent pour un accompagnement rapide",
+          "Une plateforme simple pour amorcer rapidement votre cheminement"
         ]
       }
     },
@@ -2161,9 +2161,9 @@
       "expectations": {
         "title": "Ce que vous pouvez attendre",
         "items": [
-          "Une écoute attentive et une réponse personnalisée.",
-          "Un accompagnement pour clarifier vos besoins.",
-          "Des solutions adaptées à votre réalité."
+          "Une écoute attentive et une réponse personnalisée",
+          "Un accompagnement pour clarifier vos besoins",
+          "Des solutions adaptées à votre réalité"
         ]
       }
     },
@@ -2322,7 +2322,7 @@
           "highlight": "Souplesse totale et continuité des suivis."
         },
         "office": {
-          "title": "En bureau",
+          "title": "Au bureau",
           "description": "Profitez d'un environnement chaleureux et professionnel pour un contact direct, si vous préférez une approche en personne.",
           "highlight": "Un espace accueillant, confidentiel et serein."
         },
