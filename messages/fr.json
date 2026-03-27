@@ -2291,7 +2291,8 @@
         "qualified": {
           "id": "02",
           "title": "Des professionnels qualifiés et encadrés",
-          "description": "Psychologues, psychothérapeutes, psychoéducateurs et autres spécialistes : vous êtes accompagné par des experts dont la pratique est reconnue et rigoureusement encadrée par leur ordre professionnel.",
+          "descriptionLead": "Psychologues, psychothérapeutes, psychoéducateurs et autres spécialistes\u202F:",
+          "descriptionBody": "vous êtes accompagné par des experts dont la pratique est reconnue et rigoureusement encadrée par leur ordre professionnel.",
           "chips": [
             "Compétence clinique",
             "Supervision continue",

@@ -2285,7 +2285,8 @@
         "qualified": {
           "id": "02",
           "title": "Qualified and Supervised Professionals",
-          "description": "Psychologists, psychotherapists, psychoeducators, and other specialists: you are supported by experts whose practice is recognized and rigorously regulated by their professional order.",
+          "descriptionLead": "Psychologists, psychotherapists, psychoeducators, and other specialists:",
+          "descriptionBody": "you are supported by experts whose practice is recognized and rigorously regulated by their professional order.",
           "chips": [
             "Clinical competence",
             "Continuous supervision",
