@@ -142,9 +142,9 @@ export default function AccessExperienceSection() {
                         delayMs={950 + index * 100}
                         duration={600}
                       >
-                        <div className="flex gap-4 rounded-3xl bg-muted/30 p-5">
-                          <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-foreground/90 text-card">
-                            <Icon className="h-5 w-5" />
+                        <div className="flex items-start gap-4 rounded-3xl bg-muted/30 p-5">
+                          <div className="inline-flex aspect-square h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-foreground text-card shadow-md">
+                            <Icon className="h-6 w-6 shrink-0" />
                           </div>
                           <div>
                             <p className="font-serif text-lg font-medium text-foreground">

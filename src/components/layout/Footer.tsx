@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Instagram, Linkedin, Facebook, Twitter } from "lucide-react";
+import { Instagram, Linkedin, Facebook } from "lucide-react";
+import { XLogoIcon } from "@/components/icons/XLogoIcon";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -89,47 +90,50 @@ export function Footer() {
               {t("partners")}
             </h4>
             <div className="space-y-4">
-              <Image
-                src="/logocln.png"
-                alt="Clinique partenaire"
-                width={240}
-                height={96}
-                className="h-24 w-auto object-contain"
-              />
-            <div className="flex gap-3 flex-wrap">
-              <Link
-                href="https://linkedin.com/company/jechemine"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
-              >
-                <Linkedin size={18} />
-              </Link>
-              <Link
-                href="https://twitter.com/jechemine"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
-              >
-                <Twitter size={18} />
-              </Link>
-              <Link
-                href="https://facebook.com/jechemine"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
-              >
-                <Facebook size={18} />
-              </Link>
-              <Link
-                href="https://instagram.com/jechemine"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-primary-foreground/30 flex items-center justify-center text-primary-foreground/70 hover:border-primary-foreground hover:text-primary-foreground transition-all"
-              >
-                <Instagram size={18} />
-              </Link>
-            </div>
+              <div className="inline-flex rounded-lg bg-primary-foreground px-1.5 py-0 shadow-sm ring-1 ring-black/10">
+                <Image
+                  src="/logocln.png"
+                  alt="Clinique partenaire"
+                  width={240}
+                  height={96}
+                  className="h-24 w-auto object-contain"
+                />
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="https://linkedin.com/company/jechemine"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 text-primary-foreground/70 transition-all hover:border-primary-foreground hover:text-primary-foreground"
+                >
+                  <Linkedin size={18} />
+                </Link>
+                <Link
+                  href="https://x.com/jechemine"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t("socialX")}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 text-primary-foreground/70 transition-all hover:border-primary-foreground hover:text-primary-foreground"
+                >
+                  <XLogoIcon size={18} />
+                </Link>
+                <Link
+                  href="https://facebook.com/jechemine"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 text-primary-foreground/70 transition-all hover:border-primary-foreground hover:text-primary-foreground"
+                >
+                  <Facebook size={18} />
+                </Link>
+                <Link
+                  href="https://instagram.com/jechemine"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 text-primary-foreground/70 transition-all hover:border-primary-foreground hover:text-primary-foreground"
+                >
+                  <Instagram size={18} />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

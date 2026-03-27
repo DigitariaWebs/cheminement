@@ -70,18 +70,13 @@ export default function FamilySupportSection() {
 
             {/* Right: Family Image */}
             <ScrollReveal variant="zoom-in" delayMs={200} duration={800}>
-              <div className="relative">
-                <div className="relative aspect-4/3 rounded-3xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="/HappyFamilyEnjoyingAMomentTogether.jpg"
-                    alt={t("imageAlt")}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                {/* Decorative element */}
-                <div className="absolute -bottom-4 -right-4 h-24 w-24 rounded-2xl bg-foreground/10 -z-10"></div>
-                <div className="absolute -top-4 -left-4 h-16 w-16 rounded-xl bg-primary/20 -z-10"></div>
+              <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-2xl">
+                <Image
+                  src="/HappyFamilyEnjoyingAMomentTogether.jpg"
+                  alt={t("imageAlt")}
+                  fill
+                  className="object-cover"
+                />
               </div>
             </ScrollReveal>
           </div>

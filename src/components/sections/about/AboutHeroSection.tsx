@@ -42,13 +42,13 @@ export default function AboutHeroSection() {
 
           <ScrollReveal variant="slide-up" delayMs={200} duration={800}>
             <div className="space-y-8 text-left">
-              <h1 className="font-serif text-4xl font-light leading-tight md:text-5xl lg:text-6xl">
+              <h1 className="max-w-4xl font-serif text-2xl font-light leading-tight text-foreground md:text-3xl lg:text-4xl">
                 {t("headline")}
               </h1>
-              <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+              <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
                 {t("description1")}
               </p>
-              <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+              <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
                 {t("description2")}
               </p>
             </div>
