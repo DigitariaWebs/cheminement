@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Instagram, Linkedin, Facebook, Twitter } from "lucide-react";
+import { Instagram, Linkedin, Facebook } from "lucide-react";
+import { XLogoIcon } from "@/components/icons/XLogoIcon";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -108,12 +109,13 @@ export function Footer() {
                   <Linkedin size={18} />
                 </Link>
                 <Link
-                  href="https://twitter.com/jechemine"
+                  href="https://x.com/jechemine"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={t("socialX")}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 text-primary-foreground/70 transition-all hover:border-primary-foreground hover:text-primary-foreground"
                 >
-                  <Twitter size={18} />
+                  <XLogoIcon size={18} />
                 </Link>
                 <Link
                   href="https://facebook.com/jechemine"
