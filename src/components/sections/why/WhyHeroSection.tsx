@@ -23,7 +23,7 @@ export default function WhyHeroSection() {
           </ScrollReveal>
 
           <ScrollReveal variant="blur-in" delayMs={150} duration={800}>
-            <h1 className="font-serif text-4xl font-light leading-tight md:text-5xl lg:text-6xl">
+            <h1 className="max-w-4xl font-serif text-2xl font-light leading-tight text-foreground md:text-3xl lg:text-4xl">
               {t("headline")}
             </h1>
           </ScrollReveal>
