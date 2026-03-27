@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -14,6 +16,52 @@ import {
 
 export default function SchoolManagerPage() {
   const t = useTranslations("SchoolManagerForm");
+  const serviceTypes = t.raw("serviceTypes") as string[];
+
+  const [name, setName] = useState("");
+  const [school, setSchool] = useState("");
+  const [role, setRole] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [serviceType, setServiceType] = useState("");
+  const [message, setMessage] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [serviceTypeError, setServiceTypeError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPhoneError("");
+    setServiceTypeError("");
+    setSuccess(false);
+
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 10) {
+      setPhoneError(t("validation.phoneDigits"));
+      return;
+    }
+    if (!serviceType) {
+      setServiceTypeError(t("validation.serviceTypeRequired"));
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // TODO: envoyer vers l’API (demande gestionnaire scolaire)
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      setSuccess(true);
+      setName("");
+      setSchool("");
+      setRole("");
+      setPhone("");
+      setEmail("");
+      setServiceType("");
+      setMessage("");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="bg-background">
@@ -31,40 +79,147 @@ export default function SchoolManagerPage() {
             </p>
           </div>
 
-          <form className="mt-10 space-y-6">
+          {success ? (
+            <p
+              className="mt-10 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-center text-sm text-foreground"
+              role="status"
+            >
+              {t("success")}
+            </p>
+          ) : null}
+
+          <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="name">{t("fields.name")}</Label>
-              <Input id="name" placeholder={t("placeholders.name")} />
+              <Input
+                id="name"
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("placeholders.name")}
+                autoComplete="name"
+                required
+                className="h-12"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="school">{t("fields.school")}</Label>
-              <Input id="school" placeholder={t("placeholders.school")} />
+              <Input
+                id="school"
+                name="school"
+                value={school}
+                onChange={(e) => setSchool(e.target.value)}
+                placeholder={t("placeholders.school")}
+                autoComplete="organization"
+                required
+                className="h-12"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="function">{t("fields.function")}</Label>
-              <Input id="function" placeholder={t("placeholders.function")} />
+              <Input
+                id="function"
+                name="function"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                placeholder={t("placeholders.function")}
+                required
+                className="h-12"
+              />
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="phone">{t("fields.phone")}</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  title={t("validation.phoneHint")}
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    setPhoneError("");
+                  }}
+                  placeholder={t("placeholders.phone")}
+                  autoComplete="tel"
+                  required
+                  aria-invalid={phoneError ? true : undefined}
+                  className="h-12"
+                />
+                {phoneError ? (
+                  <p className="text-sm text-destructive" role="alert">
+                    {phoneError}
+                  </p>
+                ) : null}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("fields.email")}</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  inputMode="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("placeholders.email")}
+                  autoComplete="email"
+                  required
+                  className="h-12"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <Label>{t("fields.serviceType")}</Label>
-              <Select>
-                <SelectTrigger>
+              <Label htmlFor="service-type">{t("fields.serviceType")}</Label>
+              <Select
+                value={serviceType || undefined}
+                onValueChange={(v) => {
+                  setServiceType(v);
+                  setServiceTypeError("");
+                }}
+              >
+                <SelectTrigger
+                  id="service-type"
+                  className="h-12 w-full"
+                  aria-invalid={serviceTypeError ? true : undefined}
+                >
                   <SelectValue placeholder={t("placeholders.serviceType")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {t.raw("serviceTypes").map((type: string) => (
+                  {serviceTypes.map((type: string) => (
                     <SelectItem key={type} value={type}>
                       {type}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {serviceTypeError ? (
+                <p className="text-sm text-destructive" role="alert">
+                  {serviceTypeError}
+                </p>
+              ) : null}
             </div>
 
-            <Button type="submit" className="w-full">
-              {t("submit")}
+            <div className="space-y-2">
+              <Label htmlFor="message">{t("fields.message")}</Label>
+              <Textarea
+                id="message"
+                name="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={t("placeholders.message")}
+                required
+                rows={6}
+                className="min-h-[140px] resize-y font-light"
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </form>
         </div>
