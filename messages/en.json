@@ -224,7 +224,7 @@
     "aboutUs": "About Us",
     "careers": "Careers",
     "press": "Press",
-    "culture": "Culture, care and community",
+    "culture": "My mental health, our shared horizon",
     "brandGuidelines": "Brand guidelines",
     "platform": "Platform",
     "integratedHealthPlatform": "Integrated Health Platform",
@@ -242,6 +242,8 @@
     "helpCentre": "Help Centre",
     "status": "Status",
     "contactUs": "Contact Us",
+    "linkSchoolManagerForm": "School establishment manager",
+    "linkEnterpriseForm": "Business representative",
     "copyright": "Je Chemine © {year}",
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
@@ -3466,15 +3468,28 @@
       "name": "Name",
       "school": "School",
       "function": "Function",
-      "serviceType": "Service Type"
+      "phone": "Phone",
+      "email": "Email address",
+      "serviceType": "Service Type",
+      "message": "Your request"
     },
     "placeholders": {
       "name": "Full name",
       "school": "School name",
       "function": "Your function",
-      "serviceType": "Select a service type"
+      "phone": "514 555 0101",
+      "email": "name@school.edu",
+      "serviceType": "Select a service type",
+      "message": "Describe the context, student or school needs, preferred timelines, etc."
+    },
+    "validation": {
+      "phoneHint": "At least 10 digits (spaces, dashes, or parentheses allowed)",
+      "phoneDigits": "The phone number must contain at least 10 digits.",
+      "serviceTypeRequired": "Please select a service type."
     },
     "serviceTypes": ["Evaluation", "ADHD", "Intervention Plan", "Other"],
-    "submit": "Submit Request"
+    "submit": "Submit Request",
+    "submitting": "Sending…",
+    "success": "Your request has been sent. We will contact you shortly."
   }
 }

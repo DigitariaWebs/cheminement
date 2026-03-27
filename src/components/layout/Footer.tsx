@@ -23,7 +23,7 @@ export function Footer() {
                 height={256}
                 src="/Logo.png"
                 alt="Je Chemine"
-                className="h-12 w-auto"
+                className="h-8 w-auto"
               />
             </Link>
             <p className="text-primary-foreground/60 text-sm leading-relaxed">
@@ -79,6 +79,22 @@ export function Footer() {
               <li>
                 <Link href="/contact" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                   {t("contactUs")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/school-manager"
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  {t("linkSchoolManagerForm")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/services/contact-direct"
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  {t("linkEnterpriseForm")}
                 </Link>
               </li>
             </ul>

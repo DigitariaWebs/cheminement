@@ -224,7 +224,7 @@
     "aboutUs": "À propos",
     "careers": "Carrières",
     "press": "Presse",
-    "culture": "Culture, soins et communauté",
+    "culture": "Ma santé mentale, notre horizon commun",
     "brandGuidelines": "Directives de marque",
     "platform": "Plateforme",
     "integratedHealthPlatform": "Plateforme de santé mentale",
@@ -242,6 +242,8 @@
     "helpCentre": "Centre d'aide",
     "status": "Statut",
     "contactUs": "Nous contacter",
+    "linkSchoolManagerForm": "Gestionnaire d'établissement scolaire",
+    "linkEnterpriseForm": "Responsable d'entreprise",
     "copyright": "Je Chemine © {year}",
     "privacyPolicy": "Politique de confidentialité",
     "termsOfUse": "Conditions d'utilisation",
@@ -3471,15 +3473,28 @@
       "name": "Nom",
       "school": "École",
       "function": "Fonction",
-      "serviceType": "Type de service"
+      "phone": "Téléphone",
+      "email": "Adresse courriel",
+      "serviceType": "Type de service",
+      "message": "Votre demande"
     },
     "placeholders": {
       "name": "Nom complet",
       "school": "Nom de l'école",
       "function": "Votre fonction",
-      "serviceType": "Sélectionnez un type de service"
+      "phone": "514 555 0101",
+      "email": "prenom.nom@ecole.ca",
+      "serviceType": "Sélectionnez un type de service",
+      "message": "Décrivez le contexte, les besoins de l’élève ou de l’école, les échéances souhaitées, etc."
+    },
+    "validation": {
+      "phoneHint": "Au moins 10 chiffres (espaces, tirets ou parenthèses acceptés)",
+      "phoneDigits": "Le téléphone doit contenir au moins 10 chiffres.",
+      "serviceTypeRequired": "Veuillez sélectionner un type de service."
     },
     "serviceTypes": ["Évaluation", "TDAH", "Plan d’intervention", "Autre"],
-    "submit": "Envoyer la demande"
+    "submit": "Envoyer la demande",
+    "submitting": "Envoi en cours…",
+    "success": "Votre demande a été transmise. Nous vous contacterons sous peu."
   }
 }
