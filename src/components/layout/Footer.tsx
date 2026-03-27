@@ -81,6 +81,22 @@ export function Footer() {
                   {t("contactUs")}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/school-manager"
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  {t("linkSchoolManagerForm")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/services/contact-direct"
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  {t("linkEnterpriseForm")}
+                </Link>
+              </li>
             </ul>
           </div>
 
