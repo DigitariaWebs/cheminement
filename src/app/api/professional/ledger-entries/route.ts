@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import connectToDatabase from "@/lib/mongodb";
 import ProfessionalLedgerEntry from "@/models/ProfessionalLedgerEntry";
 import Appointment from "@/models/Appointment";
+import { getBiweeklyCycleKey, getBiweeklyRange } from "@/lib/ledger-cycle";
 
 export async function GET() {
   try {
@@ -16,6 +17,8 @@ export async function GET() {
     await connectToDatabase();
 
     const proOid = new mongoose.Types.ObjectId(session.user.id);
+    const currentCycleKey = getBiweeklyCycleKey(new Date());
+    const { start: cycleStart, end: cycleEnd } = getBiweeklyRange(new Date());
 
     const entries = await ProfessionalLedgerEntry.find({
       professionalId: proOid,
@@ -23,6 +26,102 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .limit(200)
       .lean();
+
+    const lifetime = await ProfessionalLedgerEntry.aggregate<{
+      _id: null;
+      credits: number;
+      debits: number;
+    }>([
+      { $match: { professionalId: proOid } },
+      {
+        $group: {
+          _id: null,
+          credits: {
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    { $eq: ["$entryKind", "credit"] },
+                    { $not: ["$entryKind"] },
+                  ],
+                },
+                "$netToProfessionalCad",
+                0,
+              ],
+            },
+          },
+          debits: {
+            $sum: {
+              $cond: [
+                { $eq: ["$entryKind", "debit"] },
+                { $ifNull: ["$payoutAmountCad", 0] },
+                0,
+              ],
+            },
+          },
+        },
+      },
+    ]);
+
+    const cycleBal = await ProfessionalLedgerEntry.aggregate<{
+      _id: null;
+      credits: number;
+      debits: number;
+    }>([
+      {
+        $match: {
+          professionalId: proOid,
+          $or: [
+            { cycleKey: currentCycleKey },
+            {
+              $and: [
+                {
+                  $or: [
+                    { cycleKey: { $exists: false } },
+                    { cycleKey: null },
+                    { cycleKey: "" },
+                  ],
+                },
+                { createdAt: { $gte: cycleStart, $lt: cycleEnd } },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          credits: {
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    { $eq: ["$entryKind", "credit"] },
+                    { $not: ["$entryKind"] },
+                  ],
+                },
+                "$netToProfessionalCad",
+                0,
+              ],
+            },
+          },
+          debits: {
+            $sum: {
+              $cond: [
+                { $eq: ["$entryKind", "debit"] },
+                { $ifNull: ["$payoutAmountCad", 0] },
+                0,
+              ],
+            },
+          },
+        },
+      },
+    ]);
+
+    const creditsLife = lifetime[0]?.credits ?? 0;
+    const debitsLife = lifetime[0]?.debits ?? 0;
+    const creditsCyc = cycleBal[0]?.credits ?? 0;
+    const debitsCyc = cycleBal[0]?.debits ?? 0;
 
     const pending = await Appointment.aggregate<{
       _id: null;
@@ -49,6 +148,10 @@ export async function GET() {
     return NextResponse.json({
       entries,
       pendingPayoutCad,
+      currentCycleKey,
+      balanceLifetimeCad: Math.round((creditsLife - debitsLife) * 100) / 100,
+      balanceCurrentCycleCad:
+        Math.round((creditsCyc - debitsCyc) * 100) / 100,
     });
   } catch (e: unknown) {
     console.error("GET /api/professional/ledger-entries:", e);

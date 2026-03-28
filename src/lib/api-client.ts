@@ -289,12 +289,17 @@ export const clientReceiptsAPI = {
 export type ProfessionalLedgerEntryResponse = {
   _id: string;
   professionalId: string;
-  appointmentId: string;
+  entryKind?: "credit" | "debit";
+  cycleKey?: string;
+  appointmentId?: string;
   sessionActNature?: string;
   grossAmountCad: number;
   platformFeeCad: number;
   netToProfessionalCad: number;
   paymentChannel: "stripe" | "transfer" | "none";
+  payoutAmountCad?: number;
+  payoutReference?: string;
+  payoutNotes?: string;
   createdAt: string;
 };
 
@@ -303,6 +308,9 @@ export const professionalLedgerAPI = {
     apiClient.get<{
       entries: ProfessionalLedgerEntryResponse[];
       pendingPayoutCad: number;
+      currentCycleKey?: string;
+      balanceLifetimeCad?: number;
+      balanceCurrentCycleCad?: number;
     }>("/professional/ledger-entries"),
 };
 

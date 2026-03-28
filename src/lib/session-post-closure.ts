@@ -13,6 +13,7 @@ import {
 } from "@/lib/receipt-pdf";
 import { getInteracDepositEmail } from "@/lib/interac-deposit-email";
 import mongoose from "mongoose";
+import { cycleKeyFromDateOrNow } from "@/lib/ledger-cycle";
 
 /**
  * Après enregistrement Mongo de la clôture : Interac, reçu PDF, grand livre, historique reçus.
@@ -52,6 +53,8 @@ export async function runSessionClosureSideEffects(
     try {
       await ProfessionalLedgerEntry.create({
         professionalId: new mongoose.Types.ObjectId(proId),
+        entryKind: "credit",
+        cycleKey: cycleKeyFromDateOrNow(appointment.sessionCompletedAt ?? new Date()),
         appointmentId: appointment._id,
         sessionActNature: appointment.sessionActNature,
         grossAmountCad: price,

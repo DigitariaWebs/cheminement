@@ -14,6 +14,7 @@ import {
   Shield,
   Settings,
   Banknote,
+  BookOpen,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -71,6 +72,11 @@ export function AdminSidebar() {
           title: t("billing"),
           url: "/admin/dashboard/billing",
           icon: Wallet,
+        },
+        {
+          title: t("accounting"),
+          url: "/admin/dashboard/accounting",
+          icon: BookOpen,
         },
         {
           title: t("paymentTrust"),

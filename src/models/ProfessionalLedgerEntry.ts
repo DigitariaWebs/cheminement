@@ -1,14 +1,21 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-/** Ligne du grand livre — revenu lié à une séance clôturée. */
+/** Ligne du grand livre : crédit (séance) ou débit (versement plateforme → pro). */
 export interface IProfessionalLedgerEntry extends Document {
   professionalId: mongoose.Types.ObjectId;
-  appointmentId: mongoose.Types.ObjectId;
+  entryKind: "credit" | "debit";
+  /** Regroupement bihebdomadaire (affichage solde / historique). */
+  cycleKey: string;
+  appointmentId?: mongoose.Types.ObjectId;
   sessionActNature?: string;
   grossAmountCad: number;
   platformFeeCad: number;
   netToProfessionalCad: number;
   paymentChannel: "stripe" | "transfer" | "none";
+  /** Débit : montant versé au professionnel. */
+  payoutAmountCad?: number;
+  payoutReference?: string;
+  payoutNotes?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,26 +28,40 @@ const ProfessionalLedgerEntrySchema = new Schema<IProfessionalLedgerEntry>(
       required: true,
       index: true,
     },
+    entryKind: {
+      type: String,
+      enum: ["credit", "debit"],
+      default: "credit",
+      index: true,
+    },
+    cycleKey: {
+      type: String,
+      index: true,
+    },
     appointmentId: {
       type: Schema.Types.ObjectId,
       ref: "Appointment",
-      required: true,
+      sparse: true,
       unique: true,
     },
     sessionActNature: String,
-    grossAmountCad: { type: Number, required: true },
-    platformFeeCad: { type: Number, required: true },
-    netToProfessionalCad: { type: Number, required: true },
+    grossAmountCad: { type: Number, default: 0 },
+    platformFeeCad: { type: Number, default: 0 },
+    netToProfessionalCad: { type: Number, default: 0 },
     paymentChannel: {
       type: String,
       enum: ["stripe", "transfer", "none"],
-      required: true,
+      default: "none",
     },
+    payoutAmountCad: { type: Number },
+    payoutReference: String,
+    payoutNotes: String,
   },
   { timestamps: true },
 );
 
 ProfessionalLedgerEntrySchema.index({ professionalId: 1, createdAt: -1 });
+ProfessionalLedgerEntrySchema.index({ professionalId: 1, cycleKey: 1 });
 
 const ProfessionalLedgerEntry: Model<IProfessionalLedgerEntry> =
   mongoose.models.ProfessionalLedgerEntry ||
