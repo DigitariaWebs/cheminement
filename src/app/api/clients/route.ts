@@ -10,7 +10,7 @@ interface PopulatedUser {
   lastName: string;
   email: string;
   phone: string;
-  paymentGuaranteeStatus?: "none" | "green";
+  paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
 }
 
 export async function GET() {
@@ -60,8 +60,15 @@ export async function GET() {
       } else {
         const existingClient = clientMap.get(clientId);
         existingClient.totalSessions += 1;
-        if (client.paymentGuaranteeStatus === "green") {
+        const g = (s: string | undefined) => s ?? "none";
+        const cur = g(existingClient.paymentGuaranteeStatus);
+        const next = g(client.paymentGuaranteeStatus);
+        if (cur === "green" || next === "green") {
           existingClient.paymentGuaranteeStatus = "green";
+        } else if (cur === "pending_admin" || next === "pending_admin") {
+          existingClient.paymentGuaranteeStatus = "pending_admin";
+        } else {
+          existingClient.paymentGuaranteeStatus = "none";
         }
         if (
           appointment.date &&

@@ -224,9 +224,13 @@ export async function DELETE(req: NextRequest) {
     if (customerId) {
       await syncPaymentGuaranteeStatusWithStripe(session.user.id, customerId);
     } else {
-      await User.findByIdAndUpdate(session.user.id, {
-        paymentGuaranteeStatus: "none",
-      });
+      const u = await User.findById(session.user.id);
+      if (u?.paymentGuaranteeStatus !== "pending_admin") {
+        await User.findByIdAndUpdate(session.user.id, {
+          $set: { paymentGuaranteeStatus: "none" },
+          $unset: { paymentGuaranteeSource: "" },
+        });
+      }
     }
 
     return NextResponse.json({

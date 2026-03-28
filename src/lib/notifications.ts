@@ -6,6 +6,7 @@
 
 import nodemailer from "nodemailer";
 import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
 import PlatformSettings, {
   type EmailNotificationType,
   type IEmailSettings,
@@ -1467,4 +1468,68 @@ export async function sendProfessionalRejectionEmail(
     { to: data.email, subject, html, text },
     "professional_rejection",
   );
+}
+
+/** Alerte admins : un client a choisi Interac / virement (entente de confiance à valider). */
+export async function sendAdminInteracTrustRequestAlert(data: {
+  clientName: string;
+  clientEmail: string;
+  appointmentId: string;
+}): Promise<void> {
+  await connectToDatabase();
+  const adminUsers = await User.find({ isAdmin: true, role: "admin" })
+    .select("email")
+    .lean();
+  let emails = adminUsers
+    .map((a) => a.email)
+    .filter((e): e is string => Boolean(e));
+  if (emails.length === 0 && process.env.ADMIN_ALERT_EMAIL) {
+    emails = process.env.ADMIN_ALERT_EMAIL.split(",").map((s) => s.trim());
+  }
+  if (emails.length === 0) {
+    console.warn(
+      "[admin_interac_trust_request] No admin emails — set ADMIN_ALERT_EMAIL or admin users.",
+    );
+    return;
+  }
+
+  const base =
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
+  const reviewUrl = `${base}/admin/dashboard/payment-trust`;
+
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "Validation garantie Interac / virement",
+    theme: "warning",
+    greeting: "Bonjour,",
+    intro:
+      "Un client a indiqué ne pas utiliser de carte et souhaite payer par virement Interac (entente de confiance). Validez le profil pour passer le client en Statut vert.",
+    details: [
+      { label: "Client", value: data.clientName },
+      { label: "Courriel", value: data.clientEmail },
+      { label: "Rendez-vous", value: data.appointmentId },
+    ],
+    button: { text: "Ouvrir la file d’attente", url: reviewUrl },
+    outro:
+      "Après chaque séance, le paiement doit être reçu dans les 24 heures. Merci de confirmer la réception selon vos processus internes.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Interac / virement — action admin requise",
+    `Client: ${data.clientName} (${data.clientEmail})`,
+    `Rendez-vous: ${data.appointmentId}`,
+    `Valider: ${reviewUrl}`,
+  ]);
+
+  const subject = await getSubject(
+    "admin_interac_trust_request",
+    "Interac / virement — validation requise (Statut vert)",
+  );
+
+  for (const to of emails) {
+    await sendEmail({ to, subject, html, text }, "admin_interac_trust_request");
+  }
 }

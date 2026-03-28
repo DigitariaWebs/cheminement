@@ -21,6 +21,8 @@ export interface IPayment {
   payoutDate?: Date;
   paymentToken?: string;
   paymentTokenExpiry?: Date;
+  /** Interac / virement : échéance de réception du paiement (ex. fin de séance + 24h). */
+  transferDueAt?: Date;
 }
 
 // Loved one information for third-party bookings
@@ -153,6 +155,7 @@ const PaymentSchema = new Schema<IPayment>(
       index: true,
     },
     paymentTokenExpiry: Date,
+    transferDueAt: Date,
   },
   { _id: false },
 );

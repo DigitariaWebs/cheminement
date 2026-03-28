@@ -2,11 +2,8 @@ import { stripe } from "@/lib/stripe";
 import User from "@/models/User";
 
 /**
- * Client "Statut vert" : garantie de paiement en place (carte ou PAD enregistré chez Stripe).
- * Définit aussi le moyen de paiement par défaut du client Stripe pour d’éventuels prélèvements hors session.
- */
-/**
- * @param setStripeDefault - Si true, enregistre ce moyen comme défaut chez Stripe (ex. 1er moyen ou garantie RDV).
+ * Client "Statut vert" via Stripe : carte ou PAD enregistré chez Stripe.
+ * @param setStripeDefault - Si true, enregistre ce moyen comme défaut chez Stripe.
  */
 export async function markClientPaymentGuaranteeGreen(
   userId: string,
@@ -16,6 +13,7 @@ export async function markClientPaymentGuaranteeGreen(
 ): Promise<void> {
   await User.findByIdAndUpdate(userId, {
     paymentGuaranteeStatus: "green",
+    paymentGuaranteeSource: "stripe",
   });
   if (!setStripeDefault) {
     return;
@@ -34,7 +32,17 @@ export async function markClientPaymentGuaranteeGreen(
   }
 }
 
-/** Réaligne le statut avec les moyens de paiement encore attachés au client Stripe. */
+/**
+ * Statut vert par entente Interac / virement (validation admin).
+ */
+export async function approveInteracTrustGreen(userId: string): Promise<void> {
+  await User.findByIdAndUpdate(userId, {
+    paymentGuaranteeStatus: "green",
+    paymentGuaranteeSource: "interac_trust",
+  });
+}
+
+/** Réaligne le statut avec les moyens Stripe ; préserve pending_admin et vert Interac sans carte. */
 export async function syncPaymentGuaranteeStatusWithStripe(
   userId: string,
   stripeCustomerId: string,
@@ -47,7 +55,30 @@ export async function syncPaymentGuaranteeStatusWithStripe(
     }),
   ]);
   const count = card.data.length + acss.data.length;
+
+  if (count > 0) {
+    await User.findByIdAndUpdate(userId, {
+      paymentGuaranteeStatus: "green",
+      paymentGuaranteeSource: "stripe",
+    });
+    return;
+  }
+
+  const u = await User.findById(userId).lean();
+  if (!u) return;
+
+  if (u.paymentGuaranteeStatus === "pending_admin") {
+    return;
+  }
+  if (
+    u.paymentGuaranteeStatus === "green" &&
+    u.paymentGuaranteeSource === "interac_trust"
+  ) {
+    return;
+  }
+
   await User.findByIdAndUpdate(userId, {
-    paymentGuaranteeStatus: count > 0 ? "green" : "none",
+    $set: { paymentGuaranteeStatus: "none" },
+    $unset: { paymentGuaranteeSource: "" },
   });
 }

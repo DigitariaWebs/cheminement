@@ -22,6 +22,7 @@ import {
   CheckCircle2,
   CreditCard,
   Landmark,
+  Banknote,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
@@ -32,11 +33,18 @@ const stripePromise = loadStripe(
 );
 
 type PaymentMethodType = "card" | "acss_debit";
+type SelectedPaymentChoice = PaymentMethodType | "interac_manual";
 
 const paymentMethodOptions: {
-  id: PaymentMethodType;
-  labelKey: "cardLabel" | "padLabel";
-  descriptionKey: "cardDescription" | "padDescription";
+  id: SelectedPaymentChoice;
+  labelKey:
+    | "cardLabel"
+    | "padLabel"
+    | "interacLabel";
+  descriptionKey:
+    | "cardDescription"
+    | "padDescription"
+    | "interacDescription";
   icon: React.ReactNode;
 }[] = [
   {
@@ -50,6 +58,12 @@ const paymentMethodOptions: {
     labelKey: "padLabel",
     descriptionKey: "padDescription",
     icon: <Landmark className="h-5 w-5" />,
+  },
+  {
+    id: "interac_manual",
+    labelKey: "interacLabel",
+    descriptionKey: "interacDescription",
+    icon: <Banknote className="h-5 w-5" />,
   },
 ];
 
@@ -187,8 +201,28 @@ export default function AppointmentConfirmPaymentModal({
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<PaymentMethodType>("card");
+  const [selectedType, setSelectedType] =
+    useState<SelectedPaymentChoice>("card");
   const [typeSelected, setTypeSelected] = useState(false);
+
+  const submitInteracRequest = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await apiClient.post("/payments/request-transfer-guarantee", {
+        appointmentId,
+      });
+      setTypeSelected(true);
+      setClientSecret("__interac__");
+    } catch (err) {
+      console.error(err);
+      setError(
+        err instanceof Error ? err.message : t("initFailed"),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [appointmentId, t]);
 
   const createSetupIntent = useCallback(
     async (type: PaymentMethodType) => {
@@ -289,7 +323,15 @@ export default function AppointmentConfirmPaymentModal({
                 </div>
               )}
 
-              <Button onClick={() => createSetupIntent(selectedType)} className="w-full" size="lg">
+              <Button
+                onClick={() =>
+                  selectedType === "interac_manual"
+                    ? void submitInteracRequest()
+                    : createSetupIntent(selectedType)
+                }
+                className="w-full"
+                size="lg"
+              >
                 {t("continue")}
               </Button>
             </div>
@@ -302,7 +344,29 @@ export default function AppointmentConfirmPaymentModal({
             </div>
           )}
 
-          {!loading && clientSecret && typeSelected && (
+          {!loading && clientSecret && typeSelected && clientSecret === "__interac__" && (
+            <div className="text-center py-8 space-y-4">
+              <CheckCircle2 className="h-16 w-16 text-amber-500 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-foreground mb-2">
+                {t("interacSuccessTitle")}
+              </h3>
+              <p className="text-muted-foreground text-sm">{t("interacSuccessBody")}</p>
+              <Button
+                className="mt-4"
+                onClick={() => {
+                  onSuccess?.();
+                  onOpenChange(false);
+                }}
+              >
+                {t("continue")}
+              </Button>
+            </div>
+          )}
+
+          {!loading &&
+            clientSecret &&
+            typeSelected &&
+            clientSecret !== "__interac__" && (
             <div className="space-y-4">
               <button
                 type="button"
@@ -321,7 +385,7 @@ export default function AppointmentConfirmPaymentModal({
               >
                 <AppointmentSetupForm
                   appointmentId={appointmentId}
-                  paymentMethodType={selectedType}
+                  paymentMethodType={selectedType as PaymentMethodType}
                   onSuccess={() => {
                     onSuccess?.();
                     onOpenChange(false);

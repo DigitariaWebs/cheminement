@@ -167,6 +167,20 @@ export async function PATCH(
       );
     }
 
+    // Interac / virement : paiement attendu dans les 24h après la séance (référence = fin de séance)
+    if (
+      oldAppointment &&
+      oldAppointment.status !== "completed" &&
+      appointment.status === "completed" &&
+      appointment.payment?.method === "transfer"
+    ) {
+      const due = new Date();
+      due.setHours(due.getHours() + 24);
+      await Appointment.findByIdAndUpdate(id, {
+        "payment.transferDueAt": due,
+      });
+    }
+
     // Pivot de confirmation : RDV fixé → en attente de garantie (paiement) + e-mail coordonnées bancaires
     if (
       oldAppointment &&

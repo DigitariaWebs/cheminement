@@ -1181,7 +1181,8 @@
       "professionals": "Professionnels",
       "patients": "Patients",
       "systemSettings": "Paramètres système",
-      "reports": "Rapports"
+      "reports": "Rapports",
+      "paymentTrust": "Garanties Interac / virement"
     },
     "overview": {
       "title": "Bienvenue",
@@ -1314,6 +1315,7 @@
       "paymentGuarantee": "Paiement",
       "statutVert": "Statut vert",
       "statutSansGarantie": "Sans garantie",
+      "statutAttenteAdmin": "Validation admin",
       "all": "Tous",
       "active": "Actif",
       "inactive": "Inactif",
@@ -3060,7 +3062,11 @@
         "saveFailed": "Impossible d'enregistrer le moyen de paiement",
         "incomplete": "Configuration incomplète",
         "initFailed": "Impossible de démarrer la confirmation",
-        "stripeFootnote": "Sécurisé par Stripe. Les informations bancaires ne sont pas stockées sur Je Chemine."
+        "stripeFootnote": "Sécurisé par Stripe. Les informations bancaires ne sont pas stockées sur Je Chemine.",
+        "interacLabel": "Je n’ai pas de carte / Virement Interac",
+        "interacDescription": "Entente de confiance : un administrateur validera votre dossier (Statut vert). Le paiement doit être reçu dans les 24 h après chaque séance.",
+        "interacSuccessTitle": "Demande envoyée",
+        "interacSuccessBody": "Notre équipe a été avisée. Une fois votre profil validé, vous serez en Statut vert. Vous recevrez les instructions pour le virement selon les modalités de la plateforme."
       },
       "status": {
         "paid": "Payé",
@@ -3094,7 +3100,13 @@
       "preparingSetup": "Préparation...",
       "appointmentDetailsSection": "Détails du rendez-vous",
       "notAvailableTitle": "Pas encore disponible",
-      "notAvailableBody": "Le paiement s'ouvre après la séance. Réutilisez ce lien lorsque votre professionnel aura indiqué que la rencontre a eu lieu."
+      "notAvailableBody": "Le paiement s'ouvre après la séance. Réutilisez ce lien lorsque votre professionnel aura indiqué que la rencontre a eu lieu.",
+      "interacOptionLabel": "Virement Interac / sans carte",
+      "interacOptionDescription": "Demande d’entente de confiance — validation admin (Statut vert)",
+      "interacPendingTitle": "Demande en cours de validation",
+      "interacPendingBody": "Vous avez choisi le virement Interac. Un administrateur doit valider votre dossier avant le Statut vert. Vous serez avisé par courriel si besoin.",
+      "interacRequestSentTitle": "Demande transmise",
+      "interacRequestSentBody": "Les administrateurs ont été avisés. Après validation, votre compte passera en Statut vert. Le paiement de chaque séance doit être reçu dans les 24 heures suivant la rencontre."
     }
   },
   "Review": {

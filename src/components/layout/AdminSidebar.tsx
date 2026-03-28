@@ -13,6 +13,7 @@ import {
   Wallet,
   Shield,
   Settings,
+  Banknote,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -70,6 +71,11 @@ export function AdminSidebar() {
           title: t("billing"),
           url: "/admin/dashboard/billing",
           icon: Wallet,
+        },
+        {
+          title: t("paymentTrust"),
+          url: "/admin/dashboard/payment-trust",
+          icon: Banknote,
         },
       ],
     },

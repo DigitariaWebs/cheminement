@@ -1180,7 +1180,8 @@
       "professionals": "Professionals",
       "patients": "Patients",
       "systemSettings": "System Settings",
-      "reports": "Reports"
+      "reports": "Reports",
+      "paymentTrust": "Interac / transfer guarantees"
     },
     "overview": {
       "title": "Welcome Back",
@@ -1314,6 +1315,7 @@
       "paymentGuarantee": "Payment",
       "statutVert": "Green status",
       "statutSansGarantie": "No guarantee on file",
+      "statutAttenteAdmin": "Admin validation",
       "all": "All",
       "active": "Active",
       "inactive": "Inactive",
@@ -3055,7 +3057,11 @@
         "saveFailed": "Could not save payment method",
         "incomplete": "Setup not complete",
         "initFailed": "Failed to start confirmation",
-        "stripeFootnote": "Secured by Stripe. Banking information is not stored on Je Chemine."
+        "stripeFootnote": "Secured by Stripe. Banking information is not stored on Je Chemine.",
+        "interacLabel": "I don’t have a card / Interac transfer",
+        "interacDescription": "Trust agreement: an administrator will validate your profile (green status). Payment must be received within 24 hours after each session.",
+        "interacSuccessTitle": "Request sent",
+        "interacSuccessBody": "Our team has been notified. Once your profile is approved, you will be on green status. You will receive transfer instructions according to platform rules."
       },
       "status": {
         "paid": "Paid",
@@ -3089,7 +3095,13 @@
       "preparingSetup": "Preparing...",
       "appointmentDetailsSection": "Appointment details",
       "notAvailableTitle": "Not available yet",
-      "notAvailableBody": "Payment opens after your session is completed. Use this link again after your professional marks the meeting as done."
+      "notAvailableBody": "Payment opens after your session is completed. Use this link again after your professional marks the meeting as done.",
+      "interacOptionLabel": "Interac transfer / no card",
+      "interacOptionDescription": "Trust agreement request — admin validation (green status)",
+      "interacPendingTitle": "Awaiting validation",
+      "interacPendingBody": "You chose Interac transfer. An administrator must approve your profile before green status. You may receive an email if more information is needed.",
+      "interacRequestSentTitle": "Request submitted",
+      "interacRequestSentBody": "Administrators have been notified. After approval, your account will show green status. Payment for each session must be received within 24 hours after the session."
     }
   },
   "Review": {

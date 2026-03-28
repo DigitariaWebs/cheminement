@@ -17,7 +17,8 @@ export type EmailNotificationType =
   | "payment_refund"
   | "meeting_link"
   | "professional_approval"
-  | "professional_rejection";
+  | "professional_rejection"
+  | "admin_interac_trust_request";
 
 export interface IEmailTemplateConfig {
   enabled: boolean;
@@ -134,6 +135,10 @@ const defaultEmailTemplates: Record<
   professional_rejection: {
     enabled: true,
     subject: "Application Update - JeChemine",
+  },
+  admin_interac_trust_request: {
+    enabled: true,
+    subject: "Interac / virement — validation requise (Statut vert)",
   },
 };
 

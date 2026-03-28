@@ -32,12 +32,15 @@ export interface PaymentInfo {
   platformFee: number;
   professionalPayout: number;
   status: PaymentStatus;
+  method?: "card" | "transfer" | "direct_debit";
   stripePaymentIntentId?: string;
   stripePaymentMethodId?: string;
   paidAt?: string;
   refundedAt?: string;
   payoutTransferId?: string;
   payoutDate?: string;
+  /** Interac / virement : date limite de réception (ex. +24h après séance). */
+  transferDueAt?: string;
 }
 
 export interface AppointmentResponse {

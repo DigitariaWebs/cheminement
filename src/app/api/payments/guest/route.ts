@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
       "payment.paymentToken": token,
       "payment.paymentTokenExpiry": { $gt: new Date() },
     })
-      .populate("clientId", "firstName lastName email")
+      .populate(
+        "clientId",
+        "firstName lastName email paymentGuaranteeStatus paymentGuaranteeSource",
+      )
       .populate("professionalId", "firstName lastName");
 
     if (!appointment) {
@@ -46,7 +49,16 @@ export async function GET(req: NextRequest) {
       firstName: string;
       lastName: string;
       email: string;
+      paymentGuaranteeStatus?: string;
+      paymentGuaranteeSource?: string;
     };
+
+    const interacTrustGreen =
+      client.paymentGuaranteeStatus === "green" &&
+      client.paymentGuaranteeSource === "interac_trust";
+    const interacTrustPending =
+      client.paymentGuaranteeStatus === "pending_admin" &&
+      appointment.payment?.method === "transfer";
 
     const professional = appointment.professionalId as unknown as {
       firstName?: string;
@@ -70,9 +82,9 @@ export async function GET(req: NextRequest) {
       alreadyPaid: appointment.payment.status === "paid",
       paidAt: appointment.payment.paidAt,
       appointmentStatus: appointment.status,
-      hasPaymentMethodOnFile: Boolean(
-        appointment.payment.stripePaymentMethodId,
-      ),
+      hasPaymentMethodOnFile:
+        Boolean(appointment.payment.stripePaymentMethodId) || interacTrustGreen,
+      interacTrustPending,
     });
   } catch (error) {
     console.error("Error fetching guest appointment:", error);

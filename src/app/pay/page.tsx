@@ -21,6 +21,7 @@ import {
   Home,
   Download,
   Landmark,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -49,9 +50,10 @@ interface AppointmentDetails {
   paidAt?: string;
   appointmentStatus?: string;
   hasPaymentMethodOnFile?: boolean;
+  interacTrustPending?: boolean;
 }
 
-type GuestSetupPaymentType = "card" | "acss_debit";
+type GuestSetupPaymentType = "card" | "acss_debit" | "interac_manual";
 
 interface CheckoutFormProps {
   amount: number;
@@ -268,6 +270,7 @@ function GuestPaymentContent() {
   const [guestSetupStarted, setGuestSetupStarted] = useState(false);
   const [creatingGuestSetup, setCreatingGuestSetup] = useState(false);
   const [methodSetupSuccess, setMethodSetupSuccess] = useState(false);
+  const [interacRequestSent, setInteracRequestSent] = useState(false);
 
   const fetchAppointment = useCallback(async () => {
     if (!token) {
@@ -382,7 +385,40 @@ function GuestPaymentContent() {
     }
   };
 
+  const handleGuestSetupContinue = async () => {
+    if (!token || !appointment) return;
+    if (guestSetupType === "interac_manual") {
+      setCreatingGuestSetup(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/payments/request-transfer-guarantee", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token,
+            appointmentId: appointment.appointmentId,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Request failed");
+        }
+        setInteracRequestSent(true);
+        setMethodSetupSuccess(true);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Request failed",
+        );
+      } finally {
+        setCreatingGuestSetup(false);
+      }
+      return;
+    }
+    createGuestSetupIntent();
+  };
+
   const handleGuestSetupSuccess = () => {
+    setInteracRequestSent(false);
     setMethodSetupSuccess(true);
     setGuestSetupStarted(false);
     setGuestSetupSecret(null);
@@ -563,13 +599,31 @@ function GuestPaymentContent() {
     return (
       <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
         <div className="max-w-md w-full rounded-xl bg-card border border-border/40 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+          <div
+            className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              interacRequestSent
+                ? "bg-amber-100 dark:bg-amber-950/30"
+                : "bg-green-100 dark:bg-green-900/30"
+            }`}
+          >
+            <CheckCircle2
+              className={`h-8 w-8 ${
+                interacRequestSent
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-green-600 dark:text-green-400"
+              }`}
+            />
           </div>
           <h1 className="text-2xl font-serif font-light text-foreground mb-2">
-            {t("setupSuccessTitle")}
+            {interacRequestSent
+              ? t("interacRequestSentTitle")
+              : t("setupSuccessTitle")}
           </h1>
-          <p className="text-muted-foreground mb-6">{t("setupSuccessBody")}</p>
+          <p className="text-muted-foreground mb-6">
+            {interacRequestSent
+              ? t("interacRequestSentBody")
+              : t("setupSuccessBody")}
+          </p>
           <Button variant="outline" onClick={() => router.push("/")}>
             <Home className="mr-2 h-4 w-4" />
             {t("backHome")}
@@ -588,6 +642,29 @@ function GuestPaymentContent() {
             {t("pendingTitle")}
           </h1>
           <p className="text-muted-foreground mb-6">{t("pendingBody")}</p>
+          <Button variant="outline" onClick={() => router.push("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            {t("backHome")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    appointment &&
+    appointment.appointmentStatus === "scheduled" &&
+    appointment.interacTrustPending &&
+    !alreadyPaid
+  ) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background to-muted/20 flex items-center justify-center p-4">
+        <div className="max-w-md w-full rounded-xl bg-card border border-border/40 p-8 text-center">
+          <Clock className="h-12 w-12 text-sky-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-serif font-light text-foreground mb-2">
+            {t("interacPendingTitle")}
+          </h1>
+          <p className="text-muted-foreground mb-6">{t("interacPendingBody")}</p>
           <Button variant="outline" onClick={() => router.push("/")}>
             <Home className="mr-2 h-4 w-4" />
             {t("backHome")}
@@ -643,6 +720,12 @@ function GuestPaymentContent() {
         label: "Pre-authorized debit (Canada)",
         description: "PAD via Stripe",
         icon: <Landmark className="h-5 w-5" />,
+      },
+      {
+        id: "interac_manual",
+        label: t("interacOptionLabel"),
+        description: t("interacOptionDescription"),
+        icon: <Banknote className="h-5 w-5" />,
       },
     ];
 
@@ -726,7 +809,7 @@ function GuestPaymentContent() {
                   className="w-full"
                   size="lg"
                   disabled={creatingGuestSetup}
-                  onClick={createGuestSetupIntent}
+                  onClick={() => void handleGuestSetupContinue()}
                 >
                   {creatingGuestSetup ? (
                     <>
@@ -740,7 +823,9 @@ function GuestPaymentContent() {
               </div>
             ) : (
               guestSetupSecret &&
-              token && (
+              token &&
+              (guestSetupType === "card" ||
+                guestSetupType === "acss_debit") && (
                 <div className="space-y-4">
                   <button
                     type="button"

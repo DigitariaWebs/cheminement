@@ -37,7 +37,7 @@ interface Client {
   email: string;
   phone: string;
   status: "active" | "inactive" | "pending";
-  paymentGuaranteeStatus?: "none" | "green";
+  paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
   lastSession: string;
   totalSessions: number;
   issueType: string;
@@ -124,6 +124,14 @@ export default function ClientsPage() {
         <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-light bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
           <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden />
           {t("statutVert")}
+        </span>
+      );
+    }
+    if (guarantee === "pending_admin") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-light bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-200">
+          <span className="w-2 h-2 rounded-full bg-sky-500" aria-hidden />
+          {t("statutAttenteAdmin")}
         </span>
       );
     }
