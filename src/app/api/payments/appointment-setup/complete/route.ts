@@ -116,6 +116,7 @@ export async function POST(req: NextRequest) {
     if (appointment.payment.status === "processing") {
       appointment.payment.status = "pending";
     }
+    appointment.awaitingPaymentGuarantee = false;
     await appointment.save();
 
     return NextResponse.json({ success: true });

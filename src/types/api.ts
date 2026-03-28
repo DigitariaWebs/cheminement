@@ -60,6 +60,8 @@ export interface AppointmentResponse {
   scheduledStartAt?: string;
   reminderSent: boolean;
   payment: PaymentInfo;
+  /** RDV fixé mais moyen de paiement / garantie pas encore enregistré */
+  awaitingPaymentGuarantee?: boolean;
   createdAt: string;
   updatedAt: string;
 }

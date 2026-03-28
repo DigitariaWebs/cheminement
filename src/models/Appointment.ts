@@ -98,6 +98,12 @@ export interface IAppointment extends Document {
   // Preferred availability slots provided by client
   preferredAvailability?: string[];
 
+  /**
+   * True when the 1st appointment is scheduled but payment guarantee (card on file) is still pending.
+   * Aligns with workflow: "RDV fixé — en attente de garantie".
+   */
+  awaitingPaymentGuarantee?: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -298,6 +304,11 @@ const AppointmentSchema = new Schema<IAppointment>(
     ],
     // Preferred availability slots provided by client
     preferredAvailability: [String],
+
+    awaitingPaymentGuarantee: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
