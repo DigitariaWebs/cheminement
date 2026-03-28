@@ -1,10 +1,11 @@
 import crypto from "crypto";
 
 /**
- * AES-256-GCM at rest for Stripe payment method references (`pm_...`) stored in MongoDB.
+ * AES-256-GCM at rest for sensitive strings in MongoDB (Loi 25 / defense in depth).
  *
- * PCI-DSS: full card numbers, CVV, etc. must never touch our database — Stripe Elements
- * tokenizes them. This layer encrypts the opaque Stripe IDs we persist (defense in depth).
+ * Uses:
+ * - Stripe payment method references (`pm_...`) — PCI: card data never hits our DB; IDs are still encrypted.
+ * - Contact data: phone numbers, addresses / locations (not searchable by partial match when encrypted).
  *
  * Set FIELD_ENCRYPTION_KEY to 32 raw bytes encoded as base64, e.g.:
  *   node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
@@ -42,6 +43,11 @@ function getKey(): Buffer | null {
   }
   cachedKey = buf;
   return cachedKey;
+}
+
+/** True when a valid 32-byte key is configured (AES-256-GCM enabled for at-rest fields). */
+export function isFieldEncryptionEnabled(): boolean {
+  return getKey() !== null;
 }
 
 /**
@@ -103,3 +109,9 @@ export function decryptPaymentMethodReference(
     return stored;
   }
 }
+
+/** Generic alias — phones, addresses, same AES-256-GCM as payment method refs. */
+export const encryptAtRestString = encryptPaymentMethodReference;
+
+/** Decrypt values produced by `encryptAtRestString`. */
+export const decryptAtRestString = decryptPaymentMethodReference;

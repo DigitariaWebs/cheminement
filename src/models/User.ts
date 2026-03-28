@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { attachContactStringEncryption } from "@/lib/mongoose-contact-encryption";
 
 export interface IUser extends Document {
   email: string;
@@ -147,6 +148,8 @@ UserSchema.index({ adminId: 1 });
 UserSchema.index({ guardianId: 1 });
 UserSchema.index({ accountManagerId: 1 });
 UserSchema.index({ managedAccounts: 1 });
+
+attachContactStringEncryption(UserSchema, ["phone", "location"]);
 
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

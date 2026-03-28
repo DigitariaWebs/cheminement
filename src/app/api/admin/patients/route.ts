@@ -4,6 +4,7 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
+import { isFieldEncryptionEnabled } from "@/lib/field-encryption";
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
     const query: {
       role: { $in: string[] };
       status?: string;
-      $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
+      $or?: Record<string, unknown>[];
     } = { role: { $in: ["client", "guest"] } };
 
     if (status !== "all") {
@@ -34,12 +35,16 @@ export async function GET(req: NextRequest) {
 
     // Add search functionality
     if (search.trim()) {
-      query.$or = [
+      const or: Array<Record<string, unknown>> = [
         { firstName: { $regex: search, $options: "i" } },
         { lastName: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
       ];
+      /* Phone is AES-GCM at rest when FIELD_ENCRYPTION_KEY is set — no substring search on ciphertext. */
+      if (!isFieldEncryptionEnabled()) {
+        or.push({ phone: { $regex: search, $options: "i" } });
+      }
+      query.$or = or;
     }
 
     // Get patients with pagination

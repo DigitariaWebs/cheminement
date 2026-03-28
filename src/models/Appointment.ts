@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { attachAppointmentContactEncryption } from "@/lib/mongoose-contact-encryption";
 
 export interface IPayment {
   price: number;
@@ -356,6 +357,8 @@ AppointmentSchema.index({ professionalId: 1, date: 1 });
 AppointmentSchema.index({ status: 1, date: 1 });
 AppointmentSchema.index({ routingStatus: 1 });
 AppointmentSchema.index({ proposedTo: 1, routingStatus: 1 });
+
+attachAppointmentContactEncryption(AppointmentSchema);
 
 const Appointment: Model<IAppointment> =
   mongoose.models.Appointment ||
