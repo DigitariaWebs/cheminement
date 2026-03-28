@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
+import { computeClientStatusTier } from "@/lib/client-status-tier";
+import type { ClientStatusTier } from "@/lib/client-status-tier";
 
 interface PopulatedUser {
   _id: string;
@@ -12,6 +14,29 @@ interface PopulatedUser {
   phone: string;
   paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
 }
+
+type ClientAgg = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: "active" | "inactive" | "pending";
+  paymentGuaranteeStatus: "none" | "pending_admin" | "green";
+  lastSession: string;
+  totalSessions: number;
+  issueType: string;
+  joinedDate: string;
+  statusTier: ClientStatusTier;
+  _appointments: Array<{
+    status: string;
+    payment?: {
+      status?: string;
+      method?: string;
+    };
+    awaitingPaymentGuarantee?: boolean;
+    sessionCompletedAt?: Date | string | null;
+  }>;
+};
 
 export async function GET() {
   try {
@@ -25,7 +50,16 @@ export async function GET() {
 
     const appointments = await Appointment.find({
       professionalId: session.user.id,
-      status: { $in: ["scheduled", "completed"] },
+      status: {
+        $in: [
+          "pending",
+          "scheduled",
+          "ongoing",
+          "completed",
+          "no-show",
+          "cancelled",
+        ],
+      },
     })
       .populate(
         "clientId",
@@ -34,32 +68,47 @@ export async function GET() {
       .populate("professionalId", "firstName lastName email phone")
       .sort({ date: -1 });
 
-    // Process appointments to get unique clients
-    const clientMap = new Map();
+    const clientMap = new Map<string, ClientAgg>();
 
     for (const appointment of appointments) {
       const client = appointment.clientId as unknown as PopulatedUser;
       const clientId = client._id.toString();
+
+      const aptSlice = {
+        status: appointment.status,
+        payment: appointment.payment
+          ? {
+              status: appointment.payment.status,
+              method: appointment.payment.method,
+            }
+          : undefined,
+        awaitingPaymentGuarantee: appointment.awaitingPaymentGuarantee,
+        sessionCompletedAt: appointment.sessionCompletedAt,
+      };
+
       if (!clientMap.has(clientId)) {
+        const lastS = appointment.date
+          ? appointment.date.toISOString().split("T")[0]
+          : "N/A";
         clientMap.set(clientId, {
           id: clientId,
           name: `${client.firstName} ${client.lastName}`,
           email: client.email,
           phone: client.phone,
-          status: "active", // Default, can be updated based on logic
+          status: "active",
           paymentGuaranteeStatus: client.paymentGuaranteeStatus ?? "none",
-          lastSession: appointment.date
-            ? appointment.date.toISOString().split("T")[0]
-            : "N/A",
+          lastSession: lastS,
           totalSessions: 1,
-          issueType: "Not specified", // Placeholder
-          joinedDate: appointment.date
-            ? appointment.date.toISOString().split("T")[0]
-            : "N/A",
+          issueType: "Not specified",
+          joinedDate: lastS,
+          statusTier: "yellow",
+          _appointments: [aptSlice],
         });
       } else {
-        const existingClient = clientMap.get(clientId);
+        const existingClient = clientMap.get(clientId)!;
         existingClient.totalSessions += 1;
+        existingClient._appointments.push(aptSlice);
+
         const g = (s: string | undefined) => s ?? "none";
         const cur = g(existingClient.paymentGuaranteeStatus);
         const next = g(client.paymentGuaranteeStatus);
@@ -70,18 +119,30 @@ export async function GET() {
         } else {
           existingClient.paymentGuaranteeStatus = "none";
         }
+
         if (
           appointment.date &&
+          existingClient.lastSession !== "N/A" &&
           new Date(appointment.date) > new Date(existingClient.lastSession)
         ) {
           existingClient.lastSession = appointment.date
             .toISOString()
             .split("T")[0];
+        } else if (appointment.date && existingClient.lastSession === "N/A") {
+          existingClient.lastSession = appointment.date
+            .toISOString()
+            .split("T")[0];
         }
+
         if (
           appointment.date &&
+          existingClient.joinedDate !== "N/A" &&
           new Date(appointment.date) < new Date(existingClient.joinedDate)
         ) {
+          existingClient.joinedDate = appointment.date
+            .toISOString()
+            .split("T")[0];
+        } else if (appointment.date && existingClient.joinedDate === "N/A") {
           existingClient.joinedDate = appointment.date
             .toISOString()
             .split("T")[0];
@@ -89,14 +150,22 @@ export async function GET() {
       }
     }
 
-    const clients = Array.from(clientMap.values());
-
-    // Update status based on last session
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    clients.forEach((client) => {
-      client.status =
-        new Date(client.lastSession) >= thirtyDaysAgo ? "active" : "inactive";
+
+    const clients = Array.from(clientMap.values()).map((c) => {
+      c.status =
+        c.lastSession !== "N/A" && new Date(c.lastSession) >= thirtyDaysAgo
+          ? "active"
+          : "inactive";
+
+      c.statusTier = computeClientStatusTier(
+        c.paymentGuaranteeStatus,
+        c._appointments,
+      );
+
+      const { _appointments: _, ...rest } = c;
+      return rest;
     });
 
     return NextResponse.json(clients);

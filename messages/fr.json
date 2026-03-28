@@ -1332,7 +1332,36 @@
       "message": "Message",
       "noClients": "Aucun client trouvé",
       "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
-      "sessions": "séances"
+      "sessions": "séances",
+      "statusTierColumn": "Statut dossier",
+      "statusTierFilter": "Statut dossier",
+      "statusTierLegendTitle": "Résumé des statuts (codes couleur)",
+      "statusTierMeaning": "Signification",
+      "statusTierAction": "Action requise",
+      "statusTier": {
+        "tiers": {
+          "gray": {
+            "label": "Nouveau prospect",
+            "meaning": "Aucun RDV confirmé ou uniquement des demandes en attente.",
+            "action": "Le professionnel doit appeler pour fixer le RDV."
+          },
+          "yellow": {
+            "label": "RDV sans carte",
+            "meaning": "RDV fixé, mais pas de carte ou garantie en place.",
+            "action": "Le système envoie des relances automatiques."
+          },
+          "green": {
+            "label": "Carte ou entente OK",
+            "meaning": "Carte enregistrée ou entente validée.",
+            "action": "Prêt pour la séance, dossier sécurisé."
+          },
+          "red": {
+            "label": "Incident paiement / Interac",
+            "meaning": "Échec de paiement ou virement Interac en retard.",
+            "action": "L’administrateur ou le professionnel doit assurer le suivi et contacter le client."
+          }
+        }
+      }
     },
     "sessions": {
       "title": "Séances",

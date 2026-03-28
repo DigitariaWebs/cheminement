@@ -1332,7 +1332,36 @@
       "message": "Message",
       "noClients": "No clients found",
       "adjustFilters": "Try adjusting your search or filters",
-      "sessions": "sessions"
+      "sessions": "sessions",
+      "statusTierColumn": "Case status",
+      "statusTierFilter": "Case status",
+      "statusTierLegendTitle": "Status color guide",
+      "statusTierMeaning": "Meaning",
+      "statusTierAction": "Required action",
+      "statusTier": {
+        "tiers": {
+          "gray": {
+            "label": "New prospect",
+            "meaning": "No confirmed appointment yet, or only pending requests.",
+            "action": "The professional should call to book the appointment."
+          },
+          "yellow": {
+            "label": "Appointment, no card",
+            "meaning": "Appointment is set, but no card or guarantee on file.",
+            "action": "The system sends automatic reminders."
+          },
+          "green": {
+            "label": "Card or agreement OK",
+            "meaning": "Card on file or agreement validated.",
+            "action": "Ready for the session; file is secure."
+          },
+          "red": {
+            "label": "Payment issue / Interac",
+            "meaning": "Payment failed or Interac transfer overdue.",
+            "action": "Admin or professional should follow up and contact the client."
+          }
+        }
+      }
     },
     "sessions": {
       "title": "Sessions",
