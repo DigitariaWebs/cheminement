@@ -1373,7 +1373,38 @@
       "addNotes": "Add Notes",
       "noSessions": "No sessions found",
       "adjustFilters": "Try adjusting your search or filters",
-      "minutes": "min"
+      "minutes": "min",
+      "sessionClosure": {
+        "title": "End of session",
+        "description": "Confirm the type of service, encounter outcome, and next step. This updates billing and the record.",
+        "cta": "Complete session",
+        "actNatureLabel": "Type of service",
+        "actPlaceholder": "Choose an option",
+        "outcomeLabel": "Encounter outcome",
+        "outcomePlaceholder": "Choose an option",
+        "nextLabel": "Next step",
+        "nextDate": "Next appointment date",
+        "nextTime": "Time",
+        "nextHint": "Optional unless rescheduling by agreement (date and time required).",
+        "submit": "Confirm and close",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "needNextWhenRescheduled": "Enter the date and time of the next appointment when rescheduling by agreement.",
+        "needBothDateTime": "Provide both date and time together, or leave both empty.",
+        "acts": {
+          "psychotherapy_individual_couple_family": "Individual / couple / family psychotherapy",
+          "psychotherapy_child": "Child psychotherapy",
+          "eval_psych_neuro": "Psychological / neuropsychological assessment",
+          "psychological_expertise": "Psychological expertise",
+          "report_followup_notes": "Report writing / follow-up notes"
+        },
+        "outcomes": {
+          "present": "Attended — bill 100%",
+          "late_cancel_24_48": "Late cancellation (24–48 h) — bill 50%",
+          "no_show_within_24": "Unexcused no-show (within 24 h) — bill 100%",
+          "rescheduled_agreed": "Rescheduled with professional agreement — no charge for this slot"
+        }
+      }
     },
     "profileModal": {
       "title": "Complete Your Profile",

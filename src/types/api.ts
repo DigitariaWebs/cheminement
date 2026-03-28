@@ -9,7 +9,7 @@ interface PersonResponse {
 
 type AppointmentType = "video" | "in-person" | "phone";
 type TherapyType = "solo" | "couple" | "group";
-type AppointmentStatus =
+export type AppointmentStatus =
   | "scheduled"
   | "completed"
   | "cancelled"
@@ -29,6 +29,8 @@ type CancelledBy = "client" | "professional" | "admin";
 
 export interface PaymentInfo {
   price: number;
+  /** Tarif de référence avant ajustement fin de séance (facultatif jusqu'à la clôture). */
+  listPrice?: number;
   platformFee: number;
   professionalPayout: number;
   status: PaymentStatus;
@@ -66,6 +68,11 @@ export interface AppointmentResponse {
   payment: PaymentInfo;
   /** RDV fixé mais moyen de paiement / garantie pas encore enregistré */
   awaitingPaymentGuarantee?: boolean;
+  /** Clôture post-séance (professionnel) */
+  sessionActNature?: string;
+  sessionOutcome?: string;
+  nextAppointmentAt?: string;
+  sessionCompletedAt?: string;
   createdAt: string;
   updatedAt: string;
 }

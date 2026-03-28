@@ -2,6 +2,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IPayment {
   price: number;
+  /** Tarif catalogue avant ajustement (clôture séance). */
+  listPrice?: number;
   platformFee: number;
   professionalPayout: number;
   status:
@@ -114,6 +116,14 @@ export interface IAppointment extends Document {
   guarantee48hClientReminderSent?: boolean;
   guarantee48hProfessionalAlertSent?: boolean;
 
+  /** Nature de l'acte (clôture professionnelle). */
+  sessionActNature?: string;
+  /** Issue de la rencontre (clôture). */
+  sessionOutcome?: string;
+  /** Prochain RDV convenu (information). */
+  nextAppointmentAt?: Date;
+  sessionCompletedAt?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -125,6 +135,7 @@ const PaymentSchema = new Schema<IPayment>(
       required: true,
       default: 120,
     },
+    listPrice: { type: Number, required: false },
     platformFee: {
       type: Number,
       required: true,
@@ -326,6 +337,11 @@ const AppointmentSchema = new Schema<IAppointment>(
     guaranteeDay1ReminderSent: { type: Boolean, default: false },
     guarantee48hClientReminderSent: { type: Boolean, default: false },
     guarantee48hProfessionalAlertSent: { type: Boolean, default: false },
+
+    sessionActNature: { type: String, required: false },
+    sessionOutcome: { type: String, required: false },
+    nextAppointmentAt: { type: Date, required: false },
+    sessionCompletedAt: { type: Date, required: false },
   },
   {
     timestamps: true,

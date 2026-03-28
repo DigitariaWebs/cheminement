@@ -258,6 +258,19 @@ export const appointmentsAPI = {
     apiClient.patch<AppointmentResponse>(`/appointments/${id}`, data),
   delete: (id: string) =>
     apiClient.delete<{ success: boolean }>(`/appointments/${id}`),
+  completeSession: (
+    id: string,
+    data: {
+      sessionActNature: string;
+      sessionOutcome: string;
+      nextAppointmentDate?: string;
+      nextAppointmentTime?: string;
+    },
+  ) =>
+    apiClient.post<AppointmentResponse>(
+      `/appointments/${id}/complete-session`,
+      data,
+    ),
 };
 
 // Users

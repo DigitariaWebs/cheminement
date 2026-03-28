@@ -1373,7 +1373,38 @@
       "addNotes": "Ajouter des notes",
       "noSessions": "Aucune séance trouvée",
       "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
-      "minutes": "min"
+      "minutes": "min",
+      "sessionClosure": {
+        "title": "Fin de séance",
+        "description": "Validez la nature de l'acte, le statut de la rencontre et la prochaine étape. Cette action met à jour la facturation et le dossier.",
+        "cta": "Terminer la séance",
+        "actNatureLabel": "Nature de l'acte",
+        "actPlaceholder": "Choisir une option",
+        "outcomeLabel": "Statut de la rencontre",
+        "outcomePlaceholder": "Choisir une option",
+        "nextLabel": "Prochaine étape",
+        "nextDate": "Date du prochain RDV",
+        "nextTime": "Heure",
+        "nextHint": "Facultatif sauf en cas de report convenu (date et heure requises).",
+        "submit": "Valider et clôturer",
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "needNextWhenRescheduled": "Indiquez la date et l'heure du prochain rendez-vous pour un report convenu.",
+        "needBothDateTime": "Renseignez la date et l'heure ensemble, ou laissez les deux vides.",
+        "acts": {
+          "psychotherapy_individual_couple_family": "Psychothérapie individuelle / couple / familiale",
+          "psychotherapy_child": "Psychothérapie pour enfant",
+          "eval_psych_neuro": "Évaluation psychologique / neuropsychologique",
+          "psychological_expertise": "Expertise psychologique",
+          "report_followup_notes": "Rédaction de rapport / notes de suivi"
+        },
+        "outcomes": {
+          "present": "Présent — facturation 100 %",
+          "late_cancel_24_48": "Annulation tardive (24 h à 48 h) — facturation 50 %",
+          "no_show_within_24": "Absence non motivée (moins de 24 h) — facturation 100 %",
+          "rescheduled_agreed": "Report avec accord du professionnel — pas de facturation pour ce créneau"
+        }
+      }
     },
     "profileModal": {
       "title": "Complétez votre profil",
