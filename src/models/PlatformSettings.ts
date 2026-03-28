@@ -18,7 +18,11 @@ export type EmailNotificationType =
   | "meeting_link"
   | "professional_approval"
   | "professional_rejection"
-  | "admin_interac_trust_request";
+  | "admin_interac_trust_request"
+  | "interac_transfer_instructions"
+  | "payment_guarantee_day1_reminder"
+  | "payment_guarantee_48h_client"
+  | "payment_guarantee_48h_professional";
 
 export interface IEmailTemplateConfig {
   enabled: boolean;
@@ -63,6 +67,8 @@ export interface IPlatformSettings extends Document {
     professionalCancellationHours: number;
   };
   emailSettings: IEmailSettings;
+  /** Courriel de dépôt Interac affiché aux clients (ex. paiements@domaine.com). */
+  interacDepositEmail?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -140,6 +146,22 @@ const defaultEmailTemplates: Record<
     enabled: true,
     subject: "Interac / virement — validation requise (Statut vert)",
   },
+  interac_transfer_instructions: {
+    enabled: true,
+    subject: "Instructions virement Interac — JeChemine",
+  },
+  payment_guarantee_day1_reminder: {
+    enabled: true,
+    subject: "Rappel : ajoutez un moyen de paiement — JeChemine",
+  },
+  payment_guarantee_48h_client: {
+    enabled: true,
+    subject: "URGENT : votre rendez-vous approche — moyen de paiement — JeChemine",
+  },
+  payment_guarantee_48h_professional: {
+    enabled: true,
+    subject: "ALERTE : client sans garantie de paiement — rendez-vous proche",
+  },
 };
 
 const defaultEmailBranding: IEmailBranding = {
@@ -216,6 +238,11 @@ const PlatformSettingsSchema = new Schema<IPlatformSettings>(
         type: Number,
         default: 12,
       },
+    },
+    interacDepositEmail: {
+      type: String,
+      trim: true,
+      default: "",
     },
     emailSettings: {
       enabled: {

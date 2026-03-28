@@ -4,7 +4,12 @@ import { authOptions } from "@/lib/auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
-import { sendAdminInteracTrustRequestAlert } from "@/lib/notifications";
+import {
+  sendAdminInteracTrustRequestAlert,
+  sendInteracTransferInstructionsEmail,
+} from "@/lib/notifications";
+import { buildInteracReferenceCode } from "@/lib/interac-reference";
+import { getInteracDepositEmail } from "@/lib/interac-deposit-email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -103,8 +108,22 @@ export async function POST(req: NextRequest) {
 
     const prevStatus = user.paymentGuaranteeStatus;
 
+    const proDoc = appointment.professionalId as unknown as {
+      _id: { toString: () => string };
+      firstName?: string;
+      lastName?: string;
+    } | null;
+
+    const interacReferenceCode =
+      appointment.payment?.interacReferenceCode ||
+      buildInteracReferenceCode(
+        String(appointment._id),
+        proDoc?._id?.toString(),
+      );
+
     await Appointment.findByIdAndUpdate(appointmentId, {
       "payment.method": "transfer",
+      "payment.interacReferenceCode": interacReferenceCode,
       awaitingPaymentGuarantee: false,
     });
 
@@ -129,7 +148,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true });
+    const depositEmail = await getInteracDepositEmail();
+    const aptDate = appointment.date
+      ? new Date(appointment.date)
+      : null;
+    const dateLabel =
+      aptDate && !isNaN(aptDate.getTime())
+        ? `${aptDate.toLocaleDateString("fr-CA", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}${appointment.time ? ` à ${appointment.time}` : ""}`
+        : "—";
+
+    sendInteracTransferInstructionsEmail({
+      clientName: `${client.firstName} ${client.lastName}`,
+      clientEmail: client.email,
+      clientLegalName: `${client.firstName} ${client.lastName}`,
+      depositEmail,
+      amountCad: appointment.payment?.price ?? 0,
+      interacReferenceCode,
+      professionalName: proDoc
+        ? `${proDoc.firstName ?? ""} ${proDoc.lastName ?? ""}`.trim()
+        : "Votre professionnel",
+      appointmentDateLabel: dateLabel,
+    }).catch((err) =>
+      console.error("sendInteracTransferInstructionsEmail:", err),
+    );
+
+    return NextResponse.json({ success: true, interacReferenceCode });
   } catch (error: unknown) {
     console.error("request-transfer-guarantee:", error);
     return NextResponse.json(

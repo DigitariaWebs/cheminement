@@ -120,6 +120,16 @@ export async function PATCH(
       data.professionalId = session.user.id;
     }
 
+    // Relance J+1 : ancrage du premier passage en « scheduled »
+    if (
+      oldAppointment &&
+      oldAppointment.status === "pending" &&
+      data.status === "scheduled" &&
+      !oldAppointment.firstScheduledAt
+    ) {
+      data.firstScheduledAt = new Date();
+    }
+
     // If status is being set to ongoing and scheduledStartAt is not provided,
     // derive scheduledStartAt from the existing date/time fields so that
     // timers can consistently count from the scheduled start time.

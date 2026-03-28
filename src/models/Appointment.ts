@@ -23,6 +23,8 @@ export interface IPayment {
   paymentTokenExpiry?: Date;
   /** Interac / virement : échéance de réception du paiement (ex. fin de séance + 24h). */
   transferDueAt?: Date;
+  /** Code message Interac (unique par RDV, lié au pro). */
+  interacReferenceCode?: string;
 }
 
 // Loved one information for third-party bookings
@@ -106,6 +108,12 @@ export interface IAppointment extends Document {
    */
   awaitingPaymentGuarantee?: boolean;
 
+  /** Premier passage en « scheduled » (pour relance J+1 garantie). */
+  firstScheduledAt?: Date;
+  guaranteeDay1ReminderSent?: boolean;
+  guarantee48hClientReminderSent?: boolean;
+  guarantee48hProfessionalAlertSent?: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -156,6 +164,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
     paymentTokenExpiry: Date,
     transferDueAt: Date,
+    interacReferenceCode: { type: String, index: true },
   },
   { _id: false },
 );
@@ -312,6 +321,11 @@ const AppointmentSchema = new Schema<IAppointment>(
       type: Boolean,
       default: false,
     },
+
+    firstScheduledAt: Date,
+    guaranteeDay1ReminderSent: { type: Boolean, default: false },
+    guarantee48hClientReminderSent: { type: Boolean, default: false },
+    guarantee48hProfessionalAlertSent: { type: Boolean, default: false },
   },
   {
     timestamps: true,

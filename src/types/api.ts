@@ -41,6 +41,7 @@ export interface PaymentInfo {
   payoutDate?: string;
   /** Interac / virement : date limite de réception (ex. +24h après séance). */
   transferDueAt?: string;
+  interacReferenceCode?: string;
 }
 
 export interface AppointmentResponse {

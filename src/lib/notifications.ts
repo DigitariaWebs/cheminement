@@ -1533,3 +1533,189 @@ export async function sendAdminInteracTrustRequestAlert(data: {
     await sendEmail({ to, subject, html, text }, "admin_interac_trust_request");
   }
 }
+
+export async function sendInteracTransferInstructionsEmail(data: {
+  clientName: string;
+  clientEmail: string;
+  clientLegalName: string;
+  depositEmail: string;
+  amountCad: number;
+  interacReferenceCode: string;
+  professionalName: string;
+  appointmentDateLabel: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const company = branding?.companyName || "JeChemine";
+
+  const smsBlock = [
+    "Paiement Interac Rapide ⚡",
+    `📧 Courriel : ${data.depositEmail}`,
+    `💰 Montant : ${data.amountCad.toFixed(2)} $`,
+    `📝 Message obligatoire : ${data.interacReferenceCode}`,
+    "",
+    "Le système pourra associer votre virement à votre dossier grâce à ce code.",
+  ].join("\n");
+
+  const html = buildEmailHtml({
+    title: "Instructions — virement Interac",
+    theme: "info",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: `Voici comment envoyer votre virement pour votre séance avec ${data.professionalName} (${data.appointmentDateLabel}).`,
+    details: [
+      {
+        label: "1. Envoyez votre virement à",
+        value: data.depositEmail,
+      },
+      {
+        label: "2. Vérification du nom",
+        value: `Le nom associé à votre compte bancaire doit être identique à celui de votre dossier : ${data.clientLegalName}.`,
+      },
+      {
+        label: "3. Compte d’un tiers ou d’une entreprise",
+        value:
+          "Inscrivez votre nom complet dans le champ « Message » du virement pour que nous puissions identifier votre paiement.",
+      },
+      {
+        label: "4. Message obligatoire (référence unique)",
+        value: data.interacReferenceCode,
+      },
+    ],
+    infoBox: {
+      title: "Format court (idéal mobile / SMS)",
+      content: smsBlock.split("\n").join("<br/>"),
+      theme: "info",
+    },
+    outro: `PAD et carte : vous pouvez aussi enregistrer un moyen de paiement sécurisé (Stripe) depuis votre espace Facturation. Pour les PME, des solutions type prélèvement avec mandat (ex. intégrations bancaires spécialisées) peuvent s’ajouter — contactez ${company} pour plus d’informations.`,
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Instructions virement Interac",
+    `Bonjour ${data.clientName},`,
+    `Séance avec ${data.professionalName} — ${data.appointmentDateLabel}`,
+    "",
+    `1. Envoyer le virement à : ${data.depositEmail}`,
+    `2. Nom : doit correspondre à « ${data.clientLegalName} »`,
+    "3. Tiers / entreprise : indiquez votre nom complet dans le message du virement.",
+    `4. Message obligatoire : ${data.interacReferenceCode}`,
+    `Montant : ${data.amountCad.toFixed(2)} $`,
+    "",
+    "— Format SMS —",
+    smsBlock,
+  ]);
+
+  const subject = await getSubject(
+    "interac_transfer_instructions",
+    "Instructions virement Interac — JeChemine",
+  );
+
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "interac_transfer_instructions",
+  );
+}
+
+export async function sendPaymentGuaranteeDay1Reminder(data: {
+  clientName: string;
+  clientEmail: string;
+  billingUrl: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "Rappel : moyen de paiement",
+    theme: "warning",
+    greeting: `Bonjour ${data.clientName},`,
+    intro:
+      "Votre rendez-vous est confirmé, mais aucune carte ni prélèvement bancaire (PAD) n’est encore enregistré. Ajoutez un moyen de paiement pour finaliser la garantie.",
+    button: { text: "Ouvrir Facturation", url: data.billingUrl },
+    outro: "Si vous avez choisi le virement Interac, votre demande est en traitement côté administration.",
+    branding,
+  });
+  const text = buildEmailText([
+    "Rappel moyen de paiement",
+    `Bonjour ${data.clientName},`,
+    "Ajoutez une carte ou un PAD :",
+    data.billingUrl,
+  ]);
+  const subject = await getSubject(
+    "payment_guarantee_day1_reminder",
+    "Rappel : ajoutez un moyen de paiement — JeChemine",
+  );
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "payment_guarantee_day1_reminder",
+  );
+}
+
+export async function sendPaymentGuarantee48hClientReminder(data: {
+  clientName: string;
+  clientEmail: string;
+  billingUrl: string;
+  appointmentDateLabel: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "URGENT — rendez-vous proche",
+    theme: "danger",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: `Votre rendez-vous du ${data.appointmentDateLabel} approche. Aucune garantie de paiement (carte/PAD) n’est en place. Merci d’agir immédiatement pour éviter tout report.`,
+    button: { text: "Ajouter un moyen de paiement", url: data.billingUrl },
+    branding,
+  });
+  const text = buildEmailText([
+    "URGENT — moyen de paiement",
+    `Bonjour ${data.clientName},`,
+    `Rendez-vous : ${data.appointmentDateLabel}`,
+    data.billingUrl,
+  ]);
+  const subject = await getSubject(
+    "payment_guarantee_48h_client",
+    "URGENT : moyen de paiement — JeChemine",
+  );
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "payment_guarantee_48h_client",
+  );
+}
+
+export async function sendPaymentGuarantee48hProfessionalAlert(data: {
+  professionalEmail: string;
+  professionalName: string;
+  clientName: string;
+  appointmentDateLabel: string;
+  appointmentId: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const base =
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
+  const dashboardUrl = `${base}/professional/dashboard/sessions`;
+
+  const html = buildEmailHtml({
+    title: "ALERTE — client sans garantie de paiement",
+    theme: "danger",
+    greeting: `Bonjour ${data.professionalName},`,
+    intro: `Le client ${data.clientName} n’a toujours pas de carte ni prélèvement enregistré pour le rendez-vous du ${data.appointmentDateLabel}. Dernière relance automatique envoyée au client.`,
+    details: [
+      { label: "Rendez-vous", value: data.appointmentId },
+    ],
+    button: { text: "Voir les séances", url: dashboardUrl },
+    branding,
+  });
+  const text = buildEmailText([
+    "ALERTE garantie paiement",
+    `Bonjour ${data.professionalName},`,
+    `Client : ${data.clientName}`,
+    `Date : ${data.appointmentDateLabel}`,
+    dashboardUrl,
+  ]);
+  const subject = await getSubject(
+    "payment_guarantee_48h_professional",
+    "ALERTE : client sans garantie — rendez-vous proche",
+  );
+  return sendEmail(
+    { to: data.professionalEmail, subject, html, text },
+    "payment_guarantee_48h_professional",
+  );
+}
