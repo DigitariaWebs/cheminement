@@ -22,7 +22,8 @@ export type EmailNotificationType =
   | "interac_transfer_instructions"
   | "payment_guarantee_day1_reminder"
   | "payment_guarantee_48h_client"
-  | "payment_guarantee_48h_professional";
+  | "payment_guarantee_48h_professional"
+  | "fiscal_receipt";
 
 export interface IEmailTemplateConfig {
   enabled: boolean;
@@ -161,6 +162,10 @@ const defaultEmailTemplates: Record<
   payment_guarantee_48h_professional: {
     enabled: true,
     subject: "ALERTE : client sans garantie de paiement — rendez-vous proche",
+  },
+  fiscal_receipt: {
+    enabled: true,
+    subject: "Votre reçu fiscal — JeChemine",
   },
 };
 

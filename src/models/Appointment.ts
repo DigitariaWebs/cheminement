@@ -123,6 +123,8 @@ export interface IAppointment extends Document {
   /** Prochain RDV convenu (information). */
   nextAppointmentAt?: Date;
   sessionCompletedAt?: Date;
+  /** Reçu fiscal émis (PDF envoyé / disponible). */
+  fiscalReceiptIssuedAt?: Date;
 
   createdAt: Date;
   updatedAt: Date;
@@ -342,6 +344,7 @@ const AppointmentSchema = new Schema<IAppointment>(
     sessionOutcome: { type: String, required: false },
     nextAppointmentAt: { type: Date, required: false },
     sessionCompletedAt: { type: Date, required: false },
+    fiscalReceiptIssuedAt: { type: Date, required: false },
   },
   {
     timestamps: true,

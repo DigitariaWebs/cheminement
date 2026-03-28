@@ -23,6 +23,11 @@ interface EmailData {
   subject: string;
   html: string;
   text: string;
+  attachments?: {
+    filename: string;
+    content: Buffer;
+    contentType?: string;
+  }[];
 }
 
 interface BaseAppointmentData {
@@ -505,6 +510,7 @@ const sendEmail = async (
       subject: data.subject,
       html: data.html,
       text: data.text,
+      attachments: data.attachments,
     });
 
     console.log(`Email sent successfully [${emailType}] to:`, data.to);
@@ -1612,6 +1618,53 @@ export async function sendInteracTransferInstructionsEmail(data: {
   return sendEmail(
     { to: data.clientEmail, subject, html, text },
     "interac_transfer_instructions",
+  );
+}
+
+export async function sendFiscalReceiptEmail(data: {
+  clientEmail: string;
+  clientName: string;
+  amountCad: number;
+  pdfBuffer: Buffer;
+  appointmentId: string;
+  paymentPendingTransfer: boolean;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const subject = await getSubject(
+    "fiscal_receipt",
+    "Votre reçu fiscal — JeChemine",
+  );
+  const html = buildEmailHtml({
+    title: "Reçu fiscal",
+    theme: data.paymentPendingTransfer ? "warning" : "success",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: data.paymentPendingTransfer
+      ? `Votre séance est enregistrée. Montant dû : ${data.amountCad.toFixed(2)} $ CAD (virement Interac). Les instructions ont été ou seront envoyées par courriel. Vous trouverez en pièce jointe votre reçu.`
+      : `Votre paiement de ${data.amountCad.toFixed(2)} $ CAD a été traité. Veuillez trouver votre reçu fiscal en pièce jointe.`,
+    branding,
+  });
+  const text = buildEmailText([
+    "Reçu fiscal — Je Chemine",
+    data.paymentPendingTransfer
+      ? `Montant dû (Interac) : ${data.amountCad.toFixed(2)} $ CAD`
+      : `Paiement reçu : ${data.amountCad.toFixed(2)} $ CAD`,
+    "PDF en pièce jointe.",
+  ]);
+  return sendEmail(
+    {
+      to: data.clientEmail,
+      subject,
+      html,
+      text,
+      attachments: [
+        {
+          filename: `recu-${data.appointmentId.slice(-8)}.pdf`,
+          content: data.pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    },
+    "fiscal_receipt",
   );
 }
 

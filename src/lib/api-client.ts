@@ -273,6 +273,39 @@ export const appointmentsAPI = {
     ),
 };
 
+export type ClientReceiptRecord = {
+  _id: string;
+  clientId: string;
+  appointmentId: string;
+  issuedAt: string;
+  amountCad: number;
+  status: "paid" | "pending_transfer";
+};
+
+export const clientReceiptsAPI = {
+  list: () => apiClient.get<ClientReceiptRecord[]>("/client/receipts"),
+};
+
+export type ProfessionalLedgerEntryResponse = {
+  _id: string;
+  professionalId: string;
+  appointmentId: string;
+  sessionActNature?: string;
+  grossAmountCad: number;
+  platformFeeCad: number;
+  netToProfessionalCad: number;
+  paymentChannel: "stripe" | "transfer" | "none";
+  createdAt: string;
+};
+
+export const professionalLedgerAPI = {
+  get: () =>
+    apiClient.get<{
+      entries: ProfessionalLedgerEntryResponse[];
+      pendingPayoutCad: number;
+    }>("/professional/ledger-entries"),
+};
+
 // Users
 export const usersAPI = {
   get: () => apiClient.get("/users/me"),

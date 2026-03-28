@@ -73,6 +73,7 @@ export interface AppointmentResponse {
   sessionOutcome?: string;
   nextAppointmentAt?: string;
   sessionCompletedAt?: string;
+  fiscalReceiptIssuedAt?: string;
   createdAt: string;
   updatedAt: string;
 }

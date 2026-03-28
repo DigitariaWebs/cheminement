@@ -15,6 +15,7 @@ import {
   Loader2,
   Plus,
   Landmark,
+  FileText,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,12 @@ import {
   AddPaymentMethodModal,
   AppointmentConfirmPaymentModal,
 } from "@/components/payments";
-import { apiClient, appointmentsAPI } from "@/lib/api-client";
+import {
+  apiClient,
+  appointmentsAPI,
+  clientReceiptsAPI,
+  type ClientReceiptRecord,
+} from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 
 interface PaymentMethod {
@@ -44,7 +50,13 @@ interface PaymentMethod {
 }
 
 export default function ClientBillingPage() {
-  const [activeTab, setActiveTab] = useState<"owed" | "history">("owed");
+  const [activeTab, setActiveTab] = useState<"owed" | "history" | "receipts">(
+    "owed",
+  );
+  const [receiptRecords, setReceiptRecords] = useState<ClientReceiptRecord[]>(
+    [],
+  );
+  const [loadingReceipts, setLoadingReceipts] = useState(false);
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<AppointmentResponse | null>(null);
@@ -75,6 +87,24 @@ export default function ClientBillingPage() {
     }
     if (accountId) {
       fetchManagedAccountInfo();
+    }
+  }, [accountId]);
+
+  const fetchReceipts = async () => {
+    try {
+      setLoadingReceipts(true);
+      const data = await clientReceiptsAPI.list();
+      setReceiptRecords(data);
+    } catch (err) {
+      console.error("Error fetching receipts:", err);
+    } finally {
+      setLoadingReceipts(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!accountId) {
+      void fetchReceipts();
     }
   }, [accountId]);
 
@@ -475,10 +505,74 @@ export default function ClientBillingPage() {
         >
           {t("paymentHistory")} ({paidPayments.length})
         </button>
+        <button
+          onClick={() => setActiveTab("receipts")}
+          className={`rounded-t-lg px-6 py-3 font-medium transition ${
+            activeTab === "receipts"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {t("myReceipts")} ({receiptRecords.length})
+        </button>
       </div>
 
       {/* Payments List */}
-      {displayPayments.length === 0 ? (
+      {activeTab === "receipts" ? (
+        <div className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
+          <h2 className="font-serif text-xl font-light text-foreground">
+            {t("myReceipts")}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("receiptsSubtitle")}
+          </p>
+          {loadingReceipts ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : receiptRecords.length === 0 ? (
+            <div className="mt-8 text-center text-muted-foreground">
+              <FileText className="mx-auto h-12 w-12 opacity-40" />
+              <p className="mt-3">{t("noReceipts")}</p>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-3">
+              {receiptRecords.map((rec) => (
+                <div
+                  key={rec._id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/20 bg-card/70 p-4"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {formatDate(rec.issuedAt)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {rec.appointmentId.slice(-8)} ·{" "}
+                      {rec.status === "paid"
+                        ? t("receiptStatusPaid")
+                        : t("receiptStatusPending")}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">
+                      {rec.amountCad.toFixed(2)} $
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2 rounded-full"
+                      onClick={() => handleDownloadReceipt(rec.appointmentId)}
+                    >
+                      <Download className="h-4 w-4" />
+                      {t("downloadReceipt")}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : displayPayments.length === 0 ? (
         <div className="rounded-3xl border border-border/20 bg-card/80 p-12 text-center shadow-lg">
           <Wallet className="mx-auto h-16 w-16 text-muted-foreground/50" />
           <h3 className="mt-4 font-serif text-xl text-foreground">

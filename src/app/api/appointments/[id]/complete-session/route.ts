@@ -16,6 +16,10 @@ import {
   calculatePlatformFee,
   calculateProfessionalPayout,
 } from "@/lib/stripe";
+import User from "@/models/User";
+import { chargeSavedPaymentMethodAfterSession } from "@/lib/stripe-off-session-charge";
+import { buildInteracReferenceCode } from "@/lib/interac-reference";
+import { runSessionClosureSideEffects } from "@/lib/session-post-closure";
 
 function parseNextAppointmentAt(
   dateStr: string | undefined,
@@ -144,6 +148,84 @@ export async function POST(
       professionalPayout = calculateProfessionalPayout(price);
       if (price <= 0) {
         paymentStatus = "cancelled";
+      } else {
+        paymentStatus = "pending";
+      }
+    }
+
+    const billableForPayment =
+      !paymentLocked &&
+      price > 0 &&
+      (newStatus === "completed" || newStatus === "no-show");
+
+    let stripeChargePaymentIntentId: string | undefined;
+    let interacRefToSet: string | undefined;
+
+    if (billableForPayment) {
+      const payMethod = apt.payment.method || "card";
+      if (payMethod === "card" || payMethod === "direct_debit") {
+        const clientUser = await User.findById(apt.clientId);
+        if (!clientUser?.stripeCustomerId) {
+          return NextResponse.json(
+            {
+              error:
+                "Profil de facturation du client introuvable. Le client doit enregistrer une carte ou un PAD avant la clôture.",
+            },
+            { status: 400 },
+          );
+        }
+        if (!apt.payment.stripePaymentMethodId) {
+          return NextResponse.json(
+            {
+              error:
+                "Aucun moyen de paiement enregistré pour ce rendez-vous. Le client doit compléter la garantie de paiement.",
+            },
+            { status: 400 },
+          );
+        }
+        try {
+          const { paymentIntentId } =
+            await chargeSavedPaymentMethodAfterSession({
+              appointmentId: id,
+              customerId: clientUser.stripeCustomerId,
+              encryptedPaymentMethodId: apt.payment.stripePaymentMethodId,
+              amountCad: price,
+              method: payMethod,
+            });
+          stripeChargePaymentIntentId = paymentIntentId;
+          paymentStatus = "paid";
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (msg === "PAYMENT_REQUIRES_ACTION") {
+            return NextResponse.json(
+              {
+                error:
+                  "Le paiement nécessite une action du client (authentification). Invitez-le à payer depuis Facturation.",
+              },
+              { status: 402 },
+            );
+          }
+          if (msg === "MISSING_PAYMENT_METHOD") {
+            return NextResponse.json(
+              {
+                error:
+                  "Moyen de paiement manquant. Le client doit enregistrer une carte ou un PAD.",
+              },
+              { status: 400 },
+            );
+          }
+          return NextResponse.json(
+            { error: `Échec du prélèvement : ${msg}` },
+            { status: 402 },
+          );
+        }
+      } else if (payMethod === "transfer") {
+        interacRefToSet =
+          apt.payment.interacReferenceCode ||
+          buildInteracReferenceCode(
+            String(apt._id),
+            apt.professionalId?.toString(),
+          );
       }
     }
 
@@ -164,6 +246,15 @@ export async function POST(
       $set["payment.platformFee"] = platformFee;
       $set["payment.professionalPayout"] = professionalPayout;
       $set["payment.status"] = paymentStatus;
+    }
+
+    if (stripeChargePaymentIntentId) {
+      $set["payment.stripePaymentIntentId"] = stripeChargePaymentIntentId;
+      $set["payment.paidAt"] = now;
+    }
+
+    if (interacRefToSet) {
+      $set["payment.interacReferenceCode"] = interacRefToSet;
     }
 
     if (nextAt) {
@@ -204,7 +295,17 @@ export async function POST(
       );
     }
 
-    return NextResponse.json(updated);
+    try {
+      await runSessionClosureSideEffects(id);
+    } catch (e) {
+      console.error("runSessionClosureSideEffects:", e);
+    }
+
+    const finalDoc = await Appointment.findById(id)
+      .populate("clientId", "firstName lastName email phone location")
+      .populate("professionalId", "firstName lastName email phone");
+
+    return NextResponse.json(finalDoc ?? updated);
   } catch (error: unknown) {
     console.error("complete-session error:", error);
     return NextResponse.json(
