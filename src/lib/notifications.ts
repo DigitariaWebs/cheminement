@@ -389,6 +389,8 @@ interface EmailTemplateOptions {
   infoBox?: { title: string; content: string; theme?: EmailTheme };
   badge?: { text: string; theme?: EmailTheme };
   button?: { text: string; url: string };
+  /** Optional second CTA (e.g. invite guest to create a full client account) */
+  secondaryButton?: { preamble?: string; text: string; url: string };
   outro?: string;
   branding?: IEmailBranding;
 }
@@ -406,6 +408,7 @@ const buildEmailHtml = (options: EmailTemplateOptions): string => {
     infoBox,
     badge,
     button,
+    secondaryButton,
     outro,
     branding,
   } = options;
@@ -431,6 +434,15 @@ const buildEmailHtml = (options: EmailTemplateOptions): string => {
             ${price ? createPriceSection(price.amount, price.note, price.theme || theme, price.currency!, branding) : ""}
             ${infoBox ? createInfoBox(infoBox.title, infoBox.content, infoBox.theme, branding) : ""}
             ${button ? createButton(button.text, button.url, branding) : ""}
+            ${
+              secondaryButton
+                ? `
+            <div style="margin-top: 28px; padding-top: 24px; border-top: 1px solid #eee;">
+              ${secondaryButton.preamble ? `<p style="margin: 0 0 16px; font-size: 15px; color: #333;">${secondaryButton.preamble}</p>` : ""}
+              ${createButton(secondaryButton.text, secondaryButton.url, branding)}
+            </div>`
+                : ""
+            }
             ${outro ? `<p style="color: #666; font-size: 14px;">${outro}</p>` : ""}
           </div>
           ${createFooter(branding)}
@@ -626,6 +638,8 @@ export async function sendGuestBookingConfirmation(
   data: GuestBookingEmailData,
 ): Promise<boolean> {
   const branding = await getBranding();
+  const baseUrl = process.env.NEXTAUTH_URL || "";
+  const memberSignupUrl = `${baseUrl}/signup/member?email=${encodeURIComponent(data.guestEmail)}`;
   const formattedDate = formatEmailDate(data.date);
   const formattedTime = formatTime(data.time);
   const professionalName = formatProfessionalName(data.professionalName);
@@ -667,6 +681,12 @@ export async function sendGuestBookingConfirmation(
       title: "Next Steps",
       content: nextSteps,
     },
+    secondaryButton: {
+      preamble:
+        "Create your secure Je Chemine member account with the same email you used for this request. You will complete your detailed profile (basic clinical information) to help your professional prepare for your care.",
+      text: "Create my secure account",
+      url: memberSignupUrl,
+    },
     outro:
       "Thank you for choosing us. We'll be in touch soon with more details.",
     branding,
@@ -700,6 +720,9 @@ export async function sendGuestBookingConfirmation(
     `Time: ${formattedTime}`,
     `Duration: ${data.duration} minutes`,
     ...textNextSteps,
+    "CREATE YOUR SECURE ACCOUNT:",
+    "Use the link below to register and complete your detailed clinical profile (same email as this request):",
+    memberSignupUrl,
   ]);
 
   const subject = await getSubject(

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
@@ -179,6 +179,7 @@ const EXCLUSIVE_MULTISELECT_VALUES = new Set([
 export default function MemberSignupPage() {
   const t = useTranslations("Auth.memberSignup");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -238,6 +239,20 @@ export default function MemberSignupPage() {
     paymentMethod: "",
     agreeToTerms: false,
   });
+
+  useEffect(() => {
+    const prefill = searchParams.get("email");
+    if (!prefill) return;
+    try {
+      const decoded = decodeURIComponent(prefill.trim());
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(decoded)) return;
+      setFormData((prev) =>
+        prev.email.trim() ? prev : { ...prev, email: decoded },
+      );
+    } catch {
+      /* ignore malformed query */
+    }
+  }, [searchParams]);
 
   const sections = [
     { title: t("sections.basicInfo"), icon: UserCircle, required: true },

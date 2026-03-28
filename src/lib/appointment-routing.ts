@@ -2,6 +2,7 @@ import Profile from "@/models/Profile";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
 import MedicalProfile from "@/models/MedicalProfile";
+import { sendProfessionalNotification } from "@/lib/notifications";
 
 /**
  * Calculate age from date of birth
@@ -608,7 +609,59 @@ export async function routeAppointmentToProfessionals(
       proposedTo: proposedIds,
     });
 
-    // TODO: Send notifications to proposed professionals
+    const populatedAppt = await Appointment.findById(appointmentId)
+      .populate("clientId", "firstName lastName email phone")
+      .lean();
+
+    const client = populatedAppt?.clientId as
+      | {
+          firstName?: string;
+          lastName?: string;
+          email?: string;
+        }
+      | null
+      | undefined;
+
+    const clientEmail = client?.email?.trim();
+    if (clientEmail) {
+      const clientName =
+        `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim() ||
+        "Client";
+      const dateIso = populatedAppt?.date
+        ? new Date(populatedAppt.date).toISOString()
+        : undefined;
+      const apptType = (populatedAppt?.type ?? "video") as
+        | "video"
+        | "in-person"
+        | "phone";
+
+      for (const match of topMatches) {
+        const pro = await User.findById(match.professionalId)
+          .select("firstName lastName email")
+          .lean();
+        if (!pro?.email) continue;
+
+        void sendProfessionalNotification({
+          clientName,
+          clientEmail,
+          professionalName: `${pro.firstName} ${pro.lastName}`,
+          professionalEmail: pro.email,
+          date: dateIso,
+          time: populatedAppt?.time,
+          duration: populatedAppt?.duration ?? 60,
+          type: apptType,
+        }).catch((err) =>
+          console.error(
+            `[routing] Failed to notify professional ${match.professionalId}:`,
+            err,
+          ),
+        );
+      }
+    } else {
+      console.warn(
+        `[routing] Skipped professional notifications for appointment ${appointmentId}: missing client email`,
+      );
+    }
 
     return { success: true, matches: topMatches, routingStatus: "proposed" };
   } catch (error) {
