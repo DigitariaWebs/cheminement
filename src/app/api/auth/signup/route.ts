@@ -64,12 +64,24 @@ export async function POST(req: NextRequest) {
       languagePreference,
       culturalConsiderations,
       professionalProfile,
+      agreeToTerms,
+      acceptPrivacyPolicy,
     } = await req.json();
 
     // Validation
     if (!email || !password || !firstName || !lastName || !role) {
       return NextResponse.json(
         { error: "All fields are required" },
+        { status: 400 },
+      );
+    }
+
+    if (agreeToTerms !== true || acceptPrivacyPolicy !== true) {
+      return NextResponse.json(
+        {
+          error:
+            "Terms of service and privacy policy acceptance are required",
+        },
         { status: 400 },
       );
     }
@@ -113,6 +125,7 @@ export async function POST(req: NextRequest) {
                     ? "other"
                     : undefined,
       location: location,
+      privacyPolicyAcceptedAt: new Date(),
     });
 
     await user.save();

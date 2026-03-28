@@ -16,6 +16,8 @@ export interface IUser extends Document {
   location?: string;
   status: "active" | "pending" | "inactive";
   emailVerified?: Date;
+  /** Consentement explicite à la politique de confidentialité (Loi 25), à l’inscription. */
+  privacyPolicyAcceptedAt?: Date;
   image?: string;
   stripeCustomerId?: string; // For clients to store payment methods
   /**
@@ -103,6 +105,7 @@ const UserSchema = new Schema<IUser>(
       default: "pending",
     },
     emailVerified: Date,
+    privacyPolicyAcceptedAt: Date,
     image: String,
     stripeCustomerId: String, // For clients to store payment methods
     paymentGuaranteeStatus: {

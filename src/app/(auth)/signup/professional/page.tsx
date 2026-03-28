@@ -101,6 +101,7 @@ interface FormData {
   breakDuration: string;
 
   agreeToTerms: boolean;
+  acceptPrivacyPolicy: boolean;
 }
 
 /** Stored `value` strings are sent to the API; labels use `Auth.professionalSignup.*Options`. */
@@ -184,6 +185,7 @@ export default function ProfessionalSignupPage() {
     sessionDuration: "",
     breakDuration: "",
     agreeToTerms: false,
+    acceptPrivacyPolicy: false,
   });
 
   const sections = [
@@ -255,6 +257,8 @@ export default function ProfessionalSignupPage() {
         break;
       case 7:
         if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
+        if (!formData.acceptPrivacyPolicy)
+          return t("errors.acceptPrivacyPolicyRequired");
         break;
       case 2: // Education
         if (!formData.degree.trim()) return t("errors.degreeRequired");
@@ -288,6 +292,10 @@ export default function ProfessionalSignupPage() {
       setError(t("errors.agreeToTermsRequired"));
       return;
     }
+    if (!formData.acceptPrivacyPolicy) {
+      setError(t("errors.acceptPrivacyPolicyRequired"));
+      return;
+    }
 
     setIsLoading(true);
     setError("");
@@ -299,6 +307,8 @@ export default function ProfessionalSignupPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: "professional",
+        agreeToTerms: formData.agreeToTerms,
+        acceptPrivacyPolicy: formData.acceptPrivacyPolicy,
         phone: formData.phone,
         dateOfBirth: formData.dateOfBirth,
         gender: formData.gender,
@@ -1218,39 +1228,68 @@ export default function ProfessionalSignupPage() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    agreeToTerms: checked as boolean,
-                  }))
-                }
-              />
-              <label
-                htmlFor="agreeToTerms"
-                className="text-sm cursor-pointer leading-tight"
-              >
-                {t("agreeToTerms")}{" "}
-                <Link
-                  href="/terms"
-                  className="text-primary underline"
-                  target="_blank"
+            <div className="space-y-4">
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      agreeToTerms: checked as boolean,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="agreeToTerms"
+                  className="text-sm cursor-pointer leading-tight"
                 >
-                  {t("termsOfService")}
-                </Link>{" "}
-                {t("and")}{" "}
-                <Link
-                  href="/privacy"
-                  className="text-primary underline"
-                  target="_blank"
-                >
-                  {t("privacyPolicy")}
-                </Link>
-                <span className="text-red-500">*</span>
-              </label>
+                  {t("termsAcceptBefore")}
+                  <Link
+                    href="/terms"
+                    className="text-primary underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("termsOfService")}
+                  </Link>
+                  {t("termsAcceptAfter")}
+                  <span className="text-red-500">*</span>
+                </label>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="acceptPrivacyPolicy"
+                  checked={formData.acceptPrivacyPolicy}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      acceptPrivacyPolicy: checked as boolean,
+                    }))
+                  }
+                />
+                <div className="space-y-2">
+                  <label
+                    htmlFor="acceptPrivacyPolicy"
+                    className="text-sm cursor-pointer leading-tight block"
+                  >
+                    {t("privacyAcceptBefore")}
+                    <Link
+                      href="/privacy"
+                      className="text-primary underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t("privacyPolicy")}
+                    </Link>
+                    {t("privacyAcceptAfter")}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <p className="text-xs text-muted-foreground leading-snug">
+                    {t("privacyConsentClinicalNote")}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -1384,7 +1423,11 @@ export default function ProfessionalSignupPage() {
             ) : (
               <button
                 type="submit"
-                disabled={isLoading || !formData.agreeToTerms}
+                disabled={
+                  isLoading ||
+                  !formData.agreeToTerms ||
+                  !formData.acceptPrivacyPolicy
+                }
                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
               >
                 {isLoading ? (

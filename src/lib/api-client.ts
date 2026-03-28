@@ -171,6 +171,8 @@ export const authAPI = {
     languagePreference?: string;
     culturalConsiderations?: string;
     paymentMethod?: string;
+    agreeToTerms: boolean;
+    acceptPrivacyPolicy: boolean;
     // Professional fields
     professionalProfile?: {
       problematics?: string[];

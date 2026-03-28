@@ -126,6 +126,7 @@ interface FormData {
   paymentMethod: string;
 
   agreeToTerms: boolean;
+  acceptPrivacyPolicy: boolean;
 }
 
 /** Stored values stay in English for API compatibility; labels use `Auth.memberSignup.healthOptions`. */
@@ -238,6 +239,7 @@ export default function MemberSignupPage() {
     culturalConsiderations: "",
     paymentMethod: "",
     agreeToTerms: false,
+    acceptPrivacyPolicy: false,
   });
 
   useEffect(() => {
@@ -390,6 +392,10 @@ export default function MemberSignupPage() {
           setError(t("errors.agreeToTermsRequired"));
           return false;
         }
+        if (!formData.acceptPrivacyPolicy) {
+          setError(t("errors.acceptPrivacyPolicyRequired"));
+          return false;
+        }
         return true;
       default:
         return true;
@@ -497,6 +503,8 @@ export default function MemberSignupPage() {
         languagePreference: formData.language || undefined,
         culturalConsiderations: formData.culturalConsiderations || undefined,
         paymentMethod: formData.paymentMethod || undefined,
+        agreeToTerms: formData.agreeToTerms,
+        acceptPrivacyPolicy: formData.acceptPrivacyPolicy,
       });
 
       const result = await signIn("credentials", {
@@ -1678,31 +1686,59 @@ export default function MemberSignupPage() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    agreeToTerms: checked as boolean,
-                  }))
-                }
-              />
-              <label
-                htmlFor="agreeToTerms"
-                className="text-sm leading-relaxed cursor-pointer"
-              >
-                {t("agreeToTerms")}{" "}
-                <Link href="/terms" className="text-primary hover:underline">
-                  {t("termsOfService")}
-                </Link>{" "}
-                {t("and")}{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
-                  {t("privacyPolicy")}
-                </Link>
-                . {t("agreeToTermsSuffix")}
-              </label>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      agreeToTerms: checked as boolean,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="agreeToTerms"
+                  className="text-sm leading-relaxed cursor-pointer"
+                >
+                  {t("termsAcceptBefore")}
+                  <Link href="/terms" className="text-primary hover:underline">
+                    {t("termsOfService")}
+                  </Link>
+                  {t("termsAcceptAfter")} {t("agreeToTermsSuffix")}
+                </label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="acceptPrivacyPolicy"
+                  checked={formData.acceptPrivacyPolicy}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      acceptPrivacyPolicy: checked as boolean,
+                    }))
+                  }
+                />
+                <div className="space-y-2">
+                  <label
+                    htmlFor="acceptPrivacyPolicy"
+                    className="text-sm leading-relaxed cursor-pointer block"
+                  >
+                    {t("privacyAcceptBefore")}
+                    <Link
+                      href="/privacy"
+                      className="text-primary hover:underline"
+                    >
+                      {t("privacyPolicy")}
+                    </Link>
+                    {t("privacyAcceptAfter")}
+                  </label>
+                  <p className="text-xs text-muted-foreground leading-snug pl-0">
+                    {t("privacyConsentClinicalNote")}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -1809,7 +1845,11 @@ export default function MemberSignupPage() {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={isLoading || !formData.agreeToTerms}
+              disabled={
+                isLoading ||
+                !formData.agreeToTerms ||
+                !formData.acceptPrivacyPolicy
+              }
               className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-light hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? (
