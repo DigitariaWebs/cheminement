@@ -18,6 +18,8 @@ export interface IUser extends Document {
   emailVerified?: Date;
   image?: string;
   stripeCustomerId?: string; // For clients to store payment methods
+  /** Carte/PAD enregistré via Stripe (garantie) — "Statut vert" côté métier */
+  paymentGuaranteeStatus?: "none" | "green";
   stripeConnectAccountId?: string; // For professionals to receive payouts
   guardianId?: mongoose.Types.ObjectId; // Reference to parent/guardian User (for minors)
   accountManagerId?: mongoose.Types.ObjectId; // Alias for guardianId (same field, different name for clarity)
@@ -99,6 +101,11 @@ const UserSchema = new Schema<IUser>(
     emailVerified: Date,
     image: String,
     stripeCustomerId: String, // For clients to store payment methods
+    paymentGuaranteeStatus: {
+      type: String,
+      enum: ["none", "green"],
+      default: "none",
+    },
     stripeConnectAccountId: String, // For professionals to receive payouts
     guardianId: {
       type: Schema.Types.ObjectId,

@@ -37,6 +37,7 @@ interface Client {
   email: string;
   phone: string;
   status: "active" | "inactive" | "pending";
+  paymentGuaranteeStatus?: "none" | "green";
   lastSession: string;
   totalSessions: number;
   issueType: string;
@@ -111,6 +112,24 @@ export default function ClientsPage() {
         className={`px-2 py-1 rounded-full text-xs font-light ${styles[status]}`}
       >
         {t(status)}
+      </span>
+    );
+  };
+
+  const getPaymentGuaranteeBadge = (
+    guarantee: Client["paymentGuaranteeStatus"],
+  ) => {
+    if (guarantee === "green") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-light bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden />
+          {t("statutVert")}
+        </span>
+      );
+    }
+    return (
+      <span className="px-2 py-1 rounded-full text-xs font-light bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        {t("statutSansGarantie")}
       </span>
     );
   };
@@ -347,6 +366,7 @@ export default function ClientsPage() {
               <TableHead className="font-light">{t("name")}</TableHead>
               <TableHead className="font-light">{t("contact")}</TableHead>
               <TableHead className="font-light">{t("status")}</TableHead>
+              <TableHead className="font-light">{t("paymentGuarantee")}</TableHead>
               <TableHead className="font-light">{t("issueType")}</TableHead>
               <TableHead className="font-light">{t("lastSession")}</TableHead>
               <TableHead className="font-light">{t("totalSessions")}</TableHead>
@@ -357,7 +377,7 @@ export default function ClientsPage() {
             {loading ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
                   Loading clients...
@@ -366,7 +386,7 @@ export default function ClientsPage() {
             ) : error ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-8 text-red-500 font-light"
                 >
                   {error}
@@ -375,7 +395,7 @@ export default function ClientsPage() {
             ) : filteredClients.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
                   {t("noClients")}
@@ -411,6 +431,11 @@ export default function ClientsPage() {
                     </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(client.status)}</TableCell>
+                  <TableCell>
+                    {getPaymentGuaranteeBadge(
+                      client.paymentGuaranteeStatus ?? "none",
+                    )}
+                  </TableCell>
                   <TableCell className="font-light">
                     <span className="text-sm">{client.issueType}</span>
                   </TableCell>

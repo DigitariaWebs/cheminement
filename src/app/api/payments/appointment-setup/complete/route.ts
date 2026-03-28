@@ -6,6 +6,7 @@ import { encryptPaymentMethodReference } from "@/lib/field-encryption";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import User from "@/models/User";
+import { markClientPaymentGuaranteeGreen } from "@/lib/payment-guarantee";
 
 /**
  * After the client completes the SetupIntent in the browser, persist the
@@ -118,6 +119,12 @@ export async function POST(req: NextRequest) {
     }
     appointment.awaitingPaymentGuarantee = false;
     await appointment.save();
+
+    await markClientPaymentGuaranteeGreen(
+      session.user.id,
+      user.stripeCustomerId,
+      paymentMethodId,
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

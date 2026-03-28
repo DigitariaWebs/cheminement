@@ -10,6 +10,7 @@ interface PopulatedUser {
   lastName: string;
   email: string;
   phone: string;
+  paymentGuaranteeStatus?: "none" | "green";
 }
 
 export async function GET() {
@@ -26,7 +27,10 @@ export async function GET() {
       professionalId: session.user.id,
       status: { $in: ["scheduled", "completed"] },
     })
-      .populate("clientId", "firstName lastName email phone")
+      .populate(
+        "clientId",
+        "firstName lastName email phone paymentGuaranteeStatus",
+      )
       .populate("professionalId", "firstName lastName email phone")
       .sort({ date: -1 });
 
@@ -43,6 +47,7 @@ export async function GET() {
           email: client.email,
           phone: client.phone,
           status: "active", // Default, can be updated based on logic
+          paymentGuaranteeStatus: client.paymentGuaranteeStatus ?? "none",
           lastSession: appointment.date
             ? appointment.date.toISOString().split("T")[0]
             : "N/A",
@@ -55,6 +60,9 @@ export async function GET() {
       } else {
         const existingClient = clientMap.get(clientId);
         existingClient.totalSessions += 1;
+        if (client.paymentGuaranteeStatus === "green") {
+          existingClient.paymentGuaranteeStatus = "green";
+        }
         if (
           appointment.date &&
           new Date(appointment.date) > new Date(existingClient.lastSession)
