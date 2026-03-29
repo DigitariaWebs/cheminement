@@ -140,6 +140,21 @@ export async function PATCH(
       }
     }
 
+    if (
+      existingUser.role === "professional" &&
+      updates.status === "active" &&
+      existingUser.status === "pending"
+    ) {
+      updates.professionalLicenseStatus = "verified";
+    }
+    if (
+      existingUser.role === "professional" &&
+      updates.status === "inactive" &&
+      existingUser.status === "pending"
+    ) {
+      updates.professionalLicenseStatus = "rejected";
+    }
+
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
         { error: "No valid fields to update" },

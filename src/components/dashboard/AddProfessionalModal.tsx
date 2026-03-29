@@ -68,6 +68,7 @@ export default function AddProfessionalModal({
         acceptPrivacyPolicy,
         phone: formData.phone,
         location: formData.location,
+        provisionedByAdmin: true,
         professionalProfile: {
           specialty: formData.specialty,
           license: formData.license,

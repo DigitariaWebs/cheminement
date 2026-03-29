@@ -113,6 +113,18 @@ class ApiClient {
 // Export singleton instance
 export const apiClient = new ApiClient();
 
+export type SignupApiResponse = {
+  message: string;
+  requiresEmailVerification?: boolean;
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  };
+};
+
 // Specific API functions for common operations
 
 // Auth
@@ -212,7 +224,8 @@ export const authAPI = {
         year?: number;
       }[];
     };
-  }) => apiClient.post("/auth/signup", data),
+    provisionedByAdmin?: boolean;
+  }) => apiClient.post<SignupApiResponse>("/auth/signup", data),
 };
 
 // Profile

@@ -546,7 +546,48 @@
       "signIn": "Se connecter",
       "noAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créez-en un ici",
-      "backToHome": "Retour à l'accueil"
+      "backToHome": "Retour à l'accueil",
+      "errors": {
+        "invalidCredentials": "Courriel ou mot de passe incorrect.",
+        "emailNotVerified": "Vous devez d'abord confirmer votre courriel (lien dans le message envoyé).",
+        "phoneNotVerified": "Après le courriel, validez votre numéro avec le code SMS envoyé à votre téléphone.",
+        "licenseRejected": "Votre dossier (permis OPQ) a été refusé. Contactez le support si besoin.",
+        "genericSignIn": "Une erreur s'est produite lors de la connexion."
+      },
+      "confirmAccountLink": "Confirmer mon compte (courriel / SMS)"
+    },
+    "verifyAccount": {
+      "title": "Sécuriser votre compte",
+      "description": "Confirmez votre courriel puis votre téléphone pour activer la connexion.",
+      "verifyingEmail": "Vérification du lien courriel…",
+      "checkInboxHint": "Ouvrez le message que nous avons envoyé et cliquez sur le lien (valide 15 minutes). Vous pourrez ensuite recevoir un code par SMS.",
+      "emailLabel": "Courriel utilisé à l'inscription",
+      "emailPlaceholder": "vous@exemple.com",
+      "resendEmail": "Renvoyer le courriel de confirmation",
+      "sending": "Envoi…",
+      "resendSuccess": "Si un compte existe et n'est pas encore confirmé, un nouveau message a été envoyé.",
+      "smsIntro": "Nous enverrons un code à 6 chiffres au numéro associé à votre compte (indicatif masqué : {phone}).",
+      "sendSms": "Envoyer le code SMS",
+      "smsSent": "Code envoyé. Saisissez-le ci-dessous.",
+      "codeLabel": "Code SMS (6 chiffres)",
+      "confirmSms": "Confirmer le numéro",
+      "allDone": "Votre compte est confirmé. Vous pouvez vous connecter.",
+      "goToLogin": "Aller à la connexion",
+      "backToLogin": "Retour à la connexion",
+      "errors": {
+        "verifyEmailFailed": "Impossible de valider le lien.",
+        "sendSmsFailed": "Impossible d'envoyer le SMS.",
+        "verifyPhoneFailed": "Impossible de valider le code.",
+        "resendFailed": "Impossible de renvoyer le courriel.",
+        "emailRequired": "Indiquez votre courriel.",
+        "network": "Erreur réseau. Réessayez."
+      }
+    },
+    "professionalAccountPending": {
+      "title": "Compte en attente d'approbation",
+      "description": "Votre profil professionnel est en cours de révision. Notre équipe vérifie notamment votre numéro de permis auprès de l'Ordre (OPQ) avant d'activer pleinement l'accès.",
+      "opqNote": "Vous recevrez un courriel lorsque votre compte sera approuvé ou si des précisions sont nécessaires.",
+      "signOut": "Se déconnecter"
     },
     "signupSelection": {
       "title": "Créez votre compte",
@@ -694,7 +735,8 @@
         "acceptPrivacyPolicyRequired": "Vous devez confirmer avoir lu et accepté la politique de confidentialité.",
         "accountCreatedButSignInFailed": "Compte créé mais la connexion a échoué. Veuillez réessayer.",
         "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer.",
-        "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence."
+        "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.",
+        "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres)."
       },
       "objectivesLabel": "Objectifs de thérapie (recherche, plusieurs choix possibles)",
       "therapyApproachOptional": "Approche de thérapie préférée (optionnel)",
@@ -1097,7 +1139,8 @@
         "agreeToTermsRequired": "Vous devez accepter les conditions générales.",
         "acceptPrivacyPolicyRequired": "Vous devez confirmer avoir lu et accepté la politique de confidentialité.",
         "accountCreatedButSignInFailed": "Compte créé mais la connexion a échoué. Veuillez réessayer.",
-        "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer."
+        "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer.",
+        "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres)."
       },
       "noBreak": "Aucune pause",
       "gender": "Genre",

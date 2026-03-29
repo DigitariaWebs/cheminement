@@ -346,6 +346,11 @@ export default function MemberSignupPage() {
           setError(t("errors.languageRequired"));
           return false;
         }
+        const phoneDigits = formData.phone.replace(/\D/g, "");
+        if (phoneDigits.length < 10) {
+          setError(t("errors.phoneRequiredMin10"));
+          return false;
+        }
         if (formData.accountFor === "child") {
           if (!formData.childFirstName.trim() || !formData.childLastName.trim()) {
             setError(t("errors.childNameRequired"));
@@ -423,7 +428,7 @@ export default function MemberSignupPage() {
     setIsLoading(true);
 
     try {
-      await authAPI.signup({
+      const signupResult = await authAPI.signup({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
@@ -506,6 +511,13 @@ export default function MemberSignupPage() {
         agreeToTerms: formData.agreeToTerms,
         acceptPrivacyPolicy: formData.acceptPrivacyPolicy,
       });
+
+      if (signupResult.requiresEmailVerification) {
+        router.push(
+          `/verify-account?email=${encodeURIComponent(formData.email)}`,
+        );
+        return;
+      }
 
       const result = await signIn("credentials", {
         email: formData.email,

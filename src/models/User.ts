@@ -17,6 +17,24 @@ export interface IUser extends Document {
   location?: string;
   status: "active" | "pending" | "inactive";
   emailVerified?: Date;
+  /** Double validation compte : SMS après courriel (v1 = flux sécurisé public). */
+  phoneVerifiedAt?: Date;
+  accountSecurityVersion?: number;
+  verificationEmailTokenHash?: string;
+  verificationEmailExpires?: Date;
+  phoneStepTokenHash?: string;
+  phoneStepTokenExpires?: Date;
+  verificationSmsCodeHash?: string;
+  verificationSmsExpires?: Date;
+  verificationSmsAttempts?: number;
+  /**
+   * Professionnel : revue permis (OPQ / ordre) avant activation complète par l’admin.
+   */
+  professionalLicenseStatus?:
+    | "not_applicable"
+    | "pending_review"
+    | "verified"
+    | "rejected";
   /** Consentement explicite à la politique de confidentialité (Loi 25), à l’inscription. */
   privacyPolicyAcceptedAt?: Date;
   image?: string;
@@ -106,6 +124,20 @@ const UserSchema = new Schema<IUser>(
       default: "pending",
     },
     emailVerified: Date,
+    phoneVerifiedAt: Date,
+    accountSecurityVersion: { type: Number, default: 0 },
+    verificationEmailTokenHash: String,
+    verificationEmailExpires: Date,
+    phoneStepTokenHash: String,
+    phoneStepTokenExpires: Date,
+    verificationSmsCodeHash: String,
+    verificationSmsExpires: Date,
+    verificationSmsAttempts: { type: Number, default: 0 },
+    professionalLicenseStatus: {
+      type: String,
+      enum: ["not_applicable", "pending_review", "verified", "rejected"],
+      default: "not_applicable",
+    },
     privacyPolicyAcceptedAt: Date,
     image: String,
     stripeCustomerId: String, // For clients to store payment methods

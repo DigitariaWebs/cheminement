@@ -73,6 +73,12 @@ interface WelcomeEmailData {
   role: "client" | "professional" | "guest";
 }
 
+interface AccountEmailVerificationData {
+  name: string;
+  email: string;
+  verifyUrl: string;
+}
+
 interface PasswordResetEmailData {
   name: string;
   email: string;
@@ -555,6 +561,38 @@ async function getBranding(): Promise<IEmailBranding | undefined> {
 // =============================================================================
 // Public Email Functions - Authentication
 // =============================================================================
+
+export async function sendAccountEmailVerificationEmail(
+  data: AccountEmailVerificationData,
+): Promise<boolean> {
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "Confirmez votre adresse courriel",
+    subtitle: "Lien valide 15 minutes",
+    theme: "info",
+    greeting: `Bonjour ${data.name},`,
+    intro:
+      "Pour sécuriser votre compte, veuillez confirmer votre adresse courriel en cliquant sur le bouton ci-dessous. Ensuite, vous devrez valider votre numéro de téléphone par code SMS.",
+    button: { text: "Confirmer mon courriel", url: data.verifyUrl },
+    outro:
+      "Si vous n’êtes pas à l’origine de cette inscription, ignorez ce message.",
+    branding,
+  });
+  const text = buildEmailText([
+    "Confirmez votre adresse courriel",
+    `Bonjour ${data.name},`,
+    "Ouvrez ce lien (valide 15 minutes) pour continuer :",
+    data.verifyUrl,
+  ]);
+  const subject = await getSubject(
+    "email_verification",
+    "Confirmez votre courriel - JeChemine",
+  );
+  return sendEmail(
+    { to: data.email, subject, html, text },
+    "email_verification",
+  );
+}
 
 export async function sendWelcomeEmail(
   data: WelcomeEmailData,

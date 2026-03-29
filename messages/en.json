@@ -546,7 +546,48 @@
       "signIn": "Sign In",
       "noAccount": "Don't have an account?",
       "createAccount": "Create one here",
-      "backToHome": "Back to home"
+      "backToHome": "Back to home",
+      "errors": {
+        "invalidCredentials": "Invalid email or password.",
+        "emailNotVerified": "Please confirm your email first (use the link we sent).",
+        "phoneNotVerified": "After email confirmation, validate your phone number with the SMS code.",
+        "licenseRejected": "Your professional license file was declined. Contact support if you need help.",
+        "genericSignIn": "Something went wrong while signing in."
+      },
+      "confirmAccountLink": "Confirm my account (email / SMS)"
+    },
+    "verifyAccount": {
+      "title": "Secure your account",
+      "description": "Confirm your email, then your phone, before you can sign in.",
+      "verifyingEmail": "Verifying your email link…",
+      "checkInboxHint": "Open the message we sent and tap the link (valid for 15 minutes). You will then receive an SMS code.",
+      "emailLabel": "Email used at signup",
+      "emailPlaceholder": "you@example.com",
+      "resendEmail": "Resend confirmation email",
+      "sending": "Sending…",
+      "resendSuccess": "If an account exists and is not yet confirmed, a new message has been sent.",
+      "smsIntro": "We will send a 6-digit code to the number on your account (masked: {phone}).",
+      "sendSms": "Send SMS code",
+      "smsSent": "Code sent. Enter it below.",
+      "codeLabel": "SMS code (6 digits)",
+      "confirmSms": "Confirm phone number",
+      "allDone": "Your account is confirmed. You can sign in.",
+      "goToLogin": "Go to sign in",
+      "backToLogin": "Back to sign in",
+      "errors": {
+        "verifyEmailFailed": "Could not validate the link.",
+        "sendSmsFailed": "Could not send the SMS.",
+        "verifyPhoneFailed": "Could not validate the code.",
+        "resendFailed": "Could not resend the email.",
+        "emailRequired": "Enter your email.",
+        "network": "Network error. Please try again."
+      }
+    },
+    "professionalAccountPending": {
+      "title": "Account pending approval",
+      "description": "Your professional profile is under review. Our team verifies your license number with the professional order (OPQ) before fully activating access.",
+      "opqNote": "You will receive an email when your account is approved or if we need more information.",
+      "signOut": "Sign out"
     },
     "signupSelection": {
       "title": "Create Your Account",
@@ -693,7 +734,8 @@
         "acceptPrivacyPolicyRequired": "You must confirm that you have read and accepted the privacy policy.",
         "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
         "failedToCreateAccount": "Failed to create account. Please try again.",
-        "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference."
+        "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference.",
+        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits)."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
       "therapyApproachOptional": "Preferred therapy approach (optional)",
@@ -1096,7 +1138,8 @@
         "agreeToTermsRequired": "You must agree to the terms and conditions.",
         "acceptPrivacyPolicyRequired": "You must confirm that you have read and accepted the privacy policy.",
         "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
-        "failedToCreateAccount": "Failed to create account. Please try again."
+        "failedToCreateAccount": "Failed to create account. Please try again.",
+        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits)."
       },
       "noBreak": "No break",
       "gender": "Gender",

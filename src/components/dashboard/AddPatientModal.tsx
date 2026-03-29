@@ -53,6 +53,7 @@ export default function AddPatientModal({
         role: "client",
         agreeToTerms,
         acceptPrivacyPolicy,
+        provisionedByAdmin: true,
       });
 
       onSuccess();

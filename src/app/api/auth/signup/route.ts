@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import bcrypt from "bcryptjs";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Profile from "@/models/Profile";
 import MedicalProfile from "@/models/MedicalProfile";
-import { sendWelcomeEmail } from "@/lib/notifications";
+import Admin from "@/models/Admin";
+import { authOptions } from "@/lib/auth";
+import {
+  EMAIL_VERIFY_TTL_MS,
+  generateUrlToken,
+  hashVerificationSecret,
+} from "@/lib/account-init";
+import {
+  sendWelcomeEmail,
+  sendAccountEmailVerificationEmail,
+} from "@/lib/notifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,6 +77,7 @@ export async function POST(req: NextRequest) {
       professionalProfile,
       agreeToTerms,
       acceptPrivacyPolicy,
+      provisionedByAdmin,
     } = await req.json();
 
     // Validation
@@ -86,6 +98,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let bootstrapVerified = false;
+    if (provisionedByAdmin === true) {
+      const session = await getServerSession(authOptions);
+      if (!session?.user?.id || session.user.role !== "admin") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const adminRecord = await Admin.findOne({
+        userId: session.user.id,
+        isActive: true,
+      }).lean();
+      if (
+        !adminRecord?.permissions.managePatients &&
+        !adminRecord?.permissions.manageProfessionals
+      ) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      bootstrapVerified = true;
+    }
+
+    if (
+      (role === "client" || role === "professional") &&
+      !bootstrapVerified
+    ) {
+      const ph = typeof phone === "string" ? phone.trim() : "";
+      if (ph.length < 10) {
+        return NextResponse.json(
+          {
+            error:
+              "A valid phone number is required for account verification (SMS).",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
 
@@ -99,6 +146,9 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const useSecureInit =
+      !bootstrapVerified && (role === "client" || role === "professional");
+
     // Create user
     const user = new User({
       email: email.toLowerCase(),
@@ -108,6 +158,13 @@ export async function POST(req: NextRequest) {
       role,
       status: role == "professional" ? "pending" : "active",
       phone,
+      accountSecurityVersion: useSecureInit ? 1 : 0,
+      emailVerified: bootstrapVerified ? new Date() : undefined,
+      phoneVerifiedAt: bootstrapVerified ? new Date() : undefined,
+      professionalLicenseStatus:
+        role === "professional"
+          ? "pending_review"
+          : "not_applicable",
       gender,
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
       language:
@@ -129,6 +186,18 @@ export async function POST(req: NextRequest) {
     });
 
     await user.save();
+
+    let emailVerifyPlainToken: string | null = null;
+    if (useSecureInit) {
+      emailVerifyPlainToken = generateUrlToken();
+      user.verificationEmailTokenHash = hashVerificationSecret(
+        emailVerifyPlainToken,
+      );
+      user.verificationEmailExpires = new Date(
+        Date.now() + EMAIL_VERIFY_TTL_MS,
+      );
+      await user.save();
+    }
 
     if (user.role === "professional") {
       // Create profile for the user with provided professional data
@@ -227,16 +296,30 @@ export async function POST(req: NextRequest) {
       await medicalProfile.save();
     }
 
-    // Send welcome email (non-blocking)
-    sendWelcomeEmail({
-      name: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      role: user.role as "client" | "professional" | "guest",
-    }).catch((err) => console.error("Error sending welcome email:", err));
+    if (bootstrapVerified) {
+      sendWelcomeEmail({
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        role: user.role as "client" | "professional" | "guest",
+      }).catch((err) => console.error("Welcome email:", err));
+    }
+
+    if (emailVerifyPlainToken) {
+      const base = process.env.NEXTAUTH_URL || "";
+      const verifyUrl = `${base}/verify-account?uid=${encodeURIComponent(user._id.toString())}&token=${encodeURIComponent(emailVerifyPlainToken)}`;
+      sendAccountEmailVerificationEmail({
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        verifyUrl,
+      }).catch((err) =>
+        console.error("Verification email:", err),
+      );
+    }
 
     return NextResponse.json(
       {
         message: "User created successfully",
+        requiresEmailVerification: Boolean(useSecureInit),
         user: {
           id: user._id,
           email: user.email,

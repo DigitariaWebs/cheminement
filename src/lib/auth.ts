@@ -41,6 +41,23 @@ export const authOptions: NextAuthOptions = {
           throw new Error("User ID not found");
         }
 
+        const sec = user.accountSecurityVersion ?? 0;
+        if (sec >= 1 && (user.role === "client" || user.role === "professional")) {
+          if (!user.emailVerified) {
+            throw new Error("AUTH_EMAIL_NOT_VERIFIED");
+          }
+          if (!user.phoneVerifiedAt) {
+            throw new Error("AUTH_PHONE_NOT_VERIFIED");
+          }
+        }
+
+        if (
+          user.role === "professional" &&
+          user.professionalLicenseStatus === "rejected"
+        ) {
+          throw new Error("AUTH_LICENSE_REJECTED");
+        }
+
         return {
           id: user._id.toString(),
           email: user.email,

@@ -239,6 +239,10 @@ export default function ProfessionalSignupPage() {
           return t("errors.passwordMinLength");
         if (formData.password !== formData.confirmPassword)
           return t("errors.passwordsDoNotMatch");
+        {
+          const digits = formData.phone.replace(/\D/g, "");
+          if (digits.length < 10) return t("errors.phoneRequiredMin10");
+        }
         break;
       case 1: // Professional Details (Titres + Catégorie d'âge)
         if (formData.ageCategories.length === 0)
@@ -301,7 +305,7 @@ export default function ProfessionalSignupPage() {
     setError("");
 
     try {
-      await authAPI.signup({
+      const signupResult = await authAPI.signup({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
@@ -400,6 +404,13 @@ export default function ProfessionalSignupPage() {
               : undefined,
         },
       });
+
+      if (signupResult.requiresEmailVerification) {
+        router.push(
+          `/verify-account?email=${encodeURIComponent(formData.email)}`,
+        );
+        return;
+      }
 
       const result = await signIn("credentials", {
         email: formData.email,

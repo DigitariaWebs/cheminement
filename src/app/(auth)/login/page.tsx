@@ -31,6 +31,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [verifyHint, setVerifyHint] = useState<"none" | "email" | "phone">(
+    "none",
+  );
   const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = (email: string) => {
@@ -46,6 +49,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setVerifyHint("none");
 
     // Client-side validation
     if (!email.trim()) {
@@ -80,7 +84,34 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        try {
+          const diag = await fetch("/api/auth/account/login-reason", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          if (!diag.ok) {
+            setError(t("errors.invalidCredentials"));
+          } else {
+            const body = (await diag.json()) as { code?: string };
+            const code = body.code;
+            if (code === "AUTH_EMAIL_NOT_VERIFIED") {
+              setError(t("errors.emailNotVerified"));
+              setVerifyHint("email");
+            } else if (code === "AUTH_PHONE_NOT_VERIFIED") {
+              setError(t("errors.phoneNotVerified"));
+              setVerifyHint("phone");
+            } else if (code === "AUTH_LICENSE_REJECTED") {
+              setError(t("errors.licenseRejected"));
+            } else if (code === "OK") {
+              setError(t("errors.genericSignIn"));
+            } else {
+              setError(t("errors.invalidCredentials"));
+            }
+          }
+        } catch {
+          setError(t("errors.genericSignIn"));
+        }
       } else {
         // Get the session to determine user role
         const response = await fetch("/api/auth/session");
@@ -100,7 +131,7 @@ export default function LoginPage() {
         }
       }
     } catch {
-      setError("An error occurred during login");
+      setError(t("errors.genericSignIn"));
     } finally {
       setIsLoading(false);
     }
@@ -117,8 +148,16 @@ export default function LoginPage() {
       <AuthCard>
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md space-y-2">
               <p className="text-sm text-red-600">{error}</p>
+              {(verifyHint === "email" || verifyHint === "phone") && (
+                <Link
+                  href={`/verify-account?email=${encodeURIComponent(email)}`}
+                  className="text-sm text-primary hover:text-primary/80 font-light inline-block"
+                >
+                  {t("confirmAccountLink")}
+                </Link>
+              )}
             </div>
           )}
 
