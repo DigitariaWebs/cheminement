@@ -1627,7 +1627,6 @@ export default function BookAppointmentPage() {
                             setIssueType(Array.isArray(value) ? value : value ? [value] : []);
                           }}
                           placeholder={tB("motifPlaceholder")}
-                          searchButtonLabel={tB("motifSearchButton")}
                           multiSelect={true}
                           maxSelections={3}
                         />
@@ -1975,7 +1974,6 @@ export default function BookAppointmentPage() {
                             setIssueType(Array.isArray(value) ? value : value ? [value] : []);
                           }}
                           placeholder={tB("motifPlaceholder")}
-                          searchButtonLabel={tB("motifSearchButton")}
                           multiSelect={true}
                           maxSelections={3}
                         />
@@ -2286,7 +2284,6 @@ export default function BookAppointmentPage() {
                           setIssueType(Array.isArray(value) ? value : value ? [value] : []);
                         }}
                         placeholder={tB("motifPlaceholder")}
-                        searchButtonLabel={tB("motifSearchButton")}
                         multiSelect={true}
                         maxSelections={3}
                       />

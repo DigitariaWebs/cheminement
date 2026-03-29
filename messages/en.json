@@ -14,6 +14,14 @@
       "description": "Book for a patient as a professional or doctor."
     }
   },
+  "MotifSearch": {
+    "suggestions": "Suggestions",
+    "noResults": "No matching results. You can describe your needs in the message field.",
+    "selected": "Selected",
+    "removeAria": "Remove {label}",
+    "searchAria": "Search by keywords, synonyms, or acronyms",
+    "maxReached": "Maximum {max} selections"
+  },
   "AppointmentBooking": {
     "back": "Back",
     "continue": "Continue",

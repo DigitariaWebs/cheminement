@@ -14,6 +14,14 @@
       "description": "Prendre rendez-vous pour un patient en tant que professionnel ou médecin."
     }
   },
+  "MotifSearch": {
+    "suggestions": "Suggestions",
+    "noResults": "Aucun résultat correspondant. Vous pouvez préciser votre besoin dans le champ message.",
+    "selected": "Sélectionné",
+    "removeAria": "Retirer {label}",
+    "searchAria": "Recherche par mots-clés, synonymes ou acronymes",
+    "maxReached": "Maximum {max} sélections"
+  },
   "AppointmentBooking": {
     "back": "Retour",
     "continue": "Continuer",

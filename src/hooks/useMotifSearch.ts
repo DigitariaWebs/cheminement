@@ -1,5 +1,9 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import Fuse, { type IFuseOptions } from "fuse.js";
+import {
+  expandUserMotifQuery,
+  MOTIF_SEARCH_EXTRAS,
+} from "@/config/motifSearch";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -142,5 +146,88 @@ export function useStringSearch(
     count: results.length,
     reset,
     search,
+  };
+}
+
+// ─── Smart-Suggest (synonymes / acronymes + debounce) ─────────────────────────
+
+export interface MotifSearchRecord {
+  canonical: string;
+  searchText: string;
+}
+
+/**
+ * Construit les documents Fuse : libellé + mots-clés optionnels par entrée.
+ * @param perItemExtras — `{}` pour désactiver les extras (ex. liste custom).
+ */
+export function buildMotifSearchRecords(
+  motifs: string[],
+  perItemExtras: Partial<Record<string, string>> = MOTIF_SEARCH_EXTRAS,
+): MotifSearchRecord[] {
+  return motifs.map((canonical) => {
+    const extra = perItemExtras[canonical];
+    const searchText = extra ? `${canonical} ${extra}` : canonical;
+    return { canonical, searchText };
+  });
+}
+
+export interface UseDebouncedSmartMotifSearchOptions {
+  debounceMs?: number;
+  fuseThreshold?: number;
+}
+
+/**
+ * Recherche différée (défaut 300 ms) sur searchText, avec expansion de requête
+ * (TCC, EMDR, anxiété… — voir config/motifSearch.ts).
+ */
+export function useDebouncedSmartMotifSearch(
+  records: MotifSearchRecord[],
+  {
+    debounceMs = 300,
+    fuseThreshold = 0.34,
+  }: UseDebouncedSmartMotifSearchOptions = {},
+) {
+  const [inputQuery, setInputQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(inputQuery), debounceMs);
+    return () => clearTimeout(id);
+  }, [inputQuery, debounceMs]);
+
+  const fuse = useMemo(
+    () =>
+      new Fuse(records, {
+        keys: ["searchText"],
+        threshold: fuseThreshold,
+        minMatchCharLength: 1,
+        ignoreLocation: true,
+        includeScore: true,
+      }),
+    [records, fuseThreshold],
+  );
+
+  const results = useMemo(() => {
+    const trimmed = debouncedQuery.trim();
+    if (!trimmed) return [];
+    const expanded = expandUserMotifQuery(trimmed);
+    const hits = fuse.search(expanded);
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const h of hits) {
+      const c = h.item.canonical;
+      if (!seen.has(c)) {
+        seen.add(c);
+        out.push(c);
+      }
+    }
+    return out;
+  }, [debouncedQuery, fuse]);
+
+  return {
+    inputQuery,
+    setInputQuery,
+    debouncedQuery,
+    results,
   };
 }
