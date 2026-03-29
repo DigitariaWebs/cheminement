@@ -5,6 +5,19 @@
 
 import type { AppointmentResponse } from "@/types/api";
 
+export class ApiClientError extends Error {
+  readonly status: number;
+  readonly code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "ApiClientError";
+    this.status = status;
+    this.code = code;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
 interface FetchOptions extends RequestInit {
   data?: any;
 }
@@ -60,7 +73,7 @@ class ApiClient {
           : body.code
             ? ` (${body.code})`
             : "";
-        throw new Error(`${main}${suffix}`);
+        throw new ApiClientError(`${main}${suffix}`, response.status, body.code);
       }
 
       return await response.json();

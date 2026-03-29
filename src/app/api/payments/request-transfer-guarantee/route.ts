@@ -10,6 +10,20 @@ import {
 } from "@/lib/notifications";
 import { buildInteracReferenceCode } from "@/lib/interac-reference";
 import { getInteracDepositEmail } from "@/lib/interac-deposit-email";
+import { canSessionUserActForClient } from "@/lib/guardian-utils";
+
+function appointmentClientUserId(clientRef: unknown): string {
+  if (
+    typeof clientRef === "object" &&
+    clientRef !== null &&
+    "_id" in clientRef
+  ) {
+    return String(
+      (clientRef as { _id: { toString: () => string } })._id,
+    );
+  }
+  return String(clientRef);
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,16 +68,17 @@ export async function POST(req: NextRequest) {
           { status: 403 },
         );
       }
-      const cid = appointment.clientId as unknown as {
-        _id: { toString: () => string };
-      };
-      clientUserId = cid._id.toString();
+      clientUserId = appointmentClientUserId(appointment.clientId);
     } else {
       if (!session?.user?.id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
-      clientUserId = appointment.clientId.toString();
-      if (clientUserId !== session.user.id) {
+      clientUserId = appointmentClientUserId(appointment.clientId);
+      const allowed = await canSessionUserActForClient(
+        session.user.id,
+        clientUserId,
+      );
+      if (!allowed) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     }

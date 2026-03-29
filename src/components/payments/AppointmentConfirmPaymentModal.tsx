@@ -24,7 +24,7 @@ import {
   Landmark,
   Banknote,
 } from "lucide-react";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, ApiClientError } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -115,7 +115,9 @@ function AppointmentSetupForm({
         setIsComplete(true);
         setTimeout(() => onSuccess?.(), 1200);
       } catch (err) {
-        console.error(err);
+        if (!(err instanceof ApiClientError && err.status < 500)) {
+          console.error(err);
+        }
         const m =
           err instanceof Error ? err.message : t("saveFailed");
         setMessage(m);
@@ -215,7 +217,9 @@ export default function AppointmentConfirmPaymentModal({
       setTypeSelected(true);
       setClientSecret("__interac__");
     } catch (err) {
-      console.error(err);
+      if (!(err instanceof ApiClientError && err.status < 500)) {
+        console.error(err);
+      }
       setError(
         err instanceof Error ? err.message : t("initFailed"),
       );
@@ -239,7 +243,9 @@ export default function AppointmentConfirmPaymentModal({
         setClientSecret(response.clientSecret);
         setTypeSelected(true);
       } catch (err) {
-        console.error(err);
+        if (!(err instanceof ApiClientError && err.status < 500)) {
+          console.error(err);
+        }
         setError(
           err instanceof Error ? err.message : t("initFailed"),
         );

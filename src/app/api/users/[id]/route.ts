@@ -13,6 +13,7 @@ import {
   sendProfessionalApprovalEmail,
   sendProfessionalRejectionEmail,
 } from "@/lib/notifications";
+import { PROFESSIONAL_CLIENT_APPOINTMENT_STATUSES } from "@/lib/professional-client-access";
 
 export async function GET(
   req: NextRequest,
@@ -34,7 +35,7 @@ export async function GET(
         const hasAppointment = await Appointment.findOne({
           professionalId: session.user.id,
           clientId: id,
-          status: { $in: ["scheduled", "pending", "completed"] },
+          status: { $in: Array.from(PROFESSIONAL_CLIENT_APPOINTMENT_STATUSES) },
         });
         if (!hasAppointment) {
           return NextResponse.json({ error: "Forbidden" }, { status: 403 });
