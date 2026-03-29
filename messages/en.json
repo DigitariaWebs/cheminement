@@ -22,6 +22,34 @@
     "searchAria": "Search by keywords, synonyms, or acronyms",
     "maxReached": "Maximum {max} selections"
   },
+  "ClinicalAvailabilityGrid": {
+    "ariaLabel": "Availability grid by period (morning, afternoon, evening) and week type",
+    "columnWeekday": "Weekdays (Mon–Fri)",
+    "columnWeekend": "Weekend (Sat–Sun)",
+    "rows": {
+      "morning": {
+        "label": "Morning",
+        "hours": "8 a.m. – 12 p.m."
+      },
+      "afternoon": {
+        "label": "Afternoon",
+        "hours": "12 p.m. – 5 p.m."
+      },
+      "evening": {
+        "label": "Evening",
+        "hours": "5 p.m. – 9 p.m."
+      }
+    },
+    "checkboxAria": "{period}, {column}",
+    "slotLabels": {
+      "week_morning": "Weekday · Morning (8 a.m.–12 p.m.)",
+      "week_afternoon": "Weekday · Afternoon (12 p.m.–5 p.m.)",
+      "week_evening": "Weekday · Evening (5 p.m.–9 p.m.)",
+      "weekend_morning": "Weekend · Morning (8 a.m.–12 p.m.)",
+      "weekend_afternoon": "Weekend · Afternoon (12 p.m.–5 p.m.)",
+      "weekend_evening": "Weekend · Evening (5 p.m.–9 p.m.)"
+    }
+  },
   "AppointmentBooking": {
     "back": "Back",
     "continue": "Continue",
@@ -201,7 +229,8 @@
       "phoneInvalid": "Please enter a valid phone number",
       "submitFailed": "Failed to submit request",
       "motifRequiredSubmit": "Please fill in all required fields, including at least one motif",
-      "contactGuest": "Please fill in all required contact information"
+      "contactGuest": "Please fill in all required contact information",
+      "availabilityRequired": "Please select at least one slot in the availability grid."
     }
   },
   "Header": {
@@ -743,7 +772,8 @@
         "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
         "failedToCreateAccount": "Failed to create account. Please try again.",
         "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference.",
-        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits)."
+        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits).",
+        "availabilityRequired": "Please select at least one slot in the availability grid."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
       "therapyApproachOptional": "Preferred therapy approach (optional)",
@@ -915,6 +945,7 @@
         },
         "step6": {
           "availability": "Availability",
+          "clinicalGridHint": "Select at least one cell: morning (8 a.m.–12 p.m.), afternoon (12 p.m.–5 p.m.), or evening (5 p.m.–9 p.m.), on weekdays or weekend.",
           "modality": "Preferred Modality",
           "sessionFrequency": "Preferred Session Frequency",
           "sessionFrequencyOptions": {
@@ -2654,6 +2685,12 @@
         "Weekend afternoons": "Weekend afternoons",
         "Weekend evenings": "Weekend evenings",
         "Flexible": "Flexible",
+        "week_morning": "Weekday — morning (8 a.m.–12 p.m.)",
+        "week_afternoon": "Weekday — afternoon (12 p.m.–5 p.m.)",
+        "week_evening": "Weekday — evening (5 p.m.–9 p.m.)",
+        "weekend_morning": "Weekend — morning (8 a.m.–12 p.m.)",
+        "weekend_afternoon": "Weekend — afternoon (12 p.m.–5 p.m.)",
+        "weekend_evening": "Weekend — evening (5 p.m.–9 p.m.)",
         "modality": "Preferred Modality",
         "online": "Online",
         "inPerson": "In-Person",
@@ -2898,6 +2935,8 @@
         "availabilityDesc": "Select your preferred times",
         "preferredTimeSlots": "Preferred time slots",
         "preferredTimeSlotsDesc": "Select your preferred times for sessions",
+        "clinicalGridHint": "Select at least one cell (morning, afternoon, or evening × weekday or weekend).",
+        "availabilityRequired": "Please select at least one slot in the availability grid.",
         "timeSlotOptions": {
           "morning": "Morning",
           "afternoon": "Afternoon",

@@ -49,6 +49,7 @@ import {
   AuthFooter,
 } from "@/components/auth";
 import { MotifSearch } from "@/components/ui/MotifSearch";
+import { ClinicalAvailabilityGrid } from "@/components/ui/ClinicalAvailabilityGrid";
 
 interface FormData {
   // User fields
@@ -161,20 +162,9 @@ const MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS = [
   { value: "No preference", msgKey: "noPreference" },
 ] as const;
 
-const MEMBER_SIGNUP_AVAILABILITY_OPTIONS = [
-  { value: "Weekday mornings", msgKey: "weekdayMornings" },
-  { value: "Weekday afternoons", msgKey: "weekdayAfternoons" },
-  { value: "Weekday evenings", msgKey: "weekdayEvenings" },
-  { value: "Weekend mornings", msgKey: "weekendMornings" },
-  { value: "Weekend afternoons", msgKey: "weekendAfternoons" },
-  { value: "Weekend evenings", msgKey: "weekendEvenings" },
-  { value: "Flexible", msgKey: "flexible" },
-] as const;
-
 const EXCLUSIVE_MULTISELECT_VALUES = new Set([
   "None",
   "No preference",
-  "Flexible",
 ]);
 
 export default function MemberSignupPage() {
@@ -377,6 +367,10 @@ export default function MemberSignupPage() {
       case 5:
         return true;
       case 6:
+        if (formData.availability.length === 0) {
+          setError(t("errors.availabilityRequired"));
+          return false;
+        }
         return true;
       case 7:
         return true;
@@ -423,6 +417,10 @@ export default function MemberSignupPage() {
 
   const handleSubmit = async () => {
     setError("");
+    if (formData.availability.length === 0) {
+      setError(t("errors.availabilityRequired"));
+      return;
+    }
     if (!validateSection(currentSection)) return;
 
     setIsLoading(true);
@@ -1407,25 +1405,15 @@ export default function MemberSignupPage() {
               <Label>
                 {t("profileModal.step6.availability")}
               </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {MEMBER_SIGNUP_AVAILABILITY_OPTIONS.map(({ value, msgKey }) => (
-                  <div key={value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`availability-${value}`}
-                      checked={formData.availability.includes(value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("availability", value)
-                      }
-                    />
-                    <label
-                      htmlFor={`availability-${value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`availabilityOptions.${msgKey}`)}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground font-light">
+                {t("profileModal.step6.clinicalGridHint")}
+              </p>
+              <ClinicalAvailabilityGrid
+                value={formData.availability}
+                onChange={(v) =>
+                  setFormData((prev) => ({ ...prev, availability: v }))
+                }
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

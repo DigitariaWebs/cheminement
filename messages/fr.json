@@ -22,6 +22,34 @@
     "searchAria": "Recherche par mots-clés, synonymes ou acronymes",
     "maxReached": "Maximum {max} sélections"
   },
+  "ClinicalAvailabilityGrid": {
+    "ariaLabel": "Grille de disponibilités par période (matin, après-midi, soir) et type de semaine",
+    "columnWeekday": "Semaine (lun.–ven.)",
+    "columnWeekend": "Week-end (sam.–dim.)",
+    "rows": {
+      "morning": {
+        "label": "Matin",
+        "hours": "8h – 12h"
+      },
+      "afternoon": {
+        "label": "Après-midi",
+        "hours": "12h – 17h"
+      },
+      "evening": {
+        "label": "Soir",
+        "hours": "17h – 21h"
+      }
+    },
+    "checkboxAria": "{period}, {column}",
+    "slotLabels": {
+      "week_morning": "Semaine · Matin (8h–12h)",
+      "week_afternoon": "Semaine · Après-midi (12h–17h)",
+      "week_evening": "Semaine · Soir (17h–21h)",
+      "weekend_morning": "Week-end · Matin (8h–12h)",
+      "weekend_afternoon": "Week-end · Après-midi (12h–17h)",
+      "weekend_evening": "Week-end · Soir (17h–21h)"
+    }
+  },
   "AppointmentBooking": {
     "back": "Retour",
     "continue": "Continuer",
@@ -201,7 +229,8 @@
       "phoneInvalid": "Veuillez entrer un numéro de téléphone valide",
       "submitFailed": "Échec de l'envoi de la demande",
       "motifRequiredSubmit": "Veuillez remplir tous les champs obligatoires, y compris au moins un motif",
-      "contactGuest": "Veuillez remplir tous les champs de contact obligatoires"
+      "contactGuest": "Veuillez remplir tous les champs de contact obligatoires",
+      "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités."
     }
   },
   "Header": {
@@ -744,7 +773,8 @@
         "accountCreatedButSignInFailed": "Compte créé mais la connexion a échoué. Veuillez réessayer.",
         "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer.",
         "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.",
-        "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres)."
+        "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres).",
+        "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités."
       },
       "objectivesLabel": "Objectifs de thérapie (recherche, plusieurs choix possibles)",
       "therapyApproachOptional": "Approche de thérapie préférée (optionnel)",
@@ -916,6 +946,7 @@
         },
         "step6": {
           "availability": "Disponibilité",
+          "clinicalGridHint": "Cochez au moins une case : matin (8h–12h), après-midi (12h–17h) ou soir (17h–21h), en semaine ou en week-end.",
           "modality": "Modalité préférée",
           "sessionFrequency": "Fréquence des séances",
           "sessionFrequencyOptions": {
@@ -2659,6 +2690,12 @@
         "Weekend afternoons": "Après-midis de week-end",
         "Weekend evenings": "Soirs de week-end",
         "Flexible": "Flexible",
+        "week_morning": "Semaine — matin (8h–12h)",
+        "week_afternoon": "Semaine — après-midi (12h–17h)",
+        "week_evening": "Semaine — soir (17h–21h)",
+        "weekend_morning": "Week-end — matin (8h–12h)",
+        "weekend_afternoon": "Week-end — après-midi (12h–17h)",
+        "weekend_evening": "Week-end — soir (17h–21h)",
         "modality": "Modalité souhaitée",
         "online": "En ligne",
         "inPerson": "En personne",
@@ -2903,6 +2940,8 @@
         "availabilityDesc": "Sélectionnez vos heures préférées",
         "preferredTimeSlots": "Créneaux préférés",
         "preferredTimeSlotsDesc": "Sélectionnez vos créneaux préférés pour les séances",
+        "clinicalGridHint": "Cochez au moins une case (matin, après-midi ou soir × semaine ou week-end).",
+        "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités.",
         "timeSlotOptions": {
           "morning": "Matin",
           "afternoon": "Après-midi",

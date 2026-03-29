@@ -19,6 +19,8 @@ import { IMedicalProfile } from "@/models/MedicalProfile";
 import { medicalProfileAPI } from "@/lib/api-client";
 import { CHILD_DIAGNOSTICS } from "@/data/childDiagnostics";
 import { ADULT_DIAGNOSTICS } from "@/data/adultDiagnostics";
+import { ClinicalAvailabilityGrid } from "@/components/ui/ClinicalAvailabilityGrid";
+import { migrateLegacyAvailabilitySlots } from "@/config/clinical-availability-grid";
 
 interface MedicalProfileProps {
   profile?: IMedicalProfile;
@@ -1018,8 +1020,14 @@ function MedicalProfileModal({
     concernsAboutTherapy: profile?.concernsAboutTherapy || "",
   });
 
-  const [appointmentPreferencesData, setAppointmentPreferencesData] = useState({
-    availability: profile?.availability || [],
+  const [appointmentPreferencesData, setAppointmentPreferencesData] = useState<{
+    availability: string[];
+    sessionFrequency: string;
+    modality: string;
+    location: string;
+    notes: string;
+  }>({
+    availability: migrateLegacyAvailabilitySlots(profile?.availability || []),
     sessionFrequency: profile?.sessionFrequency || "",
     modality: profile?.modality || "",
     location: profile?.location || "",
@@ -1042,6 +1050,10 @@ function MedicalProfileModal({
   });
 
   const handleSave = async () => {
+    if (!appointmentPreferencesData.availability?.length) {
+      alert(tMp("step6.availabilityRequired"));
+      return;
+    }
     // Collect all data
     const updatedProfile = {
       ...profile,
@@ -1857,40 +1869,18 @@ function MedicalProfileModal({
                   <p className="text-sm text-muted-foreground font-light mb-4">
                     {tMp("step6.preferredTimeSlotsDesc")}
                   </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {(["morning", "afternoon", "evening", "weekends"] as const).map(
-                      (item) => (
-                        <button
-                          key={item}
-                          type="button"
-                          onClick={() => {
-                            const current =
-                              appointmentPreferencesData.availability;
-                            if (current.includes(item)) {
-                              setAppointmentPreferencesData((prev) => ({
-                                ...prev,
-                                availability: current.filter((v) => v !== item),
-                              }));
-                            } else {
-                              setAppointmentPreferencesData((prev) => ({
-                                ...prev,
-                                availability: [...current, item],
-                              }));
-                            }
-                          }}
-                          className={`rounded-lg px-4 py-3 text-sm font-light text-center transition-all ${
-                            appointmentPreferencesData.availability.includes(
-                              item,
-                            )
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted/50 text-foreground hover:bg-muted"
-                          }`}
-                        >
-                          {tMp(`step6.timeSlotOptions.${item}`)}
-                        </button>
-                      ),
-                    )}
-                  </div>
+                  <p className="text-sm text-muted-foreground font-light mb-3">
+                    {tMp("step6.clinicalGridHint")}
+                  </p>
+                  <ClinicalAvailabilityGrid
+                    value={appointmentPreferencesData.availability}
+                    onChange={(availability) =>
+                      setAppointmentPreferencesData((prev) => ({
+                        ...prev,
+                        availability,
+                      }))
+                    }
+                  />
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-3">

@@ -48,6 +48,11 @@ import { apiClient, medicalProfileAPI } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { MotifSearch } from "@/components/ui/MotifSearch";
+import { ClinicalAvailabilityGrid } from "@/components/ui/ClinicalAvailabilityGrid";
+import {
+  isClinicalAvailabilitySlotId,
+  migrateLegacyAvailabilitySlots,
+} from "@/config/clinical-availability-grid";
 import { cn } from "@/lib/utils";
 import { MOTIFS } from "@/data/motif";
 import AppointmentForm from "@/components/appointments/AppointmentForm";
@@ -106,11 +111,15 @@ export default function BookAppointmentPage() {
   const { data: session, status } = useSession();
   const tManaged = useTranslations("managedAccounts");
   const tB = useTranslations("AppointmentBooking");
+  const tGrid = useTranslations("ClinicalAvailabilityGrid");
   const tHero = useTranslations("HeroSection");
   const locale = useLocale();
   const dateLocale = locale === "fr" ? "fr-CA" : "en-CA";
 
   const describeAvailabilitySlot = (slot: string): string => {
+    if (isClinicalAvailabilitySlotId(slot)) {
+      return tGrid(`slotLabels.${slot}`);
+    }
     const m = /^(\d{4}-\d{2}-\d{2})-(morning|afternoon|evening)$/.exec(slot);
     if (m) {
       const d = new Date(`${m[1]}T12:00:00`);
@@ -251,9 +260,11 @@ export default function BookAppointmentPage() {
               const primaryIssue = (profile as MedicalProfileData).primaryIssue || "";
               setIssueType(primaryIssue ? [primaryIssue] : []);
             }
-            if ((profile as MedicalProfileData).availability) {
+            if ((profile as MedicalProfileData).availability?.length) {
               setPreferredAvailability(
-                (profile as MedicalProfileData).availability || [],
+                migrateLegacyAvailabilitySlots(
+                  (profile as MedicalProfileData).availability || [],
+                ),
               );
             }
             if ((profile as MedicalProfileData).modality) {
@@ -570,6 +581,12 @@ export default function BookAppointmentPage() {
       setLoading(true);
       setError("");
 
+      if (preferredAvailability.length === 0) {
+        setError(tB("errors.availabilityRequired"));
+        setLoading(false);
+        return;
+      }
+
       // Prepare motifs data based on booking type
       const motifs = Array.isArray(issueType) ? issueType : issueType ? [issueType] : [];
       
@@ -652,6 +669,10 @@ export default function BookAppointmentPage() {
     }
     if (issueType.length > 3) {
       setError(tB("errors.motifMax"));
+      return;
+    }
+    if (preferredAvailability.length === 0) {
+      setError(tB("errors.availabilityRequired"));
       return;
     }
 
@@ -2414,47 +2435,13 @@ export default function BookAppointmentPage() {
                             </span>
                           )}
                       </Label>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {(
-                          [
-                            { value: "Weekday Mornings", key: "weekdayMornings" },
-                            { value: "Weekday Afternoons", key: "weekdayAfternoons" },
-                            { value: "Weekday Evenings", key: "weekdayEvenings" },
-                            { value: "Weekends", key: "weekends" },
-                          ] as const
-                        ).map(({ value, key }) => (
-                          <Button
-                            key={value}
-                            type="button"
-                            variant={
-                              preferredAvailability.includes(value)
-                                ? "default"
-                                : "outline"
-                            }
-                            size="sm"
-                            onClick={() => {
-                              if (preferredAvailability.includes(value)) {
-                                setPreferredAvailability(
-                                  preferredAvailability.filter(
-                                    (a) => a !== value,
-                                  ),
-                                );
-                              } else {
-                                setPreferredAvailability([
-                                  ...preferredAvailability,
-                                  value,
-                                ]);
-                              }
-                            }}
-                            className="text-xs"
-                          >
-                            {tB(key)}
-                          </Button>
-                        ))}
-                      </div>
                       <p className="text-xs text-muted-foreground">
                         {tB("availabilityHintGeneric")}
                       </p>
+                      <ClinicalAvailabilityGrid
+                        value={preferredAvailability}
+                        onChange={setPreferredAvailability}
+                      />
                     </div>
                   )}
 

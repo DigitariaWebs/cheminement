@@ -422,19 +422,29 @@ function calculateRelevancyScore(
       .filter((d) => d.isWorkDay)
       .map((d) => d.day);
 
-    // Check if professional has any availability matching client preferences
+    const weekdaySet = new Set([
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+    ]);
+    const weekendSet = new Set(["Saturday", "Sunday"]);
+
     const availabilityMatches = appointment.preferredAvailability.some(
       (pref) => {
-        const prefLower = pref.toLowerCase();
-        if (prefLower.includes("weekday")) {
-          return availableDays.some((d) =>
-            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(
-              d,
-            ),
-          );
+        const p = pref.toLowerCase();
+        if (p.startsWith("week_")) {
+          return availableDays.some((d) => weekdaySet.has(d));
         }
-        if (prefLower.includes("weekend")) {
-          return availableDays.some((d) => ["Saturday", "Sunday"].includes(d));
+        if (p.startsWith("weekend_")) {
+          return availableDays.some((d) => weekendSet.has(d));
+        }
+        if (p.includes("weekday")) {
+          return availableDays.some((d) => weekdaySet.has(d));
+        }
+        if (p.includes("weekend")) {
+          return availableDays.some((d) => weekendSet.has(d));
         }
         return true;
       },
