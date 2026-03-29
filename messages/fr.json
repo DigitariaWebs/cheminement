@@ -50,6 +50,15 @@
       "weekend_evening": "Week-end · Soir (17h–21h)"
     }
   },
+  "AppointmentForm": {
+    "referrerSection": "Le Référent",
+    "patientSection": "Le Patient",
+    "clientSection": "Le Client",
+    "optional": "optionnel",
+    "phoneOrEmail": "Téléphone ou courriel",
+    "professionalName": "Nom du professionnel",
+    "patientName": "Nom du patient"
+  },
   "AppointmentBooking": {
     "back": "Retour",
     "continue": "Continuer",
@@ -3098,15 +3107,6 @@
         "failedToCancel": "Impossible d'annuler le rendez-vous",
         "currencySuffix": "CAD"
       }
-    },
-    "AppointmentForm": {
-      "referrerSection": "Le Référent",
-      "patientSection": "Le Patient",
-      "clientSection": "Le Client",
-      "optional": "optionnel",
-      "phoneOrEmail": "Téléphone ou Email",
-      "professionalName": "Nom du professionnel",
-      "patientName": "Nom du patient"
     },
     "medicalProfile": {
       "loading": "Chargement...",

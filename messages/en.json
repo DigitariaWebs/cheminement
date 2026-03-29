@@ -50,6 +50,15 @@
       "weekend_evening": "Weekend · Evening (5 p.m.–9 p.m.)"
     }
   },
+  "AppointmentForm": {
+    "referrerSection": "Referrer",
+    "patientSection": "Patient",
+    "clientSection": "Client",
+    "optional": "optional",
+    "phoneOrEmail": "Phone or email",
+    "professionalName": "Professional name",
+    "patientName": "Patient name"
+  },
   "AppointmentBooking": {
     "back": "Back",
     "continue": "Continue",
@@ -3093,15 +3102,6 @@
         "failedToCancel": "Failed to cancel appointment",
         "currencySuffix": "CAD"
       }
-    },
-    "AppointmentForm": {
-      "referrerSection": "Referrer",
-      "patientSection": "Patient",
-      "clientSection": "Client",
-      "optional": "optional",
-      "phoneOrEmail": "Phone or email",
-      "professionalName": "Professional name",
-      "patientName": "Patient name"
     },
     "medicalProfile": {
       "loading": "Loading...",
