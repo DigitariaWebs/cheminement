@@ -3,9 +3,15 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import MedicalProfile from "@/models/MedicalProfile";
 import { authOptions } from "@/lib/auth";
+import {
+  getActiveAdminPermissions,
+  mustMaskClientContactPII,
+  applyMedicalProfileContactMask,
+} from "@/lib/admin-rbac";
+import { logAdminClientAccess } from "@/lib/admin-access-log";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   ctx: RouteContext<"/api/medical-profile/[id]">,
 ) {
   try {
@@ -54,6 +60,22 @@ export async function GET(
         { error: "Medical profile not found" },
         { status: 404 },
       );
+    }
+
+    if (session.user.role === "admin" && session.user.id !== userId) {
+      void logAdminClientAccess({
+        actorUserId: session.user.id,
+        resourceUserId: userId,
+        action: "view_client_medical_profile",
+        req,
+      });
+      const perms = await getActiveAdminPermissions(session.user.id);
+      const mask = mustMaskClientContactPII(perms);
+      const plain = medicalProfile.toObject() as unknown as Record<
+        string,
+        unknown
+      >;
+      return NextResponse.json(applyMedicalProfileContactMask(plain, mask));
     }
 
     return NextResponse.json(medicalProfile);

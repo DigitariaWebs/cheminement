@@ -3,8 +3,11 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
+import Admin from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
 import { isFieldEncryptionEnabled } from "@/lib/field-encryption";
+import { mustMaskClientContactPII } from "@/lib/admin-rbac";
+import { maskPhoneForDisplay } from "@/lib/contact-mask";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,6 +18,23 @@ export async function GET(req: NextRequest) {
     }
 
     await connectToDatabase();
+
+    const adminRecord = await Admin.findOne({
+      userId: session.user.id,
+      isActive: true,
+    })
+      .select("permissions")
+      .lean();
+    const perms = adminRecord?.permissions;
+    if (
+      perms &&
+      !perms.managePatients &&
+      !perms.manageBilling
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const mask = perms ? mustMaskClientContactPII(perms) : false;
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
@@ -87,7 +107,9 @@ export async function GET(req: NextRequest) {
           id: patient._id.toString(),
           name: `${patient.firstName} ${patient.lastName}`,
           email: patient.email,
-          phone: patient.phone || "",
+          phone: mask
+            ? maskPhoneForDisplay(String(patient.phone || ""))
+            : patient.phone || "",
           status: patient.status,
           role: patient.role, // Include role to identify guests
           matchedWith,

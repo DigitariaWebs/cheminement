@@ -4,12 +4,18 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
 import {
+  getActiveAdminPermissions,
+  mustMaskClientContactPII,
+  applyClientContactMaskToUserPayload,
+} from "@/lib/admin-rbac";
+import { logAdminClientAccess } from "@/lib/admin-access-log";
+import {
   sendProfessionalApprovalEmail,
   sendProfessionalRejectionEmail,
 } from "@/lib/notifications";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   ctx: RouteContext<"/api/users/[id]">,
 ) {
   try {
@@ -46,6 +52,24 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    if (session.user.role === "admin") {
+      const perms = await getActiveAdminPermissions(session.user.id);
+      const isClientOrGuest = ["client", "guest"].includes(String(user.role));
+      if (isClientOrGuest) {
+        void logAdminClientAccess({
+          actorUserId: session.user.id,
+          resourceUserId: id,
+          action: "view_client_user",
+          req,
+        });
+      }
+      const mask = mustMaskClientContactPII(perms) && isClientOrGuest;
+      const plain = user.toObject() as { phone?: string };
+      return NextResponse.json(
+        applyClientContactMaskToUserPayload(plain, mask),
+      );
+    }
+
     return NextResponse.json(user);
   } catch (error: unknown) {
     console.error(
@@ -80,6 +104,14 @@ export async function PATCH(
     }
 
     await connectToDatabase();
+
+    const adminPerms = await getActiveAdminPermissions(session.user.id);
+    if (adminPerms && mustMaskClientContactPII(adminPerms)) {
+      return NextResponse.json(
+        { error: "Insufficient permissions to modify user records" },
+        { status: 403 },
+      );
+    }
 
     // Get the user before update to check for status changes
     const existingUser = await User.findById(id);

@@ -3,6 +3,12 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import MedicalProfile from "@/models/MedicalProfile";
 import { authOptions } from "@/lib/auth";
+import {
+  getActiveAdminPermissions,
+  mustMaskClientContactPII,
+  applyMedicalProfileContactMask,
+} from "@/lib/admin-rbac";
+import { logAdminClientAccess } from "@/lib/admin-access-log";
 
 export async function GET(
   req: NextRequest,
@@ -27,7 +33,20 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(medicalProfile);
+    void logAdminClientAccess({
+      actorUserId: session.user.id,
+      resourceUserId: id,
+      action: "view_client_medical_profile",
+      req,
+    });
+
+    const perms = await getActiveAdminPermissions(session.user.id);
+    const mask = mustMaskClientContactPII(perms);
+    const plain = medicalProfile.toObject() as unknown as Record<
+      string,
+      unknown
+    >;
+    return NextResponse.json(applyMedicalProfileContactMask(plain, mask));
   } catch (error: unknown) {
     console.error("Get patient medical profile error:", error);
     return NextResponse.json(

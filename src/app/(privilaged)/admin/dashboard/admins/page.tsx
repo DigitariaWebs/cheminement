@@ -12,6 +12,7 @@ import {
   Crown,
   Settings,
   Users,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +44,8 @@ type AdminRole =
   | "super_admin"
   | "platform_admin"
   | "content_admin"
-  | "support_admin";
+  | "support_admin"
+  | "billing_admin";
 
 interface AdminPermissions {
   manageUsers: boolean;
@@ -107,6 +109,8 @@ const getRoleIcon = (role: AdminRole) => {
       return <Settings className="h-4 w-4" />;
     case "support_admin":
       return <Users className="h-4 w-4" />;
+    case "billing_admin":
+      return <Wallet className="h-4 w-4" />;
   }
 };
 
@@ -120,6 +124,8 @@ const getRoleBadgeColor = (role: AdminRole) => {
       return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
     case "support_admin":
       return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
+    case "billing_admin":
+      return "bg-teal-100 text-teal-800 dark:bg-teal-950/40 dark:text-teal-200";
   }
 };
 
@@ -369,6 +375,7 @@ export default function AdminsPage() {
                   <SelectItem value="platform_admin">Platform Admin</SelectItem>
                   <SelectItem value="content_admin">Content Admin</SelectItem>
                   <SelectItem value="support_admin">Support Admin</SelectItem>
+                  <SelectItem value="billing_admin">Billing Admin</SelectItem>
                 </SelectContent>
               </Select>
             </div>

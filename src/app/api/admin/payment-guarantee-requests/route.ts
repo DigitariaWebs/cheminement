@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
+import Admin from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
+import { mustMaskClientContactPII } from "@/lib/admin-rbac";
+import { maskPhoneForDisplay } from "@/lib/contact-mask";
 
 export async function GET() {
   try {
@@ -13,6 +16,22 @@ export async function GET() {
     }
 
     await connectToDatabase();
+
+    const adminRecord = await Admin.findOne({
+      userId: session.user.id,
+      isActive: true,
+    })
+      .select("permissions")
+      .lean();
+    const perms = adminRecord?.permissions;
+    if (
+      perms &&
+      !perms.manageBilling &&
+      !perms.managePatients
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const mask = perms ? mustMaskClientContactPII(perms) : false;
 
     const pending = await User.find({
       role: { $in: ["client", "guest"] },
@@ -28,7 +47,7 @@ export async function GET() {
         firstName: u.firstName,
         lastName: u.lastName,
         email: u.email,
-        phone: u.phone,
+        phone: mask ? maskPhoneForDisplay(String(u.phone || "")) : u.phone,
         requestedAt: u.updatedAt?.toISOString() ?? u.createdAt?.toISOString(),
       })),
     });

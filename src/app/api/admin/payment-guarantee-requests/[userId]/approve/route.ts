@@ -4,6 +4,7 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
 import { approveInteracTrustGreen } from "@/lib/payment-guarantee";
+import { getActiveAdminPermissions } from "@/lib/admin-rbac";
 
 export async function POST(
   req: NextRequest,
@@ -19,6 +20,11 @@ export async function POST(
     const { userId } = await params;
 
     await connectToDatabase();
+
+    const adminPerms = await getActiveAdminPermissions(session.user.id);
+    if (adminPerms && !adminPerms.managePatients) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const user = await User.findById(userId);
     if (!user) {
