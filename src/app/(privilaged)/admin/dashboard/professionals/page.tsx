@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { AddProfileModal } from "@/components/admin/AddProfileModal";
 type ProfessionalStatus = "active" | "pending" | "inactive";
 
 interface Professional {
@@ -267,6 +268,10 @@ export default function ProfessionalsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <AddProfileModal
+            defaultRole="professional"
+            onSuccess={() => fetchProfessionals(currentPage)}
+          />
           <button
             onClick={() => fetchProfessionals(currentPage)}
             disabled={loading}
@@ -408,7 +413,9 @@ export default function ProfessionalsPage() {
                     <Link
                       href={`/admin/dashboard/professionals/${professional.id}`}
                     >
-                      <Eye className="h-4 w-4 mr-2" />
+                      <Button variant="ghost" size="icon">
+                        <Eye className="h-4 w-4 text-primary" />
+                      </Button>
                     </Link>
                   </TableCell>
                 </TableRow>

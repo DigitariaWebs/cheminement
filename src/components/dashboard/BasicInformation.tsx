@@ -57,7 +57,6 @@ export default function BasicInformation({
       const userData = userId
         ? await usersAPI.getById(userId)
         : await usersAPI.get();
-      console.log(userData);
       setUser(userData as IUser);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -128,7 +127,11 @@ export default function BasicInformation({
 
       // Update via API
       if (Object.keys(updates).length > 0) {
-        await usersAPI.update(updates);
+        if (userId) {
+          await usersAPI.updateById(userId, updates);
+        } else {
+          await usersAPI.update(updates);
+        }
         await fetchUser();
       }
 

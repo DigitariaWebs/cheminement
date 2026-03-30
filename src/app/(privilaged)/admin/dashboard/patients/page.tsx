@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { AddProfileModal } from "@/components/admin/AddProfileModal";
 
 type PatientStatus = "active" | "pending" | "inactive";
 
@@ -45,6 +46,8 @@ interface Patient {
   joinedDate: string;
   totalSessions: number;
   issueType: string;
+  paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
+  paymentGuaranteeSource?: "stripe" | "interac_trust";
 }
 
 interface PatientsData {
@@ -130,10 +133,10 @@ export default function PatientsPage() {
     // Patients data
     csvContent += "Patient Details\n";
     csvContent +=
-      "ID,Name,Email,Phone,Issue Type,Status,Matched With,Sessions,Joined Date\n";
+      "ID,Name,Email,Phone,Issue Type,Status,Guarantee,Matched With,Sessions,Joined Date\n";
 
     patients.forEach((patient) => {
-      csvContent += `${patient.id},"${patient.name}","${patient.email}","${patient.phone}","${patient.issueType}","${patient.status}","${patient.matchedWith || ""}",${patient.totalSessions},"${new Date(patient.joinedDate).toLocaleDateString()}"\n`;
+      csvContent += `${patient.id},"${patient.name}","${patient.email}","${patient.phone}","${patient.issueType}","${patient.status}","${patient.paymentGuaranteeStatus}","${patient.matchedWith || ""}",${patient.totalSessions},"${new Date(patient.joinedDate).toLocaleDateString()}"\n`;
     });
 
     // Create and download the file
@@ -173,6 +176,30 @@ export default function PatientsPage() {
         <Icon className="h-3 w-3" />
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
+    );
+  };
+
+  const getGuaranteeDot = (status?: string, source?: string) => {
+    if (status === "green" && source === "interac_trust") {
+      return (
+        <span
+          title="Garantie manuelle (Interac/Entente)"
+          className="inline-flex h-3 w-3 rounded-full bg-blue-500 shadow-sm"
+        />
+      );
+    } else if (status === "green") {
+      return (
+        <span
+          title="Garantie Stripe"
+          className="inline-flex h-3 w-3 rounded-full bg-green-500 shadow-sm"
+        />
+      );
+    }
+    return (
+      <span
+        title="Aucune garantie"
+        className="inline-flex h-3 w-3 rounded-full bg-red-500 shadow-sm"
+      />
     );
   };
 
@@ -269,6 +296,10 @@ export default function PatientsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <AddProfileModal
+            defaultRole="client"
+            onSuccess={() => fetchPatients(currentPage)}
+          />
           <button
             onClick={() => fetchPatients(currentPage)}
             disabled={loading}
@@ -368,6 +399,9 @@ export default function PatientsPage() {
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Sessions
                 </TableHead>
+                <TableHead className="text-left text-sm font-light text-muted-foreground w-12">
+                  CB
+                </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Joined
                 </TableHead>
@@ -415,12 +449,20 @@ export default function PatientsPage() {
                   <TableCell className="text-sm font-light text-foreground">
                     {patient.totalSessions}
                   </TableCell>
+                  <TableCell className="text-center">
+                    {getGuaranteeDot(
+                      patient.paymentGuaranteeStatus,
+                      patient.paymentGuaranteeSource,
+                    )}
+                  </TableCell>
                   <TableCell className="text-sm font-light text-muted-foreground">
                     {new Date(patient.joinedDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-sm font-light text-muted-foreground">
                     <Link href={`/admin/dashboard/patients/${patient.id}`}>
-                      <Eye className="h-4 w-4 mr-2" />
+                      <Button variant="ghost" size="icon">
+                        <Eye className="h-4 w-4 text-primary" />
+                      </Button>
                     </Link>
                   </TableCell>
                 </TableRow>
