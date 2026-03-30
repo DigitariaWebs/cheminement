@@ -22,6 +22,29 @@
     "searchAria": "Search by keywords, synonyms, or acronyms",
     "maxReached": "Maximum {max} selections"
   },
+  "AdminServiceRequests": {
+    "title": "Service requests",
+    "subtitle": "Requests without an assigned professional (matching pending).",
+    "empty": "No requests at this time.",
+    "client": "Client",
+    "email": "Email",
+    "motif": "Primary reason",
+    "modality": "Modality",
+    "bookingFor": "For",
+    "created": "Received",
+    "routing": "Matching",
+    "self": "Self",
+    "patient": "Patient",
+    "lovedOne": "Loved one",
+    "typeVideo": "Video",
+    "typeInPerson": "In-person",
+    "typePhone": "Phone",
+    "typeBoth": "Both",
+    "actions": "Actions",
+    "sendToRequester": "Send to requester",
+    "sendToLovedOne": "Send to loved one",
+    "refresh": "Refresh"
+  },
   "ClinicalAvailabilityGrid": {
     "ariaLabel": "Availability grid by period (morning, afternoon, evening) and week type",
     "columnWeekday": "Weekdays (Mon–Fri)",
@@ -141,6 +164,8 @@
     "videoCall": "Video Call",
     "inPerson": "In-Person",
     "phoneCall": "Phone Call",
+    "consultationTypeSelf": "Consultation type",
+    "bothModalities": "Open to both (video or in-person)",
     "selectTimesNextWeek": "Select Available Times (Next Week)",
     "clickSelectTimes": "Click to select available times",
     "timeSlotsSelected": "{count} time slot(s) selected",
@@ -227,6 +252,7 @@
       "emailInvalid": "Please enter a valid email address",
       "phoneRequired": "Please provide your phone number",
       "locationRequired": "Please provide your location",
+      "dateOfBirthRequired": "Please provide your loved one’s date of birth",
       "lovedOneName": "Please provide the first and last name of your loved one",
       "relationshipRequired": "Please select the relationship",
       "motifRequired": "Please select at least one motif/reason for consultation",
@@ -1285,7 +1311,8 @@
       "systemSettings": "System Settings",
       "reports": "Reports",
       "paymentTrust": "Interac / transfer guarantees",
-      "accounting": "Accounting & cycles"
+      "accounting": "Accounting & cycles",
+      "serviceRequests": "Service requests"
     },
     "overview": {
       "title": "Welcome Back",

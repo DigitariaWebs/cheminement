@@ -116,7 +116,9 @@ export function buildFiscalReceiptInputFromPopulatedAppointment(
           ? "Vidéo"
           : appointment.type === "phone"
             ? "Téléphone"
-            : appointment.type || "—",
+            : appointment.type === "both"
+              ? "Vidéo ou en personne"
+              : appointment.type || "—",
     therapyTypeLabel:
       appointment.therapyType === "solo"
         ? "Individuel"

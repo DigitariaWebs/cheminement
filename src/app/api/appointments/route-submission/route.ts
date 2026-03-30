@@ -48,20 +48,32 @@ function calculateRelevancyScore(
     }
   }
 
-  // Match by modality (video, in-person, phone)
+  // Match by modality (video, in-person, phone, both)
   if (profile.modalities) {
-    const modalityMap: Record<string, string> = {
-      video: "online",
-      "in-person": "inPerson",
-      phone: "phone",
-    };
-    const requiredModality = modalityMap[appointment.type];
-    if (
-      profile.modalities.includes(requiredModality) ||
-      profile.modalities.includes("both")
-    ) {
-      score += 20;
-      reasons.push("Offers required session modality");
+    if (appointment.type === "both") {
+      const offersVideoOrInPerson =
+        profile.modalities.includes("online") ||
+        profile.modalities.includes("inPerson") ||
+        profile.modalities.includes("both");
+      if (offersVideoOrInPerson) {
+        score += 20;
+        reasons.push("Offers required session modality (video or in-person)");
+      }
+    } else {
+      const modalityMap: Record<string, string> = {
+        video: "online",
+        "in-person": "inPerson",
+        phone: "phone",
+      };
+      const requiredModality = modalityMap[appointment.type];
+      if (
+        requiredModality &&
+        (profile.modalities.includes(requiredModality) ||
+          profile.modalities.includes("both"))
+      ) {
+        score += 20;
+        reasons.push("Offers required session modality");
+      }
     }
   }
 

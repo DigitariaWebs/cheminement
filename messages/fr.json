@@ -22,6 +22,29 @@
     "searchAria": "Recherche par mots-clés, synonymes ou acronymes",
     "maxReached": "Maximum {max} sélections"
   },
+  "AdminServiceRequests": {
+    "title": "Demandes de service",
+    "subtitle": "Demandes sans professionnel assigné (en attente de jumelage).",
+    "empty": "Aucune demande pour le moment.",
+    "client": "Client",
+    "email": "Courriel",
+    "motif": "Motif principal",
+    "modality": "Modalité",
+    "bookingFor": "Pour",
+    "created": "Reçue le",
+    "routing": "Jumelage",
+    "self": "Pour moi",
+    "patient": "Patient",
+    "lovedOne": "Proche",
+    "typeVideo": "Vidéo",
+    "typeInPerson": "En personne",
+    "typePhone": "Téléphone",
+    "typeBoth": "Les deux",
+    "actions": "Actions",
+    "sendToRequester": "Envoyer au demandeur",
+    "sendToLovedOne": "Envoyer au proche",
+    "refresh": "Actualiser"
+  },
   "ClinicalAvailabilityGrid": {
     "ariaLabel": "Grille de disponibilités par période (matin, après-midi, soir) et type de semaine",
     "columnWeekday": "Semaine (lun.–ven.)",
@@ -141,6 +164,8 @@
     "videoCall": "Appel vidéo",
     "inPerson": "En personne",
     "phoneCall": "Appel téléphonique",
+    "consultationTypeSelf": "Type de consultation",
+    "bothModalities": "Ouvert pour les deux (vidéo ou en personne)",
     "selectTimesNextWeek": "Créneaux disponibles (semaine prochaine)",
     "clickSelectTimes": "Cliquez pour choisir les créneaux",
     "timeSlotsSelected": "{count} créneau(x) sélectionné(s)",
@@ -227,6 +252,7 @@
       "emailInvalid": "Veuillez entrer une adresse courriel valide",
       "phoneRequired": "Veuillez indiquer votre numéro de téléphone",
       "locationRequired": "Veuillez indiquer votre localisation",
+      "dateOfBirthRequired": "Veuillez indiquer la date de naissance de votre proche",
       "lovedOneName": "Veuillez indiquer le prénom et le nom de votre proche",
       "relationshipRequired": "Veuillez choisir le lien de parenté",
       "motifRequired": "Veuillez sélectionner au moins un motif de consultation",
@@ -1286,7 +1312,8 @@
       "systemSettings": "Paramètres système",
       "reports": "Rapports",
       "paymentTrust": "Garanties Interac / virement",
-      "accounting": "Comptabilité & cycles"
+      "accounting": "Comptabilité & cycles",
+      "serviceRequests": "Demandes de service"
     },
     "overview": {
       "title": "Bienvenue",

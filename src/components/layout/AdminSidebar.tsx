@@ -15,6 +15,7 @@ import {
   Settings,
   Banknote,
   BookOpen,
+  Inbox,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -62,6 +63,11 @@ export function AdminSidebar() {
           title: t("patients"),
           url: "/admin/dashboard/patients",
           icon: User,
+        },
+        {
+          title: t("serviceRequests"),
+          url: "/admin/dashboard/service-requests",
+          icon: Inbox,
         },
         {
           title: t("reports"),

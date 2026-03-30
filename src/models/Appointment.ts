@@ -64,7 +64,7 @@ export interface IAppointment extends Document {
   date?: Date;
   time?: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
+  type: "video" | "in-person" | "phone" | "both";
   therapyType: "solo" | "couple" | "group";
   status:
     | "scheduled"
@@ -104,6 +104,17 @@ export interface IAppointment extends Document {
 
   // Preferred availability slots provided by client
   preferredAvailability?: string[];
+
+  /**
+   * For "loved-one" requests: when the loved one is an adult (>18),
+   * admin must validate where the onboarding/account link should be sent.
+   */
+  accountActivationStatus?:
+    | "pending_admin"
+    | "sent_to_requester"
+    | "sent_to_loved_one";
+
+  accountActivationSentAt?: Date;
 
   /**
    * True when the 1st appointment is scheduled but payment guarantee (card on file) is still pending.
@@ -250,7 +261,7 @@ const AppointmentSchema = new Schema<IAppointment>(
     },
     type: {
       type: String,
-      enum: ["video", "in-person", "phone"],
+      enum: ["video", "in-person", "phone", "both"],
       required: true,
       default: "video",
     },
@@ -330,6 +341,14 @@ const AppointmentSchema = new Schema<IAppointment>(
     ],
     // Preferred availability slots provided by client
     preferredAvailability: [String],
+
+    // Loved-one onboarding link decision (admin-controlled when loved one is an adult)
+    accountActivationStatus: {
+      type: String,
+      enum: ["pending_admin", "sent_to_requester", "sent_to_loved_one"],
+      required: false,
+    },
+    accountActivationSentAt: { type: Date, required: false },
 
     awaitingPaymentGuarantee: {
       type: Boolean,

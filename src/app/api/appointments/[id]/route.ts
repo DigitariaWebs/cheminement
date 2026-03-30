@@ -349,7 +349,11 @@ export async function PATCH(
         date: appointment.date?.toISOString(),
         time: appointment.time,
         duration: appointment.duration || 60,
-        type: appointment.type as "video" | "in-person" | "phone",
+        type: appointment.type as
+          | "video"
+          | "in-person"
+          | "phone"
+          | "both",
         cancelledBy: cancelledBy,
       }).catch((err) =>
         console.error("Error sending cancellation notification:", err),

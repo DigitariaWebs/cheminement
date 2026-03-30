@@ -9,6 +9,7 @@ import {
   sendProfessionalNotification,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
+import { isMinor } from "@/lib/guardian-utils";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,8 +17,8 @@ export async function POST(req: NextRequest) {
 
     const data = await req.json();
 
-    // Extract guest info and appointment data
-    const { guestInfo, ...appointmentData } = data;
+    // Extract guest info and appointment data (notificationLocale = UI lang for emails only)
+    const { guestInfo, notificationLocale, ...appointmentData } = data;
 
     if (!guestInfo) {
       return NextResponse.json(
@@ -54,6 +55,14 @@ export async function POST(req: NextRequest) {
         {
           error: "Missing required appointment field: type",
         },
+        { status: 400 },
+      );
+    }
+
+    const allowedTypes = ["video", "in-person", "phone", "both"];
+    if (!allowedTypes.includes(String(appointmentData.type))) {
+      return NextResponse.json(
+        { error: "Invalid appointment type" },
         { status: 400 },
       );
     }
@@ -269,6 +278,18 @@ export async function POST(req: NextRequest) {
       appointmentData.bookingFor = "self";
     }
 
+    // Loved-one account activation decision:
+    // - child (<18): onboarding link is sent automatically to the requester
+    // - adult (>18): onboarding link is pending admin validation
+    let lovedOneIsMinor = false;
+    if (appointmentData.bookingFor === "loved-one") {
+      const dob = (appointmentData as any).lovedOneInfo?.dateOfBirth;
+      lovedOneIsMinor = Boolean(dob) && isMinor({ dateOfBirth: dob });
+      appointmentData.accountActivationStatus = lovedOneIsMinor
+        ? "sent_to_requester"
+        : "pending_admin";
+    }
+
     // Set payment method if provided
     const paymentMethod = appointmentData.paymentMethod || "card";
 
@@ -326,6 +347,9 @@ export async function POST(req: NextRequest) {
         type: appointmentData.type,
         therapyType: appointmentData.therapyType,
         price: appointmentData.price,
+        locale: notificationLocale === "fr" ? "fr" : "en",
+        bookingFor: appointmentData.bookingFor,
+        lovedOneIsMinor,
       }).catch((err) =>
         console.error("Error sending guest confirmation email:", err),
       );
@@ -355,6 +379,9 @@ export async function POST(req: NextRequest) {
         type: appointmentData.type,
         therapyType: appointmentData.therapyType,
         price: appointmentData.price,
+        locale: notificationLocale === "fr" ? "fr" : "en",
+        bookingFor: appointmentData.bookingFor,
+        lovedOneIsMinor,
       }).catch((err) =>
         console.error("Error sending guest confirmation email:", err),
       );

@@ -9,6 +9,7 @@ import { calculateAppointmentPricing } from "@/lib/pricing";
 import {
   sendAppointmentConfirmation,
   sendProfessionalNotification,
+  sendServiceRequestOnboardingEmail,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
 import { linkGuardian, isMinor } from "@/lib/guardian-utils";
@@ -125,6 +126,16 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
+    const allowedTypes = ["video", "in-person", "phone", "both"];
+    if (!allowedTypes.includes(String(data.type))) {
+      return NextResponse.json(
+        { error: "Invalid appointment type" },
+        { status: 400 },
+      );
+    }
+
+    delete data.notificationLocale;
 
     // Set default therapy type if not provided
     if (!data.therapyType) {
@@ -320,6 +331,17 @@ export async function POST(req: NextRequest) {
       data.payment.method = data.paymentMethod;
     }
 
+    // Loved-one account activation decision (admin validation for adults)
+    if (data.bookingFor === "loved-one" && data.lovedOneInfo?.dateOfBirth) {
+      const lovedOneIsMinor = isMinor({ dateOfBirth: data.lovedOneInfo.dateOfBirth as any });
+      data.accountActivationStatus = lovedOneIsMinor
+        ? "sent_to_requester"
+        : "pending_admin";
+      if (lovedOneIsMinor) {
+        data.accountActivationSentAt = new Date();
+      }
+    }
+
     // Handle guardian/account manager linking for minors
     let minorUserId: string | null = null;
     if (
@@ -432,7 +454,11 @@ export async function POST(req: NextRequest) {
         date: populatedAppointment.date?.toISOString(),
         time: populatedAppointment.time,
         duration: populatedAppointment.duration || 60,
-        type: populatedAppointment.type as "video" | "in-person" | "phone",
+        type: populatedAppointment.type as
+          | "video"
+          | "in-person"
+          | "phone"
+          | "both",
         meetingLink: populatedAppointment.meetingLink,
         location: populatedAppointment.location,
       };
@@ -442,6 +468,21 @@ export async function POST(req: NextRequest) {
         sendAppointmentConfirmation(emailData),
         sendProfessionalNotification(emailData),
       ]).catch((err) => console.error("Error sending notifications:", err));
+    } else if (
+      populatedAppointment.bookingFor === "loved-one" &&
+      populatedAppointment.accountActivationStatus === "sent_to_requester"
+    ) {
+      // Child: send onboarding link to the requester immediately
+      const requester = await User.findById(session.user.id).select(
+        "firstName lastName email language",
+      );
+      if (requester?.email) {
+        void sendServiceRequestOnboardingEmail({
+          toName: `${requester.firstName ?? ""} ${requester.lastName ?? ""}`.trim() || "Client",
+          toEmail: requester.email,
+          locale: requester.language === "fr" ? "fr" : "en",
+        }).catch((err) => console.error("Error sending service request onboarding:", err));
+      }
     }
 
     return NextResponse.json(populatedAppointment, { status: 201 });

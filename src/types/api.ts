@@ -7,7 +7,7 @@ interface PersonResponse {
   location?: string;
 }
 
-type AppointmentType = "video" | "in-person" | "phone";
+type AppointmentType = "video" | "in-person" | "phone" | "both";
 type TherapyType = "solo" | "couple" | "group";
 export type AppointmentStatus =
   | "scheduled"

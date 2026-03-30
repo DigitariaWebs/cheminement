@@ -26,6 +26,7 @@ import {
   CreditCard,
   Building2,
   Handshake,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -162,7 +163,7 @@ export default function BookAppointmentPage() {
 
   // Form data
   const [selectedType, setSelectedType] = useState<
-    "video" | "in-person" | "phone"
+    "video" | "in-person" | "phone" | "both"
   >("video");
   const [therapyType, setTherapyType] = useState<"solo" | "couple" | "group">(
     "solo",
@@ -180,6 +181,14 @@ export default function BookAppointmentPage() {
   const [bookingFor, setBookingFor] = useState<
     "self" | "patient" | "loved-one" | null
   >(null);
+
+  useEffect(() => {
+    if (bookingFor === "self") {
+      setSelectedType((prev) => (prev === "phone" ? "video" : prev));
+    } else if (bookingFor) {
+      setSelectedType((prev) => (prev === "both" ? "video" : prev));
+    }
+  }, [bookingFor]);
 
   // Loved one info (for booking for a loved one)
   const [lovedOneInfo, setLovedOneInfo] = useState<LovedOneInfo>({
@@ -265,8 +274,9 @@ export default function BookAppointmentPage() {
                 setSelectedType("video");
               } else if (modality === "inPerson") {
                 setSelectedType("in-person");
+              } else if (modality === "both") {
+                setSelectedType("both");
               }
-              // "both" keeps default
             }
           }
         } catch {
@@ -477,12 +487,25 @@ export default function BookAppointmentPage() {
       setError(tB("errors.relationshipRequired"));
       return false;
     }
+    // Loved one identification (required)
+    if (!lovedOneInfo.phone.trim()) {
+      setError(tB("errors.phoneRequired"));
+      return false;
+    }
+    if (!lovedOneInfo.dateOfBirth.trim()) {
+      setError(tB("errors.dateOfBirthRequired"));
+      return false;
+    }
     if (!issueType || !Array.isArray(issueType) || issueType.length === 0) {
       setError(tB("errors.motifRequired"));
       return false;
     }
     if (issueType.length > 3) {
       setError(tB("errors.motifMax"));
+      return false;
+    }
+    if (preferredAvailability.length === 0) {
+      setError(tB("errors.availabilityRequired"));
       return false;
     }
     setError("");
@@ -591,6 +614,7 @@ export default function BookAppointmentPage() {
         notes,
         bookingFor,
         preferredAvailability,
+        notificationLocale: locale === "fr" ? "fr" : "en",
         // Payment method removed from initial form submission
         // Will be collected after professional schedules the appointment
         // paymentMethod:
@@ -816,12 +840,15 @@ export default function BookAppointmentPage() {
                       <MapPin className="h-3 w-3" />
                     )}
                     {selectedType === "phone" && <Phone className="h-3 w-3" />}
+                    {selectedType === "both" && <Layers className="h-3 w-3" />}
                     <span>
                       {selectedType === "video"
                         ? tB("videoCall")
                         : selectedType === "in-person"
                           ? tB("inPerson")
-                          : tB("phoneCall")}
+                          : selectedType === "both"
+                            ? tB("bothModalities")
+                            : tB("phoneCall")}
                     </span>
                   </div>
                 )}
@@ -1551,12 +1578,13 @@ export default function BookAppointmentPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="lovedOneDob">
-                            {tB("dateOfBirth")}
+                            {tB("dateOfBirth")} <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="lovedOneDob"
                             type="date"
                             value={lovedOneInfo.dateOfBirth}
+                            required
                             onChange={(e) =>
                               setLovedOneInfo({
                                 ...lovedOneInfo,
@@ -1567,7 +1595,7 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lovedOnePhone">
-                            {tB("phoneOptional")}
+                            {tB("phone")} <span className="text-red-500">*</span>
                           </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1575,6 +1603,7 @@ export default function BookAppointmentPage() {
                               id="lovedOnePhone"
                               type="tel"
                               value={lovedOneInfo.phone}
+                              required
                               onChange={(e) =>
                                 setLovedOneInfo({
                                   ...lovedOneInfo,
@@ -1642,6 +1671,26 @@ export default function BookAppointmentPage() {
                           placeholder={tB("motifPlaceholder")}
                           multiSelect={true}
                           maxSelections={3}
+                        />
+                      </div>
+
+                      {/* Preferred availability grid (required for this step) */}
+                      <div className="space-y-2">
+                        <Label>
+                          {tB("preferredAvailability")}
+                          {medicalProfile?.availability &&
+                            medicalProfile.availability.length > 0 && (
+                              <span className="text-xs text-muted-foreground ml-2">
+                                {tB("preFilledProfile")}
+                              </span>
+                            )}
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          {tB("availabilityHintGeneric")}
+                        </p>
+                        <ClinicalAvailabilityGrid
+                          value={preferredAvailability}
+                          onChange={setPreferredAvailability}
                         />
                       </div>
 
@@ -2245,40 +2294,89 @@ export default function BookAppointmentPage() {
                     </Select>
                   </div>
 
-                  {/* Appointment Type */}
-                  <div className="space-y-2">
-                    <Label>{tB("preferredAppointmentType")}</Label>
-                    <Select
-                      value={selectedType}
-                      onValueChange={(value: "video" | "in-person" | "phone") =>
-                        setSelectedType(value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="video">
-                          <div className="flex items-center gap-2">
-                            <Video className="h-4 w-4" />
+                  {/* Consultation / appointment modality */}
+                  {bookingFor === "self" ? (
+                    <div className="space-y-3">
+                      <Label>{tB("consultationTypeSelf")}</Label>
+                      <RadioGroup
+                        value={selectedType}
+                        onValueChange={(value) =>
+                          setSelectedType(
+                            value as "video" | "in-person" | "both",
+                          )
+                        }
+                        className="space-y-2"
+                      >
+                        <label
+                          htmlFor="self-mod-video"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border/40 p-3 has-[[data-state=checked]]:border-primary/60"
+                        >
+                          <RadioGroupItem value="video" id="self-mod-video" />
+                          <div className="flex items-center gap-2 text-sm font-normal">
+                            <Video className="h-4 w-4 shrink-0" />
                             {tB("videoCall")}
                           </div>
-                        </SelectItem>
-                        <SelectItem value="in-person">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
+                        </label>
+                        <label
+                          htmlFor="self-mod-inperson"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border/40 p-3 has-[[data-state=checked]]:border-primary/60"
+                        >
+                          <RadioGroupItem
+                            value="in-person"
+                            id="self-mod-inperson"
+                          />
+                          <div className="flex items-center gap-2 text-sm font-normal">
+                            <MapPin className="h-4 w-4 shrink-0" />
                             {tB("inPerson")}
                           </div>
-                        </SelectItem>
-                        <SelectItem value="phone">
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4" />
-                            {tB("phoneCall")}
+                        </label>
+                        <label
+                          htmlFor="self-mod-both"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border/40 p-3 has-[[data-state=checked]]:border-primary/60"
+                        >
+                          <RadioGroupItem value="both" id="self-mod-both" />
+                          <div className="flex items-center gap-2 text-sm font-normal">
+                            <Layers className="h-4 w-4 shrink-0" />
+                            {tB("bothModalities")}
                           </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                        </label>
+                      </RadioGroup>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label>{tB("preferredAppointmentType")}</Label>
+                      <Select
+                        value={selectedType}
+                        onValueChange={(
+                          value: "video" | "in-person" | "phone",
+                        ) => setSelectedType(value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="video">
+                            <div className="flex items-center gap-2">
+                              <Video className="h-4 w-4" />
+                              {tB("videoCall")}
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="in-person">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4" />
+                              {tB("inPerson")}
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="phone">
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4" />
+                              {tB("phoneCall")}
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   {/* Issue Type - Only show if not already collected in Step 2.5 */}
                   {(bookingFor === "self" || !issueType || (Array.isArray(issueType) && issueType.length === 0)) && (
@@ -2304,24 +2402,26 @@ export default function BookAppointmentPage() {
                   )}
 
                   {/* Preferred availability (clinical grid for all booking types) */}
-                  <div className="space-y-2">
-                    <Label>
-                      {tB("preferredAvailability")}
-                      {medicalProfile?.availability &&
-                        medicalProfile.availability.length > 0 && (
-                          <span className="text-xs text-muted-foreground ml-2">
-                            {tB("preFilledProfile")}
-                          </span>
-                        )}
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      {tB("availabilityHintGeneric")}
-                    </p>
-                    <ClinicalAvailabilityGrid
-                      value={preferredAvailability}
-                      onChange={setPreferredAvailability}
-                    />
-                  </div>
+                  {bookingFor !== "loved-one" && (
+                    <div className="space-y-2">
+                      <Label>
+                        {tB("preferredAvailability")}
+                        {medicalProfile?.availability &&
+                          medicalProfile.availability.length > 0 && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              {tB("preFilledProfile")}
+                            </span>
+                          )}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        {tB("availabilityHintGeneric")}
+                      </p>
+                      <ClinicalAvailabilityGrid
+                        value={preferredAvailability}
+                        onChange={setPreferredAvailability}
+                      />
+                    </div>
+                  )}
 
                   {/* Payment Method - Hidden from initial form */}
                   {/* Payment method will be collected after professional schedules the appointment */}
@@ -2479,12 +2579,17 @@ export default function BookAppointmentPage() {
                           {selectedType === "phone" && (
                             <Phone className="h-4 w-4" />
                           )}
+                          {selectedType === "both" && (
+                            <Layers className="h-4 w-4" />
+                          )}
                           <span className="font-medium">
                             {selectedType === "video"
                               ? tB("videoCall")
                               : selectedType === "in-person"
                                 ? tB("inPerson")
-                                : tB("phoneCall")}
+                                : selectedType === "both"
+                                  ? tB("bothModalities")
+                                  : tB("phoneCall")}
                           </span>
                         </div>
                       </div>
@@ -2601,7 +2706,9 @@ export default function BookAppointmentPage() {
                             ? tB("videoCall")
                             : selectedType === "in-person"
                               ? tB("inPerson")
-                              : tB("phoneCall")}
+                              : selectedType === "both"
+                                ? tB("bothModalities")
+                                : tB("phoneCall")}
                         </p>
                       </div>
                     </div>

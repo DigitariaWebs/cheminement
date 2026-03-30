@@ -383,20 +383,32 @@ function calculateRelevancyScore(
 
   // ===== MATCHING BASED ON APPOINTMENT REQUIREMENTS =====
 
-  // 6. Match by modality (video, in-person, phone)
+  // 6. Match by modality (video, in-person, phone, both)
   if (profile.modalities) {
-    const modalityMap: Record<string, string> = {
-      video: "online",
-      "in-person": "inPerson",
-      phone: "phone",
-    };
-    const requiredModality = modalityMap[appointment.type];
-    if (
-      profile.modalities.includes(requiredModality) ||
-      profile.modalities.includes("both")
-    ) {
-      score += 15;
-      reasons.push("Offre la modalité de session requise");
+    if (appointment.type === "both") {
+      const offersVideoOrInPerson =
+        profile.modalities.includes("online") ||
+        profile.modalities.includes("inPerson") ||
+        profile.modalities.includes("both");
+      if (offersVideoOrInPerson) {
+        score += 15;
+        reasons.push("Offre la modalité de session requise (vidéo ou en personne)");
+      }
+    } else {
+      const modalityMap: Record<string, string> = {
+        video: "online",
+        "in-person": "inPerson",
+        phone: "phone",
+      };
+      const requiredModality = modalityMap[appointment.type];
+      if (
+        requiredModality &&
+        (profile.modalities.includes(requiredModality) ||
+          profile.modalities.includes("both"))
+      ) {
+        score += 15;
+        reasons.push("Offre la modalité de session requise");
+      }
     }
   }
 
@@ -643,7 +655,8 @@ export async function routeAppointmentToProfessionals(
       const apptType = (populatedAppt?.type ?? "video") as
         | "video"
         | "in-person"
-        | "phone";
+        | "phone"
+        | "both";
 
       for (const match of topMatches) {
         const pro = await User.findById(match.professionalId)

@@ -34,7 +34,7 @@ interface BaseAppointmentData {
   date?: string;
   time?: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
+  type: "video" | "in-person" | "phone" | "both";
 }
 
 interface AppointmentEmailData extends BaseAppointmentData {
@@ -54,6 +54,10 @@ interface GuestBookingEmailData extends BaseAppointmentData {
   price: number;
   meetingLink?: string;
   paymentLink?: string;
+  /** UI locale for service-request thank-you / onboarding copy */
+  locale?: "fr" | "en";
+  bookingFor?: "self" | "patient" | "loved-one";
+  lovedOneIsMinor?: boolean;
 }
 
 interface MeetingLinkEmailData {
@@ -63,7 +67,7 @@ interface MeetingLinkEmailData {
   date?: string;
   time?: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
+  type: "video" | "in-person" | "phone" | "both";
   meetingLink: string;
 }
 
@@ -191,12 +195,23 @@ const formatProfessionalName = (name?: string): string => {
 };
 
 const formatAppointmentType = (
-  type: "video" | "in-person" | "phone",
+  type: "video" | "in-person" | "phone" | "both",
+  lang: "fr" | "en" = "en",
 ): string => {
+  if (lang === "fr") {
+    const fr: Record<string, string> = {
+      video: "Appel vidéo",
+      "in-person": "En personne",
+      phone: "Appel téléphonique",
+      both: "Ouvert pour les deux (vidéo ou en personne)",
+    };
+    return fr[type] || type;
+  }
   const types: Record<string, string> = {
     video: "Video Call",
     "in-person": "In-Person",
     phone: "Phone Call",
+    both: "Open to both (video or in-person)",
   };
   return types[type] || type;
 };
@@ -689,8 +704,262 @@ export async function sendGuestBookingConfirmation(
   const formattedTime = formatTime(data.time);
   const professionalName = formatProfessionalName(data.professionalName);
   const sessionType = formatSessionType(data.therapyType);
-  const appointmentType = formatAppointmentType(data.type);
   const isPendingSchedule = !data.date || !data.time || !data.professionalName;
+  const lang: "fr" | "en" = data.locale === "fr" ? "fr" : "en";
+  const appointmentType = formatAppointmentType(data.type, lang);
+
+  const isSelfServiceRequest =
+    isPendingSchedule && data.bookingFor === "self";
+
+  if (isSelfServiceRequest) {
+    const intro =
+      lang === "fr"
+        ? "Merci de votre demande. Pour accélérer votre jumelage, complétez votre profil en suivant le lien ci-dessous."
+        : "Thank you for your request. To speed up your matching, complete your profile using the link below.";
+
+    const nextSteps =
+      lang === "fr"
+        ? "Un professionnel vous sera proposé sous peu. Vous recevrez un autre courriel lorsque votre demande progressera."
+        : "A professional will be assigned to you soon. You will receive another email as your request moves forward.";
+
+    const detailLabels =
+      lang === "fr"
+        ? {
+            session: "Type de séance",
+            modality: "Modalité",
+            professional: "Professionnel",
+            date: "Date",
+            time: "Heure",
+            duration: "Durée",
+          }
+        : {
+            session: "Session type",
+            modality: "Modality",
+            professional: "Professional",
+            date: "Date",
+            time: "Time",
+            duration: "Duration",
+          };
+
+    const html = buildEmailHtml({
+      title:
+        lang === "fr" ? "Demande de service reçue" : "Service request received",
+      subtitle:
+        lang === "fr"
+          ? "Nous traitons votre demande"
+          : "We are processing your request",
+      theme: "info",
+      badge: {
+        text: lang === "fr" ? "⏳ En attente de jumelage" : "⏳ Pending matching",
+        theme: "warning",
+      },
+      greeting:
+        lang === "fr"
+          ? `Bonjour ${data.guestName},`
+          : `Dear ${data.guestName},`,
+      intro,
+      details: [
+        { label: detailLabels.session, value: sessionType },
+        { label: detailLabels.modality, value: appointmentType },
+        { label: detailLabels.professional, value: professionalName },
+        { label: detailLabels.date, value: formattedDate },
+        { label: detailLabels.time, value: formattedTime },
+        {
+          label: detailLabels.duration,
+          value:
+            lang === "fr"
+              ? `${data.duration} minutes`
+              : `${data.duration} minutes`,
+        },
+      ],
+      infoBox: {
+        title: lang === "fr" ? "Ensuite" : "Next steps",
+        content: nextSteps,
+      },
+      button: {
+        text:
+          lang === "fr"
+            ? "Compléter mon profil (onboarding)"
+            : "Complete my profile (onboarding)",
+        url: memberSignupUrl,
+      },
+      secondaryButton: {
+        preamble:
+          lang === "fr"
+            ? "Vous pouvez aussi créer un compte membre sécurisé avec la même adresse courriel pour suivre vos rendez-vous."
+            : "You can also create a secure member account with the same email to track your appointments.",
+        text:
+          lang === "fr" ? "Créer mon compte membre" : "Create my member account",
+        url: memberSignupUrl,
+      },
+      outro:
+        lang === "fr"
+          ? "Merci de votre confiance."
+          : "Thank you for choosing us.",
+      branding,
+    });
+
+    const text = buildEmailText([
+      lang === "fr" ? "Demande de service reçue" : "Service request received",
+      lang === "fr"
+        ? `Bonjour ${data.guestName},`
+        : `Dear ${data.guestName},`,
+      intro,
+      `${detailLabels.session}: ${sessionType}`,
+      `${detailLabels.modality}: ${appointmentType}`,
+      nextSteps,
+      lang === "fr" ? "Lien onboarding (profil)" : "Onboarding link (profile)",
+      memberSignupUrl,
+    ]);
+
+    const subject =
+      lang === "fr"
+        ? "Merci pour votre demande — Je Chemine"
+        : "Thank you for your request — Je Chemine";
+
+    return sendEmail(
+      { to: data.guestEmail, subject, html, text },
+      "guest_booking_confirmation",
+    );
+  }
+
+  // Loved-one booking (pending assignment):
+  // - child (<18): send onboarding link to the requester immediately
+  // - adult (>18): keep dossier pending until admin decides where to send the link
+  if (isPendingSchedule && data.bookingFor === "loved-one") {
+    if (data.lovedOneIsMinor) {
+      const intro =
+        lang === "fr"
+          ? "Merci de votre demande. Pour accélérer votre jumelage, complétez votre profil en suivant le lien ci-dessous."
+          : "Thank you for your request. To speed up your matching, complete your profile using the link below.";
+
+      const nextSteps =
+        lang === "fr"
+          ? "Un professionnel vous sera proposé sous peu."
+          : "A professional will be assigned to you soon.";
+
+      const detailLabels =
+        lang === "fr"
+          ? {
+              session: "Type de séance",
+              modality: "Modalité",
+              professional: "Professionnel",
+              date: "Date",
+              time: "Heure",
+              duration: "Durée",
+            }
+          : {
+              session: "Session type",
+              modality: "Modality",
+              professional: "Professional",
+              date: "Date",
+              time: "Time",
+              duration: "Duration",
+            };
+
+      const html = buildEmailHtml({
+        title: lang === "fr" ? "Demande de service reçue" : "Service request received",
+        subtitle: lang === "fr" ? "Nous traitons votre demande" : "We are processing your request",
+        theme: "info",
+        badge: {
+          text: lang === "fr" ? "⏳ En attente de jumelage" : "⏳ Pending matching",
+          theme: "warning",
+        },
+        greeting: lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+        intro,
+        details: [
+          { label: detailLabels.session, value: sessionType },
+          { label: detailLabels.modality, value: appointmentType },
+          { label: detailLabels.professional, value: professionalName },
+          { label: detailLabels.date, value: formattedDate },
+          { label: detailLabels.time, value: formattedTime },
+          { label: detailLabels.duration, value: `${data.duration} minutes` },
+        ],
+        infoBox: {
+          title: lang === "fr" ? "Ensuite" : "Next steps",
+          content: nextSteps,
+        },
+        button: {
+          text: lang === "fr" ? "Compléter mon profil (onboarding)" : "Complete my profile (onboarding)",
+          url: memberSignupUrl,
+        },
+        branding,
+      });
+
+      const text = buildEmailText([
+        lang === "fr" ? "Demande de service reçue" : "Service request received",
+        lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+        intro,
+        `Duration: ${data.duration} minutes`,
+        nextSteps,
+        lang === "fr" ? "Lien onboarding (profil)" : "Onboarding link (profile)",
+        memberSignupUrl,
+      ]);
+
+      const subject =
+        lang === "fr"
+          ? "Merci pour votre demande — Je Chemine"
+          : "Thank you for your request — Je Chemine";
+
+      return sendEmail(
+        { to: data.guestEmail, subject, html, text },
+        "guest_booking_confirmation",
+      );
+    }
+
+    // Adult (>18): no onboarding link until admin decision
+    const intro =
+      lang === "fr"
+        ? "Merci de votre demande. Votre dossier est en attente de validation par l’Admin. Selon votre situation, le lien de compte sera envoyé au demandeur ou directement au proche."
+        : "Thank you for your request. Your file is pending admin validation. Depending on your situation, the account link will be sent to the requester or directly to the loved one.";
+
+    const nextSteps =
+      lang === "fr"
+        ? "Un administrateur examinera votre demande avant l’envoi du lien de compte."
+        : "An admin will review your request before sending the account link.";
+
+    const html = buildEmailHtml({
+      title: lang === "fr" ? "Demande de service reçue" : "Service request received",
+      subtitle: lang === "fr" ? "Nous traitons votre demande" : "We are processing your request",
+      theme: "info",
+      badge: {
+        text: lang === "fr" ? "⏳ En attente de validation" : "⏳ Pending admin validation",
+        theme: "warning",
+      },
+      greeting: lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+      intro,
+      details: [
+        { label: "Type de séance", value: sessionType },
+        { label: "Type de rendez-vous", value: appointmentType },
+        { label: "Professionnel", value: professionalName },
+        { label: "Date", value: formattedDate },
+        { label: "Heure", value: formattedTime },
+        { label: "Durée", value: `${data.duration} minutes` },
+      ],
+      infoBox: {
+        title: lang === "fr" ? "Ensuite" : "Next steps",
+        content: nextSteps,
+      },
+      branding,
+    });
+
+    const text = buildEmailText([
+      lang === "fr" ? "Demande de service reçue" : "Service request received",
+      lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+      intro,
+      nextSteps,
+    ]);
+
+    const subject =
+      lang === "fr"
+        ? "Demande en attente de validation — Je Chemine"
+        : "Request pending admin validation — Je Chemine";
+
+    return sendEmail(
+      { to: data.guestEmail, subject, html, text },
+      "guest_booking_confirmation",
+    );
+  }
 
   const intro = isPendingSchedule
     ? "We've received your booking request and will match you with a professional shortly."
@@ -699,6 +968,8 @@ export async function sendGuestBookingConfirmation(
   const nextSteps = isPendingSchedule
     ? "A professional will be assigned to you soon. You'll receive another email with payment details once confirmed."
     : "Please wait for confirmation from your assigned professional. You'll receive payment instructions once your appointment is confirmed.";
+
+  const appointmentTypeEn = formatAppointmentType(data.type, "en");
 
   const html = buildEmailHtml({
     title: "Booking Request Received",
@@ -716,7 +987,7 @@ export async function sendGuestBookingConfirmation(
     intro,
     details: [
       { label: "Session Type", value: sessionType },
-      { label: "Appointment Type", value: appointmentType },
+      { label: "Appointment Type", value: appointmentTypeEn },
       { label: "Professional", value: professionalName },
       { label: "Date", value: formattedDate },
       { label: "Time", value: formattedTime },
@@ -759,7 +1030,7 @@ export async function sendGuestBookingConfirmation(
     intro,
     "SESSION DETAILS:",
     `Session Type: ${sessionType}`,
-    `Appointment Type: ${appointmentType}`,
+    `Appointment Type: ${appointmentTypeEn}`,
     `Professional: ${professionalName}`,
     `Date: ${formattedDate}`,
     `Time: ${formattedTime}`,
@@ -778,6 +1049,75 @@ export async function sendGuestBookingConfirmation(
   return sendEmail(
     { to: data.guestEmail, subject, html, text },
     "guest_booking_confirmation",
+  );
+}
+
+// =============================================================================
+// Public Email Functions - Service request onboarding link (admin approval)
+// =============================================================================
+
+export async function sendServiceRequestOnboardingEmail(data: {
+  toName: string;
+  toEmail: string;
+  locale?: "fr" | "en";
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const lang: "fr" | "en" = data.locale === "fr" ? "fr" : "en";
+  const baseUrl = process.env.NEXTAUTH_URL || "";
+  const memberSignupUrl = `${baseUrl}/signup/member?email=${encodeURIComponent(
+    data.toEmail,
+  )}`;
+
+  const intro =
+    lang === "fr"
+      ? "Merci de votre demande. Pour accélérer votre jumelage, complétez votre profil ici."
+      : "Thank you for your request. To speed up your matching, complete your profile here.";
+
+  const html = buildEmailHtml({
+    title: lang === "fr" ? "Demande reçue" : "Request received",
+    subtitle: lang === "fr" ? "Onboarding du profil" : "Profile onboarding",
+    theme: "info",
+    badge: {
+      text: lang === "fr" ? "✅ Action requise" : "✅ Action needed",
+      theme: "success",
+    },
+    greeting: lang === "fr" ? `Bonjour ${data.toName},` : `Dear ${data.toName},`,
+    intro,
+    infoBox: {
+      title: lang === "fr" ? "Étapes suivantes" : "Next steps",
+      content:
+        lang === "fr"
+          ? "Complétez votre profil pour accélérer votre jumelage."
+          : "Complete your profile to speed up your matching.",
+    },
+    button: {
+      text:
+        lang === "fr" ? "Compléter votre profil" : "Complete your profile",
+      url: memberSignupUrl,
+    },
+    outro: lang === "fr" ? "Merci de votre confiance." : "Thank you for your trust.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    lang === "fr" ? "Demande reçue" : "Request received",
+    lang === "fr" ? `Bonjour ${data.toName},` : `Dear ${data.toName},`,
+    intro,
+    lang === "fr" ? "Lien onboarding :" : "Onboarding link:",
+    memberSignupUrl,
+    lang === "fr"
+      ? "Complétez votre profil pour accélérer votre jumelage."
+      : "Complete your profile to speed up your matching.",
+  ]);
+
+  const subject =
+    lang === "fr"
+      ? "Merci pour votre demande — Je Chemine"
+      : "Thank you for your request — Je Chemine";
+
+  return sendEmail(
+    { to: data.toEmail, subject, html, text },
+    "service_request_onboarding",
   );
 }
 

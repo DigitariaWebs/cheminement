@@ -10,6 +10,7 @@ export type EmailNotificationType =
   | "appointment_reminder"
   | "appointment_cancellation"
   | "guest_booking_confirmation"
+  | "service_request_onboarding"
   | "guest_payment_confirmation"
   | "guest_payment_complete"
   | "payment_invitation"
@@ -110,6 +111,10 @@ const defaultEmailTemplates: Record<
   guest_booking_confirmation: {
     enabled: true,
     subject: "Booking Request Received - JeChemine",
+  },
+  service_request_onboarding: {
+    enabled: true,
+    subject: "JeChemine — complete your profile",
   },
   guest_payment_confirmation: {
     enabled: true,
