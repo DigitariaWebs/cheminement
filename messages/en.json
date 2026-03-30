@@ -784,6 +784,7 @@
       "consultationMotifsPlaceholder": "Search for reasons (anxiety, burnout...)",
       "paymentStepTitle": "Payment Method",
       "paymentStepDescription": "Choose your preferred payment method for consultations.",
+      "paymentReassurance": "To guarantee your first appointment, a valid credit card must be associated with your file. It will not be charged if you choose another payment modality.",
       "paymentCreditCard": "Credit card",
       "paymentInterac": "Interac transfer",
       "paymentBankWithdrawal": "Bank withdrawal agreement",
@@ -977,8 +978,8 @@
           "appetiteChangesPlaceholder": "e.g., Loss of appetite, overeating..."
         },
         "step5": {
-          "concernsAboutTherapy": "Concerns About Therapy",
-          "concernsAboutTherapyPlaceholder": "Any concerns or questions about therapy?"
+          "concernsAboutTherapy": "Message related to therapy",
+          "concernsAboutTherapyPlaceholder": "Your message related to therapy..."
         },
         "step6": {
           "availability": "Availability",
@@ -2962,8 +2963,8 @@
           "groupTherapy": "Group therapy",
           "noPreference": "No Preference"
         },
-        "concernsAboutTherapy": "Concerns About Therapy",
-        "concernsAboutTherapyPlaceholder": "Any concerns or questions about therapy?"
+        "concernsAboutTherapy": "Message related to therapy",
+        "concernsAboutTherapyPlaceholder": "Your message related to therapy..."
       },
       "step6": {
         "title": "Appointment Preferences",

@@ -785,6 +785,7 @@
       "consultationMotifsPlaceholder": "Rechercher des motifs (anxiété, burnout...)",
       "paymentStepTitle": "Mode de paiement",
       "paymentStepDescription": "Choisissez votre mode de paiement préféré pour les consultations.",
+      "paymentReassurance": "Afin de garantir votre premier rendez-vous, une carte de crédit valide doit être associée à votre dossier. Elle ne sera pas débitée si vous choisissez une autre modalité de paiement.",
       "paymentCreditCard": "Carte de crédit",
       "paymentInterac": "Virement Interac",
       "paymentBankWithdrawal": "Entente de prélèvement bancaire",
@@ -959,7 +960,7 @@
           "severity": "Niveau de sévérité",
           "severityPlaceholder": "Sélectionnez la sévérité",
           "duration": "Durée",
-          "durationPlaceholder": "Depuis combien de temps ressentez-vous cela?",
+          "durationPlaceholder": "Depuis combien de temps?",
           "triggeringSituation": "Situation déclenchante",
           "triggeringSituationPlaceholder": "Décrivez tout événement déclencheur"
         },
@@ -978,8 +979,8 @@
           "appetiteChangesPlaceholder": "Décrivez tout changement d'appétit"
         },
         "step5": {
-          "concernsAboutTherapy": "Préoccupations concernant la thérapie",
-          "concernsAboutTherapyPlaceholder": "Des préoccupations ou questions sur la thérapie?"
+          "concernsAboutTherapy": "Message en lien avec la thérapie",
+          "concernsAboutTherapyPlaceholder": "Votre message en lien avec la thérapie..."
         },
         "step6": {
           "availability": "Disponibilité",
@@ -2967,8 +2968,8 @@
           "groupTherapy": "Thérapie de groupe",
           "noPreference": "Aucune préférence"
         },
-        "concernsAboutTherapy": "Préoccupations concernant la thérapie",
-        "concernsAboutTherapyPlaceholder": "Des préoccupations ou questions sur la thérapie?"
+        "concernsAboutTherapy": "Message en lien avec la thérapie",
+        "concernsAboutTherapyPlaceholder": "Votre message en lien avec la thérapie..."
       },
       "step6": {
         "title": "Préférences de rendez-vous",

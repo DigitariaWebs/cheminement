@@ -4,9 +4,16 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { authAPI } from "@/lib/api-client";
+import { apiClient, authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import {
   UserCircle,
   Mail,
@@ -159,13 +166,111 @@ const MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS = [
   { value: "Family therapy", msgKey: "familyTherapy" },
   { value: "Group therapy", msgKey: "groupTherapy" },
   { value: "Art therapy", msgKey: "artTherapy" },
-  { value: "No preference", msgKey: "noPreference" },
+  { value: "No Preference", msgKey: "noPreference" },
 ] as const;
 
 const EXCLUSIVE_MULTISELECT_VALUES = new Set([
   "None",
-  "No preference",
+  "No Preference",
 ]);
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
+
+const stripeAppearance = {
+  theme: "stripe" as const,
+  variables: {
+    colorPrimary: "#0f172a",
+    borderRadius: "8px",
+  },
+};
+
+function GuestCardSetupForm({
+  onSuccess,
+  onError,
+  disabled,
+}: {
+  onSuccess: (paymentMethodId: string) => void;
+  onError: (error: string) => void;
+  disabled?: boolean;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (disabled) return;
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    setMessage(null);
+
+    const { error, setupIntent } = await stripe.confirmSetup({
+      elements,
+      redirect: "if_required",
+    });
+
+    if (error) {
+      const msg = error.message || "An error occurred";
+      setMessage(msg);
+      onError(msg);
+      setLoading(false);
+      return;
+    }
+
+    const pm = setupIntent?.payment_method;
+    const paymentMethodId =
+      typeof pm === "string" ? pm : pm ? (pm as any).id : null;
+
+    if (!paymentMethodId) {
+      const msg = "Unable to retrieve payment method id";
+      setMessage(msg);
+      onError(msg);
+      setLoading(false);
+      return;
+    }
+
+    setMessage("Card added successfully.");
+    onSuccess(paymentMethodId);
+    setLoading(false);
+  };
+
+  const canSubmit = Boolean(stripe && elements && !loading && !disabled);
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement options={{ layout: "tabs" }} />
+
+      {message && (
+        <p
+          className={`text-sm ${
+            message.includes("success") || message.includes("successfully")
+              ? "text-green-700"
+              : "text-destructive"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={!canSubmit}
+        className="w-full h-11 px-8 rounded-md font-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-primary text-primary-foreground"
+      >
+        {loading ? "Adding..." : "Add card"}
+      </button>
+
+      <p className="text-xs text-muted-foreground text-center">
+        Secured by Stripe. Your card details are encrypted and never stored
+        on our servers.
+      </p>
+    </form>
+  );
+}
 
 export default function MemberSignupPage() {
   const t = useTranslations("Auth.memberSignup");
@@ -176,6 +281,15 @@ export default function MemberSignupPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [stripeCardClientSecret, setStripeCardClientSecret] = useState<
+    string | null
+  >(null);
+  const [stripeCardPaymentMethodId, setStripeCardPaymentMethodId] =
+    useState<string | null>(null);
+  const [stripeCardInitLoading, setStripeCardInitLoading] = useState(false);
+  const [stripeCardInitError, setStripeCardInitError] = useState<string | null>(
+    null,
+  );
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -245,6 +359,70 @@ export default function MemberSignupPage() {
       /* ignore malformed query */
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (formData.paymentMethod !== "credit_card") {
+      setStripeCardClientSecret(null);
+      setStripeCardPaymentMethodId(null);
+      setStripeCardInitError(null);
+      setStripeCardInitLoading(false);
+      return;
+    }
+
+    if (stripeCardPaymentMethodId) return;
+
+    const email = formData.email.trim();
+    const name = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+    if (!email || !name) return;
+
+    let cancelled = false;
+
+    const init = async () => {
+      try {
+        setStripeCardInitLoading(true);
+        setStripeCardInitError(null);
+
+        const res = await fetch("/api/payments/guest-setup-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, name }),
+        });
+
+        const data = (await res.json().catch(() => ({}))) as {
+          clientSecret?: string;
+          error?: string;
+        };
+
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to initialize card input");
+        }
+
+        if (!cancelled) {
+          setStripeCardClientSecret(data.clientSecret ?? null);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setStripeCardInitError(
+            e instanceof Error ? e.message : "Failed to initialize card input",
+          );
+        }
+      } finally {
+        if (!cancelled) setStripeCardInitLoading(false);
+      }
+    };
+
+    init();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    formData.paymentMethod,
+    formData.email,
+    formData.firstName,
+    formData.lastName,
+    stripeCardPaymentMethodId,
+  ]);
 
   const sections = [
     { title: t("sections.basicInfo"), icon: UserCircle, required: true },
@@ -488,7 +666,7 @@ export default function MemberSignupPage() {
         therapyApproach:
           formData.therapyApproach.length > 0
             ? formData.therapyApproach
-            : undefined,
+            : [t("therapyApproachOptions.noPreference")],
         concernsAboutTherapy: formData.concernsAboutTherapy || undefined,
         availability:
           formData.availability.length > 0 ? formData.availability : undefined,
@@ -527,6 +705,16 @@ export default function MemberSignupPage() {
         setError(t("errors.accountCreatedButSignInFailed"));
         router.push("/login");
       } else {
+        // Optional: if the user added a card in Step Payment, save it on Stripe after sign-in.
+        if (stripeCardPaymentMethodId) {
+          try {
+            await apiClient.post("/payments/payment-methods", {
+              paymentMethodId: stripeCardPaymentMethodId,
+            });
+          } catch (e) {
+            console.error("Failed to attach payment method:", e);
+          }
+        }
         router.push("/client/dashboard");
       }
     } catch {
@@ -1196,14 +1384,14 @@ export default function MemberSignupPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="severity">{t("profileModal.step3.severity")}</Label>
                 <Select
                   value={formData.severity}
                   onValueChange={(val) => handleSelectChange("severity", val)}
                 >
-                  <SelectTrigger id="severity">
+                  <SelectTrigger id="severity" className="w-full min-w-0">
                     <SelectValue placeholder={t("profileModal.step3.severityPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -1214,13 +1402,16 @@ export default function MemberSignupPage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0 -ml-1">
                 <Label htmlFor="duration">{t("profileModal.step3.duration")}</Label>
                 <Select
                   value={formData.duration}
                   onValueChange={(val) => handleSelectChange("duration", val)}
                 >
-                  <SelectTrigger id="duration">
+                  <SelectTrigger
+                    id="duration"
+                    className="!w-full !min-w-0 overflow-hidden truncate [&_[data-slot=select-value]]:max-w-full [&_[data-slot=select-value]]:truncate [&_[data-slot=select-value][data-placeholder]]:text-[10px]"
+                  >
                     <SelectValue placeholder={t("profileModal.step3.durationPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -1359,27 +1550,21 @@ export default function MemberSignupPage() {
 
             <div className="space-y-2">
               <Label>{t("therapyApproachOptional")}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
-                  ({ value, msgKey }) => (
-                    <div key={value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`approach-${value}`}
-                        checked={formData.therapyApproach.includes(value)}
-                        onCheckedChange={() =>
-                          handleArrayChange("therapyApproach", value)
-                        }
-                      />
-                      <label
-                        htmlFor={`approach-${value}`}
-                        className="text-sm cursor-pointer"
-                      >
-                        {t(`therapyApproachOptions.${msgKey}`)}
-                      </label>
-                    </div>
-                  ),
+              <MotifSearch
+                value={formData.therapyApproach}
+                onChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    therapyApproach: Array.isArray(v) ? v : v ? [v] : [],
+                  }))
+                }
+                multiSelect
+                maxSelections={1}
+                placeholder={t("therapyApproachOptional")}
+                items={MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
+                  ({ msgKey }) => t(`therapyApproachOptions.${msgKey}`),
                 )}
-              </div>
+              />
             </div>
 
             <div className="space-y-2">
@@ -1612,6 +1797,9 @@ export default function MemberSignupPage() {
             <p className="text-sm text-muted-foreground">
               {t("paymentStepDescription")}
             </p>
+            <p className="text-sm text-muted-foreground font-light">
+              {t("paymentReassurance")}
+            </p>
             <div className="space-y-3">
               {[
                 { value: "credit_card", label: t("paymentCreditCard") },
@@ -1645,6 +1833,47 @@ export default function MemberSignupPage() {
                 </div>
               ))}
             </div>
+
+            {formData.paymentMethod === "credit_card" && (
+              <div className="space-y-4 rounded-lg border border-border/40 bg-muted/30 p-4">
+                {stripeCardPaymentMethodId ? (
+                  <p className="text-sm text-green-700 font-light">
+                    Carte ajoutée avec succès.
+                  </p>
+                ) : (
+                  <>
+                    {stripeCardInitError && (
+                      <p className="text-sm text-destructive font-light">
+                        {stripeCardInitError}
+                      </p>
+                    )}
+
+                    {stripeCardInitLoading || !stripeCardClientSecret ? (
+                      <p className="text-sm text-muted-foreground font-light">
+                        Initialisation du champ de carte sécurisé...
+                      </p>
+                    ) : (
+                      <Elements
+                        options={{
+                          clientSecret: stripeCardClientSecret,
+                          appearance: stripeAppearance,
+                        }}
+                        stripe={stripePromise}
+                      >
+                        <GuestCardSetupForm
+                          onSuccess={(paymentMethodId) => {
+                            setStripeCardPaymentMethodId(paymentMethodId);
+                            setStripeCardInitError(null);
+                          }}
+                          onError={(msg) => setStripeCardInitError(msg)}
+                          disabled={Boolean(stripeCardPaymentMethodId)}
+                        />
+                      </Elements>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         );
 
