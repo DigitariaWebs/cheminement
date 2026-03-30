@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle2, Mail, User } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -20,6 +21,7 @@ interface PendingRequest {
   email: string;
   phone?: string;
   requestedAt?: string;
+  interacReference?: string | null;
 }
 
 export default function AdminPaymentTrustPage() {
@@ -101,6 +103,7 @@ export default function AdminPaymentTrustPage() {
               <TableRow>
                 <TableHead className="font-light">{t("client")}</TableHead>
                 <TableHead className="font-light">{t("contact")}</TableHead>
+                <TableHead className="font-light">{t("colReference")}</TableHead>
                 <TableHead className="font-light text-right">{t("action")}</TableHead>
               </TableRow>
             </TableHeader>
@@ -108,18 +111,26 @@ export default function AdminPaymentTrustPage() {
               {requests.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/dashboard/patients/${r.id}`}
+                      className="flex items-center gap-2 hover:underline decoration-primary/30 underline-offset-4"
+                    >
                       <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">
+                      <span className="font-medium text-foreground">
                         {r.firstName} {r.lastName}
                       </span>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Mail className="h-3.5 w-3.5 shrink-0" />
                       {r.email}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-muted-foreground">
+                      {r.interacReference || "—"}
+                    </code>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
