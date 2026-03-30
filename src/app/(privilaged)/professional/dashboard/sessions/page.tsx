@@ -378,7 +378,7 @@ export default function SessionsPage() {
       setSelectedSession(null);
     } catch (error) {
       console.error("Error updating meeting link:", error);
-      alert("Failed to update meeting link. Please try again.");
+      alert(t("failedUpdateMeetingLink"));
     } finally {
       setIsSubmitting(false);
     }
@@ -386,7 +386,7 @@ export default function SessionsPage() {
 
   const handleStartSession = async (session: Session) => {
     if (session.type === "video" && !session.meetingLink) {
-      alert("Please add a meeting link before starting the session.");
+      alert(t("addMeetingLinkFirst"));
       handleAddMeetingLink(session);
       return;
     }
@@ -409,7 +409,7 @@ export default function SessionsPage() {
       }
     } catch (error) {
       console.error("Error starting session:", error);
-      alert("Failed to start session. Please try again.");
+      alert(t("failedStartSession"));
     }
   };
 
@@ -425,7 +425,7 @@ export default function SessionsPage() {
           </p>
         </div>
         <div className="flex justify-center items-center h-64">
-          <p>Loading sessions...</p>
+          <p>{t("loading")}</p>
         </div>
       </div>
     );
@@ -443,7 +443,9 @@ export default function SessionsPage() {
           </p>
         </div>
         <div className="flex justify-center items-center h-64">
-          <p className="text-red-500">Error: {error}</p>
+          <p className="text-red-500">
+            {t("errorPrefix")} {error}
+          </p>
         </div>
       </div>
     );
@@ -546,7 +548,7 @@ export default function SessionsPage() {
                 }
                 className="px-6 py-2.5 bg-muted text-foreground rounded-full font-light tracking-wide transition-all duration-300 hover:bg-muted/80"
               >
-                View Details
+                {t("viewDetails")}
               </button>
               <button
                 onClick={() => handleStartSession(nextSession)}
@@ -608,7 +610,7 @@ export default function SessionsPage() {
                       )
                     }
                     className="p-2 rounded-lg hover:bg-muted transition-colors"
-                    title="View Details"
+                    title={t("viewDetails")}
                   >
                     <Eye className="h-4 w-4 text-muted-foreground" />
                   </button>
@@ -714,22 +716,22 @@ export default function SessionsPage() {
               <div className="mt-3 flex items-center gap-2 flex-wrap">
                 {searchQuery && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Search: {searchQuery}
+                    {t("searchPrefix")} {searchQuery}
                   </span>
                 )}
                 {statusFilter !== "all" && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Status: {statusFilter}
+                    {t("statusPrefix")} {statusFilter}
                   </span>
                 )}
                 {typeFilter !== "all" && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Type: {typeFilter}
+                    {t("typePrefix")} {typeFilter}
                   </span>
                 )}
                 {paymentFilter !== "all" && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
-                    Payment: {paymentFilter}
+                    {t("paymentPrefix")} {paymentFilter}
                   </span>
                 )}
               </div>
@@ -957,8 +959,8 @@ export default function SessionsPage() {
                             className="p-2 rounded-lg hover:bg-muted transition-colors"
                             title={
                               session.meetingLink
-                                ? "Update Meeting Link"
-                                : "Add Meeting Link"
+                                ? t("updateMeetingLink")
+                                : t("addMeetingLink")
                             }
                           >
                             <LinkIcon
@@ -996,23 +998,22 @@ export default function SessionsPage() {
             <DialogTitle className="flex items-center gap-2">
               <Video className="h-5 w-5 text-primary" />
               {selectedSession?.meetingLink
-                ? "Update Meeting Link"
-                : "Add Meeting Link"}
+                ? t("updateMeetingLink")
+                : t("addMeetingLink")}
             </DialogTitle>
             <DialogDescription>
-              Provide an external meeting link for this video appointment (Zoom,
-              Google Meet, Microsoft Teams, etc.)
+              {t("meetingLinkDesc")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="meeting-link" className="text-sm font-light">
-                Meeting Link URL
+                {t("meetingLinkUrl")}
               </Label>
               <Input
                 id="meeting-link"
                 type="url"
-                placeholder="https://zoom.us/j/123456789"
+                placeholder={t("urlPlaceholder")}
                 value={meetingLink}
                 onChange={(e) => setMeetingLink(e.target.value)}
                 className="font-light"
@@ -1021,13 +1022,13 @@ export default function SessionsPage() {
             {selectedSession && (
               <div className="rounded-lg bg-muted/50 p-3 space-y-1">
                 <p className="text-xs text-muted-foreground font-light">
-                  Appointment Details
+                  {t("appointmentDetails")}
                 </p>
                 <p className="text-sm font-light">
                   {selectedSession.clientName}
                 </p>
                 <p className="text-xs text-muted-foreground font-light">
-                  {formatDate(selectedSession.date)} at{" "}
+                  {formatDate(selectedSession.date)} {t("at")}{" "}
                   {formatTime(selectedSession.time)}
                 </p>
               </div>
@@ -1044,14 +1045,14 @@ export default function SessionsPage() {
               }}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("cancelAction")}
             </Button>
             <Button
               type="button"
               onClick={handleSaveMeetingLink}
               disabled={!meetingLink || isSubmitting}
             >
-              {isSubmitting ? "Saving..." : "Save Link"}
+              {isSubmitting ? t("savingAction") : t("saveLinkAction")}
             </Button>
           </DialogFooter>
         </DialogContent>
