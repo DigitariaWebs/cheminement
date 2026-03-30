@@ -1834,6 +1834,8 @@
       "filters": "Filters",
       "hideFilters": "Hide Filters",
       "showFilters": "Show Filters",
+      "loading": "Loading clients...",
+      "loadingError": "Failed to load clients",
       "status": "Status",
       "paymentGuarantee": "Payment",
       "statutVert": "Green status",
@@ -2040,6 +2042,12 @@
         "contactInfo": "Contact Information",
         "email": "Email",
         "phone": "Phone",
+        "address": "Address",
+        "age": "Age",
+        "yearsOld": "years old",
+        "emergencyContactTitle": "Emergency Contact",
+        "emergencyName": "Name",
+        "emergencyPhone": "Phone",
         "clientInfo": "Client Information",
         "status": "Status",
         "issueType": "Issue Type",
@@ -2069,7 +2077,17 @@
         "completed": "Completed",
         "cancelled": "Cancelled",
         "no-show": "No Show",
-        "ongoing": "In progress"
+        "ongoing": "In progress",
+        "loading": "Loading sessions..."
+      },
+      "documents": {
+        "title": "Patient Documents",
+        "uploadBoxText1": "Click to upload a PDF document",
+        "uploadBoxText2": "PDF, JPEG, PNG (max 10MB)",
+        "uploading": "Uploading...",
+        "uploadedTitle": "Uploaded Documents",
+        "download": "Download",
+        "delete": "Delete"
       },
       "actions": {
         "schedule": "Schedule Session",
@@ -3052,6 +3070,7 @@
       "completeNow": "Complete Profile Now",
       "yes": "Yes",
       "no": "No",
+      "noPreference": "No preference",
       "completeProfile": "Complete Profile",
       "completeProfileTitle": "Complete Your Profile",
       "personalInfo": {

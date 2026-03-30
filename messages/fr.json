@@ -1834,6 +1834,8 @@
       "filters": "Filtres",
       "hideFilters": "Masquer les filtres",
       "showFilters": "Afficher les filtres",
+      "loading": "Chargement des clients...",
+      "loadingError": "Échec du chargement des clients",
       "status": "Statut",
       "paymentGuarantee": "Paiement",
       "statutVert": "Statut vert",
@@ -2040,6 +2042,12 @@
         "contactInfo": "Informations de contact",
         "email": "E-mail",
         "phone": "Téléphone",
+        "address": "Adresse",
+        "age": "Âge",
+        "yearsOld": "ans",
+        "emergencyContactTitle": "Contact d'urgence",
+        "emergencyName": "Nom",
+        "emergencyPhone": "Téléphone",
         "clientInfo": "Informations sur le client",
         "status": "Statut",
         "issueType": "Type de problème",
@@ -2069,7 +2077,17 @@
         "completed": "Complété",
         "cancelled": "Annulé",
         "no-show": "Absence",
-        "ongoing": "En cours"
+        "ongoing": "En cours",
+        "loading": "Chargement des séances..."
+      },
+      "documents": {
+        "title": "Documents du patient",
+        "uploadBoxText1": "Cliquez pour téléverser un document PDF",
+        "uploadBoxText2": "PDF, JPEG, PNG (max 10MB)",
+        "uploading": "Upload en cours...",
+        "uploadedTitle": "Documents téléversés",
+        "download": "Télécharger",
+        "delete": "Supprimer"
       },
       "actions": {
         "schedule": "Planifier une séance",
@@ -3052,6 +3070,7 @@
       "completeNow": "Compléter le profil maintenant",
       "yes": "Oui",
       "no": "Non",
+      "noPreference": "Pas de préférence",
       "completeProfile": "Compléter le profil",
       "completeProfileTitle": "Complétez votre profil",
       "personalInfo": {

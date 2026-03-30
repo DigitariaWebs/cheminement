@@ -70,7 +70,7 @@ export default function ClientsPage() {
         setClients(data as Client[]);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to fetch clients",
+          err instanceof Error ? err.message : t("loadingError"),
         );
       } finally {
         setLoading(false);
@@ -455,7 +455,7 @@ export default function ClientsPage() {
                   colSpan={8}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
-                  Loading clients...
+                  {t("loading")}
                 </TableCell>
               </TableRow>
             ) : error ? (

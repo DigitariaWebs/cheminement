@@ -270,7 +270,7 @@ export default function ClientDetailsModal({
                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                     <div>
                       <p className="text-xs text-muted-foreground font-light mb-1">
-                        Address
+                        {t("overview.address")}
                       </p>
                       <p className="text-sm text-foreground">
                         {client.address}
@@ -310,10 +310,10 @@ export default function ClientDetailsModal({
                     <div className="h-4 w-4 mt-0.5" />
                     <div>
                       <p className="text-xs text-muted-foreground font-light mb-1">
-                        Age
+                        {t("overview.age")}
                       </p>
                       <p className="text-sm text-foreground">
-                        {client.age} years old
+                        {client.age} {t("overview.yearsOld")}
                       </p>
                     </div>
                   </div>
@@ -324,12 +324,12 @@ export default function ClientDetailsModal({
             {client.emergencyContact && (
               <div className="mt-6 pt-6 border-t border-border/40">
                 <p className="text-sm font-light text-muted-foreground mb-3">
-                  Emergency Contact
+                  {t("overview.emergencyContactTitle")}
                 </p>
                 <div className="flex items-center gap-6">
                   <div>
                     <p className="text-xs text-muted-foreground font-light mb-1">
-                      Name
+                      {t("overview.emergencyName")}
                     </p>
                     <p className="text-sm text-foreground">
                       {client.emergencyContact}
@@ -338,7 +338,7 @@ export default function ClientDetailsModal({
                   {client.emergencyPhone && (
                     <div>
                       <p className="text-xs text-muted-foreground font-light mb-1">
-                        Phone
+                        {t("overview.emergencyPhone")}
                       </p>
                       <p className="text-sm text-foreground">
                         {client.emergencyPhone}
@@ -353,7 +353,7 @@ export default function ClientDetailsModal({
           {/* Patient Documents */}
           <div className="rounded-xl bg-card p-6">
             <h3 className="text-lg font-serif font-light text-foreground mb-4">
-              Documents du patient
+              {t("documents.title")}
             </h3>
             <div className="space-y-4">
               <div
@@ -371,16 +371,16 @@ export default function ClientDetailsModal({
                 {isUploading ? (
                   <div className="flex items-center justify-center gap-2 text-primary">
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Upload en cours...</span>
+                    <span>{t("documents.uploading")}</span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Upload className="h-8 w-8 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                      Cliquez pour téléverser un document PDF
+                      {t("documents.uploadBoxText1")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      PDF, JPEG, PNG (max 10MB)
+                      {t("documents.uploadBoxText2")}
                     </p>
                   </div>
                 )}
@@ -392,7 +392,7 @@ export default function ClientDetailsModal({
               {uploadedDocuments.length > 0 && (
                 <div className="space-y-3 mt-6">
                   <p className="text-sm font-light text-muted-foreground">
-                    Documents téléversés
+                    {t("documents.uploadedTitle")}
                   </p>
                   {uploadedDocuments.map((doc, index) => (
                     <div
@@ -416,7 +416,7 @@ export default function ClientDetailsModal({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 rounded-full hover:bg-muted transition-colors text-primary"
-                          title="Télécharger"
+                          title={t("documents.download")}
                         >
                           <Download className="h-4 w-4" />
                         </a>
@@ -425,7 +425,7 @@ export default function ClientDetailsModal({
                           size="sm"
                           onClick={() => handleRemoveDocument(index)}
                           className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                          title="Supprimer"
+                          title={t("documents.delete")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -451,11 +451,11 @@ export default function ClientDetailsModal({
             <div className="space-y-3">
               {sessionsLoading ? (
                 <p className="text-center text-muted-foreground">
-                  Loading sessions...
+                  {t("sessions.loading")}
                 </p>
               ) : sessions.length === 0 ? (
                 <p className="text-center text-muted-foreground">
-                  No sessions found
+                  {t("sessions.noSessions")}
                 </p>
               ) : (
                 sessions.map((session) => (
