@@ -37,13 +37,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { apiClient, medicalProfileAPI } from "@/lib/api-client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
@@ -182,7 +175,6 @@ export default function BookAppointmentPage() {
   // UI state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Booking context
   const [bookingFor, setBookingFor] = useState<
@@ -2311,139 +2303,25 @@ export default function BookAppointmentPage() {
                     </div>
                   )}
 
-                  {/* Preferred Availability */}
-                  {bookingFor === "self" ? (
-                    <div className="space-y-2">
-                      <Label>{tB("selectTimesNextWeek")}</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setCalendarOpen(true)}
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {preferredAvailability.length > 0
-                          ? tB("timeSlotsSelected", {
-                              count: preferredAvailability.length,
-                            })
-                          : tB("clickSelectTimes")}
-                      </Button>
-                      <p className="text-xs text-muted-foreground">
-                        {tB("timeSlotsHint")}
-                      </p>
-
-                      {/* Calendar Dialog */}
-                      <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
-                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle>
-                              {tB("calendarDialogTitle")}
-                            </DialogTitle>
-                            <DialogDescription>
-                              {tB("calendarDialogDesc")}
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4 mt-4">
-                            {(() => {
-                              // Calculate next week's dates (always the Monday of next week)
-                              const today = new Date();
-                              const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-                              const daysUntilNextMonday = currentDay === 0 ? 8 : (8 - currentDay); // If Sunday, add 8 days; otherwise add days to reach next Monday
-                              const nextMonday = new Date(today);
-                              nextMonday.setDate(today.getDate() + daysUntilNextMonday);
-                              
-                              const weekDays = [];
-                              for (let i = 0; i < 7; i++) {
-                                const date = new Date(nextMonday);
-                                date.setDate(nextMonday.getDate() + i);
-                                const dayName = date.toLocaleDateString(dateLocale, { weekday: 'long' });
-                                const dateStr = date.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' });
-                                weekDays.push({
-                                  day: dayName,
-                                  date: dateStr,
-                                  fullDate: date.toISOString().split('T')[0],
-                                });
-                              }
-                              
-                              const timeSlots = [
-                                { label: tB("morning"), value: 'morning', time: tB("morningTime") },
-                                { label: tB("afternoon"), value: 'afternoon', time: tB("afternoonTime") },
-                                { label: tB("evening"), value: 'evening', time: tB("eveningTime") },
-                              ];
-                              
-                              return weekDays.map((day) => (
-                                <div key={day.fullDate} className="border border-border/40 rounded-lg p-4">
-                                  <div className="font-medium text-sm mb-3">
-                                    {day.day}, {day.date}
-                                  </div>
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                    {timeSlots.map((slot) => {
-                                      const slotKey = `${day.fullDate}-${slot.value}`;
-                                      const isSelected = preferredAvailability.includes(slotKey);
-                                      return (
-                                        <Button
-                                          key={slotKey}
-                                          type="button"
-                                          variant={isSelected ? "default" : "outline"}
-                                          size="sm"
-                                          onClick={() => {
-                                            if (isSelected) {
-                                              setPreferredAvailability(
-                                                preferredAvailability.filter(
-                                                  (a) => a !== slotKey,
-                                                ),
-                                              );
-                                            } else {
-                                              setPreferredAvailability([
-                                                ...preferredAvailability,
-                                                slotKey,
-                                              ]);
-                                            }
-                                          }}
-                                          className="text-xs h-auto py-2 flex flex-col items-center gap-1"
-                                        >
-                                          <span className="font-medium">{slot.label}</span>
-                                          <span className="text-xs opacity-80">{slot.time}</span>
-                                        </Button>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              ));
-                            })()}
-                          </div>
-                          <div className="flex justify-end gap-2 mt-6">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => setCalendarOpen(false)}
-                            >
-                              {tB("done")}
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Label>
-                        {tB("preferredAvailability")}
-                        {medicalProfile?.availability &&
-                          medicalProfile.availability.length > 0 && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              {tB("preFilledProfile")}
-                            </span>
-                          )}
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        {tB("availabilityHintGeneric")}
-                      </p>
-                      <ClinicalAvailabilityGrid
-                        value={preferredAvailability}
-                        onChange={setPreferredAvailability}
-                      />
-                    </div>
-                  )}
+                  {/* Preferred availability (clinical grid for all booking types) */}
+                  <div className="space-y-2">
+                    <Label>
+                      {tB("preferredAvailability")}
+                      {medicalProfile?.availability &&
+                        medicalProfile.availability.length > 0 && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            {tB("preFilledProfile")}
+                          </span>
+                        )}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {tB("availabilityHintGeneric")}
+                    </p>
+                    <ClinicalAvailabilityGrid
+                      value={preferredAvailability}
+                      onChange={setPreferredAvailability}
+                    />
+                  </div>
 
                   {/* Payment Method - Hidden from initial form */}
                   {/* Payment method will be collected after professional schedules the appointment */}
@@ -2510,10 +2388,19 @@ export default function BookAppointmentPage() {
                             return;
                           }
                         }
+                        if (preferredAvailability.length === 0) {
+                          setError(tB("errors.availabilityRequired"));
+                          return;
+                        }
                         setError("");
                         setCurrentStep(4);
                       }}
-                      disabled={!issueType || !Array.isArray(issueType) || issueType.length === 0}
+                      disabled={
+                        !issueType ||
+                        !Array.isArray(issueType) ||
+                        issueType.length === 0 ||
+                        preferredAvailability.length === 0
+                      }
                     >
                       {tB("reviewRequest")}
                     </Button>
