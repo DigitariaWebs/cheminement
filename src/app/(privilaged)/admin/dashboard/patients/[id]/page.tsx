@@ -85,7 +85,10 @@ export default function PatientDetailPage({
         fetch(`/api/admin/users/${id}/appointments`),
       ]);
 
-      if (!userRes.ok) throw new Error("Failed to load user");
+      if (!userRes.ok) {
+        const errorBody = await userRes.json().catch(() => ({}));
+        throw new Error(errorBody.details || errorBody.error || `HTTP ${userRes.status}`);
+      }
       const userData = await userRes.json();
       
       if (aptRes.ok) {
@@ -105,7 +108,6 @@ export default function PatientDetailPage({
       });
     } catch (error) {
       setFeedback({ type: "error", message: t("loadError") });
-      router.push("/admin/dashboard/patients");
     } finally {
       setLoading(false);
     }
@@ -205,7 +207,27 @@ export default function PatientDetailPage({
     );
   }
 
-  if (!data?.user) return null;
+  if (!data?.user && !feedback) return null;
+
+  if (!data?.user && feedback) {
+    return (
+      <div className="space-y-6 max-w-5xl">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/dashboard/patients">
+            <Button variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-serif font-light text-foreground">
+            {t("detailTitle")}
+          </h1>
+        </div>
+        <div className="p-8 border rounded-xl bg-red-50 text-red-700 border-red-200">
+          {feedback.message}
+        </div>
+      </div>
+    );
+  }
 
   const { user } = data;
   const isGreen = user.paymentGuaranteeStatus === "green";

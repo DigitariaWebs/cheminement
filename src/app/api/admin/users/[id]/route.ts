@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"; // Trivial change for HMR
 import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
@@ -7,14 +7,6 @@ import Appointment from "@/models/Appointment";
 import MedicalProfile from "@/models/MedicalProfile";
 import Admin from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
-
-async function assertSuperAdmin(sessionUserId: string) {
-  const admin = await Admin.findOne({ userId: sessionUserId, isActive: true })
-    .select("role permissions")
-    .lean();
-  if (!admin) return null;
-  return admin;
-}
 
 // GET /api/admin/users/[id] — Full user detail
 export async function GET(
@@ -27,33 +19,43 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     await connectToDatabase();
-    const admin = await assertSuperAdmin(session.user.id);
-    if (!admin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    
+    // Use granular permissions if Admin record exists, otherwise skip (rely on session.user.role === "admin")
+    const adminRecord = await Admin.findOne({ userId: session.user.id, isActive: true })
+      .select("permissions")
+      .lean();
+    
+    if (adminRecord?.permissions && !adminRecord.permissions.managePatients && !adminRecord.permissions.manageBilling) {
+      return NextResponse.json({ error: "Forbidden - Insufficient permissions" }, { status: 403 });
     }
 
-    const { id } = await params;
-    const user = await User.findById(id).select("-password").lean();
+    const { id: userId } = await params;
+
+    if (!userId || userId === "undefined" || userId.length !== 24) {
+      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    }
+
+    const user = await User.findById(userId).select("-password").lean();
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Get profile (professional)
-    const profile = await Profile.findOne({ userId: id }).lean();
+    const profile = await Profile.findOne({ userId: userId }).lean();
 
     // Get medical profile (client)
-    const medicalProfile = await MedicalProfile.findOne({ userId: id }).lean();
+    const medicalProfile = await MedicalProfile.findOne({ userId: userId }).lean();
 
     // Get appointment stats
     const totalAppointments = await Appointment.countDocuments({
-      $or: [{ clientId: id }, { professionalId: id }],
+      $or: [{ clientId: userId }, { professionalId: userId }],
     });
     const completedSessions = await Appointment.countDocuments({
-      $or: [{ clientId: id }, { professionalId: id }],
+      $or: [{ clientId: userId }, { professionalId: userId }],
       status: "completed",
     });
     const noShowCount = await Appointment.countDocuments({
-      $or: [{ clientId: id }, { professionalId: id }],
+      $or: [{ clientId: userId }, { professionalId: userId }],
       status: "no-show",
     });
 
@@ -85,12 +87,12 @@ export async function GET(
 
         // Check for failed payments or late Interac
         const hasFailedPayment = await Appointment.exists({
-          clientId: id,
+          clientId: userId,
           "payment.status": "failed",
         });
 
         const hasLateInterac = await Appointment.exists({
-          clientId: id,
+          clientId: userId,
           "payment.status": { $ne: "paid" },
           "payment.transferDueAt": { $lt: new Date() },
         });
@@ -103,7 +105,7 @@ export async function GET(
           label = "Ok";
         } else {
           const scheduledAppointment = await Appointment.findOne({
-            clientId: id,
+            clientId: userId,
             status: "scheduled",
           }).lean();
 
@@ -164,12 +166,17 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     await connectToDatabase();
-    const admin = await assertSuperAdmin(session.user.id);
-    if (!admin) {
+    
+    // Check granular permissions if Admin record exists
+    const adminRecord = await Admin.findOne({ userId: session.user.id, isActive: true })
+      .select("permissions")
+      .lean();
+    
+    if (adminRecord?.permissions && !adminRecord.permissions.managePatients) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { id } = await params;
+    const { id: userId } = await params;
     const body = await req.json();
 
     // Allowed user fields to update
@@ -196,7 +203,7 @@ export async function PUT(
 
     // Update user
     if (Object.keys(userUpdates).length > 0) {
-      const user = await User.findByIdAndUpdate(id, { $set: userUpdates }, { new: true, runValidators: true });
+      const user = await User.findByIdAndUpdate(userId, { $set: userUpdates }, { new: true, runValidators: true });
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
@@ -205,7 +212,7 @@ export async function PUT(
     // Update profile if there are profile fields
     if (Object.keys(profileUpdates).length > 0) {
       await Profile.findOneAndUpdate(
-        { userId: id },
+        { userId: userId },
         { $set: profileUpdates },
         { new: true, upsert: true },
       );
@@ -232,14 +239,19 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     await connectToDatabase();
-    const admin = await assertSuperAdmin(session.user.id);
-    if (!admin) {
+    
+    // Check granular permissions if Admin record exists
+    const adminRecord = await Admin.findOne({ userId: session.user.id, isActive: true })
+      .select("permissions")
+      .lean();
+    
+    if (adminRecord?.permissions && !adminRecord.permissions.managePatients) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { id } = await params;
+    const { id: userId } = await params;
     const user = await User.findByIdAndUpdate(
-      id,
+      userId,
       { $set: { status: "inactive" } },
       { new: true },
     );

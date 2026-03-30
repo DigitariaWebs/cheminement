@@ -285,7 +285,8 @@
       "client": "Client",
       "contact": "Contact",
       "action": "Action",
-      "approveBtn": "Approve Trust"
+      "approveBtn": "Approve Trust",
+      "colReference": "Interac Reference"
     },
 
 
@@ -293,6 +294,7 @@
 
 
     "patientDetail": {
+      "detailTitle": "Patient Details",
       "loadError": "Failed to load patient record.",
       "updateSuccess": "Profile updated successfully.",
       "updateError": "Failed to update profile.",

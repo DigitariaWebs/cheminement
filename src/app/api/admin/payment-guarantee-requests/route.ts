@@ -41,16 +41,32 @@ export async function GET() {
       .sort({ updatedAt: -1 })
       .lean();
 
-    return NextResponse.json({
-      requests: pending.map((u) => ({
-        id: u._id.toString(),
-        firstName: u.firstName,
-        lastName: u.lastName,
-        email: u.email,
-        phone: mask ? maskPhoneForDisplay(String(u.phone || "")) : u.phone,
-        requestedAt: u.updatedAt?.toISOString() ?? u.createdAt?.toISOString(),
-      })),
-    });
+    const Appointment = (await import("@/models/Appointment")).default;
+
+    const requests = await Promise.all(
+      pending.map(async (u) => {
+        const latestInteracApt = await Appointment.findOne({
+          clientId: u._id,
+          "payment.interacReferenceCode": { $exists: true, $ne: null },
+        })
+          .sort({ createdAt: -1 })
+          .select("payment.interacReferenceCode")
+          .lean();
+
+        return {
+          id: u._id.toString(),
+          firstName: u.firstName,
+          lastName: u.lastName,
+          email: u.email,
+          phone: mask ? maskPhoneForDisplay(String(u.phone || "")) : u.phone,
+          requestedAt: u.updatedAt?.toISOString() ?? u.createdAt?.toISOString(),
+          interacReference: latestInteracApt?.payment?.interacReferenceCode || null,
+        };
+      }),
+    );
+
+    return NextResponse.json({ requests });
+
   } catch (error: unknown) {
     console.error("payment-guarantee-requests GET:", error);
     return NextResponse.json(

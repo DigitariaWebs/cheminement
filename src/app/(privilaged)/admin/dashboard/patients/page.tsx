@@ -465,12 +465,12 @@ export default function PatientsPage() {
                   <TableCell className="text-sm font-light text-muted-foreground">
                     {new Date(patient.joinedDate).toLocaleDateString()}
                   </TableCell>
-                  <TableCell className="text-sm font-light text-muted-foreground">
-                    <Link href={`/admin/dashboard/patients/${patient.id}`}>
-                      <Button variant="ghost" size="icon">
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href={`/admin/dashboard/patients/${patient.id}`}>
                         <Eye className="h-4 w-4 text-primary" />
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

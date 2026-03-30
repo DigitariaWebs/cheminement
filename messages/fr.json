@@ -285,7 +285,8 @@
       "client": "Client",
       "contact": "Contact",
       "action": "Action",
-      "approveBtn": "Statut vert"
+      "approveBtn": "Statut vert",
+      "colReference": "Référence Interac"
     },
 
 
@@ -293,6 +294,7 @@
 
 
     "patientDetail": {
+      "detailTitle": "Détails du Patient",
       "loadError": "Impossible de charger le dossier patient.",
       "updateSuccess": "Le profil a été mis à jour.",
       "updateError": "Impossible de mettre à jour le profil.",
