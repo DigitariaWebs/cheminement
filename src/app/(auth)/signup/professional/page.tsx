@@ -244,16 +244,20 @@ export default function ProfessionalSignupPage() {
           if (digits.length < 10) return t("errors.phoneRequiredMin10");
         }
         break;
-      case 1: // Professional Details (Titres + Catégorie d'âge)
-        if (formData.ageCategories.length === 0)
-          return t("errors.ageCategoryRequired");
+      case 1: // Professional Details (Titre professionnel + permis)
         if (!formData.specialty) return t("errors.specialtyRequired");
         if (!formData.license.trim())
           return t("errors.licenseRequired");
         break;
-      case 2:
+      case 2: // Education
         if (!formData.degree.trim()) return t("errors.degreeRequired");
         if (!formData.institution.trim()) return t("errors.institutionRequired");
+        if (formData.certifications.length === 0)
+          return t("errors.certificationsRequired");
+        break;
+      case 4: // Session types & age categories
+        if (formData.ageCategories.length === 0)
+          return t("errors.ageCategoryRequired");
         break;
       case 5: // Pricing
         if (!formData.paymentFrequency)
@@ -263,10 +267,6 @@ export default function ProfessionalSignupPage() {
         if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
         if (!formData.acceptPrivacyPolicy)
           return t("errors.acceptPrivacyPolicyRequired");
-        break;
-      case 2: // Education
-        if (!formData.degree.trim()) return t("errors.degreeRequired");
-        if (!formData.institution.trim()) return t("errors.institutionRequired");
         break;
     }
     return null;
@@ -351,7 +351,6 @@ export default function ProfessionalSignupPage() {
             formData.certifications.length > 0
               ? formData.certifications
               : undefined,
-          paymentAgreement: formData.paymentAgreement || undefined,
           paymentFrequency: formData.paymentFrequency || undefined,
           pricing: {
             individualSession: formData.individualSessionRate
@@ -662,34 +661,6 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>
-                {t("ageCategoryLabel")}
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {t("ageCategoryHint")}
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {AGE_CATEGORIES.map((age) => (
-                  <div key={age.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`age-${age.value}`}
-                      checked={formData.ageCategories.includes(age.value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("ageCategories", age.value)
-                      }
-                    />
-                    <label
-                      htmlFor={`age-${age.value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`ageCategories.${age.value}`)}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="specialty">
                 {t("professionalTitleLabel")} <span className="text-red-500">*</span>
               </Label>
@@ -741,7 +712,12 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">{t("professionalBio")}</Label>
+              <Label htmlFor="bio">
+                {t("professionalBio")}{" "}
+                <span className="text-xs text-muted-foreground">
+                  {t("optional")}
+                </span>
+              </Label>
               <Textarea
                 id="bio"
                 name="bio"
@@ -857,7 +833,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <h4 className="font-medium text-foreground">{t("approachesTitle")}</h4>
               <Label className="text-muted-foreground">
-                {t("approachesSubtitle")}
+                {t("expertiseCommonSubtitle")}
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
                 {APPROACHES_ET_THERAPIES.map((approach) => (
@@ -883,7 +859,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <h4 className="font-medium text-foreground">{t("problematicsTitle")}</h4>
               <Label className="text-muted-foreground">
-                {t("problematicsSubtitle")}
+                {t("expertiseCommonSubtitle")}
               </Label>
               {problematicsList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
@@ -915,7 +891,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <h4 className="font-medium text-foreground">{t("diagnosticsTitle")}</h4>
               <Label className="text-muted-foreground">
-                {t("diagnosticsSubtitle")}
+                {t("expertiseCommonSubtitle")}
               </Label>
               {diagnosticsList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
@@ -951,6 +927,34 @@ export default function ProfessionalSignupPage() {
       case 4: // Session Types & Modalities
         return (
           <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>
+                {t("ageCategoryLabel")}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {t("ageCategoryHint")}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {AGE_CATEGORIES.map((age) => (
+                  <div key={age.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`age-${age.value}`}
+                      checked={formData.ageCategories.includes(age.value)}
+                      onCheckedChange={() =>
+                        handleArrayChange("ageCategories", age.value)
+                      }
+                    />
+                    <label
+                      htmlFor={`age-${age.value}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {t(`ageCategories.${age.value}`)}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label>{t("sessionTypesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -996,10 +1000,6 @@ export default function ProfessionalSignupPage() {
                 ))}
               </div>
             </div>
-
-            <p className="text-sm text-muted-foreground">
-              {t("languagesIndicatedEarlier")}
-            </p>
           </div>
         );
 
@@ -1086,25 +1086,6 @@ export default function ProfessionalSignupPage() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="paymentAgreement">{t("paymentAgreementLabel")}</Label>
-              <Select
-                value={formData.paymentAgreement}
-                onValueChange={(val) =>
-                  handleSelectChange("paymentAgreement", val)
-                }
-              >
-                <SelectTrigger id="paymentAgreement">
-                  <SelectValue placeholder={t("selectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="per-session">{t("paymentAgreementPerSession")}</SelectItem>
-                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
-                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
-                  <SelectItem value="monthly">{t("paymentAgreementMonthly")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         );
 
