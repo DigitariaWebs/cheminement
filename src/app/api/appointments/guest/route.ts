@@ -89,10 +89,13 @@ export async function POST(req: NextRequest) {
       );
     }
     if (motifs.length === 0) {
-      return NextResponse.json(
-        { error: "At least one motif/reason is required" },
-        { status: 400 },
-      );
+      // For patient referrals, the "Problématique / Approche souhaitée" is optional.
+      if (appointmentData.bookingFor !== "patient") {
+        return NextResponse.json(
+          { error: "At least one motif/reason is required" },
+          { status: 400 },
+        );
+      }
     }
     if (motifs.length > 3) {
       return NextResponse.json(
@@ -112,14 +115,46 @@ export async function POST(req: NextRequest) {
 
     // Validate patient referral contact info when booking for a patient
     if (appointmentData.bookingFor === "patient") {
-      const patientFirstName = appointmentData.referralInfo?.patientFirstName?.trim();
-      const patientLastName = appointmentData.referralInfo?.patientLastName?.trim();
+      const referral = appointmentData.referralInfo || {};
+      const referrerName = referral.referrerName?.trim();
+      if (!referrerName) {
+        return NextResponse.json(
+          { error: "Referring professional name is required" },
+          { status: 400 },
+        );
+      }
+
+      const patientFirstName = referral.patientFirstName?.trim();
+      const patientLastName = referral.patientLastName?.trim();
       if (!patientFirstName || !patientLastName) {
         return NextResponse.json(
           {
             error:
               "Patient firstName and lastName are required when booking for a patient",
           },
+          { status: 400 },
+        );
+      }
+
+      const patientEmail = referral.patientEmail?.trim();
+      const patientPhone = referral.patientPhone?.trim();
+      if (!patientEmail) {
+        return NextResponse.json(
+          { error: "Patient email is required" },
+          { status: 400 },
+        );
+      }
+      if (!patientPhone) {
+        return NextResponse.json(
+          { error: "Patient phone is required" },
+          { status: 400 },
+        );
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(patientEmail)) {
+        return NextResponse.json(
+          { error: "Invalid patient email format" },
           { status: 400 },
         );
       }

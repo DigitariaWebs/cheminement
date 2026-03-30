@@ -525,15 +525,19 @@ export default function BookAppointmentPage() {
       setError(tB("errors.patientName"));
       return false;
     }
-    if (referralInfo.patientEmail.trim()) {
+    if (!referralInfo.patientEmail.trim()) {
+      setError(tB("errors.patientEmailRequired"));
+      return false;
+    }
+    {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(referralInfo.patientEmail)) {
         setError(tB("errors.emailInvalid"));
         return false;
       }
     }
-    if (!issueType || !Array.isArray(issueType) || issueType.length === 0) {
-      setError(tB("errors.referralMotif"));
+    if (!referralInfo.patientPhone.trim()) {
+      setError(tB("errors.patientPhoneRequired"));
       return false;
     }
     if (issueType.length > 3) {
@@ -679,7 +683,9 @@ export default function BookAppointmentPage() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedType || !issueType || !Array.isArray(issueType) || issueType.length === 0) {
+    const issueTypeMissing =
+      !issueType || !Array.isArray(issueType) || issueType.length === 0;
+    if (!selectedType || (issueTypeMissing && bookingFor !== "patient")) {
       setError(tB("errors.motifRequiredSubmit"));
       return;
     }
@@ -1788,8 +1794,7 @@ export default function BookAppointmentPage() {
                       {/* Referrer Type */}
                       <div className="space-y-2">
                         <Label>
-                          {tB("yourProfessionalRole")}{" "}
-                          <span className="text-red-500">*</span>
+                          {tB("yourProfessionalRole")}
                         </Label>
                         <Select
                           value={referralInfo.referrerType}
@@ -1862,14 +1867,9 @@ export default function BookAppointmentPage() {
                         <div className="space-y-2">
                           <Label htmlFor="referrerPhone">
                             {tB("contactPhone")}{" "}
-                            {isGuest && (
-                              <span className="text-red-500">*</span>
-                            )}
-                            {!isGuest && (
-                              <span className="text-muted-foreground">
-                                {tB("optional")}
-                              </span>
-                            )}
+                            <span className="text-muted-foreground">
+                              {tB("optional")}
+                            </span>
                           </Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1885,21 +1885,15 @@ export default function BookAppointmentPage() {
                               }
                               placeholder="+1 (555) 123-4567"
                               className="pl-10"
-                              required={isGuest}
                             />
                           </div>
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="referrerEmail">
                             {tB("contactEmail")}{" "}
-                            {isGuest && (
-                              <span className="text-red-500">*</span>
-                            )}
-                            {!isGuest && (
-                              <span className="text-muted-foreground">
-                                {tB("optional")}
-                              </span>
-                            )}
+                            <span className="text-muted-foreground">
+                              {tB("optional")}
+                            </span>
                           </Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1915,7 +1909,6 @@ export default function BookAppointmentPage() {
                               }
                               placeholder="doctor@clinic.com"
                               className="pl-10"
-                              required={isGuest}
                             />
                           </div>
                         </div>
@@ -1984,14 +1977,13 @@ export default function BookAppointmentPage() {
                           <div className="space-y-2">
                             <Label htmlFor="patientEmail">
                               {tB("contactEmail")}{" "}
-                              <span className="text-muted-foreground">
-                                {tB("optional")}
-                              </span>
+                              <span className="text-red-500">*</span>
                             </Label>
                             <Input
                               id="patientEmail"
                               type="email"
                               value={referralInfo.patientEmail}
+                              required
                               onChange={(e) =>
                                 setReferralInfo({
                                   ...referralInfo,
@@ -2004,14 +1996,13 @@ export default function BookAppointmentPage() {
                           <div className="space-y-2">
                             <Label htmlFor="patientPhone">
                               {tB("contactPhone")}{" "}
-                              <span className="text-muted-foreground">
-                                {tB("optional")}
-                              </span>
+                              <span className="text-red-500">*</span>
                             </Label>
                             <Input
                               id="patientPhone"
                               type="tel"
                               value={referralInfo.patientPhone}
+                              required
                               onChange={(e) =>
                                 setReferralInfo({
                                   ...referralInfo,
@@ -2027,8 +2018,7 @@ export default function BookAppointmentPage() {
                       {/* Motif Search Section - ADDED HERE */}
                       <div className="space-y-2 pt-4 border-t border-border/40">
                         <Label htmlFor="issueType">
-                          {tB("primaryIssueDiagnosis")}{" "}
-                          <span className="text-red-500">*</span>
+                          {tB("primaryIssueDiagnosis")}
                         </Label>
                         <MotifSearch
                           value={issueType}
@@ -2379,7 +2369,10 @@ export default function BookAppointmentPage() {
                   )}
 
                   {/* Issue Type - Only show if not already collected in Step 2.5 */}
-                  {(bookingFor === "self" || !issueType || (Array.isArray(issueType) && issueType.length === 0)) && (
+                  {bookingFor !== "patient" &&
+                    (bookingFor === "self" ||
+                      !issueType ||
+                      (Array.isArray(issueType) && issueType.length === 0)) && (
                     <div className="space-y-2">
                       <Label htmlFor="issueType">
                         {tB("whatBringsYou")} *
@@ -2496,10 +2489,11 @@ export default function BookAppointmentPage() {
                         setCurrentStep(4);
                       }}
                       disabled={
-                        !issueType ||
-                        !Array.isArray(issueType) ||
-                        issueType.length === 0 ||
-                        preferredAvailability.length === 0
+                        preferredAvailability.length === 0 ||
+                        (((bookingFor ?? "") !== "patient") &&
+                          (!issueType ||
+                            !Array.isArray(issueType) ||
+                            issueType.length === 0))
                       }
                     >
                       {tB("reviewRequest")}
