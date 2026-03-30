@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   Search,
   Filter,
@@ -63,6 +64,7 @@ interface ProfessionalsData {
 }
 
 export default function ProfessionalsPage() {
+  const t = useTranslations("AdminDashboard.professionals");
   const [data, setData] = useState<ProfessionalsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -181,10 +183,10 @@ export default function ProfessionalsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Professionals
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Manage all professionals on the platform
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -226,10 +228,10 @@ export default function ProfessionalsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Professionals
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Manage all professionals on the platform
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -239,7 +241,7 @@ export default function ProfessionalsPage() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-light text-foreground mb-2">
-                Failed to load professionals data
+                {t("failedLoad")}
               </h3>
               <p className="text-muted-foreground mb-4">{error}</p>
               <button
@@ -247,7 +249,7 @@ export default function ProfessionalsPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           </div>
@@ -261,10 +263,10 @@ export default function ProfessionalsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Professionals
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Manage all professionals on the platform
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -278,11 +280,11 @@ export default function ProfessionalsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("refresh")}
           </button>
           <Button className="gap-2" onClick={exportProfessionalsData}>
             <Download className="h-4 w-4" />
-            Export Data
+            {t("exportReport")}
           </Button>
         </div>
       </div>
@@ -290,27 +292,27 @@ export default function ProfessionalsPage() {
       <div className="grid gap-6 md:grid-cols-4">
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Total Professionals
+            {t("totalProf")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.totalProfessionals}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
-          <p className="text-sm font-light text-muted-foreground">Active</p>
+          <p className="text-sm font-light text-muted-foreground">{t("activeProf")}</p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.activeProfessionals}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
-          <p className="text-sm font-light text-muted-foreground">Pending</p>
+          <p className="text-sm font-light text-muted-foreground">{t("pendingProf")}</p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.pendingProfessionals}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Total Sessions
+            {t("colSessions")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.totalSessions.toLocaleString()}
@@ -324,7 +326,7 @@ export default function ProfessionalsPage() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search professionals..."
+                placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -334,13 +336,13 @@ export default function ProfessionalsPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[150px]">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("filterStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="all">{t("allStatuses")}</SelectItem>
+                  <SelectItem value="active">{t("statusActive")}</SelectItem>
+                  <SelectItem value="pending">{t("statusPending")}</SelectItem>
+                  <SelectItem value="inactive">{t("statusInactive")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -352,28 +354,28 @@ export default function ProfessionalsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Name
+                  {t("colProfessional")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Specialty
+                  {t("colSpecialty")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  License
+                  {t("colLicense")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Status
+                  {t("colStatus")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Clients
+                  {t("colClients")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Sessions
+                  {t("colSessions")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Joined
+                  {t("colJoined")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Actions
+                  {t("colActions")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -425,9 +427,9 @@ export default function ProfessionalsPage() {
 
           {professionals.length === 0 && (
             <div className="p-12 text-center">
-              <p className="text-muted-foreground">No professionals found</p>
+              <p className="text-muted-foreground">{t("noProfessionals")}</p>
               <p className="text-sm text-muted-foreground/70 mt-1">
-                Try adjusting your search or filters
+                {t("noProfessionalsDesc")}
               </p>
             </div>
           )}

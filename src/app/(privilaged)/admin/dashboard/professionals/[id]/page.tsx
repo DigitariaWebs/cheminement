@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Loader2,
   ArrowLeft,
@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Clock,
   PlayCircle,
-  Inbox
+  Inbox,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,7 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
 export default function ProfessionalDetailPage({
   params,
@@ -57,6 +59,7 @@ export default function ProfessionalDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const t = useTranslations("AdminDashboard.professionalDetail");
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
@@ -76,6 +79,13 @@ export default function ProfessionalDetailPage({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteConfirmName, setDeleteConfirmName] = useState("");
   const [deleting, setDeleting] = useState(false);
+
+  // Ledger states
+  const [ledger, setLedger] = useState<any>(null);
+  const [loadingLedger, setLoadingLedger] = useState(false);
+
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") === "ledger" ? "ledger" : "ongoing";
 
   // Form states
   const [formData, setFormData] = useState({
@@ -122,16 +132,31 @@ export default function ProfessionalDetailPage({
         yearsOfExperience: userData.profile?.yearsOfExperience || 0,
       });
     } catch (error) {
-      setFeedback({ type: "error", message: "Impossible de charger le dossier professionnel." });
+      setFeedback({ type: "error", message: t("loadError") });
       router.push("/admin/dashboard/professionals");
     } finally {
       setLoading(false);
     }
-  }, [id, router]);
+  }, [id, router, t]);
+
+  const fetchLedger = useCallback(async () => {
+    try {
+      setLoadingLedger(true);
+      const res = await fetch(`/api/admin/accounting/professionals/${id}/ledger`);
+      if (res.ok) {
+        setLedger(await res.json());
+      }
+    } catch {
+      // Slient fail for now
+    } finally {
+      setLoadingLedger(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchLedger();
+  }, [fetchData, fetchLedger]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -156,11 +181,11 @@ export default function ProfessionalDetailPage({
 
       if (!res.ok) throw new Error();
 
-      setFeedback({ type: "success", message: "Le profil professionnel a été mis à jour." });
+      setFeedback({ type: "success", message: t("updateSuccess") });
       setTimeout(() => setFeedback(null), 3000);
       fetchData();
     } catch {
-      setFeedback({ type: "error", message: "Impossible de mettre à jour le profil." });
+      setFeedback({ type: "error", message: t("updateError") });
       setTimeout(() => setFeedback(null), 3000);
     } finally {
       setSaving(false);
@@ -169,7 +194,7 @@ export default function ProfessionalDetailPage({
 
   const handleDelete = async () => {
     if (deleteConfirmName !== `${data?.user?.firstName} ${data?.user?.lastName}`) {
-      setFeedback({ type: "error", message: "Le nom saisi ne correspond pas." });
+      setFeedback({ type: "error", message: t("deleteNameMismatch") });
       setTimeout(() => setFeedback(null), 3000);
       return;
     }
@@ -180,7 +205,7 @@ export default function ProfessionalDetailPage({
       if (!res.ok) throw new Error();
       router.push("/admin/dashboard/professionals");
     } catch {
-      setFeedback({ type: "error", message: "Impossible de supprimer le profil." });
+      setFeedback({ type: "error", message: t("deleteError") });
       setTimeout(() => setFeedback(null), 3000);
       setDeleting(false);
     }
@@ -208,11 +233,11 @@ export default function ProfessionalDetailPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nom du patient</TableHead>
-              <TableHead>Courriel</TableHead>
-              <TableHead>Téléphone</TableHead>
-              <TableHead>Dernier RDV</TableHead>
-              <TableHead className="w-16">Action</TableHead>
+              <TableHead>{t("colPatientName")}</TableHead>
+              <TableHead>{t("colEmail")}</TableHead>
+              <TableHead>{t("colPhone")}</TableHead>
+              <TableHead>{t("colLastApt")}</TableHead>
+              <TableHead className="w-16">{t("colAction")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -226,7 +251,7 @@ export default function ProfessionalDetailPage({
                 </TableCell>
                 <TableCell>
                   <Link href={`/admin/dashboard/patients/${client.id}`}>
-                    <Button variant="ghost" size="sm">Voir</Button>
+                    <Button variant="ghost" size="sm">{t("viewBtn")}</Button>
                   </Link>
                 </TableCell>
               </TableRow>
@@ -252,7 +277,7 @@ export default function ProfessionalDetailPage({
               <Badge variant={user.status === "active" ? "default" : "secondary"}>{user.status}</Badge>
             </h1>
             <p className="text-muted-foreground font-light mt-1">
-              Spécialité : {formData.specialty || "Non renseignée"}
+              {t("specialtyLabel")} {formData.specialty || t("noSpecialty")}
             </p>
           </div>
         </div>
@@ -268,36 +293,36 @@ export default function ProfessionalDetailPage({
         {/* Left Col - Info */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-card border border-border/40 rounded-xl p-6">
-            <h2 className="text-xl font-serif font-light mb-4 text-primary">Informations de base</h2>
+            <h2 className="text-xl font-serif font-light mb-4 text-primary">{t("basicInfo")}</h2>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Prénom</Label>
+                <Label>{t("firstName")}</Label>
                 <Input name="firstName" value={formData.firstName} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Nom</Label>
+                <Label>{t("lastName")}</Label>
                 <Input name="lastName" value={formData.lastName} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Courriel</Label>
+                <Label>{t("email")}</Label>
                 <Input name="email" value={formData.email} onChange={handleChange} type="email" />
               </div>
               <div className="space-y-2">
-                <Label>Téléphone</Label>
+                <Label>{t("phone")}</Label>
                 <Input name="phone" value={formData.phone} onChange={handleChange} type="tel" />
               </div>
               <div className="space-y-2">
-                <Label>Ville / Localité</Label>
+                <Label>{t("location")}</Label>
                 <Input name="location" value={formData.location} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Statut du compte</Label>
+                <Label>{t("accountStatus")}</Label>
                 <Select value={formData.status} onValueChange={(v) => handleSelectChange("status", v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Actif</SelectItem>
-                    <SelectItem value="pending">En attente / En révision</SelectItem>
-                    <SelectItem value="inactive">Inactif</SelectItem>
+                    <SelectItem value="active">{t("statusActive")}</SelectItem>
+                    <SelectItem value="pending">{t("statusPending")}</SelectItem>
+                    <SelectItem value="inactive">{t("statusInactive")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -305,63 +330,62 @@ export default function ProfessionalDetailPage({
             
             <hr className="my-6 border-border" />
             
-            <h2 className="text-xl font-serif font-light mb-4 text-primary">Détails professionnels</h2>
+            <h2 className="text-xl font-serif font-light mb-4 text-primary">{t("profDetails")}</h2>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Spécialité principale</Label>
+                <Label>{t("mainSpecialty")}</Label>
                 <Input name="specialty" value={formData.specialty} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Numéro de permis (OPQ, Ordre...)</Label>
+                <Label>{t("licenseNumber")}</Label>
                 <Input name="license" value={formData.license} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Années d'expérience</Label>
+                <Label>{t("yearsExperience")}</Label>
                 <Input name="yearsOfExperience" type="number" value={formData.yearsOfExperience} onChange={handleChange} min={0} />
               </div>
               <div className="space-y-2">
-                <Label>Biographie / Description courte</Label>
+                <Label>{t("bio")}</Label>
                 <Textarea name="bio" value={formData.bio} onChange={handleChange} rows={4} />
               </div>
             </div>
             <div className="mt-6 flex justify-end">
               <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                Sauvegarder les modifications
+                {t("saveChanges")}
               </Button>
             </div>
           </div>
 
           <div className="bg-red-50 dark:bg-red-950/10 border border-red-200 dark:border-red-900 rounded-xl p-6">
             <h2 className="text-lg font-serif font-light mb-2 text-red-600 dark:text-red-400 flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5" /> Danger Zone
+              <ShieldAlert className="h-5 w-5" /> {t("dangerZone")}
             </h2>
             <p className="text-sm font-light mb-4 text-red-800/80 dark:text-red-200/80">
-              La suppression de ce professionnel est définitive. Ses patients actifs devront être réassignés.
+              {t("deleteWarning")}
             </p>
             <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
               <DialogTrigger asChild>
                 <Button variant="destructive" className="w-full gap-2">
                   <Trash2 className="h-4 w-4" />
-                  Supprimer Professionnel
+                  {t("deleteButton")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Confirmer la suppression</DialogTitle>
-                  <DialogDescription>
-                    Veuillez taper <strong>{user.firstName} {user.lastName}</strong> pour confirmer la désactivation de ce profil.
+                  <DialogTitle>{t("deleteConfirmTitle")}</DialogTitle>
+                  <DialogDescription dangerouslySetInnerHTML={{ __html: t.raw("deleteConfirmDesc").replace("{name}", `${user.firstName} ${user.lastName}`) }}>
                   </DialogDescription>
                 </DialogHeader>
                 <Input
                   value={deleteConfirmName}
                   onChange={(e) => setDeleteConfirmName(e.target.value)}
-                  placeholder="Tapez le nom complet"
+                  placeholder={t("typeFullNamePlaceholder")}
                 />
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Annuler</Button>
+                  <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>{t("cancel")}</Button>
                   <Button variant="destructive" onClick={handleDelete} disabled={deleting || deleteConfirmName !== `${user.firstName} ${user.lastName}`}>
-                    {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmer"}
+                    {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("confirm")}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -373,47 +397,115 @@ export default function ProfessionalDetailPage({
         <div className="lg:col-span-2">
           <div className="bg-card border border-border/40 rounded-xl p-6 h-full shadow-sm">
             <h2 className="text-2xl font-serif font-light mb-6 flex items-center gap-2">
-              <Users2 className="h-6 w-6 text-primary" /> Dossiers Cliniques (Caseload)
+              <Users2 className="h-6 w-6 text-primary" /> {t("caseloadTitle")}
             </h2>
             
-            <Tabs defaultValue="ongoing" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-8">
-                <TabsTrigger value="proposed" className="flex items-center gap-2">
-                  <Inbox className="h-4 w-4" /> Proposés ({caseload.proposed.length})
+            <Tabs defaultValue={initialTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-5 mb-8">
+                <TabsTrigger value="proposed" className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Inbox className="h-4 w-4" /> {t("proposed", { count: caseload.proposed.length })}
                 </TabsTrigger>
-                <TabsTrigger value="accepted" className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" /> Acceptés ({caseload.accepted.length})
+                <TabsTrigger value="accepted" className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Clock className="h-4 w-4" /> {t("accepted", { count: caseload.accepted.length })}
                 </TabsTrigger>
-                <TabsTrigger value="ongoing" className="flex items-center gap-2">
-                  <PlayCircle className="h-4 w-4" /> En cours ({caseload.ongoing.length})
+                <TabsTrigger value="ongoing" className="flex items-center gap-2 text-xs sm:text-sm">
+                  <PlayCircle className="h-4 w-4" /> {t("ongoing", { count: caseload.ongoing.length })}
                 </TabsTrigger>
-                <TabsTrigger value="completed" className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" /> Terminés ({caseload.completed.length})
+                <TabsTrigger value="completed" className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="h-4 w-4" /> {t("completed", { count: caseload.completed.length })}
+                </TabsTrigger>
+                <TabsTrigger value="ledger" className="flex items-center gap-2 text-xs sm:text-sm">
+                  <History className="h-4 w-4" /> {t("ledgerTab")}
                 </TabsTrigger>
               </TabsList>
               
               <TabsContent value="proposed" className="mt-0">
-                <h3 className="text-lg font-medium mb-3">Triage — Clients proprosés</h3>
-                <p className="text-muted-foreground text-sm mb-4">Ces clients ont été proposés par le système et attendent une réponse du professionnel.</p>
-                {renderClientList(caseload.proposed, "Aucun client proposé en attente.")}
+                <h3 className="text-lg font-medium mb-3">{t("triageTitle")}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{t("triageDesc")}</p>
+                {renderClientList(caseload.proposed, t("triageEmpty"))}
               </TabsContent>
               
               <TabsContent value="accepted" className="mt-0">
-                <h3 className="text-lg font-medium mb-3">Premières séances planifiées</h3>
-                <p className="text-muted-foreground text-sm mb-4">La première séance est planifiée mais le processus thérapeutique complet n'est pas encore "en cours".</p>
-                {renderClientList(caseload.accepted, "Aucun client dans ce statut.")}
+                <h3 className="text-lg font-medium mb-3">{t("acceptedTitle")}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{t("acceptedDesc")}</p>
+                {renderClientList(caseload.accepted, t("acceptedEmpty"))}
               </TabsContent>
               
               <TabsContent value="ongoing" className="mt-0">
-                <h3 className="text-lg font-medium mb-3">Thérapies en cours</h3>
-                <p className="text-muted-foreground text-sm mb-4">La liste des clients réguliers actifs de ce professionnel.</p>
-                {renderClientList(caseload.ongoing, "Aucun suivi en cours.")}
+                <h3 className="text-lg font-medium mb-3">{t("ongoingTitle")}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{t("ongoingDesc")}</p>
+                {renderClientList(caseload.ongoing, t("ongoingEmpty"))}
               </TabsContent>
               
               <TabsContent value="completed" className="mt-0">
-                <h3 className="text-lg font-medium mb-3">Dossiers terminés</h3>
-                <p className="text-muted-foreground text-sm mb-4">Historique des clients pour lesquels l'accompagnement est officiellement terminé.</p>
-                {renderClientList(caseload.completed, "Aucun dossier terminé.")}
+                <h3 className="text-lg font-medium mb-3">{t("completedTitle")}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{t("completedDesc")}</p>
+                {renderClientList(caseload.completed, t("completedEmpty"))}
+              </TabsContent>
+
+              <TabsContent value="ledger" className="mt-0 space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl border bg-muted/20">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t("lifetimeBalance")}</p>
+                    <p className={`text-2xl font-mono mt-1 ${ledger?.balanceLifetimeCad > 0 ? "text-green-600" : ""}`}>
+                      {ledger ? `${ledger.balanceLifetimeCad.toFixed(2)} $` : "—"}
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-xl border bg-muted/20">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t("currentCycleBalance")} ({ledger?.currentCycleKey})</p>
+                    <p className={`text-2xl font-mono mt-1 ${ledger?.balanceCurrentCycleCad > 0 ? "text-green-600" : ""}`}>
+                      {ledger ? `${ledger.balanceCurrentCycleCad.toFixed(2)} $` : "—"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="border rounded-xl bg-card overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[120px]">{t("colDate")}</TableHead>
+                        <TableHead>{t("colDescription")}</TableHead>
+                        <TableHead>{t("colEntryKind")}</TableHead>
+                        <TableHead className="text-right">{t("colAmount")}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loadingLedger ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-12">
+                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                          </TableCell>
+                        </TableRow>
+                      ) : !ledger?.entries || ledger.entries.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
+                            {t("noEntries", { defaultValue: "Aucune transaction." })}
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        ledger.entries.map((entry: any) => (
+                          <TableRow key={entry._id}>
+                            <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
+                              {new Date(entry.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className="max-w-[200px] truncate" title={entry.notes || entry.reference}>
+                              {entry.notes || entry.reference || "—"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={entry.entryKind === "debit" ? "secondary" : "default"} className="text-[10px] uppercase">
+                                {entry.entryKind === "debit" ? t("kindDebit") : t("kindCredit")}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className={`text-right font-mono font-medium ${entry.entryKind === "debit" ? "text-red-500" : "text-green-600"}`}>
+                              {entry.entryKind === "debit" ? "-" : "+"}
+                              {(entry.entryKind === "debit" ? entry.payoutAmountCad : entry.netToProfessionalCad).toFixed(2)} $
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </TabsContent>
             </Tabs>
           </div>

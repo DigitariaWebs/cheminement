@@ -79,6 +79,45 @@ export async function GET(
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
+      adminStatus: await (async () => {
+        let color = "gray";
+        let label = "Nouveau prospect";
+
+        // Check for failed payments or late Interac
+        const hasFailedPayment = await Appointment.exists({
+          clientId: id,
+          "payment.status": "failed",
+        });
+
+        const hasLateInterac = await Appointment.exists({
+          clientId: id,
+          "payment.status": { $ne: "paid" },
+          "payment.transferDueAt": { $lt: new Date() },
+        });
+
+        if (hasFailedPayment || hasLateInterac) {
+          color = "red";
+          label = "Échec de paiement";
+        } else if (user.paymentGuaranteeStatus === "green") {
+          color = "green";
+          label = "Ok";
+        } else {
+          const scheduledAppointment = await Appointment.findOne({
+            clientId: id,
+            status: "scheduled",
+          }).lean();
+
+          if (scheduledAppointment) {
+            color = "yellow";
+            label = "RDV fixé sans carte";
+          } else {
+            color = "gray";
+            label = "Nouveau prospect";
+          }
+        }
+        return { color, label };
+      })(),
+
       profile: profile
         ? {
             specialty: profile.specialty || "",

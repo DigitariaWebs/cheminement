@@ -3,6 +3,15 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import { authOptions } from "@/lib/auth";
+import { sendPaymentGuaranteeDay1Reminder } from "@/lib/notifications";
+
+function getBaseUrl(): string {
+  return (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000"
+  );
+}
 
 /**
  * POST /api/appointments/[id]/accept
@@ -69,19 +78,33 @@ export async function POST(
       );
     }
 
-    // Accept the appointment
+    // Accept the appointment and set it as scheduled
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       {
         professionalId: session.user.id,
         routingStatus: "accepted",
+        status: "scheduled",
       },
       { new: true },
     )
       .populate("clientId", "firstName lastName email phone location")
       .populate("professionalId", "firstName lastName email phone");
 
-    // TODO: Send notification to client about acceptance
+    if (updatedAppointment && updatedAppointment.clientId) {
+      const client = updatedAppointment.clientId as any;
+      const billingUrl = `${getBaseUrl()}/client/dashboard/billing`;
+
+      // Trigger Day 1 payment guarantee reminder
+      await sendPaymentGuaranteeDay1Reminder({
+        clientName: `${client.firstName} ${client.lastName}`.trim(),
+        clientEmail: client.email,
+        billingUrl,
+      }).catch((err) => 
+        console.error("Error sending payment guarantee reminder:", err)
+      );
+    }
+
     // TODO: Send notification to other proposed professionals that appointment is taken
 
     return NextResponse.json({

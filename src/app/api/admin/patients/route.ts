@@ -103,6 +103,44 @@ export async function GET(req: NextRequest) {
           ? `${professional.firstName} ${professional.lastName}`
           : undefined;
 
+        // Logic for adminStatusColor and label
+        let adminStatusColor = "gray";
+        let adminStatusLabel = "Nouveau prospect";
+
+        // Check for failed payments or late Interac
+        const hasFailedPayment = await Appointment.exists({
+          clientId: patient._id,
+          "payment.status": "failed",
+        });
+
+        const hasLateInterac = await Appointment.exists({
+          clientId: patient._id,
+          "payment.status": { $ne: "paid" },
+          "payment.transferDueAt": { $lt: new Date() },
+        });
+
+        if (hasFailedPayment || hasLateInterac) {
+          adminStatusColor = "red";
+          adminStatusLabel = "Échec de paiement";
+        } else if (patient.paymentGuaranteeStatus === "green") {
+          adminStatusColor = "green";
+          adminStatusLabel = "Ok";
+        } else {
+          const scheduledAppointment = await Appointment.findOne({
+            clientId: patient._id,
+            status: "scheduled",
+          }).lean();
+
+          if (scheduledAppointment) {
+            adminStatusColor = "yellow";
+            adminStatusLabel = "RDV fixé sans carte";
+          } else {
+            // Default to Gray / Nouveau prospect
+            adminStatusColor = "gray";
+            adminStatusLabel = "Nouveau prospect";
+          }
+        }
+
         return {
           id: patient._id.toString(),
           name: `${patient.firstName} ${patient.lastName}`,
@@ -116,7 +154,10 @@ export async function GET(req: NextRequest) {
           joinedDate: patient.createdAt.toISOString().split("T")[0],
           totalSessions,
           issueType: "General", // This would come from appointment data or profile
+          adminStatusColor,
+          adminStatusLabel,
         };
+
       }),
     );
 

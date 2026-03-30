@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   Loader2,
   AlertCircle,
@@ -11,11 +12,21 @@ import {
   AlertTriangle,
   BookOpen,
   MinusCircle,
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
@@ -37,15 +48,30 @@ type AnomaliesData = {
   counts: { stripeFailures: number; interacPendingTooLong: number };
 };
 
+type BalancePro = {
+  _id: string;
+  name: string;
+  email: string;
+  status: string;
+  balanceLifetimeCad: number;
+  balanceCurrentCycleCad: number;
+};
+
+type BalancesData = {
+  professionals: BalancePro[];
+  currentCycleKey: string;
+};
+
 export default function AdminAccountingPage() {
   const t = useTranslations("Admin.accounting");
   const [tab, setTab] = useState<
-    "collections" | "anomalies" | "exports" | "payout"
+    "collections" | "anomalies" | "balances" | "exports" | "payout"
   >("collections");
   const [collections, setCollections] = useState<CollectionsData | null>(
     null,
   );
   const [anomalies, setAnomalies] = useState<AnomaliesData | null>(null);
+  const [balances, setBalances] = useState<BalancesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [exportYear, setExportYear] = useState(
@@ -70,11 +96,17 @@ export default function AdminAccountingPage() {
     setAnomalies(await res.json());
   }, []);
 
+  const loadBalances = useCallback(async () => {
+    const res = await fetch("/api/admin/accounting/balances");
+    if (!res.ok) throw new Error("balances");
+    setBalances(await res.json());
+  }, []);
+
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      await Promise.all([loadCollections(), loadAnomalies()]);
+      await Promise.all([loadCollections(), loadAnomalies(), loadBalances()]);
     } catch {
       setError(t("loadError"));
     } finally {
@@ -162,6 +194,7 @@ export default function AdminAccountingPage() {
           [
             ["collections", t("tabCollections")],
             ["anomalies", t("tabAnomalies")],
+            ["balances", t("tabBalances")],
             ["exports", t("tabExports")],
             ["payout", t("tabPayout")],
           ] as const
@@ -306,6 +339,74 @@ export default function AdminAccountingPage() {
                 </CardContent>
               </Card>
             </div>
+          )}
+
+          {tab === "balances" && balances && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-primary" />
+                      {t("balancesTitle")}
+                    </CardTitle>
+                    <CardDescription>{t("balancesDesc")}</CardDescription>
+                  </div>
+                  <Badge variant="outline">Cycle: {balances.currentCycleKey}</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t("colPro")}</TableHead>
+                        <TableHead>{t("colStatus")}</TableHead>
+                        <TableHead className="text-right">{t("colCycleBalance")}</TableHead>
+                        <TableHead className="text-right">{t("colLifetimeBalance")}</TableHead>
+                        <TableHead className="text-right">{t("colActions")}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {balances.professionals.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                            {t("empty")}
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        balances.professionals.map((pro) => (
+                          <TableRow key={pro._id}>
+                            <TableCell>
+                              <div className="font-medium">{pro.name}</div>
+                              <div className="text-xs text-muted-foreground">{pro.email}</div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={pro.status === "active" ? "default" : "secondary"} className="capitalize">
+                                {pro.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className={`text-right font-mono ${pro.balanceCurrentCycleCad > 0 ? "text-green-600" : ""}`}>
+                              {pro.balanceCurrentCycleCad.toFixed(2)} $
+                            </TableCell>
+                            <TableCell className={`text-right font-mono ${pro.balanceLifetimeCad > 0 ? "text-green-600" : ""}`}>
+                              {pro.balanceLifetimeCad.toFixed(2)} $
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="ghost" size="sm" asChild>
+                                <Link href={`/admin/dashboard/professionals/${pro._id}?tab=ledger`}>
+                                  {t("viewLedger")}
+                                </Link>
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {tab === "exports" && (

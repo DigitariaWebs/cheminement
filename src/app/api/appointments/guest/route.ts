@@ -7,6 +7,7 @@ import { calculateAppointmentPricing } from "@/lib/pricing";
 import {
   sendGuestBookingConfirmation,
   sendProfessionalNotification,
+  sendServiceRequestOnboardingEmail,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
 import { isMinor } from "@/lib/guardian-utils";
@@ -160,6 +161,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    let isNewGuest = false;
+
     // Find or create guest user
     let guestUser = await User.findOne({
       email: email.toLowerCase(),
@@ -186,6 +189,7 @@ export async function POST(req: NextRequest) {
         language: "en",
       });
       await guestUser.save();
+      isNewGuest = true;
     }
 
     // Only validate professional if one is specified
@@ -419,6 +423,17 @@ export async function POST(req: NextRequest) {
         lovedOneIsMinor,
       }).catch((err) =>
         console.error("Error sending guest confirmation email:", err),
+      );
+    }
+    
+    // Automatically send onboarding invitation to new guests (Step 2 of the workflow)
+    if (isNewGuest) {
+      sendServiceRequestOnboardingEmail({
+        toName: firstName,
+        toEmail: email,
+        locale: notificationLocale === "fr" ? "fr" : "en",
+      }).catch((err) => 
+        console.error("Error sending onboarding email:", err)
       );
     }
 

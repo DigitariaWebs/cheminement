@@ -41,6 +41,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function PatientDetailPage({
   params,
@@ -48,6 +49,7 @@ export default function PatientDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const t = useTranslations("AdminDashboard.patientDetail");
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,7 @@ export default function PatientDetailPage({
         status: userData.user.status || "active",
       });
     } catch (error) {
-      setFeedback({ type: "error", message: "Impossible de charger le dossier patient." });
+      setFeedback({ type: "error", message: t("loadError") });
       router.push("/admin/dashboard/patients");
     } finally {
       setLoading(false);
@@ -132,11 +134,11 @@ export default function PatientDetailPage({
 
       if (!res.ok) throw new Error();
 
-      setFeedback({ type: "success", message: "Le profil a été mis à jour." });
+      setFeedback({ type: "success", message: t("updateSuccess") });
       setTimeout(() => setFeedback(null), 3000);
       fetchData();
     } catch {
-      setFeedback({ type: "error", message: "Impossible de mettre à jour le profil." });
+      setFeedback({ type: "error", message: t("updateError") });
       setTimeout(() => setFeedback(null), 3000);
     } finally {
       setSaving(false);
@@ -145,7 +147,7 @@ export default function PatientDetailPage({
 
   const handleDelete = async () => {
     if (deleteConfirmName !== `${data?.user?.firstName} ${data?.user?.lastName}`) {
-      setFeedback({ type: "error", message: "Le nom saisi ne correspond pas." });
+      setFeedback({ type: "error", message: t("deleteNameMismatch") });
       setTimeout(() => setFeedback(null), 3000);
       return;
     }
@@ -156,7 +158,7 @@ export default function PatientDetailPage({
       if (!res.ok) throw new Error();
       router.push("/admin/dashboard/patients");
     } catch {
-      setFeedback({ type: "error", message: "Impossible de supprimer le profil." });
+      setFeedback({ type: "error", message: t("deleteError") });
       setTimeout(() => setFeedback(null), 3000);
       setDeleting(false);
     }
@@ -209,11 +211,37 @@ export default function PatientDetailPage({
   const isGreen = user.paymentGuaranteeStatus === "green";
   const isManual = user.paymentGuaranteeSource === "interac_trust";
 
-  const getGuaranteeBadge = () => {
-    if (isGreen && isManual) return <span className="inline-flex h-3 w-3 mx-2 rounded-full bg-blue-500 shadow-sm" title="Garantie manuelle (Admin)" />;
-    if (isGreen) return <span className="inline-flex h-3 w-3 mx-2 rounded-full bg-green-500 shadow-sm" title="Garantie Stripe" />;
-    return <span className="inline-flex h-3 w-3 mx-2 rounded-full bg-red-500 shadow-sm" title="Aucune garantie CB" />;
+  const getAdminStatusBadge = (color?: string, label?: string) => {
+    const defaultColor = "bg-gray-100 text-gray-700";
+    const defaultLabel = "Inconnu";
+
+    const styles: Record<string, string> = {
+      gray: "bg-gray-100 text-gray-600 border-gray-200",
+      yellow: "bg-yellow-50 text-yellow-700 border-yellow-200",
+      green: "bg-green-50 text-green-700 border-green-200",
+      red: "bg-red-50 text-red-700 border-red-200",
+    };
+
+    const dotStyles: Record<string, string> = {
+      gray: "bg-gray-400",
+      yellow: "bg-yellow-500",
+      green: "bg-green-500",
+      red: "bg-red-500",
+    };
+
+    const style = color ? styles[color] : defaultColor;
+    const dotStyle = color ? dotStyles[color] : "bg-gray-400";
+
+    return (
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border ml-4 ${style}`}
+      >
+        <span className={`h-1.5 w-1.5 rounded-full ${dotStyle}`} />
+        {label || defaultLabel}
+      </span>
+    );
   };
+
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -226,7 +254,7 @@ export default function PatientDetailPage({
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground flex items-center">
             {user.firstName} {user.lastName}
-            {getGuaranteeBadge()}
+            {getAdminStatusBadge(data.adminStatus?.color, data.adminStatus?.label)}
           </h1>
           <p className="text-muted-foreground font-light mt-1">
             Rejoint le {new Date(user.createdAt).toLocaleDateString()}
@@ -244,26 +272,26 @@ export default function PatientDetailPage({
         {/* Left Col - Info */}
         <div className="col-span-1 md:col-span-2 space-y-6">
           <div className="bg-card border border-border/40 rounded-xl p-6">
-            <h2 className="text-xl font-serif font-light mb-4">Informations Personnelles</h2>
+            <h2 className="text-xl font-serif font-light mb-4">{t("basicInfo")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Prénom</Label>
+                <Label>{t("firstName")}</Label>
                 <Input name="firstName" value={formData.firstName} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Nom</Label>
+                <Label>{t("lastName")}</Label>
                 <Input name="lastName" value={formData.lastName} onChange={handleChange} />
               </div>
               <div className="space-y-2">
-                <Label>Courriel</Label>
+                <Label>{t("email")}</Label>
                 <Input name="email" value={formData.email} onChange={handleChange} type="email" />
               </div>
               <div className="space-y-2">
-                <Label>Téléphone</Label>
+                <Label>{t("phone")}</Label>
                 <Input name="phone" value={formData.phone} onChange={handleChange} type="tel" />
               </div>
               <div className="space-y-2">
-                <Label>Adresse / Ville</Label>
+                <Label>{t("location")}</Label>
                 <Input name="location" value={formData.location} onChange={handleChange} />
               </div>
               <div className="space-y-2">
@@ -277,13 +305,13 @@ export default function PatientDetailPage({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Statut d'accès</Label>
+                <Label>{t("accountStatus")}</Label>
                 <Select value={formData.status} onValueChange={(v) => handleSelectChange("status", v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Actif</SelectItem>
-                    <SelectItem value="pending">En attente / Bloqué</SelectItem>
-                    <SelectItem value="inactive">Inactif</SelectItem>
+                    <SelectItem value="active">{t("statusActive")}</SelectItem>
+                    <SelectItem value="pending">{t("statusPending")}</SelectItem>
+                    <SelectItem value="inactive">{t("statusInactive")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -291,7 +319,7 @@ export default function PatientDetailPage({
             <div className="mt-6 flex justify-end">
               <Button onClick={handleSave} disabled={saving} className="gap-2">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                Sauvegarder
+                {t("saveChanges")}
               </Button>
             </div>
           </div>
@@ -356,8 +384,9 @@ export default function PatientDetailPage({
           <div className="bg-card border border-border/40 rounded-xl p-6">
             <h2 className="text-lg font-serif font-light mb-4">Actions de Garantie</h2>
             <div className="space-y-3">
-              <div className="p-3 bg-muted/50 rounded-lg text-sm mb-2">
-                <strong>Statut :</strong> {isGreen ? (isManual ? "Bleu (Approuvé Admin)" : "Vert (Stripe)") : "Rouge (Aucune CF)"}
+              <div className="p-3 bg-muted/50 rounded-lg text-sm mb-2 flex items-center justify-between">
+                <strong>Statut :</strong>
+                {getAdminStatusBadge(data.adminStatus?.color, data.adminStatus?.label)}
               </div>
               
               <Button
@@ -396,34 +425,33 @@ export default function PatientDetailPage({
 
           <div className="bg-red-50 dark:bg-red-950/10 border border-red-200 dark:border-red-900 rounded-xl p-6">
             <h2 className="text-lg font-serif font-light mb-2 text-red-600 dark:text-red-400 flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5" /> Danger Zone
+              <ShieldAlert className="h-5 w-5" /> {t("dangerZone")}
             </h2>
             <p className="text-sm font-light mb-4 text-red-800/80 dark:text-red-200/80">
-              La suppression d'un profil est définitive. Les données de rendez-vous seront conservées anonymement pour la comptabilité.
+              {t("deleteWarning")}
             </p>
             <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
               <DialogTrigger asChild>
                 <Button variant="destructive" className="w-full gap-2">
                   <Trash2 className="h-4 w-4" />
-                  Supprimer Profil
+                  {t("deleteConfirm")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Confirmer la suppression</DialogTitle>
-                  <DialogDescription>
-                    Veuillez taper <strong>{user.firstName} {user.lastName}</strong> pour confirmer la désactivation de ce profil.
+                  <DialogTitle>{t("deleteConfirmTitle")}</DialogTitle>
+                  <DialogDescription dangerouslySetInnerHTML={{ __html: t.raw("deleteConfirmDesc").replace("{name}", `${user.firstName} ${user.lastName}`) }}>
                   </DialogDescription>
                 </DialogHeader>
                 <Input
                   value={deleteConfirmName}
                   onChange={(e) => setDeleteConfirmName(e.target.value)}
-                  placeholder="Tapez le nom complet"
+                  placeholder={t("typeFullNamePlaceholder")}
                 />
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Annuler</Button>
+                  <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>{t("cancel")}</Button>
                   <Button variant="destructive" onClick={handleDelete} disabled={deleting || deleteConfirmName !== `${user.firstName} ${user.lastName}`}>
-                    {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmer"}
+                    {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("confirm")}
                   </Button>
                 </DialogFooter>
               </DialogContent>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle2, Mail, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -22,6 +23,7 @@ interface PendingRequest {
 }
 
 export default function AdminPaymentTrustPage() {
+  const t = useTranslations("AdminDashboard.paymentTrust");
   const [requests, setRequests] = useState<PendingRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +35,7 @@ export default function AdminPaymentTrustPage() {
       setError(null);
       const res = await fetch("/api/admin/payment-guarantee-requests");
       if (!res.ok) {
-        throw new Error("Impossible de charger la file d’attente");
+        throw new Error(t("errorLoad"));
       }
       const data = await res.json();
       setRequests(data.requests ?? []);
@@ -57,7 +59,7 @@ export default function AdminPaymentTrustPage() {
       );
       if (!res.ok) {
         const j = await res.json();
-        throw new Error(j.error || "Échec de la validation");
+        throw new Error(j.error || t("errorApprove"));
       }
       await load();
     } catch (e) {
@@ -71,12 +73,10 @@ export default function AdminPaymentTrustPage() {
     <div className="space-y-8 max-w-5xl">
       <div>
         <h1 className="text-3xl font-serif font-light text-foreground">
-          Garanties Interac / virement
+          {t("titleInterac")}
         </h1>
         <p className="text-muted-foreground font-light mt-2">
-          Validez manuellement les profils pour passer le client en Statut vert
-          (entente de confiance). Le paiement doit être reçu dans les 24 h
-          après chaque séance.
+          {t("descInterac")}
         </p>
       </div>
 
@@ -93,15 +93,15 @@ export default function AdminPaymentTrustPage() {
           </div>
         ) : requests.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground font-light">
-            Aucune demande en attente.
+            {t("empty")}
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="font-light">Client</TableHead>
-                <TableHead className="font-light">Contact</TableHead>
-                <TableHead className="font-light text-right">Action</TableHead>
+                <TableHead className="font-light">{t("client")}</TableHead>
+                <TableHead className="font-light">{t("contact")}</TableHead>
+                <TableHead className="font-light text-right">{t("action")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -133,7 +133,7 @@ export default function AdminPaymentTrustPage() {
                       ) : (
                         <CheckCircle2 className="h-4 w-4" />
                       )}
-                      Statut vert
+                      {t("approveBtn")}
                     </Button>
                   </TableCell>
                 </TableRow>

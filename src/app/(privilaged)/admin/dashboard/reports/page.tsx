@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   BarChart3,
   TrendingUp,
@@ -54,6 +55,7 @@ interface ReportData {
 }
 
 export default function ReportsPage() {
+  const t = useTranslations("AdminDashboard.reports");
   const [period, setPeriod] = useState<ReportPeriod>("month");
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -155,10 +157,10 @@ export default function ReportsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Reports & Analytics
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Platform-wide metrics and performance insights
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -211,10 +213,10 @@ export default function ReportsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Reports & Analytics
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Platform-wide metrics and performance insights
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -224,7 +226,7 @@ export default function ReportsPage() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-light text-foreground mb-2">
-                Failed to load reports data
+                {t("failedLoad")}
               </h3>
               <p className="text-muted-foreground mb-4">{error}</p>
               <button
@@ -232,7 +234,7 @@ export default function ReportsPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           </div>
@@ -251,10 +253,10 @@ export default function ReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Reports & Analytics
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Platform-wide metrics and performance insights
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -264,15 +266,15 @@ export default function ReportsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="week">{t("thisWeek")}</SelectItem>
+              <SelectItem value="month">{t("thisMonth")}</SelectItem>
+              <SelectItem value="quarter">{t("thisQuarter")}</SelectItem>
+              <SelectItem value="year">{t("thisYear")}</SelectItem>
             </SelectContent>
           </Select>
           <Button className="gap-2" onClick={exportReport}>
             <Download className="h-4 w-4" />
-            Export Report
+            {t("exportReport")}
           </Button>
         </div>
       </div>
@@ -282,7 +284,7 @@ export default function ReportsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Revenue
+                {t("totalRevenue")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 ${metrics.totalRevenue.toLocaleString()}
@@ -298,7 +300,7 @@ export default function ReportsPage() {
                   {metrics.revenueChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  vs last period
+                  {t("vsLastPeriod")}
                 </span>
               </div>
             </div>
@@ -312,7 +314,7 @@ export default function ReportsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Sessions
+                {t("totalSessions")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 {metrics.totalSessions.toLocaleString()}
@@ -328,7 +330,7 @@ export default function ReportsPage() {
                   {metrics.sessionsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  vs last period
+                  {t("vsLastPeriod")}
                 </span>
               </div>
             </div>
@@ -342,7 +344,7 @@ export default function ReportsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Active Professionals
+                {t("activeProfessionals")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 {metrics.activeProfessionals}
@@ -358,7 +360,7 @@ export default function ReportsPage() {
                   {metrics.professionalsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  vs last period
+                  {t("vsLastPeriod")}
                 </span>
               </div>
             </div>
@@ -372,7 +374,7 @@ export default function ReportsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Active Patients
+                {t("activePatients")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 {metrics.activePatients}
@@ -388,7 +390,7 @@ export default function ReportsPage() {
                   {metrics.patientsChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  vs last period
+                  {t("vsLastPeriod")}
                 </span>
               </div>
             </div>
@@ -402,13 +404,13 @@ export default function ReportsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <h2 className="text-xl font-serif font-light text-foreground mb-4">
-            Revenue Breakdown
+            {t("revenueBreakdown")}
           </h2>
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-light text-muted-foreground">
-                  Session Fees
+                  {t("sessionFees")}
                 </span>
                 <span className="text-sm font-medium text-foreground">
                   ${revenueBreakdown.sessionFees.toLocaleString()}
@@ -430,7 +432,7 @@ export default function ReportsPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-light text-muted-foreground">
-                    Resource Sales
+                    {t("resourceSales")}
                   </span>
                   <span className="text-sm font-medium text-foreground">
                     ${revenueBreakdown.resourceSales.toLocaleString()}
@@ -454,7 +456,7 @@ export default function ReportsPage() {
 
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <h2 className="text-xl font-serif font-light text-foreground mb-4">
-            Top Issue Types
+            {t("topIssueTypes")}
           </h2>
           <div className="space-y-3">
             {topIssueTypes.length > 0 ? (
@@ -467,14 +469,14 @@ export default function ReportsPage() {
                     {issue.type}
                   </span>
                   <span className="text-sm font-medium text-foreground">
-                    {issue.sessions} sessions
+                    {issue.sessions} {t("sessions")}
                   </span>
                 </div>
               ))
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No issue type data available</p>
+                <p>{t("noIssueData")}</p>
               </div>
             )}
           </div>
@@ -483,26 +485,26 @@ export default function ReportsPage() {
 
       <div className="rounded-xl bg-card p-6 border border-border/40">
         <h2 className="text-xl font-serif font-light text-foreground mb-4">
-          Professional Performance
+          {t("profPerformance")}
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted/30">
               <tr>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Professional
+                  {t("profColumn")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Total Sessions
+                  {t("totalSessions")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Active Clients
+                  {t("activeClientsColumn")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Revenue Generated
+                  {t("revenueGeneratedColumn")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Avg. Rating
+                  {t("avgRatingColumn")}
                 </th>
               </tr>
             </thead>
@@ -537,7 +539,7 @@ export default function ReportsPage() {
                   <td colSpan={5} className="p-12 text-center">
                     <Users className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
                     <p className="text-muted-foreground">
-                      No professional performance data available
+                      {t("noProfData")}
                     </p>
                   </td>
                 </tr>
