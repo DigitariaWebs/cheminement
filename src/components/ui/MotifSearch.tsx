@@ -1,52 +1,68 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useStringSearch } from "@/hooks/useMotifSearch";
+"use client";
+
+import React, { useMemo, useRef, useEffect, useState } from "react";
+import {
+  buildMotifSearchRecords,
+  useDebouncedSmartMotifSearch,
+} from "@/hooks/useMotifSearch";
 import { MOTIFS } from "@/data/motif";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
+import { MOTIF_SEARCH_EXTRAS } from "@/config/motifSearch";
 
 interface MotifSearchProps {
   value: string | string[];
   onChange: (value: string | string[]) => void;
   placeholder?: string;
-  /** Libellé du bouton (ex. "Rechercher") */
+  /** @deprecated Plus de bouton recherche — conservé pour compatibilité */
   searchButtonLabel?: string;
   disabled?: boolean;
   className?: string;
   maxSelections?: number;
   multiSelect?: boolean;
-  /** Custom list of items to search through. Defaults to MOTIFS. */
+  /** Liste personnalisée (ex. objectifs thérapie). Pas d’extras MOTIF_SEARCH par défaut. */
   items?: string[];
 }
 
 /**
- * MotifSearch Component
- * Petit moteur de recherche pour les motifs : champ de recherche avec icône,
- * résultats affichés en liste sous la barre (pas une liste déroulante).
- * Recherche floue (fuzzy), single ou multi-sélection (max 3).
+ * Smart-Suggest : suggestions dès le 1er caractère, debounce 300 ms,
+ * synonymes / acronymes (config/motifSearch), multi-sélection avec tags × supprimables.
  */
 export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
   (
     {
       value = "",
       onChange,
-      placeholder = "Rechercher un motif (ex. anxiété, burnout…)",
-      searchButtonLabel = "Rechercher",
+      placeholder = "Rechercher un motif (ex. anxiété, TCC, EMDR…)",
       disabled = false,
       className,
-      maxSelections = 3,
+      maxSelections: maxSelectionsProp,
       multiSelect = false,
       items: customItems,
     },
     ref,
   ) => {
+    const t = useTranslations("MotifSearch");
+    const maxSelections =
+      maxSelectionsProp ?? (multiSelect ? 10 : 1);
+
     const searchItems = customItems ?? MOTIFS;
-    const { query, setQuery, results } = useStringSearch(searchItems);
+    const records = useMemo(() => {
+      const extras =
+        customItems === undefined ? MOTIF_SEARCH_EXTRAS : {};
+      return buildMotifSearchRecords(searchItems, extras);
+    }, [searchItems, customItems]);
+
+    const { inputQuery, setInputQuery, debouncedQuery, results } =
+      useDebouncedSmartMotifSearch(records, { debounceMs: 300 });
+
     const [isOpen, setIsOpen] = useState(false);
-    /** La recherche (affichage des résultats) ne se fait qu'après clic sur le bouton */
-    const [searchTriggered, setSearchTriggered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const isTypingPending =
+      inputQuery.trim().length > 0 &&
+      (inputQuery !== debouncedQuery || debouncedQuery.trim().length === 0);
 
     const selectedMotifs = multiSelect
       ? (Array.isArray(value) ? value : value ? [value] : [])
@@ -59,7 +75,6 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
           !containerRef.current.contains(event.target as Node)
         ) {
           setIsOpen(false);
-          setSearchTriggered(false);
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
@@ -74,10 +89,10 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
         } else if (selectedMotifs.length < maxSelections) {
           onChange([...selectedMotifs, motif]);
         }
-        setQuery("");
+        setInputQuery("");
       } else {
         onChange(motif);
-        setQuery("");
+        setInputQuery("");
         setIsOpen(false);
       }
     };
@@ -94,40 +109,30 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
       }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(e.target.value);
-    };
-
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Escape") {
         setIsOpen(false);
-        setSearchTriggered(false);
-        setQuery("");
+        setInputQuery("");
       } else if (e.key === "Enter") {
         e.preventDefault();
         if (results.length > 0) {
           const first = results[0];
           if (!multiSelect || !selectedMotifs.includes(first)) {
-            handleSelectMotif(first);
+            const atCap =
+              multiSelect && selectedMotifs.length >= maxSelections;
+            if (!atCap) handleSelectMotif(first);
           }
-        } else {
-          handleSearchClick();
         }
       }
     };
 
-    const handleSearchClick = () => {
-      if (disabled || isAtMax) return;
-      setSearchTriggered(true);
-      setIsOpen(true);
-      inputRef.current?.focus();
-    };
-
     const isAtMax = multiSelect && selectedMotifs.length >= maxSelections;
+
+    const showSuggestions =
+      isOpen && !disabled && !isAtMax && inputQuery.trim().length >= 1;
 
     return (
       <div ref={ref} className={cn("relative", className)}>
-        {/* Bloc "moteur de recherche" : au focus il se détache visuellement des autres champs */}
         <div
           ref={containerRef}
           className={cn(
@@ -139,36 +144,35 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
             disabled || isAtMax ? "opacity-90" : "",
           )}
         >
-          {/* Motifs sélectionnés (chips) */}
           {(multiSelect ? selectedMotifs.length > 0 : value) && (
             <div className="flex flex-wrap gap-2 px-3 pt-3">
               {multiSelect ? (
                 selectedMotifs.map((motif) => (
                   <div
                     key={motif}
-                    className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-md text-sm"
+                    className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-md text-sm max-w-full"
                   >
                     <span className="truncate">{motif}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveMotif(motif)}
                       disabled={disabled}
-                      className="hover:text-primary/80 transition-colors flex-shrink-0"
-                      aria-label={`Retirer ${motif}`}
+                      className="hover:text-primary/80 transition-colors shrink-0"
+                      aria-label={t("removeAria", { label: motif })}
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 ))
               ) : (
-                <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-md text-sm">
+                <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-md text-sm max-w-full">
                   <span className="truncate">{value}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveMotif()}
                     disabled={disabled}
-                    className="hover:text-primary/80 transition-colors flex-shrink-0"
-                    aria-label={`Retirer ${value}`}
+                    className="hover:text-primary/80 transition-colors shrink-0"
+                    aria-label={t("removeAria", { label: String(value) })}
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -177,10 +181,9 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
             </div>
           )}
 
-          {/* Barre de recherche + bouton Rechercher */}
           <div
             className={cn(
-              "flex items-center gap-2 mx-3 mb-0 rounded-lg border bg-background transition-colors",
+              "mx-3 mb-0 rounded-lg border bg-background transition-colors",
               isOpen && !disabled && !isAtMax
                 ? "border-primary/40 shadow-sm"
                 : "border-input",
@@ -189,62 +192,52 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
                 : "my-3",
             )}
           >
-            <Search
-              className={cn(
-                "h-4 w-4 flex-shrink-0 text-muted-foreground ml-3",
-                isOpen && !disabled && !isAtMax && "text-primary/80",
-                (disabled || isAtMax) && "opacity-60",
-              )}
-              aria-hidden
-            />
             <input
               ref={inputRef}
-              type="search"
-              value={query}
-              onChange={handleInputChange}
+              type="text"
+              autoComplete="off"
+              value={inputQuery}
+              onChange={(e) => {
+                setInputQuery(e.target.value);
+                setIsOpen(true);
+              }}
               onKeyDown={handleKeyDown}
               onFocus={() => setIsOpen(true)}
               placeholder={
                 isAtMax
-                  ? `Maximum ${maxSelections} motifs sélectionnés`
+                  ? t("maxReached", { max: maxSelections })
                   : placeholder
               }
               disabled={disabled || isAtMax}
               className={cn(
-                "flex-1 min-w-0 py-2.5 pr-2 bg-transparent outline-none text-sm",
+                "w-full min-w-0 py-2.5 px-3 bg-transparent outline-none text-sm rounded-lg",
                 "placeholder:text-muted-foreground",
                 (disabled || isAtMax) &&
                   "text-muted-foreground cursor-not-allowed",
               )}
-              aria-label="Rechercher un motif"
+              aria-label={t("searchAria")}
               aria-expanded={isOpen}
               aria-controls="motif-search-results"
               aria-autocomplete="list"
             />
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={handleSearchClick}
-              disabled={disabled || isAtMax}
-              className="mr-2 h-8 shrink-0 gap-1.5 px-3 text-xs font-medium"
-              aria-label={searchButtonLabel}
-            >
-              <Search className="h-3.5 w-3.5" />
-              {searchButtonLabel}
-            </Button>
           </div>
 
-          {/* Zone résultats : panneau de suggestions (pas une liste déroulante) */}
-          {isOpen && !disabled && searchTriggered && query.trim().length > 0 && (
+          {showSuggestions && (
             <section
               id="motif-search-results"
               className="mx-3 mb-3 rounded-lg border border-border/70 bg-muted/20 p-3"
-              aria-label="Suggestions de motifs"
+              aria-label={t("suggestions")}
             >
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Suggestions
-              </p>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("suggestions")}
+                </p>
+                {isTypingPending && (
+                  <span className="text-[10px] text-muted-foreground tabular-nums">
+                    …
+                  </span>
+                )}
+              </div>
               {results.length > 0 ? (
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {results.map((motif) => {
@@ -278,16 +271,22 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
                         <div className="flex items-center justify-between gap-2">
                           <span className="truncate">{motif}</span>
                           {selected && (
-                            <span className="text-primary text-xs">Selectionne</span>
+                            <span className="text-primary text-xs shrink-0">
+                              {t("selected")}
+                            </span>
                           )}
                         </div>
                       </button>
                     );
                   })}
                 </div>
+              ) : isTypingPending ? (
+                <p className="py-6 text-center text-sm text-muted-foreground">
+                  …
+                </p>
               ) : (
-                <p className="py-4 text-center text-sm text-muted-foreground">
-                  Aucun motif trouve pour « {query} »
+                <p className="py-4 text-center text-sm text-muted-foreground leading-relaxed">
+                  {t("noResults")}
                 </p>
               )}
             </section>
@@ -295,7 +294,7 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
 
           {isAtMax && (
             <p className="px-3 pb-3 text-xs text-muted-foreground">
-              Maximum {maxSelections} motifs sélectionnés
+              {t("maxReached", { max: maxSelections })}
             </p>
           )}
         </div>

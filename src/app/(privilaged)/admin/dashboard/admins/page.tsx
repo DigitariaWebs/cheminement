@@ -12,6 +12,7 @@ import {
   Crown,
   Settings,
   Users,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -43,7 +45,8 @@ type AdminRole =
   | "super_admin"
   | "platform_admin"
   | "content_admin"
-  | "support_admin";
+  | "support_admin"
+  | "billing_admin";
 
 interface AdminPermissions {
   manageUsers: boolean;
@@ -107,6 +110,8 @@ const getRoleIcon = (role: AdminRole) => {
       return <Settings className="h-4 w-4" />;
     case "support_admin":
       return <Users className="h-4 w-4" />;
+    case "billing_admin":
+      return <Wallet className="h-4 w-4" />;
   }
 };
 
@@ -120,10 +125,13 @@ const getRoleBadgeColor = (role: AdminRole) => {
       return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
     case "support_admin":
       return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
+    case "billing_admin":
+      return "bg-teal-100 text-teal-800 dark:bg-teal-950/40 dark:text-teal-200";
   }
 };
 
 export default function AdminsPage() {
+  const t = useTranslations("AdminDashboard.admins");
   const [data, setData] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -180,10 +188,10 @@ export default function AdminsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Admin Management
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Manage administrator accounts and permissions
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -225,10 +233,10 @@ export default function AdminsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Admin Management
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Manage administrator accounts and permissions
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -238,7 +246,7 @@ export default function AdminsPage() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-light text-foreground mb-2">
-                Failed to load admin data
+                {t("failedLoad")}
               </h3>
               <p className="text-muted-foreground mb-4">{error}</p>
               <button
@@ -246,7 +254,7 @@ export default function AdminsPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           </div>
@@ -260,10 +268,10 @@ export default function AdminsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Admin Management
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Manage administrator accounts and permissions
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -279,16 +287,14 @@ export default function AdminsPage() {
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <UserPlus className="h-4 w-4" />
-                Promote to Admin
+                {t("promoteToAdmin")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Promote Client to Administrator</DialogTitle>
+                <DialogTitle>{t("dialogTitle")}</DialogTitle>
                 <DialogDescription>
-                  Select an existing client account and assign them an
-                  administrator role. They will automatically gain access to the
-                  admin dashboard.
+                  {t("dialogDesc")}
                 </DialogDescription>
               </DialogHeader>
               <CreateAdminForm
@@ -306,7 +312,7 @@ export default function AdminsPage() {
       <div className="grid gap-6 md:grid-cols-4">
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Total Admins
+            {t("totalAdmins")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {data?.pagination.total || 0}
@@ -314,7 +320,7 @@ export default function AdminsPage() {
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Super Admins
+            {t("superAdmins")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {admins.filter((a) => a.role === "super_admin").length}
@@ -322,7 +328,7 @@ export default function AdminsPage() {
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Platform Admins
+            {t("platformAdmins")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {admins.filter((a) => a.role === "platform_admin").length}
@@ -330,7 +336,7 @@ export default function AdminsPage() {
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Active Today
+            {t("activeToday")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {
@@ -351,7 +357,7 @@ export default function AdminsPage() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search admins..."
+                placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -361,14 +367,15 @@ export default function AdminsPage() {
               <Select value={roleFilter} onValueChange={setRoleFilter}>
                 <SelectTrigger className="w-[180px]">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Filter by role" />
+                  <SelectValue placeholder={t("filterRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="super_admin">Super Admin</SelectItem>
-                  <SelectItem value="platform_admin">Platform Admin</SelectItem>
-                  <SelectItem value="content_admin">Content Admin</SelectItem>
-                  <SelectItem value="support_admin">Support Admin</SelectItem>
+                  <SelectItem value="all">{t("allRoles")}</SelectItem>
+                  <SelectItem value="super_admin">{t("superAdmin")}</SelectItem>
+                  <SelectItem value="platform_admin">{t("platformAdmin")}</SelectItem>
+                  <SelectItem value="content_admin">{t("contentAdmin")}</SelectItem>
+                  <SelectItem value="support_admin">{t("supportAdmin")}</SelectItem>
+                  <SelectItem value="billing_admin">{t("billingAdmin")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -380,22 +387,22 @@ export default function AdminsPage() {
             <thead className="bg-muted/30">
               <tr>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Administrator
+                  {t("colAdmin")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Role
+                  {t("colRole")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Created By
+                  {t("colCreatedBy")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Last Login
+                  {t("colLastLogin")}
                 </th>
                 <th className="text-left p-4 text-sm font-light text-muted-foreground">
-                  Created
+                  {t("colCreated")}
                 </th>
                 <th className="text-right p-4 text-sm font-light text-muted-foreground">
-                  Actions
+                  {t("colActions")}
                 </th>
               </tr>
             </thead>
@@ -426,12 +433,12 @@ export default function AdminsPage() {
                   <td className="p-4 text-sm font-light text-muted-foreground">
                     {admin.createdBy
                       ? `${admin.createdBy.firstName} ${admin.createdBy.lastName}`
-                      : "System"}
+                      : t("system")}
                   </td>
                   <td className="p-4 text-sm font-light text-muted-foreground">
                     {admin.lastLogin
                       ? new Date(admin.lastLogin).toLocaleDateString()
-                      : "Never"}
+                      : t("never")}
                   </td>
                   <td className="p-4 text-sm font-light text-muted-foreground">
                     {new Date(admin.createdAt).toLocaleDateString()}
@@ -444,10 +451,10 @@ export default function AdminsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Permissions</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Role</DropdownMenuItem>
+                        <DropdownMenuItem>{t("viewPermissions")}</DropdownMenuItem>
+                        <DropdownMenuItem>{t("editRole")}</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">
-                          Deactivate
+                          {t("deactivate")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -460,9 +467,9 @@ export default function AdminsPage() {
           {admins.length === 0 && (
             <div className="p-12 text-center">
               <Shield className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-              <p className="text-muted-foreground">No administrators found</p>
+              <p className="text-muted-foreground">{t("noAdmins")}</p>
               <p className="text-sm text-muted-foreground/70 mt-1">
-                Try adjusting your search or filters
+                {t("noAdminsDesc")}
               </p>
             </div>
           )}
@@ -479,6 +486,7 @@ function CreateAdminForm({
   roles: RoleInfo[];
   onSuccess: () => void;
 }) {
+  const t = useTranslations("AdminDashboard.admins");
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<AdminRole>("support_admin");
   const [availableUsers, setAvailableUsers] = useState<IUser[]>([]);
@@ -547,12 +555,12 @@ function CreateAdminForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label className="text-sm font-medium mb-2 block">
-          Select User to Promote
+          {t("selectUser")}
         </label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search users by name or email..."
+            placeholder={t("searchUsers")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -561,7 +569,7 @@ function CreateAdminForm({
         <div className="mt-2 max-h-48 overflow-y-auto border rounded-md">
           {filteredUsers.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground">
-              No users available
+              {t("noUsers")}
             </div>
           ) : (
             filteredUsers.map((user) => (
@@ -608,7 +616,7 @@ function CreateAdminForm({
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-2 block">Admin Role</label>
+        <label className="text-sm font-medium mb-2 block">{t("adminRole")}</label>
         <Select
           value={selectedRole}
           onValueChange={(value) => setSelectedRole(value as AdminRole)}
@@ -644,7 +652,7 @@ function CreateAdminForm({
           disabled={loading || !selectedUserId}
           className="flex-1"
         >
-          {loading ? "Promoting..." : "Promote to Admin"}
+          {loading ? t("promoting") : t("promoteToAdmin")}
         </Button>
       </div>
     </form>

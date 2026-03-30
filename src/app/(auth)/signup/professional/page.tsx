@@ -101,6 +101,7 @@ interface FormData {
   breakDuration: string;
 
   agreeToTerms: boolean;
+  acceptPrivacyPolicy: boolean;
 }
 
 /** Stored `value` strings are sent to the API; labels use `Auth.professionalSignup.*Options`. */
@@ -184,6 +185,7 @@ export default function ProfessionalSignupPage() {
     sessionDuration: "",
     breakDuration: "",
     agreeToTerms: false,
+    acceptPrivacyPolicy: false,
   });
 
   const sections = [
@@ -237,17 +239,25 @@ export default function ProfessionalSignupPage() {
           return t("errors.passwordMinLength");
         if (formData.password !== formData.confirmPassword)
           return t("errors.passwordsDoNotMatch");
+        {
+          const digits = formData.phone.replace(/\D/g, "");
+          if (digits.length < 10) return t("errors.phoneRequiredMin10");
+        }
         break;
-      case 1: // Professional Details (Titres + Catégorie d'âge)
-        if (formData.ageCategories.length === 0)
-          return t("errors.ageCategoryRequired");
+      case 1: // Professional Details (Titre professionnel + permis)
         if (!formData.specialty) return t("errors.specialtyRequired");
         if (!formData.license.trim())
           return t("errors.licenseRequired");
         break;
-      case 2:
+      case 2: // Education
         if (!formData.degree.trim()) return t("errors.degreeRequired");
         if (!formData.institution.trim()) return t("errors.institutionRequired");
+        if (formData.certifications.length === 0)
+          return t("errors.certificationsRequired");
+        break;
+      case 4: // Session types & age categories
+        if (formData.ageCategories.length === 0)
+          return t("errors.ageCategoryRequired");
         break;
       case 5: // Pricing
         if (!formData.paymentFrequency)
@@ -255,10 +265,8 @@ export default function ProfessionalSignupPage() {
         break;
       case 7:
         if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
-        break;
-      case 2: // Education
-        if (!formData.degree.trim()) return t("errors.degreeRequired");
-        if (!formData.institution.trim()) return t("errors.institutionRequired");
+        if (!formData.acceptPrivacyPolicy)
+          return t("errors.acceptPrivacyPolicyRequired");
         break;
     }
     return null;
@@ -288,17 +296,23 @@ export default function ProfessionalSignupPage() {
       setError(t("errors.agreeToTermsRequired"));
       return;
     }
+    if (!formData.acceptPrivacyPolicy) {
+      setError(t("errors.acceptPrivacyPolicyRequired"));
+      return;
+    }
 
     setIsLoading(true);
     setError("");
 
     try {
-      await authAPI.signup({
+      const signupResult = await authAPI.signup({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: "professional",
+        agreeToTerms: formData.agreeToTerms,
+        acceptPrivacyPolicy: formData.acceptPrivacyPolicy,
         phone: formData.phone,
         dateOfBirth: formData.dateOfBirth,
         gender: formData.gender,
@@ -337,7 +351,6 @@ export default function ProfessionalSignupPage() {
             formData.certifications.length > 0
               ? formData.certifications
               : undefined,
-          paymentAgreement: formData.paymentAgreement || undefined,
           paymentFrequency: formData.paymentFrequency || undefined,
           pricing: {
             individualSession: formData.individualSessionRate
@@ -390,6 +403,13 @@ export default function ProfessionalSignupPage() {
               : undefined,
         },
       });
+
+      if (signupResult.requiresEmailVerification) {
+        router.push(
+          `/verify-account?email=${encodeURIComponent(formData.email)}`,
+        );
+        return;
+      }
 
       const result = await signIn("credentials", {
         email: formData.email,
@@ -641,34 +661,6 @@ export default function ProfessionalSignupPage() {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label>
-                {t("ageCategoryLabel")}
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {t("ageCategoryHint")}
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {AGE_CATEGORIES.map((age) => (
-                  <div key={age.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`age-${age.value}`}
-                      checked={formData.ageCategories.includes(age.value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("ageCategories", age.value)
-                      }
-                    />
-                    <label
-                      htmlFor={`age-${age.value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`ageCategories.${age.value}`)}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="specialty">
                 {t("professionalTitleLabel")} <span className="text-red-500">*</span>
               </Label>
@@ -720,7 +712,12 @@ export default function ProfessionalSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">{t("professionalBio")}</Label>
+              <Label htmlFor="bio">
+                {t("professionalBio")}{" "}
+                <span className="text-xs text-muted-foreground">
+                  {t("optional")}
+                </span>
+              </Label>
               <Textarea
                 id="bio"
                 name="bio"
@@ -836,7 +833,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <h4 className="font-medium text-foreground">{t("approachesTitle")}</h4>
               <Label className="text-muted-foreground">
-                {t("approachesSubtitle")}
+                {t("expertiseCommonSubtitle")}
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
                 {APPROACHES_ET_THERAPIES.map((approach) => (
@@ -862,7 +859,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <h4 className="font-medium text-foreground">{t("problematicsTitle")}</h4>
               <Label className="text-muted-foreground">
-                {t("problematicsSubtitle")}
+                {t("expertiseCommonSubtitle")}
               </Label>
               {problematicsList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
@@ -894,7 +891,7 @@ export default function ProfessionalSignupPage() {
             <div className="space-y-2">
               <h4 className="font-medium text-foreground">{t("diagnosticsTitle")}</h4>
               <Label className="text-muted-foreground">
-                {t("diagnosticsSubtitle")}
+                {t("expertiseCommonSubtitle")}
               </Label>
               {diagnosticsList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
@@ -930,6 +927,34 @@ export default function ProfessionalSignupPage() {
       case 4: // Session Types & Modalities
         return (
           <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>
+                {t("ageCategoryLabel")}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {t("ageCategoryHint")}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {AGE_CATEGORIES.map((age) => (
+                  <div key={age.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`age-${age.value}`}
+                      checked={formData.ageCategories.includes(age.value)}
+                      onCheckedChange={() =>
+                        handleArrayChange("ageCategories", age.value)
+                      }
+                    />
+                    <label
+                      htmlFor={`age-${age.value}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {t(`ageCategories.${age.value}`)}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label>{t("sessionTypesLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -975,10 +1000,6 @@ export default function ProfessionalSignupPage() {
                 ))}
               </div>
             </div>
-
-            <p className="text-sm text-muted-foreground">
-              {t("languagesIndicatedEarlier")}
-            </p>
           </div>
         );
 
@@ -1065,25 +1086,6 @@ export default function ProfessionalSignupPage() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="paymentAgreement">{t("paymentAgreementLabel")}</Label>
-              <Select
-                value={formData.paymentAgreement}
-                onValueChange={(val) =>
-                  handleSelectChange("paymentAgreement", val)
-                }
-              >
-                <SelectTrigger id="paymentAgreement">
-                  <SelectValue placeholder={t("selectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="per-session">{t("paymentAgreementPerSession")}</SelectItem>
-                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
-                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
-                  <SelectItem value="monthly">{t("paymentAgreementMonthly")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         );
 
@@ -1218,39 +1220,68 @@ export default function ProfessionalSignupPage() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    agreeToTerms: checked as boolean,
-                  }))
-                }
-              />
-              <label
-                htmlFor="agreeToTerms"
-                className="text-sm cursor-pointer leading-tight"
-              >
-                {t("agreeToTerms")}{" "}
-                <Link
-                  href="/terms"
-                  className="text-primary underline"
-                  target="_blank"
+            <div className="space-y-4">
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      agreeToTerms: checked as boolean,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="agreeToTerms"
+                  className="text-sm cursor-pointer leading-tight"
                 >
-                  {t("termsOfService")}
-                </Link>{" "}
-                {t("and")}{" "}
-                <Link
-                  href="/privacy"
-                  className="text-primary underline"
-                  target="_blank"
-                >
-                  {t("privacyPolicy")}
-                </Link>
-                <span className="text-red-500">*</span>
-              </label>
+                  {t("termsAcceptBefore")}
+                  <Link
+                    href="/terms"
+                    className="text-primary underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("termsOfService")}
+                  </Link>
+                  {t("termsAcceptAfter")}
+                  <span className="text-red-500">*</span>
+                </label>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="acceptPrivacyPolicy"
+                  checked={formData.acceptPrivacyPolicy}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      acceptPrivacyPolicy: checked as boolean,
+                    }))
+                  }
+                />
+                <div className="space-y-2">
+                  <label
+                    htmlFor="acceptPrivacyPolicy"
+                    className="text-sm cursor-pointer leading-tight block"
+                  >
+                    {t("privacyAcceptBefore")}
+                    <Link
+                      href="/privacy"
+                      className="text-primary underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t("privacyPolicy")}
+                    </Link>
+                    {t("privacyAcceptAfter")}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <p className="text-xs text-muted-foreground leading-snug">
+                    {t("privacyConsentClinicalNote")}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -1384,7 +1415,11 @@ export default function ProfessionalSignupPage() {
             ) : (
               <button
                 type="submit"
-                disabled={isLoading || !formData.agreeToTerms}
+                disabled={
+                  isLoading ||
+                  !formData.agreeToTerms ||
+                  !formData.acceptPrivacyPolicy
+                }
                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
               >
                 {isLoading ? (

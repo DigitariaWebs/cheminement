@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { attachContactStringEncryption } from "@/lib/mongoose-contact-encryption";
 
 export interface IMedicalProfile extends Document {
   userId: mongoose.Types.ObjectId;
@@ -176,6 +177,11 @@ const MedicalProfileSchema = new Schema<IMedicalProfile>(
 // Indexes for better query performance
 MedicalProfileSchema.index({ userId: 1 });
 MedicalProfileSchema.index({ profileCompleted: 1 });
+
+attachContactStringEncryption(MedicalProfileSchema, [
+  "location",
+  "emergencyContactPhone",
+]);
 
 const MedicalProfile: Model<IMedicalProfile> =
   mongoose.models.MedicalProfile ||

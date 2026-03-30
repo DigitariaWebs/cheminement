@@ -2,6 +2,7 @@ import Profile from "@/models/Profile";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
 import MedicalProfile from "@/models/MedicalProfile";
+import { sendProfessionalNotification } from "@/lib/notifications";
 
 /**
  * Calculate age from date of birth
@@ -382,20 +383,32 @@ function calculateRelevancyScore(
 
   // ===== MATCHING BASED ON APPOINTMENT REQUIREMENTS =====
 
-  // 6. Match by modality (video, in-person, phone)
+  // 6. Match by modality (video, in-person, phone, both)
   if (profile.modalities) {
-    const modalityMap: Record<string, string> = {
-      video: "online",
-      "in-person": "inPerson",
-      phone: "phone",
-    };
-    const requiredModality = modalityMap[appointment.type];
-    if (
-      profile.modalities.includes(requiredModality) ||
-      profile.modalities.includes("both")
-    ) {
-      score += 15;
-      reasons.push("Offre la modalité de session requise");
+    if (appointment.type === "both") {
+      const offersVideoOrInPerson =
+        profile.modalities.includes("online") ||
+        profile.modalities.includes("inPerson") ||
+        profile.modalities.includes("both");
+      if (offersVideoOrInPerson) {
+        score += 15;
+        reasons.push("Offre la modalité de session requise (vidéo ou en personne)");
+      }
+    } else {
+      const modalityMap: Record<string, string> = {
+        video: "online",
+        "in-person": "inPerson",
+        phone: "phone",
+      };
+      const requiredModality = modalityMap[appointment.type];
+      if (
+        requiredModality &&
+        (profile.modalities.includes(requiredModality) ||
+          profile.modalities.includes("both"))
+      ) {
+        score += 15;
+        reasons.push("Offre la modalité de session requise");
+      }
     }
   }
 
@@ -421,19 +434,29 @@ function calculateRelevancyScore(
       .filter((d) => d.isWorkDay)
       .map((d) => d.day);
 
-    // Check if professional has any availability matching client preferences
+    const weekdaySet = new Set([
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+    ]);
+    const weekendSet = new Set(["Saturday", "Sunday"]);
+
     const availabilityMatches = appointment.preferredAvailability.some(
       (pref) => {
-        const prefLower = pref.toLowerCase();
-        if (prefLower.includes("weekday")) {
-          return availableDays.some((d) =>
-            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(
-              d,
-            ),
-          );
+        const p = pref.toLowerCase();
+        if (p.startsWith("week_")) {
+          return availableDays.some((d) => weekdaySet.has(d));
         }
-        if (prefLower.includes("weekend")) {
-          return availableDays.some((d) => ["Saturday", "Sunday"].includes(d));
+        if (p.startsWith("weekend_")) {
+          return availableDays.some((d) => weekendSet.has(d));
+        }
+        if (p.includes("weekday")) {
+          return availableDays.some((d) => weekdaySet.has(d));
+        }
+        if (p.includes("weekend")) {
+          return availableDays.some((d) => weekendSet.has(d));
         }
         return true;
       },
@@ -608,7 +631,60 @@ export async function routeAppointmentToProfessionals(
       proposedTo: proposedIds,
     });
 
-    // TODO: Send notifications to proposed professionals
+    const populatedAppt = await Appointment.findById(appointmentId)
+      .populate("clientId", "firstName lastName email phone")
+      .lean();
+
+    const client = populatedAppt?.clientId as
+      | {
+          firstName?: string;
+          lastName?: string;
+          email?: string;
+        }
+      | null
+      | undefined;
+
+    const clientEmail = client?.email?.trim();
+    if (clientEmail) {
+      const clientName =
+        `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim() ||
+        "Client";
+      const dateIso = populatedAppt?.date
+        ? new Date(populatedAppt.date).toISOString()
+        : undefined;
+      const apptType = (populatedAppt?.type ?? "video") as
+        | "video"
+        | "in-person"
+        | "phone"
+        | "both";
+
+      for (const match of topMatches) {
+        const pro = await User.findById(match.professionalId)
+          .select("firstName lastName email")
+          .lean();
+        if (!pro?.email) continue;
+
+        void sendProfessionalNotification({
+          clientName,
+          clientEmail,
+          professionalName: `${pro.firstName} ${pro.lastName}`,
+          professionalEmail: pro.email,
+          date: dateIso,
+          time: populatedAppt?.time,
+          duration: populatedAppt?.duration ?? 60,
+          type: apptType,
+        }).catch((err) =>
+          console.error(
+            `[routing] Failed to notify professional ${match.professionalId}:`,
+            err,
+          ),
+        );
+      }
+    } else {
+      console.warn(
+        `[routing] Skipped professional notifications for appointment ${appointmentId}: missing client email`,
+      );
+    }
 
     return { success: true, matches: topMatches, routingStatus: "proposed" };
   } catch (error) {

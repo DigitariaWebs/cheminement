@@ -3,7 +3,11 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Appointment from "@/models/Appointment";
+import Admin from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
+import { isFieldEncryptionEnabled } from "@/lib/field-encryption";
+import { mustMaskClientContactPII } from "@/lib/admin-rbac";
+import { maskPhoneForDisplay } from "@/lib/contact-mask";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,6 +19,23 @@ export async function GET(req: NextRequest) {
 
     await connectToDatabase();
 
+    const adminRecord = await Admin.findOne({
+      userId: session.user.id,
+      isActive: true,
+    })
+      .select("permissions")
+      .lean();
+    const perms = adminRecord?.permissions;
+    if (
+      perms &&
+      !perms.managePatients &&
+      !perms.manageBilling
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const mask = perms ? mustMaskClientContactPII(perms) : false;
+
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "all";
@@ -25,7 +46,7 @@ export async function GET(req: NextRequest) {
     const query: {
       role: { $in: string[] };
       status?: string;
-      $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
+      $or?: Record<string, unknown>[];
     } = { role: { $in: ["client", "guest"] } };
 
     if (status !== "all") {
@@ -34,12 +55,16 @@ export async function GET(req: NextRequest) {
 
     // Add search functionality
     if (search.trim()) {
-      query.$or = [
+      const or: Array<Record<string, unknown>> = [
         { firstName: { $regex: search, $options: "i" } },
         { lastName: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
       ];
+      /* Phone is AES-GCM at rest when FIELD_ENCRYPTION_KEY is set — no substring search on ciphertext. */
+      if (!isFieldEncryptionEnabled()) {
+        or.push({ phone: { $regex: search, $options: "i" } });
+      }
+      query.$or = or;
     }
 
     // Get patients with pagination
@@ -78,18 +103,61 @@ export async function GET(req: NextRequest) {
           ? `${professional.firstName} ${professional.lastName}`
           : undefined;
 
+        // Logic for adminStatusColor and label
+        let adminStatusColor = "gray";
+        let adminStatusLabel = "Nouveau prospect";
+
+        // Check for failed payments or late Interac
+        const hasFailedPayment = await Appointment.exists({
+          clientId: patient._id,
+          "payment.status": "failed",
+        });
+
+        const hasLateInterac = await Appointment.exists({
+          clientId: patient._id,
+          "payment.status": { $ne: "paid" },
+          "payment.transferDueAt": { $lt: new Date() },
+        });
+
+        if (hasFailedPayment || hasLateInterac) {
+          adminStatusColor = "red";
+          adminStatusLabel = "Échec de paiement";
+        } else if (patient.paymentGuaranteeStatus === "green") {
+          adminStatusColor = "green";
+          adminStatusLabel = "Ok";
+        } else {
+          const scheduledAppointment = await Appointment.findOne({
+            clientId: patient._id,
+            status: "scheduled",
+          }).lean();
+
+          if (scheduledAppointment) {
+            adminStatusColor = "yellow";
+            adminStatusLabel = "RDV fixé sans carte";
+          } else {
+            // Default to Gray / Nouveau prospect
+            adminStatusColor = "gray";
+            adminStatusLabel = "Nouveau prospect";
+          }
+        }
+
         return {
           id: patient._id.toString(),
           name: `${patient.firstName} ${patient.lastName}`,
           email: patient.email,
-          phone: patient.phone || "",
+          phone: mask
+            ? maskPhoneForDisplay(String(patient.phone || ""))
+            : patient.phone || "",
           status: patient.status,
           role: patient.role, // Include role to identify guests
           matchedWith,
           joinedDate: patient.createdAt.toISOString().split("T")[0],
           totalSessions,
           issueType: "General", // This would come from appointment data or profile
+          adminStatusColor,
+          adminStatusLabel,
         };
+
       }),
     );
 

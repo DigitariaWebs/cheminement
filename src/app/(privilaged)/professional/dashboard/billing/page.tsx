@@ -13,12 +13,17 @@ import {
   Loader2,
   AlertCircle,
   X,
+  ScrollText,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { appointmentsAPI } from "@/lib/api-client";
+import {
+  appointmentsAPI,
+  professionalLedgerAPI,
+  type ProfessionalLedgerEntryResponse,
+} from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 
 type ConnectPayoutResponse = {
@@ -56,6 +61,14 @@ export default function ProfessionalBillingPage() {
   const [linkLoading, setLinkLoading] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [setupBanner, setSetupBanner] = useState<string | null>(null);
+  const [ledgerData, setLedgerData] = useState<{
+    entries: ProfessionalLedgerEntryResponse[];
+    pendingPayoutCad: number;
+    currentCycleKey?: string;
+    balanceLifetimeCad?: number;
+    balanceCurrentCycleCad?: number;
+  } | null>(null);
+  const [ledgerLoading, setLedgerLoading] = useState(true);
   const t = useTranslations("Professional.billing");
 
   const fetchConnectStatus = useCallback(async () => {
@@ -87,6 +100,22 @@ export default function ProfessionalBillingPage() {
 
   useEffect(() => {
     fetchAppointments();
+  }, []);
+
+  useEffect(() => {
+    const loadLedger = async () => {
+      try {
+        setLedgerLoading(true);
+        const data = await professionalLedgerAPI.get();
+        setLedgerData(data);
+      } catch (e) {
+        console.error("ledger:", e);
+        setLedgerData(null);
+      } finally {
+        setLedgerLoading(false);
+      }
+    };
+    void loadLedger();
   }, []);
 
   useEffect(() => {
@@ -370,6 +399,109 @@ export default function ProfessionalBillingPage() {
           </div>
         </div>
       </div>
+
+      <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">
+        <div className="flex items-center gap-3">
+          <ScrollText className="h-6 w-6 text-primary" />
+          <div>
+            <h2 className="font-serif text-2xl font-light text-foreground">
+              {t("ledgerTitle")}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t("pendingPayoutSynth")}
+            </p>
+          </div>
+        </div>
+        {ledgerLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-2xl border border-border/20 bg-muted/20 px-4 py-3">
+                <p className="text-xs text-muted-foreground">
+                  {t("pendingPayoutLabel")}
+                </p>
+                <p className="text-xl font-light text-foreground">
+                  {(ledgerData?.pendingPayoutCad ?? 0).toFixed(2)} $
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border/20 bg-muted/20 px-4 py-3">
+                <p className="text-xs text-muted-foreground">
+                  {t("ledgerBalanceCycle")}
+                </p>
+                <p className="text-xl font-light text-foreground">
+                  {(ledgerData?.balanceCurrentCycleCad ?? 0).toFixed(2)} $
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {ledgerData?.currentCycleKey ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border/20 bg-muted/20 px-4 py-3 sm:col-span-2 lg:col-span-2">
+                <p className="text-xs text-muted-foreground">
+                  {t("ledgerBalanceLifetime")}
+                </p>
+                <p className="text-xl font-light text-foreground">
+                  {(ledgerData?.balanceLifetimeCad ?? 0).toFixed(2)} $
+                </p>
+              </div>
+            </div>
+            {!ledgerData?.entries?.length ? (
+              <p className="mt-6 text-sm text-muted-foreground">
+                {t("ledgerEmpty")}
+              </p>
+            ) : (
+              <div className="mt-6 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/40 text-left text-muted-foreground">
+                      <th className="pb-2 pr-2 font-medium">{t("ledgerDate")}</th>
+                      <th className="pb-2 pr-2 font-medium">{t("ledgerKind")}</th>
+                      <th className="pb-2 pr-2 font-medium">{t("ledgerGross")}</th>
+                      <th className="pb-2 pr-2 font-medium">{t("platformFee")}</th>
+                      <th className="pb-2 font-medium">{t("netAmount")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ledgerData.entries.slice(0, 15).map((row) => {
+                      const isDebit = row.entryKind === "debit";
+                      return (
+                        <tr
+                          key={row._id}
+                          className="border-b border-border/20 last:border-0"
+                        >
+                          <td className="py-2 pr-2">
+                            {formatDate(row.createdAt)}
+                          </td>
+                          <td className="py-2 pr-2 text-xs">
+                            {isDebit ? t("ledgerDebit") : t("ledgerCredit")}
+                          </td>
+                          <td className="py-2 pr-2">
+                            {isDebit
+                              ? "—"
+                              : `${row.grossAmountCad.toFixed(2)} $`}
+                          </td>
+                          <td className="py-2 pr-2">
+                            {isDebit
+                              ? "—"
+                              : `${row.platformFeeCad.toFixed(2)} $`}
+                          </td>
+                          <td className="py-2">
+                            {isDebit
+                              ? `− ${(row.payoutAmountCad ?? 0).toFixed(2)} $`
+                              : `${row.netToProfessionalCad.toFixed(2)} $`}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </section>
 
       {/* Bank Details Section */}
       <section className="rounded-3xl border border-border/20 bg-card/80 p-7 shadow-lg">

@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { authAPI } from "@/lib/api-client";
+import { apiClient, authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import {
   UserCircle,
   Mail,
@@ -49,6 +56,7 @@ import {
   AuthFooter,
 } from "@/components/auth";
 import { MotifSearch } from "@/components/ui/MotifSearch";
+import { ClinicalAvailabilityGrid } from "@/components/ui/ClinicalAvailabilityGrid";
 
 interface FormData {
   // User fields
@@ -126,6 +134,7 @@ interface FormData {
   paymentMethod: string;
 
   agreeToTerms: boolean;
+  acceptPrivacyPolicy: boolean;
 }
 
 /** Stored values stay in English for API compatibility; labels use `Auth.memberSignup.healthOptions`. */
@@ -157,33 +166,130 @@ const MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS = [
   { value: "Family therapy", msgKey: "familyTherapy" },
   { value: "Group therapy", msgKey: "groupTherapy" },
   { value: "Art therapy", msgKey: "artTherapy" },
-  { value: "No preference", msgKey: "noPreference" },
-] as const;
-
-const MEMBER_SIGNUP_AVAILABILITY_OPTIONS = [
-  { value: "Weekday mornings", msgKey: "weekdayMornings" },
-  { value: "Weekday afternoons", msgKey: "weekdayAfternoons" },
-  { value: "Weekday evenings", msgKey: "weekdayEvenings" },
-  { value: "Weekend mornings", msgKey: "weekendMornings" },
-  { value: "Weekend afternoons", msgKey: "weekendAfternoons" },
-  { value: "Weekend evenings", msgKey: "weekendEvenings" },
-  { value: "Flexible", msgKey: "flexible" },
+  { value: "No Preference", msgKey: "noPreference" },
 ] as const;
 
 const EXCLUSIVE_MULTISELECT_VALUES = new Set([
   "None",
-  "No preference",
-  "Flexible",
+  "No Preference",
 ]);
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
+
+const stripeAppearance = {
+  theme: "stripe" as const,
+  variables: {
+    colorPrimary: "#0f172a",
+    borderRadius: "8px",
+  },
+};
+
+function GuestCardSetupForm({
+  onSuccess,
+  onError,
+  disabled,
+}: {
+  onSuccess: (paymentMethodId: string) => void;
+  onError: (error: string) => void;
+  disabled?: boolean;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (disabled) return;
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    setMessage(null);
+
+    const { error, setupIntent } = await stripe.confirmSetup({
+      elements,
+      redirect: "if_required",
+    });
+
+    if (error) {
+      const msg = error.message || "An error occurred";
+      setMessage(msg);
+      onError(msg);
+      setLoading(false);
+      return;
+    }
+
+    const pm = setupIntent?.payment_method;
+    const paymentMethodId =
+      typeof pm === "string" ? pm : pm ? (pm as any).id : null;
+
+    if (!paymentMethodId) {
+      const msg = "Unable to retrieve payment method id";
+      setMessage(msg);
+      onError(msg);
+      setLoading(false);
+      return;
+    }
+
+    setMessage("Card added successfully.");
+    onSuccess(paymentMethodId);
+    setLoading(false);
+  };
+
+  const canSubmit = Boolean(stripe && elements && !loading && !disabled);
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement options={{ layout: "tabs" }} />
+
+      {message && (
+        <p
+          className={`text-sm ${
+            message.includes("success") || message.includes("successfully")
+              ? "text-green-700"
+              : "text-destructive"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={!canSubmit}
+        className="w-full h-11 px-8 rounded-md font-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-primary text-primary-foreground"
+      >
+        {loading ? "Adding..." : "Add card"}
+      </button>
+
+      <p className="text-xs text-muted-foreground text-center">
+        Secured by Stripe. Your card details are encrypted and never stored
+        on our servers.
+      </p>
+    </form>
+  );
+}
 
 export default function MemberSignupPage() {
   const t = useTranslations("Auth.memberSignup");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [stripeCardClientSecret, setStripeCardClientSecret] = useState<
+    string | null
+  >(null);
+  const [stripeCardPaymentMethodId, setStripeCardPaymentMethodId] =
+    useState<string | null>(null);
+  const [stripeCardInitLoading, setStripeCardInitLoading] = useState(false);
+  const [stripeCardInitError, setStripeCardInitError] = useState<string | null>(
+    null,
+  );
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -237,7 +343,86 @@ export default function MemberSignupPage() {
     culturalConsiderations: "",
     paymentMethod: "",
     agreeToTerms: false,
+    acceptPrivacyPolicy: false,
   });
+
+  useEffect(() => {
+    const prefill = searchParams.get("email");
+    if (!prefill) return;
+    try {
+      const decoded = decodeURIComponent(prefill.trim());
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(decoded)) return;
+      setFormData((prev) =>
+        prev.email.trim() ? prev : { ...prev, email: decoded },
+      );
+    } catch {
+      /* ignore malformed query */
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (formData.paymentMethod !== "credit_card") {
+      setStripeCardClientSecret(null);
+      setStripeCardPaymentMethodId(null);
+      setStripeCardInitError(null);
+      setStripeCardInitLoading(false);
+      return;
+    }
+
+    if (stripeCardPaymentMethodId) return;
+
+    const email = formData.email.trim();
+    const name = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+    if (!email || !name) return;
+
+    let cancelled = false;
+
+    const init = async () => {
+      try {
+        setStripeCardInitLoading(true);
+        setStripeCardInitError(null);
+
+        const res = await fetch("/api/payments/guest-setup-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, name }),
+        });
+
+        const data = (await res.json().catch(() => ({}))) as {
+          clientSecret?: string;
+          error?: string;
+        };
+
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to initialize card input");
+        }
+
+        if (!cancelled) {
+          setStripeCardClientSecret(data.clientSecret ?? null);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setStripeCardInitError(
+            e instanceof Error ? e.message : "Failed to initialize card input",
+          );
+        }
+      } finally {
+        if (!cancelled) setStripeCardInitLoading(false);
+      }
+    };
+
+    init();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    formData.paymentMethod,
+    formData.email,
+    formData.firstName,
+    formData.lastName,
+    stripeCardPaymentMethodId,
+  ]);
 
   const sections = [
     { title: t("sections.basicInfo"), icon: UserCircle, required: true },
@@ -329,6 +514,11 @@ export default function MemberSignupPage() {
           setError(t("errors.languageRequired"));
           return false;
         }
+        const phoneDigits = formData.phone.replace(/\D/g, "");
+        if (phoneDigits.length < 10) {
+          setError(t("errors.phoneRequiredMin10"));
+          return false;
+        }
         if (formData.accountFor === "child") {
           if (!formData.childFirstName.trim() || !formData.childLastName.trim()) {
             setError(t("errors.childNameRequired"));
@@ -355,6 +545,10 @@ export default function MemberSignupPage() {
       case 5:
         return true;
       case 6:
+        if (formData.availability.length === 0) {
+          setError(t("errors.availabilityRequired"));
+          return false;
+        }
         return true;
       case 7:
         return true;
@@ -373,6 +567,10 @@ export default function MemberSignupPage() {
       case 10: // Review & Confirm
         if (!formData.agreeToTerms) {
           setError(t("errors.agreeToTermsRequired"));
+          return false;
+        }
+        if (!formData.acceptPrivacyPolicy) {
+          setError(t("errors.acceptPrivacyPolicyRequired"));
           return false;
         }
         return true;
@@ -397,12 +595,16 @@ export default function MemberSignupPage() {
 
   const handleSubmit = async () => {
     setError("");
+    if (formData.availability.length === 0) {
+      setError(t("errors.availabilityRequired"));
+      return;
+    }
     if (!validateSection(currentSection)) return;
 
     setIsLoading(true);
 
     try {
-      await authAPI.signup({
+      const signupResult = await authAPI.signup({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
@@ -464,7 +666,7 @@ export default function MemberSignupPage() {
         therapyApproach:
           formData.therapyApproach.length > 0
             ? formData.therapyApproach
-            : undefined,
+            : [t("therapyApproachOptions.noPreference")],
         concernsAboutTherapy: formData.concernsAboutTherapy || undefined,
         availability:
           formData.availability.length > 0 ? formData.availability : undefined,
@@ -482,7 +684,16 @@ export default function MemberSignupPage() {
         languagePreference: formData.language || undefined,
         culturalConsiderations: formData.culturalConsiderations || undefined,
         paymentMethod: formData.paymentMethod || undefined,
+        agreeToTerms: formData.agreeToTerms,
+        acceptPrivacyPolicy: formData.acceptPrivacyPolicy,
       });
+
+      if (signupResult.requiresEmailVerification) {
+        router.push(
+          `/verify-account?email=${encodeURIComponent(formData.email)}`,
+        );
+        return;
+      }
 
       const result = await signIn("credentials", {
         email: formData.email,
@@ -494,6 +705,16 @@ export default function MemberSignupPage() {
         setError(t("errors.accountCreatedButSignInFailed"));
         router.push("/login");
       } else {
+        // Optional: if the user added a card in Step Payment, save it on Stripe after sign-in.
+        if (stripeCardPaymentMethodId) {
+          try {
+            await apiClient.post("/payments/payment-methods", {
+              paymentMethodId: stripeCardPaymentMethodId,
+            });
+          } catch (e) {
+            console.error("Failed to attach payment method:", e);
+          }
+        }
         router.push("/client/dashboard");
       }
     } catch {
@@ -1163,14 +1384,14 @@ export default function MemberSignupPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="severity">{t("profileModal.step3.severity")}</Label>
                 <Select
                   value={formData.severity}
                   onValueChange={(val) => handleSelectChange("severity", val)}
                 >
-                  <SelectTrigger id="severity">
+                  <SelectTrigger id="severity" className="w-full min-w-0">
                     <SelectValue placeholder={t("profileModal.step3.severityPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -1181,13 +1402,16 @@ export default function MemberSignupPage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0 -ml-1">
                 <Label htmlFor="duration">{t("profileModal.step3.duration")}</Label>
                 <Select
                   value={formData.duration}
                   onValueChange={(val) => handleSelectChange("duration", val)}
                 >
-                  <SelectTrigger id="duration">
+                  <SelectTrigger
+                    id="duration"
+                    className="!w-full !min-w-0 overflow-hidden truncate [&_[data-slot=select-value]]:max-w-full [&_[data-slot=select-value]]:truncate [&_[data-slot=select-value][data-placeholder]]:text-[10px]"
+                  >
                     <SelectValue placeholder={t("profileModal.step3.durationPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -1326,27 +1550,21 @@ export default function MemberSignupPage() {
 
             <div className="space-y-2">
               <Label>{t("therapyApproachOptional")}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
-                  ({ value, msgKey }) => (
-                    <div key={value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`approach-${value}`}
-                        checked={formData.therapyApproach.includes(value)}
-                        onCheckedChange={() =>
-                          handleArrayChange("therapyApproach", value)
-                        }
-                      />
-                      <label
-                        htmlFor={`approach-${value}`}
-                        className="text-sm cursor-pointer"
-                      >
-                        {t(`therapyApproachOptions.${msgKey}`)}
-                      </label>
-                    </div>
-                  ),
+              <MotifSearch
+                value={formData.therapyApproach}
+                onChange={(v) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    therapyApproach: Array.isArray(v) ? v : v ? [v] : [],
+                  }))
+                }
+                multiSelect
+                maxSelections={1}
+                placeholder={t("therapyApproachOptional")}
+                items={MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
+                  ({ msgKey }) => t(`therapyApproachOptions.${msgKey}`),
                 )}
-              </div>
+              />
             </div>
 
             <div className="space-y-2">
@@ -1372,25 +1590,15 @@ export default function MemberSignupPage() {
               <Label>
                 {t("profileModal.step6.availability")}
               </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {MEMBER_SIGNUP_AVAILABILITY_OPTIONS.map(({ value, msgKey }) => (
-                  <div key={value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`availability-${value}`}
-                      checked={formData.availability.includes(value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("availability", value)
-                      }
-                    />
-                    <label
-                      htmlFor={`availability-${value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`availabilityOptions.${msgKey}`)}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground font-light">
+                {t("profileModal.step6.clinicalGridHint")}
+              </p>
+              <ClinicalAvailabilityGrid
+                value={formData.availability}
+                onChange={(v) =>
+                  setFormData((prev) => ({ ...prev, availability: v }))
+                }
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1589,6 +1797,9 @@ export default function MemberSignupPage() {
             <p className="text-sm text-muted-foreground">
               {t("paymentStepDescription")}
             </p>
+            <p className="text-sm text-muted-foreground font-light">
+              {t("paymentReassurance")}
+            </p>
             <div className="space-y-3">
               {[
                 { value: "credit_card", label: t("paymentCreditCard") },
@@ -1622,6 +1833,47 @@ export default function MemberSignupPage() {
                 </div>
               ))}
             </div>
+
+            {formData.paymentMethod === "credit_card" && (
+              <div className="space-y-4 rounded-lg border border-border/40 bg-muted/30 p-4">
+                {stripeCardPaymentMethodId ? (
+                  <p className="text-sm text-green-700 font-light">
+                    Carte ajoutée avec succès.
+                  </p>
+                ) : (
+                  <>
+                    {stripeCardInitError && (
+                      <p className="text-sm text-destructive font-light">
+                        {stripeCardInitError}
+                      </p>
+                    )}
+
+                    {stripeCardInitLoading || !stripeCardClientSecret ? (
+                      <p className="text-sm text-muted-foreground font-light">
+                        Initialisation du champ de carte sécurisé...
+                      </p>
+                    ) : (
+                      <Elements
+                        options={{
+                          clientSecret: stripeCardClientSecret,
+                          appearance: stripeAppearance,
+                        }}
+                        stripe={stripePromise}
+                      >
+                        <GuestCardSetupForm
+                          onSuccess={(paymentMethodId) => {
+                            setStripeCardPaymentMethodId(paymentMethodId);
+                            setStripeCardInitError(null);
+                          }}
+                          onError={(msg) => setStripeCardInitError(msg)}
+                          disabled={Boolean(stripeCardPaymentMethodId)}
+                        />
+                      </Elements>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         );
 
@@ -1663,31 +1915,59 @@ export default function MemberSignupPage() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    agreeToTerms: checked as boolean,
-                  }))
-                }
-              />
-              <label
-                htmlFor="agreeToTerms"
-                className="text-sm leading-relaxed cursor-pointer"
-              >
-                {t("agreeToTerms")}{" "}
-                <Link href="/terms" className="text-primary hover:underline">
-                  {t("termsOfService")}
-                </Link>{" "}
-                {t("and")}{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
-                  {t("privacyPolicy")}
-                </Link>
-                . {t("agreeToTermsSuffix")}
-              </label>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      agreeToTerms: checked as boolean,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="agreeToTerms"
+                  className="text-sm leading-relaxed cursor-pointer"
+                >
+                  {t("termsAcceptBefore")}
+                  <Link href="/terms" className="text-primary hover:underline">
+                    {t("termsOfService")}
+                  </Link>
+                  {t("termsAcceptAfter")} {t("agreeToTermsSuffix")}
+                </label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="acceptPrivacyPolicy"
+                  checked={formData.acceptPrivacyPolicy}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      acceptPrivacyPolicy: checked as boolean,
+                    }))
+                  }
+                />
+                <div className="space-y-2">
+                  <label
+                    htmlFor="acceptPrivacyPolicy"
+                    className="text-sm leading-relaxed cursor-pointer block"
+                  >
+                    {t("privacyAcceptBefore")}
+                    <Link
+                      href="/privacy"
+                      className="text-primary hover:underline"
+                    >
+                      {t("privacyPolicy")}
+                    </Link>
+                    {t("privacyAcceptAfter")}
+                  </label>
+                  <p className="text-xs text-muted-foreground leading-snug pl-0">
+                    {t("privacyConsentClinicalNote")}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -1794,7 +2074,11 @@ export default function MemberSignupPage() {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={isLoading || !formData.agreeToTerms}
+              disabled={
+                isLoading ||
+                !formData.agreeToTerms ||
+                !formData.acceptPrivacyPolicy
+              }
               className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-light hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? (

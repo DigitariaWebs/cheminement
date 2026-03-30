@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Settings,
   Save,
@@ -148,6 +149,7 @@ const TEMPLATE_CATEGORIES = [
 ];
 
 export default function SettingsPage() {
+  const t = useTranslations("AdminDashboard.settings");
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -339,10 +341,10 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Platform Settings
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Configure platform-wide settings and policies
+            {t("subtitle")}
           </p>
         </div>
 
@@ -368,10 +370,10 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Platform Settings
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Configure platform-wide settings and policies
+            {t("subtitle")}
           </p>
         </div>
 
@@ -380,7 +382,7 @@ export default function SettingsPage() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-light text-foreground mb-2">
-                Failed to load settings
+                {t("failedLoad")}
               </h3>
               <p className="text-muted-foreground mb-4">{error}</p>
               <button
@@ -388,7 +390,7 @@ export default function SettingsPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           </div>
@@ -404,10 +406,10 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Platform Settings
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Configure platform-wide settings and policies
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -425,7 +427,7 @@ export default function SettingsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className={`h-4 w-4 ${saving ? "animate-pulse" : ""}`} />
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? t("saving") : t("saveChanges")}
           </button>
         </div>
       </div>
@@ -454,14 +456,14 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-6">
             <DollarSign className="h-5 w-5 text-primary" />
             <h2 className="text-xl font-serif font-light text-foreground">
-              Default Pricing
+              {t("defaultPricing")}
             </h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Solo Session ({settings.currency})
+                {t("soloSession")} ({settings.currency})
               </label>
               <input
                 type="number"
@@ -484,7 +486,7 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Couple Session ({settings.currency})
+                {t("coupleSession")} ({settings.currency})
               </label>
               <input
                 type="number"
@@ -507,7 +509,7 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Group Session ({settings.currency})
+                {t("groupSession")} ({settings.currency})
               </label>
               <input
                 type="number"
@@ -535,14 +537,14 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-6">
             <Percent className="h-5 w-5 text-primary" />
             <h2 className="text-xl font-serif font-light text-foreground">
-              Platform Fee
+              {t("platformFee")}
             </h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Platform Fee Percentage (%)
+                {t("platformFeePct")}
               </label>
               <input
                 type="number"
@@ -565,7 +567,7 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Currency
+                {t("currency")}
               </label>
               <input
                 type="text"
@@ -586,14 +588,14 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-6">
             <Clock className="h-5 w-5 text-primary" />
             <h2 className="text-xl font-serif font-light text-foreground">
-              Cancellation Policy
+              {t("cancellationPolicy")}
             </h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Client Cancellation Hours
+                {t("clientCancelHours")}
               </label>
               <input
                 type="number"
@@ -616,7 +618,7 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Client Refund Percentage (%)
+                {t("clientRefundPct")}
               </label>
               <input
                 type="number"
@@ -640,7 +642,7 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-sm font-light text-muted-foreground mb-2">
-                Professional Cancellation Hours
+                {t("profCancelHours")}
               </label>
               <input
                 type="number"
@@ -671,14 +673,14 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2">
               <Mail className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-serif font-light text-foreground">
-                Email Notifications
+                {t("emailNotif")}
               </h2>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">
                 {settings.emailSettings?.enabled
-                  ? "Enabled"
-                  : "Disabled Globally"}
+                  ? t("enabled")
+                  : t("disabled")}
               </span>
               <button
                 onClick={() =>
@@ -716,8 +718,7 @@ export default function SettingsPage() {
               <div className="flex items-center gap-2 text-yellow-800">
                 <AlertCircle className="h-5 w-5" />
                 <p className="font-light">
-                  Email notifications are disabled. Users will not receive any
-                  email communications.
+                  {t("emailWarning")}
                 </p>
               </div>
             </div>
@@ -727,13 +728,13 @@ export default function SettingsPage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Palette className="h-4 w-4 text-muted-foreground" />
-              <h3 className="text-lg font-light text-foreground">Branding</h3>
+              <h3 className="text-lg font-light text-foreground">{t("branding")}</h3>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label className="block text-sm font-light text-muted-foreground mb-2">
-                  Company Name
+                  {t("companyName")}
                 </label>
                 <input
                   type="text"
@@ -748,7 +749,7 @@ export default function SettingsPage() {
 
               <div>
                 <label className="block text-sm font-light text-muted-foreground mb-2">
-                  Primary Color
+                  {t("primaryColor")}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -779,7 +780,7 @@ export default function SettingsPage() {
 
               <div>
                 <label className="block text-sm font-light text-muted-foreground mb-2">
-                  Secondary Color
+                  {t("secondaryColor")}
                 </label>
                 <div className="flex gap-2">
                   <input

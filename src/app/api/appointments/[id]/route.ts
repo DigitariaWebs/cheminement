@@ -14,6 +14,7 @@ import {
 } from "@/lib/notifications";
 
 import { stripe } from "@/lib/stripe";
+import { provisionGuestAsClient } from "@/lib/provision-guest-as-client";
 
 // Generate a secure payment token for guest users
 function generatePaymentToken(): string {
@@ -119,6 +120,16 @@ export async function PATCH(
       data.professionalId = session.user.id;
     }
 
+    // Relance J+1 : ancrage du premier passage en « scheduled »
+    if (
+      oldAppointment &&
+      oldAppointment.status === "pending" &&
+      data.status === "scheduled" &&
+      !oldAppointment.firstScheduledAt
+    ) {
+      data.firstScheduledAt = new Date();
+    }
+
     // If status is being set to ongoing and scheduledStartAt is not provided,
     // derive scheduledStartAt from the existing date/time fields so that
     // timers can consistently count from the scheduled start time.
@@ -166,7 +177,21 @@ export async function PATCH(
       );
     }
 
-    // Send payment invitation email when professional confirms/schedules the appointment
+    // Interac / virement : paiement attendu dans les 24h après la séance (référence = fin de séance)
+    if (
+      oldAppointment &&
+      oldAppointment.status !== "completed" &&
+      appointment.status === "completed" &&
+      appointment.payment?.method === "transfer"
+    ) {
+      const due = new Date();
+      due.setHours(due.getHours() + 24);
+      await Appointment.findByIdAndUpdate(id, {
+        "payment.transferDueAt": due,
+      });
+    }
+
+    // Pivot de confirmation : RDV fixé → en attente de garantie (paiement) + e-mail coordonnées bancaires
     if (
       oldAppointment &&
       oldAppointment.status === "pending" &&
@@ -184,23 +209,32 @@ export async function PATCH(
         lastName: string;
       };
 
-      const clientUser = await User.findById(client._id);
-      const dashboardUrl = `${getBaseUrl()}/client/dashboard/appointments`;
+      const clientUserBefore = await User.findById(client._id);
+      const wasGuest = clientUserBefore?.role === "guest";
+
+      if (wasGuest) {
+        await provisionGuestAsClient(client._id.toString(), {
+          issueType: appointment.issueType,
+        });
+      }
+
+      await Appointment.findByIdAndUpdate(id, {
+        awaitingPaymentGuarantee: true,
+      });
+
       const billingUrl = `${getBaseUrl()}/client/dashboard/billing`;
 
-      if (clientUser && clientUser.role === "guest") {
-        // Generate payment token for guest user
+      if (wasGuest) {
+        // Generate payment token for payment link (/pay) — même flux qu’avant promotion compte
         const paymentToken = generatePaymentToken();
         const paymentTokenExpiry = new Date();
         paymentTokenExpiry.setDate(paymentTokenExpiry.getDate() + 7); // Token valid for 7 days
 
-        // Save payment token to appointment under payment object
         await Appointment.findByIdAndUpdate(id, {
           "payment.paymentToken": paymentToken,
           "payment.paymentTokenExpiry": paymentTokenExpiry,
         });
 
-        // Generate payment link
         const paymentLink = `${getBaseUrl()}/pay?token=${paymentToken}`;
 
         sendGuestPaymentConfirmation({
@@ -219,13 +253,12 @@ export async function PATCH(
         }).catch((err) =>
           console.error("Error sending guest payment invitation:", err),
         );
-      } else if (clientUser && clientUser.role === "client") {
-        // Send payment invitation to authenticated client users
+      } else if (clientUserBefore && clientUserBefore.role === "client") {
         sendPaymentInvitation({
           clientName: `${client.firstName} ${client.lastName}`,
           clientEmail: client.email,
           professionalName: `${professional.firstName} ${professional.lastName}`,
-          professionalEmail: "", // Not needed for payment invitation
+          professionalEmail: "",
           date: appointment.date
             ? appointment.date.toISOString()
             : "To be scheduled",
@@ -235,7 +268,7 @@ export async function PATCH(
           meetingLink: appointment.meetingLink,
           location: appointment.location,
           price: appointment.payment.price,
-          paymentUrl: billingUrl, // Billing: add payment method to confirm; charge after session
+          paymentUrl: billingUrl,
         }).catch((err) =>
           console.error("Error sending payment invitation:", err),
         );
@@ -316,7 +349,11 @@ export async function PATCH(
         date: appointment.date?.toISOString(),
         time: appointment.time,
         duration: appointment.duration || 60,
-        type: appointment.type as "video" | "in-person" | "phone",
+        type: appointment.type as
+          | "video"
+          | "in-person"
+          | "phone"
+          | "both",
         cancelledBy: cancelledBy,
       }).catch((err) =>
         console.error("Error sending cancellation notification:", err),

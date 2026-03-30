@@ -13,6 +13,9 @@ import {
   Wallet,
   Shield,
   Settings,
+  Banknote,
+  BookOpen,
+  Inbox,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -62,6 +65,11 @@ export function AdminSidebar() {
           icon: User,
         },
         {
+          title: t("serviceRequests"),
+          url: "/admin/dashboard/service-requests",
+          icon: Inbox,
+        },
+        {
           title: t("reports"),
           url: "/admin/dashboard/reports",
           icon: ClipboardList,
@@ -70,6 +78,16 @@ export function AdminSidebar() {
           title: t("billing"),
           url: "/admin/dashboard/billing",
           icon: Wallet,
+        },
+        {
+          title: t("accounting"),
+          url: "/admin/dashboard/accounting",
+          icon: BookOpen,
+        },
+        {
+          title: t("paymentTrust"),
+          url: "/admin/dashboard/payment-trust",
+          icon: Banknote,
         },
       ],
     },

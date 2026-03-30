@@ -32,15 +32,16 @@ export default function AppointmentDetailsModal({
 
   const getTypeBadge = (type: AppointmentResponse["type"] | undefined) => {
     if (!type) return null;
-    const styles = {
+    const styles: Record<string, string> = {
       video: "bg-blue-100 text-blue-700",
       "in-person": "bg-green-100 text-green-700",
       phone: "bg-purple-100 text-purple-700",
+      both: "bg-amber-100 text-amber-800",
     };
 
     return (
       <span
-        className={`px-3 py-1 rounded-full text-xs font-light ${styles[type]}`}
+        className={`px-3 py-1 rounded-full text-xs font-light ${styles[type] ?? "bg-muted text-muted-foreground"}`}
       >
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </span>

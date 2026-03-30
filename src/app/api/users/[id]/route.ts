@@ -4,12 +4,19 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
 import {
+  getActiveAdminPermissions,
+  mustMaskClientContactPII,
+  applyClientContactMaskToUserPayload,
+} from "@/lib/admin-rbac";
+import { logAdminClientAccess } from "@/lib/admin-access-log";
+import {
   sendProfessionalApprovalEmail,
   sendProfessionalRejectionEmail,
 } from "@/lib/notifications";
+import { PROFESSIONAL_CLIENT_APPOINTMENT_STATUSES } from "@/lib/professional-client-access";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   ctx: RouteContext<"/api/users/[id]">,
 ) {
   try {
@@ -28,7 +35,7 @@ export async function GET(
         const hasAppointment = await Appointment.findOne({
           professionalId: session.user.id,
           clientId: id,
-          status: { $in: ["scheduled", "pending", "completed"] },
+          status: { $in: Array.from(PROFESSIONAL_CLIENT_APPOINTMENT_STATUSES) },
         });
         if (!hasAppointment) {
           return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -44,6 +51,24 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (session.user.role === "admin") {
+      const perms = await getActiveAdminPermissions(session.user.id);
+      const isClientOrGuest = ["client", "guest"].includes(String(user.role));
+      if (isClientOrGuest) {
+        void logAdminClientAccess({
+          actorUserId: session.user.id,
+          resourceUserId: id,
+          action: "view_client_user",
+          req,
+        });
+      }
+      const mask = mustMaskClientContactPII(perms) && isClientOrGuest;
+      const plain = user.toObject() as { phone?: string };
+      return NextResponse.json(
+        applyClientContactMaskToUserPayload(plain, mask),
+      );
     }
 
     return NextResponse.json(user);
@@ -81,6 +106,14 @@ export async function PATCH(
 
     await connectToDatabase();
 
+    const adminPerms = await getActiveAdminPermissions(session.user.id);
+    if (adminPerms && mustMaskClientContactPII(adminPerms)) {
+      return NextResponse.json(
+        { error: "Insufficient permissions to modify user records" },
+        { status: 403 },
+      );
+    }
+
     // Get the user before update to check for status changes
     const existingUser = await User.findById(id);
     if (!existingUser) {
@@ -106,6 +139,21 @@ export async function PATCH(
       if (allowedUpdates.includes(key)) {
         updates[key] = body[key];
       }
+    }
+
+    if (
+      existingUser.role === "professional" &&
+      updates.status === "active" &&
+      existingUser.status === "pending"
+    ) {
+      updates.professionalLicenseStatus = "verified";
+    }
+    if (
+      existingUser.role === "professional" &&
+      updates.status === "inactive" &&
+      existingUser.status === "pending"
+    ) {
+      updates.professionalLicenseStatus = "rejected";
     }
 
     if (Object.keys(updates).length === 0) {

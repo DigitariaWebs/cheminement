@@ -6,6 +6,7 @@
 
 import nodemailer from "nodemailer";
 import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
 import PlatformSettings, {
   type EmailNotificationType,
   type IEmailSettings,
@@ -22,13 +23,18 @@ interface EmailData {
   subject: string;
   html: string;
   text: string;
+  attachments?: {
+    filename: string;
+    content: Buffer;
+    contentType?: string;
+  }[];
 }
 
 interface BaseAppointmentData {
   date?: string;
   time?: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
+  type: "video" | "in-person" | "phone" | "both";
 }
 
 interface AppointmentEmailData extends BaseAppointmentData {
@@ -48,6 +54,10 @@ interface GuestBookingEmailData extends BaseAppointmentData {
   price: number;
   meetingLink?: string;
   paymentLink?: string;
+  /** UI locale for service-request thank-you / onboarding copy */
+  locale?: "fr" | "en";
+  bookingFor?: "self" | "patient" | "loved-one";
+  lovedOneIsMinor?: boolean;
 }
 
 interface MeetingLinkEmailData {
@@ -57,7 +67,7 @@ interface MeetingLinkEmailData {
   date?: string;
   time?: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
+  type: "video" | "in-person" | "phone" | "both";
   meetingLink: string;
 }
 
@@ -65,6 +75,12 @@ interface WelcomeEmailData {
   name: string;
   email: string;
   role: "client" | "professional" | "guest";
+}
+
+interface AccountEmailVerificationData {
+  name: string;
+  email: string;
+  verifyUrl: string;
 }
 
 interface PasswordResetEmailData {
@@ -179,12 +195,23 @@ const formatProfessionalName = (name?: string): string => {
 };
 
 const formatAppointmentType = (
-  type: "video" | "in-person" | "phone",
+  type: "video" | "in-person" | "phone" | "both",
+  lang: "fr" | "en" = "en",
 ): string => {
+  if (lang === "fr") {
+    const fr: Record<string, string> = {
+      video: "Appel vidéo",
+      "in-person": "En personne",
+      phone: "Appel téléphonique",
+      both: "Ouvert pour les deux (vidéo ou en personne)",
+    };
+    return fr[type] || type;
+  }
   const types: Record<string, string> = {
     video: "Video Call",
     "in-person": "In-Person",
     phone: "Phone Call",
+    both: "Open to both (video or in-person)",
   };
   return types[type] || type;
 };
@@ -389,6 +416,8 @@ interface EmailTemplateOptions {
   infoBox?: { title: string; content: string; theme?: EmailTheme };
   badge?: { text: string; theme?: EmailTheme };
   button?: { text: string; url: string };
+  /** Optional second CTA (e.g. invite guest to create a full client account) */
+  secondaryButton?: { preamble?: string; text: string; url: string };
   outro?: string;
   branding?: IEmailBranding;
 }
@@ -406,6 +435,7 @@ const buildEmailHtml = (options: EmailTemplateOptions): string => {
     infoBox,
     badge,
     button,
+    secondaryButton,
     outro,
     branding,
   } = options;
@@ -431,6 +461,15 @@ const buildEmailHtml = (options: EmailTemplateOptions): string => {
             ${price ? createPriceSection(price.amount, price.note, price.theme || theme, price.currency!, branding) : ""}
             ${infoBox ? createInfoBox(infoBox.title, infoBox.content, infoBox.theme, branding) : ""}
             ${button ? createButton(button.text, button.url, branding) : ""}
+            ${
+              secondaryButton
+                ? `
+            <div style="margin-top: 28px; padding-top: 24px; border-top: 1px solid #eee;">
+              ${secondaryButton.preamble ? `<p style="margin: 0 0 16px; font-size: 15px; color: #333;">${secondaryButton.preamble}</p>` : ""}
+              ${createButton(secondaryButton.text, secondaryButton.url, branding)}
+            </div>`
+                : ""
+            }
             ${outro ? `<p style="color: #666; font-size: 14px;">${outro}</p>` : ""}
           </div>
           ${createFooter(branding)}
@@ -492,6 +531,7 @@ const sendEmail = async (
       subject: data.subject,
       html: data.html,
       text: data.text,
+      attachments: data.attachments,
     });
 
     console.log(`Email sent successfully [${emailType}] to:`, data.to);
@@ -536,6 +576,38 @@ async function getBranding(): Promise<IEmailBranding | undefined> {
 // =============================================================================
 // Public Email Functions - Authentication
 // =============================================================================
+
+export async function sendAccountEmailVerificationEmail(
+  data: AccountEmailVerificationData,
+): Promise<boolean> {
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "Confirmez votre adresse courriel",
+    subtitle: "Lien valide 15 minutes",
+    theme: "info",
+    greeting: `Bonjour ${data.name},`,
+    intro:
+      "Pour sécuriser votre compte, veuillez confirmer votre adresse courriel en cliquant sur le bouton ci-dessous. Ensuite, vous devrez valider votre numéro de téléphone par code SMS.",
+    button: { text: "Confirmer mon courriel", url: data.verifyUrl },
+    outro:
+      "Si vous n’êtes pas à l’origine de cette inscription, ignorez ce message.",
+    branding,
+  });
+  const text = buildEmailText([
+    "Confirmez votre adresse courriel",
+    `Bonjour ${data.name},`,
+    "Ouvrez ce lien (valide 15 minutes) pour continuer :",
+    data.verifyUrl,
+  ]);
+  const subject = await getSubject(
+    "email_verification",
+    "Confirmez votre courriel - JeChemine",
+  );
+  return sendEmail(
+    { to: data.email, subject, html, text },
+    "email_verification",
+  );
+}
 
 export async function sendWelcomeEmail(
   data: WelcomeEmailData,
@@ -626,12 +698,268 @@ export async function sendGuestBookingConfirmation(
   data: GuestBookingEmailData,
 ): Promise<boolean> {
   const branding = await getBranding();
+  const baseUrl = process.env.NEXTAUTH_URL || "";
+  const memberSignupUrl = `${baseUrl}/signup/member?email=${encodeURIComponent(data.guestEmail)}`;
   const formattedDate = formatEmailDate(data.date);
   const formattedTime = formatTime(data.time);
   const professionalName = formatProfessionalName(data.professionalName);
   const sessionType = formatSessionType(data.therapyType);
-  const appointmentType = formatAppointmentType(data.type);
   const isPendingSchedule = !data.date || !data.time || !data.professionalName;
+  const lang: "fr" | "en" = data.locale === "fr" ? "fr" : "en";
+  const appointmentType = formatAppointmentType(data.type, lang);
+
+  const isSelfServiceRequest =
+    isPendingSchedule && data.bookingFor === "self";
+
+  if (isSelfServiceRequest) {
+    const intro =
+      lang === "fr"
+        ? "Merci de votre demande. Pour accélérer votre jumelage, complétez votre profil en suivant le lien ci-dessous."
+        : "Thank you for your request. To speed up your matching, complete your profile using the link below.";
+
+    const nextSteps =
+      lang === "fr"
+        ? "Un professionnel vous sera proposé sous peu. Vous recevrez un autre courriel lorsque votre demande progressera."
+        : "A professional will be assigned to you soon. You will receive another email as your request moves forward.";
+
+    const detailLabels =
+      lang === "fr"
+        ? {
+            session: "Type de séance",
+            modality: "Modalité",
+            professional: "Professionnel",
+            date: "Date",
+            time: "Heure",
+            duration: "Durée",
+          }
+        : {
+            session: "Session type",
+            modality: "Modality",
+            professional: "Professional",
+            date: "Date",
+            time: "Time",
+            duration: "Duration",
+          };
+
+    const html = buildEmailHtml({
+      title:
+        lang === "fr" ? "Demande de service reçue" : "Service request received",
+      subtitle:
+        lang === "fr"
+          ? "Nous traitons votre demande"
+          : "We are processing your request",
+      theme: "info",
+      badge: {
+        text: lang === "fr" ? "⏳ En attente de jumelage" : "⏳ Pending matching",
+        theme: "warning",
+      },
+      greeting:
+        lang === "fr"
+          ? `Bonjour ${data.guestName},`
+          : `Dear ${data.guestName},`,
+      intro,
+      details: [
+        { label: detailLabels.session, value: sessionType },
+        { label: detailLabels.modality, value: appointmentType },
+        { label: detailLabels.professional, value: professionalName },
+        { label: detailLabels.date, value: formattedDate },
+        { label: detailLabels.time, value: formattedTime },
+        {
+          label: detailLabels.duration,
+          value:
+            lang === "fr"
+              ? `${data.duration} minutes`
+              : `${data.duration} minutes`,
+        },
+      ],
+      infoBox: {
+        title: lang === "fr" ? "Ensuite" : "Next steps",
+        content: nextSteps,
+      },
+      button: {
+        text:
+          lang === "fr"
+            ? "Compléter mon profil (onboarding)"
+            : "Complete my profile (onboarding)",
+        url: memberSignupUrl,
+      },
+      secondaryButton: {
+        preamble:
+          lang === "fr"
+            ? "Vous pouvez aussi créer un compte membre sécurisé avec la même adresse courriel pour suivre vos rendez-vous."
+            : "You can also create a secure member account with the same email to track your appointments.",
+        text:
+          lang === "fr" ? "Créer mon compte membre" : "Create my member account",
+        url: memberSignupUrl,
+      },
+      outro:
+        lang === "fr"
+          ? "Merci de votre confiance."
+          : "Thank you for choosing us.",
+      branding,
+    });
+
+    const text = buildEmailText([
+      lang === "fr" ? "Demande de service reçue" : "Service request received",
+      lang === "fr"
+        ? `Bonjour ${data.guestName},`
+        : `Dear ${data.guestName},`,
+      intro,
+      `${detailLabels.session}: ${sessionType}`,
+      `${detailLabels.modality}: ${appointmentType}`,
+      nextSteps,
+      lang === "fr" ? "Lien onboarding (profil)" : "Onboarding link (profile)",
+      memberSignupUrl,
+    ]);
+
+    const subject =
+      lang === "fr"
+        ? "Merci pour votre demande — Je Chemine"
+        : "Thank you for your request — Je Chemine";
+
+    return sendEmail(
+      { to: data.guestEmail, subject, html, text },
+      "guest_booking_confirmation",
+    );
+  }
+
+  // Loved-one booking (pending assignment):
+  // - child (<18): send onboarding link to the requester immediately
+  // - adult (>18): keep dossier pending until admin decides where to send the link
+  if (isPendingSchedule && data.bookingFor === "loved-one") {
+    if (data.lovedOneIsMinor) {
+      const intro =
+        lang === "fr"
+          ? "Merci de votre demande. Pour accélérer votre jumelage, complétez votre profil en suivant le lien ci-dessous."
+          : "Thank you for your request. To speed up your matching, complete your profile using the link below.";
+
+      const nextSteps =
+        lang === "fr"
+          ? "Un professionnel vous sera proposé sous peu."
+          : "A professional will be assigned to you soon.";
+
+      const detailLabels =
+        lang === "fr"
+          ? {
+              session: "Type de séance",
+              modality: "Modalité",
+              professional: "Professionnel",
+              date: "Date",
+              time: "Heure",
+              duration: "Durée",
+            }
+          : {
+              session: "Session type",
+              modality: "Modality",
+              professional: "Professional",
+              date: "Date",
+              time: "Time",
+              duration: "Duration",
+            };
+
+      const html = buildEmailHtml({
+        title: lang === "fr" ? "Demande de service reçue" : "Service request received",
+        subtitle: lang === "fr" ? "Nous traitons votre demande" : "We are processing your request",
+        theme: "info",
+        badge: {
+          text: lang === "fr" ? "⏳ En attente de jumelage" : "⏳ Pending matching",
+          theme: "warning",
+        },
+        greeting: lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+        intro,
+        details: [
+          { label: detailLabels.session, value: sessionType },
+          { label: detailLabels.modality, value: appointmentType },
+          { label: detailLabels.professional, value: professionalName },
+          { label: detailLabels.date, value: formattedDate },
+          { label: detailLabels.time, value: formattedTime },
+          { label: detailLabels.duration, value: `${data.duration} minutes` },
+        ],
+        infoBox: {
+          title: lang === "fr" ? "Ensuite" : "Next steps",
+          content: nextSteps,
+        },
+        button: {
+          text: lang === "fr" ? "Compléter mon profil (onboarding)" : "Complete my profile (onboarding)",
+          url: memberSignupUrl,
+        },
+        branding,
+      });
+
+      const text = buildEmailText([
+        lang === "fr" ? "Demande de service reçue" : "Service request received",
+        lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+        intro,
+        `Duration: ${data.duration} minutes`,
+        nextSteps,
+        lang === "fr" ? "Lien onboarding (profil)" : "Onboarding link (profile)",
+        memberSignupUrl,
+      ]);
+
+      const subject =
+        lang === "fr"
+          ? "Merci pour votre demande — Je Chemine"
+          : "Thank you for your request — Je Chemine";
+
+      return sendEmail(
+        { to: data.guestEmail, subject, html, text },
+        "guest_booking_confirmation",
+      );
+    }
+
+    // Adult (>18): no onboarding link until admin decision
+    const intro =
+      lang === "fr"
+        ? "Merci de votre demande. Votre dossier est en attente de validation par l’Admin. Selon votre situation, le lien de compte sera envoyé au demandeur ou directement au proche."
+        : "Thank you for your request. Your file is pending admin validation. Depending on your situation, the account link will be sent to the requester or directly to the loved one.";
+
+    const nextSteps =
+      lang === "fr"
+        ? "Un administrateur examinera votre demande avant l’envoi du lien de compte."
+        : "An admin will review your request before sending the account link.";
+
+    const html = buildEmailHtml({
+      title: lang === "fr" ? "Demande de service reçue" : "Service request received",
+      subtitle: lang === "fr" ? "Nous traitons votre demande" : "We are processing your request",
+      theme: "info",
+      badge: {
+        text: lang === "fr" ? "⏳ En attente de validation" : "⏳ Pending admin validation",
+        theme: "warning",
+      },
+      greeting: lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+      intro,
+      details: [
+        { label: "Type de séance", value: sessionType },
+        { label: "Type de rendez-vous", value: appointmentType },
+        { label: "Professionnel", value: professionalName },
+        { label: "Date", value: formattedDate },
+        { label: "Heure", value: formattedTime },
+        { label: "Durée", value: `${data.duration} minutes` },
+      ],
+      infoBox: {
+        title: lang === "fr" ? "Ensuite" : "Next steps",
+        content: nextSteps,
+      },
+      branding,
+    });
+
+    const text = buildEmailText([
+      lang === "fr" ? "Demande de service reçue" : "Service request received",
+      lang === "fr" ? `Bonjour ${data.guestName},` : `Dear ${data.guestName},`,
+      intro,
+      nextSteps,
+    ]);
+
+    const subject =
+      lang === "fr"
+        ? "Demande en attente de validation — Je Chemine"
+        : "Request pending admin validation — Je Chemine";
+
+    return sendEmail(
+      { to: data.guestEmail, subject, html, text },
+      "guest_booking_confirmation",
+    );
+  }
 
   const intro = isPendingSchedule
     ? "We've received your booking request and will match you with a professional shortly."
@@ -640,6 +968,8 @@ export async function sendGuestBookingConfirmation(
   const nextSteps = isPendingSchedule
     ? "A professional will be assigned to you soon. You'll receive another email with payment details once confirmed."
     : "Please wait for confirmation from your assigned professional. You'll receive payment instructions once your appointment is confirmed.";
+
+  const appointmentTypeEn = formatAppointmentType(data.type, "en");
 
   const html = buildEmailHtml({
     title: "Booking Request Received",
@@ -657,7 +987,7 @@ export async function sendGuestBookingConfirmation(
     intro,
     details: [
       { label: "Session Type", value: sessionType },
-      { label: "Appointment Type", value: appointmentType },
+      { label: "Appointment Type", value: appointmentTypeEn },
       { label: "Professional", value: professionalName },
       { label: "Date", value: formattedDate },
       { label: "Time", value: formattedTime },
@@ -666,6 +996,12 @@ export async function sendGuestBookingConfirmation(
     infoBox: {
       title: "Next Steps",
       content: nextSteps,
+    },
+    secondaryButton: {
+      preamble:
+        "Create your secure Je Chemine member account with the same email you used for this request. You will complete your detailed profile (basic clinical information) to help your professional prepare for your care.",
+      text: "Create my secure account",
+      url: memberSignupUrl,
     },
     outro:
       "Thank you for choosing us. We'll be in touch soon with more details.",
@@ -694,12 +1030,15 @@ export async function sendGuestBookingConfirmation(
     intro,
     "SESSION DETAILS:",
     `Session Type: ${sessionType}`,
-    `Appointment Type: ${appointmentType}`,
+    `Appointment Type: ${appointmentTypeEn}`,
     `Professional: ${professionalName}`,
     `Date: ${formattedDate}`,
     `Time: ${formattedTime}`,
     `Duration: ${data.duration} minutes`,
     ...textNextSteps,
+    "CREATE YOUR SECURE ACCOUNT:",
+    "Use the link below to register and complete your detailed clinical profile (same email as this request):",
+    memberSignupUrl,
   ]);
 
   const subject = await getSubject(
@@ -710,6 +1049,75 @@ export async function sendGuestBookingConfirmation(
   return sendEmail(
     { to: data.guestEmail, subject, html, text },
     "guest_booking_confirmation",
+  );
+}
+
+// =============================================================================
+// Public Email Functions - Service request onboarding link (admin approval)
+// =============================================================================
+
+export async function sendServiceRequestOnboardingEmail(data: {
+  toName: string;
+  toEmail: string;
+  locale?: "fr" | "en";
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const lang: "fr" | "en" = data.locale === "fr" ? "fr" : "en";
+  const baseUrl = process.env.NEXTAUTH_URL || "";
+  const memberSignupUrl = `${baseUrl}/signup/member?email=${encodeURIComponent(
+    data.toEmail,
+  )}`;
+
+  const intro =
+    lang === "fr"
+      ? "Merci de votre demande. Pour accélérer votre jumelage, complétez votre profil ici."
+      : "Thank you for your request. To speed up your matching, complete your profile here.";
+
+  const html = buildEmailHtml({
+    title: lang === "fr" ? "Demande reçue" : "Request received",
+    subtitle: lang === "fr" ? "Onboarding du profil" : "Profile onboarding",
+    theme: "info",
+    badge: {
+      text: lang === "fr" ? "✅ Action requise" : "✅ Action needed",
+      theme: "success",
+    },
+    greeting: lang === "fr" ? `Bonjour ${data.toName},` : `Dear ${data.toName},`,
+    intro,
+    infoBox: {
+      title: lang === "fr" ? "Étapes suivantes" : "Next steps",
+      content:
+        lang === "fr"
+          ? "Complétez votre profil pour accélérer votre jumelage."
+          : "Complete your profile to speed up your matching.",
+    },
+    button: {
+      text:
+        lang === "fr" ? "Compléter votre profil" : "Complete your profile",
+      url: memberSignupUrl,
+    },
+    outro: lang === "fr" ? "Merci de votre confiance." : "Thank you for your trust.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    lang === "fr" ? "Demande reçue" : "Request received",
+    lang === "fr" ? `Bonjour ${data.toName},` : `Dear ${data.toName},`,
+    intro,
+    lang === "fr" ? "Lien onboarding :" : "Onboarding link:",
+    memberSignupUrl,
+    lang === "fr"
+      ? "Complétez votre profil pour accélérer votre jumelage."
+      : "Complete your profile to speed up your matching.",
+  ]);
+
+  const subject =
+    lang === "fr"
+      ? "Merci pour votre demande — Je Chemine"
+      : "Thank you for your request — Je Chemine";
+
+  return sendEmail(
+    { to: data.toEmail, subject, html, text },
+    "service_request_onboarding",
   );
 }
 
@@ -1443,5 +1851,302 @@ export async function sendProfessionalRejectionEmail(
   return sendEmail(
     { to: data.email, subject, html, text },
     "professional_rejection",
+  );
+}
+
+/** Alerte admins : un client a choisi Interac / virement (entente de confiance à valider). */
+export async function sendAdminInteracTrustRequestAlert(data: {
+  clientName: string;
+  clientEmail: string;
+  appointmentId: string;
+}): Promise<void> {
+  await connectToDatabase();
+  const adminUsers = await User.find({ isAdmin: true, role: "admin" })
+    .select("email")
+    .lean();
+  let emails = adminUsers
+    .map((a) => a.email)
+    .filter((e): e is string => Boolean(e));
+  if (emails.length === 0 && process.env.ADMIN_ALERT_EMAIL) {
+    emails = process.env.ADMIN_ALERT_EMAIL.split(",").map((s) => s.trim());
+  }
+  if (emails.length === 0) {
+    console.warn(
+      "[admin_interac_trust_request] No admin emails — set ADMIN_ALERT_EMAIL or admin users.",
+    );
+    return;
+  }
+
+  const base =
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
+  const reviewUrl = `${base}/admin/dashboard/payment-trust`;
+
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "Validation garantie Interac / virement",
+    theme: "warning",
+    greeting: "Bonjour,",
+    intro:
+      "Un client a indiqué ne pas utiliser de carte et souhaite payer par virement Interac (entente de confiance). Validez le profil pour passer le client en Statut vert.",
+    details: [
+      { label: "Client", value: data.clientName },
+      { label: "Courriel", value: data.clientEmail },
+      { label: "Rendez-vous", value: data.appointmentId },
+    ],
+    button: { text: "Ouvrir la file d’attente", url: reviewUrl },
+    outro:
+      "Après chaque séance, le paiement doit être reçu dans les 24 heures. Merci de confirmer la réception selon vos processus internes.",
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Interac / virement — action admin requise",
+    `Client: ${data.clientName} (${data.clientEmail})`,
+    `Rendez-vous: ${data.appointmentId}`,
+    `Valider: ${reviewUrl}`,
+  ]);
+
+  const subject = await getSubject(
+    "admin_interac_trust_request",
+    "Interac / virement — validation requise (Statut vert)",
+  );
+
+  for (const to of emails) {
+    await sendEmail({ to, subject, html, text }, "admin_interac_trust_request");
+  }
+}
+
+export async function sendInteracTransferInstructionsEmail(data: {
+  clientName: string;
+  clientEmail: string;
+  clientLegalName: string;
+  depositEmail: string;
+  amountCad: number;
+  interacReferenceCode: string;
+  professionalName: string;
+  appointmentDateLabel: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const company = branding?.companyName || "JeChemine";
+
+  const smsBlock = [
+    "Paiement Interac Rapide ⚡",
+    `📧 Courriel : ${data.depositEmail}`,
+    `💰 Montant : ${data.amountCad.toFixed(2)} $`,
+    `📝 Message obligatoire : ${data.interacReferenceCode}`,
+    "",
+    "Le système pourra associer votre virement à votre dossier grâce à ce code.",
+  ].join("\n");
+
+  const html = buildEmailHtml({
+    title: "Instructions — virement Interac",
+    theme: "info",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: `Voici comment envoyer votre virement pour votre séance avec ${data.professionalName} (${data.appointmentDateLabel}).`,
+    details: [
+      {
+        label: "1. Envoyez votre virement à",
+        value: data.depositEmail,
+      },
+      {
+        label: "2. Vérification du nom",
+        value: `Le nom associé à votre compte bancaire doit être identique à celui de votre dossier : ${data.clientLegalName}.`,
+      },
+      {
+        label: "3. Compte d’un tiers ou d’une entreprise",
+        value:
+          "Inscrivez votre nom complet dans le champ « Message » du virement pour que nous puissions identifier votre paiement.",
+      },
+      {
+        label: "4. Message obligatoire (référence unique)",
+        value: data.interacReferenceCode,
+      },
+    ],
+    infoBox: {
+      title: "Format court (idéal mobile / SMS)",
+      content: smsBlock.split("\n").join("<br/>"),
+      theme: "info",
+    },
+    outro: `PAD et carte : vous pouvez aussi enregistrer un moyen de paiement sécurisé (Stripe) depuis votre espace Facturation. Pour les PME, des solutions type prélèvement avec mandat (ex. intégrations bancaires spécialisées) peuvent s’ajouter — contactez ${company} pour plus d’informations.`,
+    branding,
+  });
+
+  const text = buildEmailText([
+    "Instructions virement Interac",
+    `Bonjour ${data.clientName},`,
+    `Séance avec ${data.professionalName} — ${data.appointmentDateLabel}`,
+    "",
+    `1. Envoyer le virement à : ${data.depositEmail}`,
+    `2. Nom : doit correspondre à « ${data.clientLegalName} »`,
+    "3. Tiers / entreprise : indiquez votre nom complet dans le message du virement.",
+    `4. Message obligatoire : ${data.interacReferenceCode}`,
+    `Montant : ${data.amountCad.toFixed(2)} $`,
+    "",
+    "— Format SMS —",
+    smsBlock,
+  ]);
+
+  const subject = await getSubject(
+    "interac_transfer_instructions",
+    "Instructions virement Interac — JeChemine",
+  );
+
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "interac_transfer_instructions",
+  );
+}
+
+export async function sendFiscalReceiptEmail(data: {
+  clientEmail: string;
+  clientName: string;
+  amountCad: number;
+  pdfBuffer: Buffer;
+  appointmentId: string;
+  paymentPendingTransfer: boolean;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const subject = await getSubject(
+    "fiscal_receipt",
+    "Votre reçu fiscal — JeChemine",
+  );
+  const html = buildEmailHtml({
+    title: "Reçu fiscal",
+    theme: data.paymentPendingTransfer ? "warning" : "success",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: data.paymentPendingTransfer
+      ? `Votre séance est enregistrée. Montant dû : ${data.amountCad.toFixed(2)} $ CAD (virement Interac). Les instructions ont été ou seront envoyées par courriel. Vous trouverez en pièce jointe votre reçu.`
+      : `Votre paiement de ${data.amountCad.toFixed(2)} $ CAD a été traité. Veuillez trouver votre reçu fiscal en pièce jointe.`,
+    branding,
+  });
+  const text = buildEmailText([
+    "Reçu fiscal — Je Chemine",
+    data.paymentPendingTransfer
+      ? `Montant dû (Interac) : ${data.amountCad.toFixed(2)} $ CAD`
+      : `Paiement reçu : ${data.amountCad.toFixed(2)} $ CAD`,
+    "PDF en pièce jointe.",
+  ]);
+  return sendEmail(
+    {
+      to: data.clientEmail,
+      subject,
+      html,
+      text,
+      attachments: [
+        {
+          filename: `recu-${data.appointmentId.slice(-8)}.pdf`,
+          content: data.pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    },
+    "fiscal_receipt",
+  );
+}
+
+export async function sendPaymentGuaranteeDay1Reminder(data: {
+  clientName: string;
+  clientEmail: string;
+  billingUrl: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "Rappel : moyen de paiement",
+    theme: "warning",
+    greeting: `Bonjour ${data.clientName},`,
+    intro:
+      "Votre rendez-vous est confirmé, mais aucune carte ni prélèvement bancaire (PAD) n’est encore enregistré. Ajoutez un moyen de paiement pour finaliser la garantie.",
+    button: { text: "Ouvrir Facturation", url: data.billingUrl },
+    outro: "Si vous avez choisi le virement Interac, votre demande est en traitement côté administration.",
+    branding,
+  });
+  const text = buildEmailText([
+    "Rappel moyen de paiement",
+    `Bonjour ${data.clientName},`,
+    "Ajoutez une carte ou un PAD :",
+    data.billingUrl,
+  ]);
+  const subject = await getSubject(
+    "payment_guarantee_day1_reminder",
+    "Rappel : ajoutez un moyen de paiement — JeChemine",
+  );
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "payment_guarantee_day1_reminder",
+  );
+}
+
+export async function sendPaymentGuarantee48hClientReminder(data: {
+  clientName: string;
+  clientEmail: string;
+  billingUrl: string;
+  appointmentDateLabel: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const html = buildEmailHtml({
+    title: "URGENT — rendez-vous proche",
+    theme: "danger",
+    greeting: `Bonjour ${data.clientName},`,
+    intro: `Votre rendez-vous du ${data.appointmentDateLabel} approche. Aucune garantie de paiement (carte/PAD) n’est en place. Merci d’agir immédiatement pour éviter tout report.`,
+    button: { text: "Ajouter un moyen de paiement", url: data.billingUrl },
+    branding,
+  });
+  const text = buildEmailText([
+    "URGENT — moyen de paiement",
+    `Bonjour ${data.clientName},`,
+    `Rendez-vous : ${data.appointmentDateLabel}`,
+    data.billingUrl,
+  ]);
+  const subject = await getSubject(
+    "payment_guarantee_48h_client",
+    "URGENT : moyen de paiement — JeChemine",
+  );
+  return sendEmail(
+    { to: data.clientEmail, subject, html, text },
+    "payment_guarantee_48h_client",
+  );
+}
+
+export async function sendPaymentGuarantee48hProfessionalAlert(data: {
+  professionalEmail: string;
+  professionalName: string;
+  clientName: string;
+  appointmentDateLabel: string;
+  appointmentId: string;
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const base =
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
+  const dashboardUrl = `${base}/professional/dashboard/sessions`;
+
+  const html = buildEmailHtml({
+    title: "ALERTE — client sans garantie de paiement",
+    theme: "danger",
+    greeting: `Bonjour ${data.professionalName},`,
+    intro: `Le client ${data.clientName} n’a toujours pas de carte ni prélèvement enregistré pour le rendez-vous du ${data.appointmentDateLabel}. Dernière relance automatique envoyée au client.`,
+    details: [
+      { label: "Rendez-vous", value: data.appointmentId },
+    ],
+    button: { text: "Voir les séances", url: dashboardUrl },
+    branding,
+  });
+  const text = buildEmailText([
+    "ALERTE garantie paiement",
+    `Bonjour ${data.professionalName},`,
+    `Client : ${data.clientName}`,
+    `Date : ${data.appointmentDateLabel}`,
+    dashboardUrl,
+  ]);
+  const subject = await getSubject(
+    "payment_guarantee_48h_professional",
+    "ALERTE : client sans garantie — rendez-vous proche",
+  );
+  return sendEmail(
+    { to: data.professionalEmail, subject, html, text },
+    "payment_guarantee_48h_professional",
   );
 }

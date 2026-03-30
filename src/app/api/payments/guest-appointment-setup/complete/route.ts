@@ -3,6 +3,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Appointment from "@/models/Appointment";
 import { stripe } from "@/lib/stripe";
 import { encryptPaymentMethodReference } from "@/lib/field-encryption";
+import { markClientPaymentGuaranteeGreen } from "@/lib/payment-guarantee";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
     const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
 
     const client = appointment.clientId as unknown as {
+      _id: { toString: () => string };
       stripeCustomerId?: string;
     };
 
@@ -102,7 +104,14 @@ export async function POST(req: NextRequest) {
     if (appointment.payment.status === "processing") {
       appointment.payment.status = "pending";
     }
+    appointment.awaitingPaymentGuarantee = false;
     await appointment.save();
+
+    await markClientPaymentGuaranteeGreen(
+      client._id.toString(),
+      client.stripeCustomerId,
+      paymentMethodId,
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

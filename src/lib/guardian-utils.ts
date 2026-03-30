@@ -92,6 +92,30 @@ export async function getManagedAccounts(
 }
 
 /**
+ * True if the session user may initiate payment / billing for this client account
+ * (same user, guardian/account manager, or client listed in managedAccounts).
+ */
+export async function canSessionUserActForClient(
+  sessionUserId: string,
+  clientUserId: string,
+): Promise<boolean> {
+  if (!sessionUserId || !clientUserId) return false;
+  if (sessionUserId === clientUserId) return true;
+
+  const client = await User.findById(clientUserId).select(
+    "guardianId accountManagerId",
+  );
+  if (!client) return false;
+  const g = client.guardianId?.toString();
+  const a = client.accountManagerId?.toString();
+  if (g === sessionUserId || a === sessionUserId) return true;
+
+  const actor = await User.findById(sessionUserId).select("managedAccounts");
+  if (!actor?.managedAccounts?.length) return false;
+  return actor.managedAccounts.some((id) => id.toString() === clientUserId);
+}
+
+/**
  * Link a minor account to a guardian/parent account
  */
 export async function linkGuardian(

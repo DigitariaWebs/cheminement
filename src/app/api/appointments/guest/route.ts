@@ -7,8 +7,10 @@ import { calculateAppointmentPricing } from "@/lib/pricing";
 import {
   sendGuestBookingConfirmation,
   sendProfessionalNotification,
+  sendServiceRequestOnboardingEmail,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
+import { isMinor } from "@/lib/guardian-utils";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,8 +18,8 @@ export async function POST(req: NextRequest) {
 
     const data = await req.json();
 
-    // Extract guest info and appointment data
-    const { guestInfo, ...appointmentData } = data;
+    // Extract guest info and appointment data (notificationLocale = UI lang for emails only)
+    const { guestInfo, notificationLocale, ...appointmentData } = data;
 
     if (!guestInfo) {
       return NextResponse.json(
@@ -58,6 +60,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const allowedTypes = ["video", "in-person", "phone", "both"];
+    if (!allowedTypes.includes(String(appointmentData.type))) {
+      return NextResponse.json(
+        { error: "Invalid appointment type" },
+        { status: 400 },
+      );
+    }
+
     // Set default therapy type if not provided
     if (!appointmentData.therapyType) {
       appointmentData.therapyType = "solo";
@@ -80,10 +90,13 @@ export async function POST(req: NextRequest) {
       );
     }
     if (motifs.length === 0) {
-      return NextResponse.json(
-        { error: "At least one motif/reason is required" },
-        { status: 400 },
-      );
+      // For patient referrals, the "Problématique / Approche souhaitée" is optional.
+      if (appointmentData.bookingFor !== "patient") {
+        return NextResponse.json(
+          { error: "At least one motif/reason is required" },
+          { status: 400 },
+        );
+      }
     }
     if (motifs.length > 3) {
       return NextResponse.json(
@@ -103,8 +116,17 @@ export async function POST(req: NextRequest) {
 
     // Validate patient referral contact info when booking for a patient
     if (appointmentData.bookingFor === "patient") {
-      const patientFirstName = appointmentData.referralInfo?.patientFirstName?.trim();
-      const patientLastName = appointmentData.referralInfo?.patientLastName?.trim();
+      const referral = appointmentData.referralInfo || {};
+      const referrerName = referral.referrerName?.trim();
+      if (!referrerName) {
+        return NextResponse.json(
+          { error: "Referring professional name is required" },
+          { status: 400 },
+        );
+      }
+
+      const patientFirstName = referral.patientFirstName?.trim();
+      const patientLastName = referral.patientLastName?.trim();
       if (!patientFirstName || !patientLastName) {
         return NextResponse.json(
           {
@@ -114,7 +136,32 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
       }
+
+      const patientEmail = referral.patientEmail?.trim();
+      const patientPhone = referral.patientPhone?.trim();
+      if (!patientEmail) {
+        return NextResponse.json(
+          { error: "Patient email is required" },
+          { status: 400 },
+        );
+      }
+      if (!patientPhone) {
+        return NextResponse.json(
+          { error: "Patient phone is required" },
+          { status: 400 },
+        );
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(patientEmail)) {
+        return NextResponse.json(
+          { error: "Invalid patient email format" },
+          { status: 400 },
+        );
+      }
     }
+
+    let isNewGuest = false;
 
     // Find or create guest user
     let guestUser = await User.findOne({
@@ -142,6 +189,7 @@ export async function POST(req: NextRequest) {
         language: "en",
       });
       await guestUser.save();
+      isNewGuest = true;
     }
 
     // Only validate professional if one is specified
@@ -269,6 +317,18 @@ export async function POST(req: NextRequest) {
       appointmentData.bookingFor = "self";
     }
 
+    // Loved-one account activation decision:
+    // - child (<18): onboarding link is sent automatically to the requester
+    // - adult (>18): onboarding link is pending admin validation
+    let lovedOneIsMinor = false;
+    if (appointmentData.bookingFor === "loved-one") {
+      const dob = (appointmentData as any).lovedOneInfo?.dateOfBirth;
+      lovedOneIsMinor = Boolean(dob) && isMinor({ dateOfBirth: dob });
+      appointmentData.accountActivationStatus = lovedOneIsMinor
+        ? "sent_to_requester"
+        : "pending_admin";
+    }
+
     // Set payment method if provided
     const paymentMethod = appointmentData.paymentMethod || "card";
 
@@ -326,6 +386,9 @@ export async function POST(req: NextRequest) {
         type: appointmentData.type,
         therapyType: appointmentData.therapyType,
         price: appointmentData.price,
+        locale: notificationLocale === "fr" ? "fr" : "en",
+        bookingFor: appointmentData.bookingFor,
+        lovedOneIsMinor,
       }).catch((err) =>
         console.error("Error sending guest confirmation email:", err),
       );
@@ -355,8 +418,22 @@ export async function POST(req: NextRequest) {
         type: appointmentData.type,
         therapyType: appointmentData.therapyType,
         price: appointmentData.price,
+        locale: notificationLocale === "fr" ? "fr" : "en",
+        bookingFor: appointmentData.bookingFor,
+        lovedOneIsMinor,
       }).catch((err) =>
         console.error("Error sending guest confirmation email:", err),
+      );
+    }
+    
+    // Automatically send onboarding invitation to new guests (Step 2 of the workflow)
+    if (isNewGuest) {
+      sendServiceRequestOnboardingEmail({
+        toName: firstName,
+        toEmail: email,
+        locale: notificationLocale === "fr" ? "fr" : "en",
+      }).catch((err) => 
+        console.error("Error sending onboarding email:", err)
       );
     }
 

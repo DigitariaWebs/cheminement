@@ -7,9 +7,9 @@ interface PersonResponse {
   location?: string;
 }
 
-type AppointmentType = "video" | "in-person" | "phone";
+type AppointmentType = "video" | "in-person" | "phone" | "both";
 type TherapyType = "solo" | "couple" | "group";
-type AppointmentStatus =
+export type AppointmentStatus =
   | "scheduled"
   | "completed"
   | "cancelled"
@@ -29,15 +29,21 @@ type CancelledBy = "client" | "professional" | "admin";
 
 export interface PaymentInfo {
   price: number;
+  /** Tarif de référence avant ajustement fin de séance (facultatif jusqu'à la clôture). */
+  listPrice?: number;
   platformFee: number;
   professionalPayout: number;
   status: PaymentStatus;
+  method?: "card" | "transfer" | "direct_debit";
   stripePaymentIntentId?: string;
   stripePaymentMethodId?: string;
   paidAt?: string;
   refundedAt?: string;
   payoutTransferId?: string;
   payoutDate?: string;
+  /** Interac / virement : date limite de réception (ex. +24h après séance). */
+  transferDueAt?: string;
+  interacReferenceCode?: string;
 }
 
 export interface AppointmentResponse {
@@ -60,6 +66,14 @@ export interface AppointmentResponse {
   scheduledStartAt?: string;
   reminderSent: boolean;
   payment: PaymentInfo;
+  /** RDV fixé mais moyen de paiement / garantie pas encore enregistré */
+  awaitingPaymentGuarantee?: boolean;
+  /** Clôture post-séance (professionnel) */
+  sessionActNature?: string;
+  sessionOutcome?: string;
+  nextAppointmentAt?: string;
+  sessionCompletedAt?: string;
+  fiscalReceiptIssuedAt?: string;
   createdAt: string;
   updatedAt: string;
 }

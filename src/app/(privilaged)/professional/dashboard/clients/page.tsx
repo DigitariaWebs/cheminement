@@ -30,6 +30,11 @@ import {
 } from "lucide-react";
 import { clientsAPI } from "@/lib/api-client";
 import ClientDetailsModal from "@/components/dashboard/ClientDetailsModal";
+import { ClientStatusTierBadge } from "@/components/dashboard/ClientStatusTierBadge";
+import { clientStatusTierColors } from "@/config/colors";
+import type { ClientStatusTier } from "@/lib/client-status-tier";
+
+const STATUS_TIERS: ClientStatusTier[] = ["gray", "yellow", "green", "red"];
 
 interface Client {
   id: string;
@@ -37,6 +42,8 @@ interface Client {
   email: string;
   phone: string;
   status: "active" | "inactive" | "pending";
+  paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
+  statusTier?: ClientStatusTier;
   lastSession: string;
   totalSessions: number;
   issueType: string;
@@ -50,6 +57,7 @@ export default function ClientsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [tierFilter, setTierFilter] = useState<string>("all");
   const [issueTypeFilter, setIssueTypeFilter] = useState<string>("all");
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -95,9 +103,13 @@ export default function ClientsPage() {
       const matchesIssueType =
         issueTypeFilter === "all" || client.issueType === issueTypeFilter;
 
-      return matchesSearch && matchesStatus && matchesIssueType;
+      const tier = client.statusTier ?? "yellow";
+      const matchesTier =
+        tierFilter === "all" || tier === tierFilter;
+
+      return matchesSearch && matchesStatus && matchesIssueType && matchesTier;
     });
-  }, [baseClients, searchQuery, statusFilter, issueTypeFilter]);
+  }, [baseClients, searchQuery, statusFilter, tierFilter, issueTypeFilter]);
 
   const getStatusBadge = (status: Client["status"]) => {
     const styles = {
@@ -196,11 +208,13 @@ export default function ClientsPage() {
             </button>
             {(searchQuery ||
               statusFilter !== "all" ||
+              tierFilter !== "all" ||
               issueTypeFilter !== "all") && (
               <button
                 onClick={() => {
                   setSearchQuery("");
                   setStatusFilter("all");
+                  setTierFilter("all");
                   setIssueTypeFilter("all");
                 }}
                 className="text-sm text-primary hover:text-primary/80 font-light transition-colors"
@@ -214,6 +228,7 @@ export default function ClientsPage() {
           {!isFilterExpanded &&
             (searchQuery ||
               statusFilter !== "all" ||
+              tierFilter !== "all" ||
               issueTypeFilter !== "all") && (
               <div className="mt-3 flex items-center gap-2 flex-wrap">
                 {searchQuery && (
@@ -224,6 +239,12 @@ export default function ClientsPage() {
                 {statusFilter !== "all" && (
                   <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
                     {t("status")}: {t(statusFilter)}
+                  </span>
+                )}
+                {tierFilter !== "all" && (
+                  <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-light">
+                    {t("statusTierFilter")}:{" "}
+                    {t(`statusTier.tiers.${tierFilter as ClientStatusTier}.label`)}
                   </span>
                 )}
                 {issueTypeFilter !== "all" && (
@@ -255,7 +276,7 @@ export default function ClientsPage() {
             </div>
 
             {/* Filters Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Status Filter */}
               <div>
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
@@ -291,8 +312,37 @@ export default function ClientsPage() {
                 </Select>
               </div>
 
-              {/* Issue Type Filter */}
+              {/* Case status (tier) filter */}
               <div>
+                <label className="text-sm font-light text-muted-foreground mb-2 block">
+                  {t("statusTierFilter")}
+                </label>
+                <Select value={tierFilter} onValueChange={setTierFilter}>
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder={t("statusTierFilter")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">
+                      <span className="font-light">{t("all")}</span>
+                    </SelectItem>
+                    {STATUS_TIERS.map((tier) => (
+                      <SelectItem key={tier} value={tier}>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`h-2 w-2 shrink-0 rounded-full ${clientStatusTierColors[tier].dot}`}
+                          />
+                          <span className="font-light">
+                            {t(`statusTier.tiers.${tier}.label`)}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Issue Type Filter */}
+              <div className="md:col-span-2 lg:col-span-1">
                 <label className="text-sm font-light text-muted-foreground mb-2 block">
                   {t("issueType")}
                 </label>
@@ -339,6 +389,50 @@ export default function ClientsPage() {
         )}
       </div>
 
+      {/* Status tier legend */}
+      <div className="rounded-xl bg-card p-6 space-y-4">
+        <h2 className="text-lg font-serif font-light text-foreground">
+          {t("statusTierLegendTitle")}
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm font-light border-collapse">
+            <thead>
+              <tr className="border-b border-border/40 text-left text-muted-foreground">
+                <th className="py-2 pr-4 font-normal w-10" />
+                <th className="py-2 pr-4 font-normal">{t("statusTierMeaning")}</th>
+                <th className="py-2 font-normal">{t("statusTierAction")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {STATUS_TIERS.map((tier) => (
+                <tr
+                  key={tier}
+                  className="border-b border-border/20 last:border-0 align-top"
+                >
+                  <td className="py-3 pr-4">
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full ${clientStatusTierColors[tier].dot}`}
+                      aria-hidden
+                    />
+                  </td>
+                  <td className="py-3 pr-4 text-foreground">
+                    <span className="font-medium">
+                      {t(`statusTier.tiers.${tier}.label`)}
+                    </span>
+                    <span className="text-muted-foreground block mt-0.5 text-xs">
+                      {t(`statusTier.tiers.${tier}.meaning`)}
+                    </span>
+                  </td>
+                  <td className="py-3 text-muted-foreground">
+                    {t(`statusTier.tiers.${tier}.action`)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Clients Table */}
       <div className="rounded-xl bg-card overflow-hidden">
         <Table>
@@ -347,6 +441,7 @@ export default function ClientsPage() {
               <TableHead className="font-light">{t("name")}</TableHead>
               <TableHead className="font-light">{t("contact")}</TableHead>
               <TableHead className="font-light">{t("status")}</TableHead>
+              <TableHead className="font-light">{t("statusTierColumn")}</TableHead>
               <TableHead className="font-light">{t("issueType")}</TableHead>
               <TableHead className="font-light">{t("lastSession")}</TableHead>
               <TableHead className="font-light">{t("totalSessions")}</TableHead>
@@ -357,7 +452,7 @@ export default function ClientsPage() {
             {loading ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
                   Loading clients...
@@ -366,7 +461,7 @@ export default function ClientsPage() {
             ) : error ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-8 text-red-500 font-light"
                 >
                   {error}
@@ -375,7 +470,7 @@ export default function ClientsPage() {
             ) : filteredClients.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-8 text-muted-foreground font-light"
                 >
                   {t("noClients")}
@@ -411,6 +506,14 @@ export default function ClientsPage() {
                     </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(client.status)}</TableCell>
+                  <TableCell>
+                    <ClientStatusTierBadge
+                      tier={client.statusTier ?? "yellow"}
+                      label={t(
+                        `statusTier.tiers.${client.statusTier ?? "yellow"}.label`,
+                      )}
+                    />
+                  </TableCell>
                   <TableCell className="font-light">
                     <span className="text-sm">{client.issueType}</span>
                   </TableCell>

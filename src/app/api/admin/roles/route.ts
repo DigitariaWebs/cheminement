@@ -38,6 +38,7 @@ function getRoleDisplayName(role: AdminRole): string {
     platform_admin: "Platform Administrator",
     content_admin: "Content Administrator",
     support_admin: "Support Administrator",
+    billing_admin: "Billing Administrator",
   };
   return names[role];
 }
@@ -52,6 +53,8 @@ function getRoleDescription(role: AdminRole): string {
       "Limited to content management. Can manage platform content, and view analytics.",
     support_admin:
       "User support focused. Can manage user accounts, approve professionals, and handle support requests.",
+    billing_admin:
+      "Billing and receipts only. Cannot view full client phone numbers; access to client records is logged.",
   };
   return descriptions[role];
 }

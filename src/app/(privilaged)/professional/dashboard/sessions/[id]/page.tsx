@@ -45,6 +45,7 @@ import {
 import { AppointmentResponse } from "@/types/api";
 import { appointmentsAPI } from "@/lib/api-client";
 import { useTranslations } from "next-intl";
+import { EndSessionDialog } from "@/components/appointments/EndSessionDialog";
 
 export default function SessionDetailsPage() {
   const t = useTranslations("Dashboard.sessions");
@@ -72,6 +73,8 @@ export default function SessionDetailsPage() {
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [rescheduleTime, setRescheduleTime] = useState("");
+
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
 
   // Session timer state (counts from scheduledStartAt when ongoing)
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -388,6 +391,17 @@ export default function SessionDetailsPage() {
               Start Session
             </Button>
           )}
+          {(appointment.status === "ongoing" ||
+            appointment.status === "scheduled") && (
+            <Button
+              variant="default"
+              className="gap-2 rounded-full"
+              onClick={() => setShowEndSessionDialog(true)}
+            >
+              <Check className="h-4 w-4" />
+              {t("sessionClosure.cta")}
+            </Button>
+          )}
           {appointment.status === "ongoing" && (
             <Button
               onClick={() => {
@@ -603,6 +617,21 @@ export default function SessionDetailsPage() {
                 </div>
               )}
 
+              {appointment.nextAppointmentAt && (
+                <div>
+                  <Label className="text-xs text-muted-foreground">
+                    {t("sessionClosure.nextLabel")}
+                  </Label>
+                  <p className="mt-1 text-sm">
+                    {(() => {
+                      const na = new Date(appointment.nextAppointmentAt);
+                      const hm = `${na.getHours().toString().padStart(2, "0")}:${na.getMinutes().toString().padStart(2, "0")}`;
+                      return `${formatDate(appointment.nextAppointmentAt)} · ${formatTime(hm)}`;
+                    })()}
+                  </p>
+                </div>
+              )}
+
               {appointment.issueType && (
                 <div>
                   <Label className="text-xs text-muted-foreground">
@@ -661,6 +690,17 @@ export default function SessionDetailsPage() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              {(appointment.status === "ongoing" ||
+                appointment.status === "scheduled") && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => setShowEndSessionDialog(true)}
+                >
+                  <Check className="h-4 w-4" />
+                  {t("sessionClosure.cta")}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2"
@@ -735,6 +775,13 @@ export default function SessionDetailsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <EndSessionDialog
+        open={showEndSessionDialog}
+        onOpenChange={setShowEndSessionDialog}
+        appointmentId={sessionId}
+        onCompleted={(apt) => setAppointment(apt)}
+      />
 
       {/* Reschedule Dialog */}
       <Dialog

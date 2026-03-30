@@ -5,6 +5,19 @@
 
 import type { AppointmentResponse } from "@/types/api";
 
+export class ApiClientError extends Error {
+  readonly status: number;
+  readonly code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "ApiClientError";
+    this.status = status;
+    this.code = code;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
 interface FetchOptions extends RequestInit {
   data?: any;
 }
@@ -60,7 +73,7 @@ class ApiClient {
           : body.code
             ? ` (${body.code})`
             : "";
-        throw new Error(`${main}${suffix}`);
+        throw new ApiClientError(`${main}${suffix}`, response.status, body.code);
       }
 
       return await response.json();
@@ -112,6 +125,18 @@ class ApiClient {
 
 // Export singleton instance
 export const apiClient = new ApiClient();
+
+export type SignupApiResponse = {
+  message: string;
+  requiresEmailVerification?: boolean;
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  };
+};
 
 // Specific API functions for common operations
 
@@ -171,6 +196,8 @@ export const authAPI = {
     languagePreference?: string;
     culturalConsiderations?: string;
     paymentMethod?: string;
+    agreeToTerms: boolean;
+    acceptPrivacyPolicy: boolean;
     // Professional fields
     professionalProfile?: {
       problematics?: string[];
@@ -210,7 +237,8 @@ export const authAPI = {
         year?: number;
       }[];
     };
-  }) => apiClient.post("/auth/signup", data),
+    provisionedByAdmin?: boolean;
+  }) => apiClient.post<SignupApiResponse>("/auth/signup", data),
 };
 
 // Profile
@@ -258,6 +286,60 @@ export const appointmentsAPI = {
     apiClient.patch<AppointmentResponse>(`/appointments/${id}`, data),
   delete: (id: string) =>
     apiClient.delete<{ success: boolean }>(`/appointments/${id}`),
+  completeSession: (
+    id: string,
+    data: {
+      sessionActNature: string;
+      sessionOutcome: string;
+      nextAppointmentDate?: string;
+      nextAppointmentTime?: string;
+    },
+  ) =>
+    apiClient.post<AppointmentResponse>(
+      `/appointments/${id}/complete-session`,
+      data,
+    ),
+};
+
+export type ClientReceiptRecord = {
+  _id: string;
+  clientId: string;
+  appointmentId: string;
+  issuedAt: string;
+  amountCad: number;
+  status: "paid" | "pending_transfer";
+};
+
+export const clientReceiptsAPI = {
+  list: () => apiClient.get<ClientReceiptRecord[]>("/client/receipts"),
+};
+
+export type ProfessionalLedgerEntryResponse = {
+  _id: string;
+  professionalId: string;
+  entryKind?: "credit" | "debit";
+  cycleKey?: string;
+  appointmentId?: string;
+  sessionActNature?: string;
+  grossAmountCad: number;
+  platformFeeCad: number;
+  netToProfessionalCad: number;
+  paymentChannel: "stripe" | "transfer" | "none";
+  payoutAmountCad?: number;
+  payoutReference?: string;
+  payoutNotes?: string;
+  createdAt: string;
+};
+
+export const professionalLedgerAPI = {
+  get: () =>
+    apiClient.get<{
+      entries: ProfessionalLedgerEntryResponse[];
+      pendingPayoutCad: number;
+      currentCycleKey?: string;
+      balanceLifetimeCad?: number;
+      balanceCurrentCycleCad?: number;
+    }>("/professional/ledger-entries"),
 };
 
 // Users

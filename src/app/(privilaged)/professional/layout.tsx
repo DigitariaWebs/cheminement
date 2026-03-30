@@ -5,6 +5,9 @@ import { getLocale } from "next-intl/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
 
 export default async function ProfessionalLayout({
   children,
@@ -15,6 +18,17 @@ export default async function ProfessionalLayout({
 
   if (!session || session.user?.role !== "professional") {
     redirect("/login");
+  }
+
+  const headerList = await headers();
+  const pathname = headerList.get("x-pathname") || "";
+  await connectToDatabase();
+  const dbUser = await User.findById(session.user.id).select("status");
+  if (
+    dbUser?.status === "pending" &&
+    !pathname.startsWith("/professional/account-pending")
+  ) {
+    redirect("/professional/account-pending");
   }
 
   const locale = await getLocale();

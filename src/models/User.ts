@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { attachContactStringEncryption } from "@/lib/mongoose-contact-encryption";
 
 export interface IUser extends Document {
   email: string;
@@ -16,8 +17,34 @@ export interface IUser extends Document {
   location?: string;
   status: "active" | "pending" | "inactive";
   emailVerified?: Date;
+  /** Double validation compte : SMS après courriel (v1 = flux sécurisé public). */
+  phoneVerifiedAt?: Date;
+  accountSecurityVersion?: number;
+  verificationEmailTokenHash?: string;
+  verificationEmailExpires?: Date;
+  phoneStepTokenHash?: string;
+  phoneStepTokenExpires?: Date;
+  verificationSmsCodeHash?: string;
+  verificationSmsExpires?: Date;
+  verificationSmsAttempts?: number;
+  /**
+   * Professionnel : revue permis (OPQ / ordre) avant activation complète par l’admin.
+   */
+  professionalLicenseStatus?:
+    | "not_applicable"
+    | "pending_review"
+    | "verified"
+    | "rejected";
+  /** Consentement explicite à la politique de confidentialité (Loi 25), à l’inscription. */
+  privacyPolicyAcceptedAt?: Date;
   image?: string;
   stripeCustomerId?: string; // For clients to store payment methods
+  /**
+   * Garantie de paiement : none | pending_admin (Interac/entente — attente validation admin) | green.
+   */
+  paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
+  /** Origine du statut vert : carte/PAD Stripe ou entente Interac validée par l’admin. */
+  paymentGuaranteeSource?: "stripe" | "interac_trust";
   stripeConnectAccountId?: string; // For professionals to receive payouts
   guardianId?: mongoose.Types.ObjectId; // Reference to parent/guardian User (for minors)
   accountManagerId?: mongoose.Types.ObjectId; // Alias for guardianId (same field, different name for clarity)
@@ -97,8 +124,32 @@ const UserSchema = new Schema<IUser>(
       default: "pending",
     },
     emailVerified: Date,
+    phoneVerifiedAt: Date,
+    accountSecurityVersion: { type: Number, default: 0 },
+    verificationEmailTokenHash: String,
+    verificationEmailExpires: Date,
+    phoneStepTokenHash: String,
+    phoneStepTokenExpires: Date,
+    verificationSmsCodeHash: String,
+    verificationSmsExpires: Date,
+    verificationSmsAttempts: { type: Number, default: 0 },
+    professionalLicenseStatus: {
+      type: String,
+      enum: ["not_applicable", "pending_review", "verified", "rejected"],
+      default: "not_applicable",
+    },
+    privacyPolicyAcceptedAt: Date,
     image: String,
     stripeCustomerId: String, // For clients to store payment methods
+    paymentGuaranteeStatus: {
+      type: String,
+      enum: ["none", "pending_admin", "green"],
+      default: "none",
+    },
+    paymentGuaranteeSource: {
+      type: String,
+      enum: ["stripe", "interac_trust"],
+    },
     stripeConnectAccountId: String, // For professionals to receive payouts
     guardianId: {
       type: Schema.Types.ObjectId,
@@ -129,6 +180,8 @@ UserSchema.index({ adminId: 1 });
 UserSchema.index({ guardianId: 1 });
 UserSchema.index({ accountManagerId: 1 });
 UserSchema.index({ managedAccounts: 1 });
+
+attachContactStringEncryption(UserSchema, ["phone", "location"]);
 
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

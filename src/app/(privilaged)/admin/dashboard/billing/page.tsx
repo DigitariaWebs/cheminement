@@ -272,7 +272,7 @@ export default function AdminBillingPage() {
           <div className="text-center">
             <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-light text-foreground mb-2">
-              Failed to load billing data
+              {t("failedLoad")}
             </h3>
             <p className="text-muted-foreground mb-4">{error}</p>
             <button
@@ -280,7 +280,7 @@ export default function AdminBillingPage() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               <RefreshCw className="h-4 w-4" />
-              Try Again
+              {t("tryAgain")}
             </button>
           </div>
         </div>
@@ -305,7 +305,7 @@ export default function AdminBillingPage() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("refresh")}
           </button>
           <Button className="gap-2 rounded-full" onClick={exportBillingReport}>
             <Download className="h-4 w-4" />

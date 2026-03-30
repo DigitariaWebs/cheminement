@@ -4,7 +4,8 @@ export type AdminRole =
   | "super_admin"
   | "platform_admin"
   | "content_admin"
-  | "support_admin";
+  | "support_admin"
+  | "billing_admin";
 
 export interface IAdminPermissions {
   // User Management
@@ -80,7 +81,13 @@ const AdminSchema = new Schema<IAdmin>(
     },
     role: {
       type: String,
-      enum: ["super_admin", "platform_admin", "content_admin", "support_admin"],
+      enum: [
+        "super_admin",
+        "platform_admin",
+        "content_admin",
+        "support_admin",
+        "billing_admin",
+      ],
       required: true,
     },
     permissions: {
@@ -159,6 +166,22 @@ export const ADMIN_ROLE_PERMISSIONS: Record<AdminRole, IAdminPermissions> = {
     viewAnalytics: true,
     manageReports: false,
     manageBilling: false,
+    manageAdmins: false,
+    createAdmins: false,
+    deleteAdmins: false,
+    manageSettings: false,
+    managePlatform: false,
+  },
+  /** Facturation / reçus : pas d’accès dossier patient complet (téléphone masqué côté API). */
+  billing_admin: {
+    manageUsers: false,
+    manageProfessionals: false,
+    managePatients: false,
+    approveProfessionals: false,
+    manageContent: false,
+    viewAnalytics: true,
+    manageReports: true,
+    manageBilling: true,
     manageAdmins: false,
     createAdmins: false,
     deleteAdmins: false,

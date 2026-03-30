@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   Search,
   Filter,
@@ -31,6 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { AddProfileModal } from "@/components/admin/AddProfileModal";
 
 type PatientStatus = "active" | "pending" | "inactive";
 
@@ -45,6 +47,10 @@ interface Patient {
   joinedDate: string;
   totalSessions: number;
   issueType: string;
+  paymentGuaranteeStatus?: "none" | "pending_admin" | "green";
+  paymentGuaranteeSource?: "stripe" | "interac_trust";
+  adminStatusColor?: string;
+  adminStatusLabel?: string;
 }
 
 interface PatientsData {
@@ -64,6 +70,7 @@ interface PatientsData {
 }
 
 export default function PatientsPage() {
+  const t = useTranslations("AdminDashboard.patients");
   const [data, setData] = useState<PatientsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,10 +137,10 @@ export default function PatientsPage() {
     // Patients data
     csvContent += "Patient Details\n";
     csvContent +=
-      "ID,Name,Email,Phone,Issue Type,Status,Matched With,Sessions,Joined Date\n";
+      "ID,Name,Email,Phone,Issue Type,Status,Guarantee,Matched With,Sessions,Joined Date\n";
 
     patients.forEach((patient) => {
-      csvContent += `${patient.id},"${patient.name}","${patient.email}","${patient.phone}","${patient.issueType}","${patient.status}","${patient.matchedWith || ""}",${patient.totalSessions},"${new Date(patient.joinedDate).toLocaleDateString()}"\n`;
+      csvContent += `${patient.id},"${patient.name}","${patient.email}","${patient.phone}","${patient.issueType}","${patient.status}","${patient.paymentGuaranteeStatus}","${patient.matchedWith || ""}",${patient.totalSessions},"${new Date(patient.joinedDate).toLocaleDateString()}"\n`;
     });
 
     // Create and download the file
@@ -151,28 +158,59 @@ export default function PatientsPage() {
     document.body.removeChild(link);
   };
 
-  const getStatusBadge = (status: PatientStatus) => {
-    const styles = {
-      active: "bg-green-100 text-green-700",
-      pending: "bg-yellow-100 text-yellow-700",
-      inactive: "bg-gray-100 text-gray-700",
+  const getAdminStatusBadge = (color?: string, label?: string) => {
+    const defaultColor = "bg-gray-100 text-gray-700";
+    const defaultLabel = "Inconnu";
+
+    const styles: Record<string, string> = {
+      gray: "bg-gray-100 text-gray-600 border-gray-200",
+      yellow: "bg-yellow-50 text-yellow-700 border-yellow-200",
+      green: "bg-green-50 text-green-700 border-green-200",
+      red: "bg-red-50 text-red-700 border-red-200",
     };
 
-    const icons = {
-      active: CheckCircle2,
-      pending: AlertCircle,
-      inactive: XCircle,
+    const dotStyles: Record<string, string> = {
+      gray: "bg-gray-400",
+      yellow: "bg-yellow-500",
+      green: "bg-green-500",
+      red: "bg-red-500",
     };
 
-    const Icon = icons[status];
+    const style = color ? styles[color] : defaultColor;
+    const dotStyle = color ? dotStyles[color] : "bg-gray-400";
 
     return (
       <span
-        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border ${style}`}
       >
-        <Icon className="h-3 w-3" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        <span className={`h-1.5 w-1.5 rounded-full ${dotStyle}`} />
+        {label || defaultLabel}
       </span>
+    );
+  };
+
+
+  const getGuaranteeDot = (status?: string, source?: string) => {
+    if (status === "green" && source === "interac_trust") {
+      return (
+        <span
+          title="Garantie manuelle (Interac/Entente)"
+          className="inline-flex h-3 w-3 rounded-full bg-blue-500 shadow-sm"
+        />
+      );
+    } else if (status === "green") {
+      return (
+        <span
+          title="Garantie Stripe"
+          className="inline-flex h-3 w-3 rounded-full bg-green-500 shadow-sm"
+        />
+      );
+    }
+    return (
+      <span
+        title="Aucune garantie"
+        className="inline-flex h-3 w-3 rounded-full bg-red-500 shadow-sm"
+      />
     );
   };
 
@@ -182,10 +220,10 @@ export default function PatientsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Patients
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Manage all patients on the platform
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -227,10 +265,10 @@ export default function PatientsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Patients
+              {t("title")}
             </h1>
             <p className="text-muted-foreground font-light mt-2">
-              Manage all patients on the platform
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -240,7 +278,7 @@ export default function PatientsPage() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-light text-foreground mb-2">
-                Failed to load patients data
+                {t("failedLoad")}
               </h3>
               <p className="text-muted-foreground mb-4">{error}</p>
               <button
@@ -248,7 +286,7 @@ export default function PatientsPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           </div>
@@ -262,24 +300,28 @@ export default function PatientsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Patients
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Manage all patients on the platform
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <AddProfileModal
+            defaultRole="client"
+            onSuccess={() => fetchPatients(currentPage)}
+          />
           <button
             onClick={() => fetchPatients(currentPage)}
             disabled={loading}
             className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("refresh")}
           </button>
           <Button className="gap-2" onClick={exportPatientsData}>
             <Download className="h-4 w-4" />
-            Export Data
+            {t("exportReport")}
           </Button>
         </div>
       </div>
@@ -287,21 +329,21 @@ export default function PatientsPage() {
       <div className="grid gap-6 md:grid-cols-4">
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Total Patients
+            {t("totalPatients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.totalPatients}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
-          <p className="text-sm font-light text-muted-foreground">Active</p>
+          <p className="text-sm font-light text-muted-foreground">{t("activePatients")}</p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.activePatients}
           </p>
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Pending Match
+            {t("pendingPatients")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.pendingPatients}
@@ -309,7 +351,7 @@ export default function PatientsPage() {
         </div>
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <p className="text-sm font-light text-muted-foreground">
-            Total Sessions
+            {t("colSessions")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
             {summary.totalSessions.toLocaleString()}
@@ -323,7 +365,7 @@ export default function PatientsPage() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search patients..."
+                placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -333,13 +375,13 @@ export default function PatientsPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[150px]">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("filterStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="all">{t("allStatuses")}</SelectItem>
+                  <SelectItem value="active">{t("statusActive")}</SelectItem>
+                  <SelectItem value="pending">{t("statusPending")}</SelectItem>
+                  <SelectItem value="inactive">{t("statusInactive")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -351,7 +393,7 @@ export default function PatientsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Name / Type
+                  {t("colClient")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
                   Contact
@@ -360,19 +402,19 @@ export default function PatientsPage() {
                   Issue Type
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Status
+                  {t("colStatus")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Matched With
+                  {t("colProfessional")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Sessions
+                  {t("colSessions")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Joined
+                  {t("colJoined")}
                 </TableHead>
                 <TableHead className="text-left text-sm font-light text-muted-foreground">
-                  Actions
+                  {t("colActions")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -408,7 +450,12 @@ export default function PatientsPage() {
                   <TableCell className="text-sm font-light text-foreground">
                     {patient.issueType}
                   </TableCell>
-                  <TableCell>{getStatusBadge(patient.status)}</TableCell>
+                  <TableCell>
+                    {getAdminStatusBadge(
+                      patient.adminStatusColor,
+                      patient.adminStatusLabel,
+                    )}
+                  </TableCell>
                   <TableCell className="text-sm font-light text-muted-foreground">
                     {patient.matchedWith || "-"}
                   </TableCell>
@@ -420,7 +467,9 @@ export default function PatientsPage() {
                   </TableCell>
                   <TableCell className="text-sm font-light text-muted-foreground">
                     <Link href={`/admin/dashboard/patients/${patient.id}`}>
-                      <Eye className="h-4 w-4 mr-2" />
+                      <Button variant="ghost" size="icon">
+                        <Eye className="h-4 w-4 text-primary" />
+                      </Button>
                     </Link>
                   </TableCell>
                 </TableRow>
@@ -430,9 +479,9 @@ export default function PatientsPage() {
 
           {patients.length === 0 && (
             <div className="p-12 text-center">
-              <p className="text-muted-foreground">No patients found</p>
+              <p className="text-muted-foreground">{t("noPatients")}</p>
               <p className="text-sm text-muted-foreground/70 mt-1">
-                Try adjusting your search or filters
+                {t("noPatientsDesc")}
               </p>
             </div>
           )}

@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { X, UserPlus, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { authAPI } from "@/lib/api-client";
 
 interface AddPatientModalProps {
@@ -18,6 +21,7 @@ export default function AddPatientModal({
   onClose,
   onSuccess,
 }: AddPatientModalProps) {
+  const t = useTranslations("Auth.memberSignup");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -26,6 +30,8 @@ export default function AddPatientModal({
     phone: "",
     location: "",
   });
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [acceptPrivacyPolicy, setAcceptPrivacyPolicy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +51,9 @@ export default function AddPatientModal({
       await authAPI.signup({
         ...formData,
         role: "client",
+        agreeToTerms,
+        acceptPrivacyPolicy,
+        provisionedByAdmin: true,
       });
 
       onSuccess();
@@ -57,6 +66,8 @@ export default function AddPatientModal({
         phone: "",
         location: "",
       });
+      setAgreeToTerms(false);
+      setAcceptPrivacyPolicy(false);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create patient");
     } finally {
@@ -75,6 +86,8 @@ export default function AddPatientModal({
         phone: "",
         location: "",
       });
+      setAgreeToTerms(false);
+      setAcceptPrivacyPolicy(false);
       setError(null);
     }
   };
@@ -233,6 +246,50 @@ export default function AddPatientModal({
             </div>
           </div>
 
+          <div className="space-y-4 pt-2 border-t border-border/40">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="addPatient-terms"
+                checked={agreeToTerms}
+                onCheckedChange={(c) => setAgreeToTerms(c === true)}
+                disabled={isLoading}
+              />
+              <label
+                htmlFor="addPatient-terms"
+                className="text-sm font-light leading-relaxed cursor-pointer"
+              >
+                {t("termsAcceptBefore")}
+                <Link href="/terms" className="text-primary hover:underline">
+                  {t("termsOfService")}
+                </Link>
+                {t("termsAcceptAfter")}
+              </label>
+            </div>
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="addPatient-privacy"
+                checked={acceptPrivacyPolicy}
+                onCheckedChange={(c) => setAcceptPrivacyPolicy(c === true)}
+                disabled={isLoading}
+              />
+              <div className="space-y-1">
+                <label
+                  htmlFor="addPatient-privacy"
+                  className="text-sm font-light leading-relaxed cursor-pointer block"
+                >
+                  {t("privacyAcceptBefore")}
+                  <Link href="/privacy" className="text-primary hover:underline">
+                    {t("privacyPolicy")}
+                  </Link>
+                  {t("privacyAcceptAfter")}
+                </label>
+                <p className="text-xs text-muted-foreground font-light">
+                  {t("privacyConsentClinicalNote")}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-6 border-t border-border/40">
             <Button
@@ -246,7 +303,9 @@ export default function AddPatientModal({
             </Button>
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={
+                isLoading || !agreeToTerms || !acceptPrivacyPolicy
+              }
               className="font-light tracking-wide transition-all duration-300 hover:scale-105"
             >
               {isLoading ? "Creating..." : "Create Patient"}

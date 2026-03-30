@@ -10,6 +10,7 @@ export type EmailNotificationType =
   | "appointment_reminder"
   | "appointment_cancellation"
   | "guest_booking_confirmation"
+  | "service_request_onboarding"
   | "guest_payment_confirmation"
   | "guest_payment_complete"
   | "payment_invitation"
@@ -17,7 +18,13 @@ export type EmailNotificationType =
   | "payment_refund"
   | "meeting_link"
   | "professional_approval"
-  | "professional_rejection";
+  | "professional_rejection"
+  | "admin_interac_trust_request"
+  | "interac_transfer_instructions"
+  | "payment_guarantee_day1_reminder"
+  | "payment_guarantee_48h_client"
+  | "payment_guarantee_48h_professional"
+  | "fiscal_receipt";
 
 export interface IEmailTemplateConfig {
   enabled: boolean;
@@ -62,6 +69,8 @@ export interface IPlatformSettings extends Document {
     professionalCancellationHours: number;
   };
   emailSettings: IEmailSettings;
+  /** Courriel de dépôt Interac affiché aux clients (ex. paiements@domaine.com). */
+  interacDepositEmail?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -103,6 +112,10 @@ const defaultEmailTemplates: Record<
     enabled: true,
     subject: "Booking Request Received - JeChemine",
   },
+  service_request_onboarding: {
+    enabled: true,
+    subject: "JeChemine — complete your profile",
+  },
   guest_payment_confirmation: {
     enabled: true,
     subject: "Payment Required - Your Appointment is Confirmed",
@@ -134,6 +147,30 @@ const defaultEmailTemplates: Record<
   professional_rejection: {
     enabled: true,
     subject: "Application Update - JeChemine",
+  },
+  admin_interac_trust_request: {
+    enabled: true,
+    subject: "Interac / virement — validation requise (Statut vert)",
+  },
+  interac_transfer_instructions: {
+    enabled: true,
+    subject: "Instructions virement Interac — JeChemine",
+  },
+  payment_guarantee_day1_reminder: {
+    enabled: true,
+    subject: "Rappel : ajoutez un moyen de paiement — JeChemine",
+  },
+  payment_guarantee_48h_client: {
+    enabled: true,
+    subject: "URGENT : votre rendez-vous approche — moyen de paiement — JeChemine",
+  },
+  payment_guarantee_48h_professional: {
+    enabled: true,
+    subject: "ALERTE : client sans garantie de paiement — rendez-vous proche",
+  },
+  fiscal_receipt: {
+    enabled: true,
+    subject: "Votre reçu fiscal — JeChemine",
   },
 };
 
@@ -211,6 +248,11 @@ const PlatformSettingsSchema = new Schema<IPlatformSettings>(
         type: Number,
         default: 12,
       },
+    },
+    interacDepositEmail: {
+      type: String,
+      trim: true,
+      default: "",
     },
     emailSettings: {
       enabled: {

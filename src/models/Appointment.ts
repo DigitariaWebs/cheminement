@@ -1,7 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { attachAppointmentContactEncryption } from "@/lib/mongoose-contact-encryption";
 
 export interface IPayment {
   price: number;
+  /** Tarif catalogue avant ajustement (clôture séance). */
+  listPrice?: number;
   platformFee: number;
   professionalPayout: number;
   status:
@@ -21,6 +24,10 @@ export interface IPayment {
   payoutDate?: Date;
   paymentToken?: string;
   paymentTokenExpiry?: Date;
+  /** Interac / virement : échéance de réception du paiement (ex. fin de séance + 24h). */
+  transferDueAt?: Date;
+  /** Code message Interac (unique par RDV, lié au pro). */
+  interacReferenceCode?: string;
 }
 
 // Loved one information for third-party bookings
@@ -57,7 +64,7 @@ export interface IAppointment extends Document {
   date?: Date;
   time?: string;
   duration: number;
-  type: "video" | "in-person" | "phone";
+  type: "video" | "in-person" | "phone" | "both";
   therapyType: "solo" | "couple" | "group";
   status:
     | "scheduled"
@@ -98,6 +105,39 @@ export interface IAppointment extends Document {
   // Preferred availability slots provided by client
   preferredAvailability?: string[];
 
+  /**
+   * For "loved-one" requests: when the loved one is an adult (>18),
+   * admin must validate where the onboarding/account link should be sent.
+   */
+  accountActivationStatus?:
+    | "pending_admin"
+    | "sent_to_requester"
+    | "sent_to_loved_one";
+
+  accountActivationSentAt?: Date;
+
+  /**
+   * True when the 1st appointment is scheduled but payment guarantee (card on file) is still pending.
+   * Aligns with workflow: "RDV fixé — en attente de garantie".
+   */
+  awaitingPaymentGuarantee?: boolean;
+
+  /** Premier passage en « scheduled » (pour relance J+1 garantie). */
+  firstScheduledAt?: Date;
+  guaranteeDay1ReminderSent?: boolean;
+  guarantee48hClientReminderSent?: boolean;
+  guarantee48hProfessionalAlertSent?: boolean;
+
+  /** Nature de l'acte (clôture professionnelle). */
+  sessionActNature?: string;
+  /** Issue de la rencontre (clôture). */
+  sessionOutcome?: string;
+  /** Prochain RDV convenu (information). */
+  nextAppointmentAt?: Date;
+  sessionCompletedAt?: Date;
+  /** Reçu fiscal émis (PDF envoyé / disponible). */
+  fiscalReceiptIssuedAt?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -109,6 +149,7 @@ const PaymentSchema = new Schema<IPayment>(
       required: true,
       default: 120,
     },
+    listPrice: { type: Number, required: false },
     platformFee: {
       type: Number,
       required: true,
@@ -147,6 +188,8 @@ const PaymentSchema = new Schema<IPayment>(
       index: true,
     },
     paymentTokenExpiry: Date,
+    transferDueAt: Date,
+    interacReferenceCode: { type: String, index: true },
   },
   { _id: false },
 );
@@ -218,7 +261,7 @@ const AppointmentSchema = new Schema<IAppointment>(
     },
     type: {
       type: String,
-      enum: ["video", "in-person", "phone"],
+      enum: ["video", "in-person", "phone", "both"],
       required: true,
       default: "video",
     },
@@ -298,6 +341,30 @@ const AppointmentSchema = new Schema<IAppointment>(
     ],
     // Preferred availability slots provided by client
     preferredAvailability: [String],
+
+    // Loved-one onboarding link decision (admin-controlled when loved one is an adult)
+    accountActivationStatus: {
+      type: String,
+      enum: ["pending_admin", "sent_to_requester", "sent_to_loved_one"],
+      required: false,
+    },
+    accountActivationSentAt: { type: Date, required: false },
+
+    awaitingPaymentGuarantee: {
+      type: Boolean,
+      default: false,
+    },
+
+    firstScheduledAt: Date,
+    guaranteeDay1ReminderSent: { type: Boolean, default: false },
+    guarantee48hClientReminderSent: { type: Boolean, default: false },
+    guarantee48hProfessionalAlertSent: { type: Boolean, default: false },
+
+    sessionActNature: { type: String, required: false },
+    sessionOutcome: { type: String, required: false },
+    nextAppointmentAt: { type: Date, required: false },
+    sessionCompletedAt: { type: Date, required: false },
+    fiscalReceiptIssuedAt: { type: Date, required: false },
   },
   {
     timestamps: true,
@@ -309,6 +376,8 @@ AppointmentSchema.index({ professionalId: 1, date: 1 });
 AppointmentSchema.index({ status: 1, date: 1 });
 AppointmentSchema.index({ routingStatus: 1 });
 AppointmentSchema.index({ proposedTo: 1, routingStatus: 1 });
+
+attachAppointmentContactEncryption(AppointmentSchema);
 
 const Appointment: Model<IAppointment> =
   mongoose.models.Appointment ||

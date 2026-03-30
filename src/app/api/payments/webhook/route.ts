@@ -115,6 +115,7 @@ async function handlePaymentIntentSucceeded(
   // Clear payment token after successful payment
   appointment.payment.paymentToken = undefined;
   appointment.payment.paymentTokenExpiry = undefined;
+  appointment.awaitingPaymentGuarantee = false;
 
   await appointment.save();
 

@@ -1,6 +1,6 @@
 "use client";
-
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Users,
   User,
@@ -44,6 +44,7 @@ interface DashboardData {
 }
 
 export default function AdminDashboardPage() {
+  const t = useTranslations("AdminDashboard.overview");
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null,
   );
@@ -56,7 +57,7 @@ export default function AdminDashboardPage() {
       setError(null);
       const response = await fetch("/api/admin/dashboard");
       if (!response.ok) {
-        throw new Error("Failed to fetch dashboard data");
+        throw new Error(t("error"));
       }
       const data = await response.json();
       setDashboardData(data);
@@ -89,10 +90,10 @@ export default function AdminDashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Admin Dashboard
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Platform overview and key metrics
+            {t("subtitle")}
           </p>
         </div>
 
@@ -148,10 +149,10 @@ export default function AdminDashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Admin Dashboard
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Platform overview and key metrics
+            {t("subtitle")}
           </p>
         </div>
 
@@ -160,15 +161,15 @@ export default function AdminDashboardPage() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-light text-foreground mb-2">
-                Failed to load dashboard data
+                {error || t("error")}
               </h3>
-              <p className="text-muted-foreground mb-4">{error}</p>
+              <p className="text-muted-foreground mb-4"></p>
               <button
                 onClick={fetchDashboardData}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           </div>
@@ -186,10 +187,10 @@ export default function AdminDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif font-light text-foreground">
-            Admin Dashboard
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-light mt-2">
-            Platform overview and key metrics
+            {t("subtitle")}
           </p>
         </div>
         <button
@@ -198,7 +199,7 @@ export default function AdminDashboardPage() {
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          Refresh
+          {t("refresh")}
         </button>
       </div>
 
@@ -207,7 +208,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Professionals
+                {t("totalProfessionals")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 {stats.totalProfessionals}
@@ -229,7 +230,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Patients
+                {t("totalPatients")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 {stats.totalPatients}
@@ -251,7 +252,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Sessions
+                {t("totalSessions")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 {stats.totalSessions.toLocaleString()}
@@ -273,7 +274,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-light text-muted-foreground">
-                Total Revenue
+                {t("totalRevenue")}
               </p>
               <p className="text-2xl font-serif font-light text-foreground mt-2">
                 ${stats.totalRevenue.toLocaleString()}
@@ -295,7 +296,7 @@ export default function AdminDashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <h2 className="text-xl font-serif font-light text-foreground mb-4">
-            Recent Activity
+            {t("recentActivity")}
           </h2>
           <div className="space-y-4">
             {recentActivity.length > 0 ? (
@@ -325,7 +326,7 @@ export default function AdminDashboardPage() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No recent activity</p>
+                <p>{t("noRecentActivity")}</p>
               </div>
             )}
           </div>
@@ -333,7 +334,7 @@ export default function AdminDashboardPage() {
 
         <div className="rounded-xl bg-card p-6 border border-border/40">
           <h2 className="text-xl font-serif font-light text-foreground mb-4">
-            Top Professionals
+            {t("topProfessionals")}
           </h2>
           <div className="space-y-3">
             {topProfessionals.length > 0 ? (
@@ -351,7 +352,7 @@ export default function AdminDashboardPage() {
                         {prof.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {prof.sessions} sessions • ⭐ {prof.rating.toFixed(1)}
+                        {prof.sessions} {t("sessions")} • ⭐ {prof.rating.toFixed(1)}
                       </p>
                     </div>
                   </div>
@@ -363,7 +364,7 @@ export default function AdminDashboardPage() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No professionals data available</p>
+                <p>{t("noProfessionalsData")}</p>
               </div>
             )}
           </div>
@@ -372,7 +373,7 @@ export default function AdminDashboardPage() {
 
       <div className="rounded-xl bg-card p-6 border border-border/40">
         <h2 className="text-xl font-serif font-light text-foreground mb-4">
-          Quick Actions
+          {t("quickActions")}
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Link
@@ -380,28 +381,28 @@ export default function AdminDashboardPage() {
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
             <h3 className="font-light text-foreground mb-2">
-              Review Professionals
+              {t("reviewProfessionals")}
             </h3>
             <p className="text-sm text-muted-foreground font-light">
-              Approve or manage professional accounts
+              {t("reviewProfessionalsDesc")}
             </p>
           </Link>
           <Link
             href="/admin/dashboard/patients"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
-            <h3 className="font-light text-foreground mb-2">Manage Patients</h3>
+            <h3 className="font-light text-foreground mb-2">{t("managePatients")}</h3>
             <p className="text-sm text-muted-foreground font-light">
-              View and manage patient accounts
+              {t("managePatientsDesc")}
             </p>
           </Link>
           <a
             href="/admin/dashboard/reports"
             className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted"
           >
-            <h3 className="font-light text-foreground mb-2">View Reports</h3>
+            <h3 className="font-light text-foreground mb-2">{t("viewReports")}</h3>
             <p className="text-sm text-muted-foreground font-light">
-              Access detailed platform analytics
+              {t("viewReportsDesc")}
             </p>
           </a>
         </div>

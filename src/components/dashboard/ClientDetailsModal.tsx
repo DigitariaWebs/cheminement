@@ -18,6 +18,8 @@ import { useTranslations } from "next-intl";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 import { Button } from "@/components/ui/button";
+import { ClientStatusTierBadge } from "@/components/dashboard/ClientStatusTierBadge";
+import type { ClientStatusTier } from "@/lib/client-status-tier";
 
 interface Client {
   id: string;
@@ -25,6 +27,7 @@ interface Client {
   email: string;
   phone: string;
   status: "active" | "inactive" | "pending";
+  statusTier?: ClientStatusTier;
   lastSession: string;
   totalSessions: number;
   issueType: string;
@@ -47,6 +50,7 @@ export default function ClientDetailsModal({
   client,
 }: ClientDetailsModalProps) {
   const t = useTranslations("Dashboard.clientModal");
+  const tClients = useTranslations("Dashboard.clients");
   const [sessions, setSessions] = useState<AppointmentResponse[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<
@@ -210,8 +214,14 @@ export default function ClientDetailsModal({
               <h2 className="text-2xl font-serif font-light text-foreground">
                 {client.name}
               </h2>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 {getStatusBadge(client.status)}
+                <ClientStatusTierBadge
+                  tier={client.statusTier ?? "yellow"}
+                  label={tClients(
+                    `statusTier.tiers.${client.statusTier ?? "yellow"}.label`,
+                  )}
+                />
                 <span className="text-sm text-muted-foreground font-light">
                   {formatShortDate(client.joinedDate)}
                 </span>

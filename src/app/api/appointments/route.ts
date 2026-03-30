@@ -9,6 +9,7 @@ import { calculateAppointmentPricing } from "@/lib/pricing";
 import {
   sendAppointmentConfirmation,
   sendProfessionalNotification,
+  sendServiceRequestOnboardingEmail,
 } from "@/lib/notifications";
 import { routeAppointmentToProfessionals } from "@/lib/appointment-routing";
 import { linkGuardian, isMinor } from "@/lib/guardian-utils";
@@ -126,6 +127,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const allowedTypes = ["video", "in-person", "phone", "both"];
+    if (!allowedTypes.includes(String(data.type))) {
+      return NextResponse.json(
+        { error: "Invalid appointment type" },
+        { status: 400 },
+      );
+    }
+
+    delete data.notificationLocale;
+
     // Set default therapy type if not provided
     if (!data.therapyType) {
       data.therapyType = "solo";
@@ -148,10 +159,13 @@ export async function POST(req: NextRequest) {
       );
     }
     if (motifs.length === 0) {
-      return NextResponse.json(
-        { error: "At least one motif/reason is required" },
-        { status: 400 },
-      );
+      // For patient referrals, the "Problématique / Approche souhaitée" is optional.
+      if (data.bookingFor !== "patient") {
+        return NextResponse.json(
+          { error: "At least one motif/reason is required" },
+          { status: 400 },
+        );
+      }
     }
     if (motifs.length > 3) {
       return NextResponse.json(
@@ -171,14 +185,46 @@ export async function POST(req: NextRequest) {
 
     // Validate patient referral contact info when booking for a patient
     if (data.bookingFor === "patient") {
-      const patientFirstName = data.referralInfo?.patientFirstName?.trim();
-      const patientLastName = data.referralInfo?.patientLastName?.trim();
+      const referral = data.referralInfo || {};
+      const referrerName = referral.referrerName?.trim();
+      if (!referrerName) {
+        return NextResponse.json(
+          { error: "Referring professional name is required" },
+          { status: 400 },
+        );
+      }
+
+      const patientFirstName = referral.patientFirstName?.trim();
+      const patientLastName = referral.patientLastName?.trim();
       if (!patientFirstName || !patientLastName) {
         return NextResponse.json(
           {
             error:
               "Patient firstName and lastName are required when booking for a patient",
           },
+          { status: 400 },
+        );
+      }
+
+      const patientEmail = referral.patientEmail?.trim();
+      const patientPhone = referral.patientPhone?.trim();
+      if (!patientEmail) {
+        return NextResponse.json(
+          { error: "Patient email is required" },
+          { status: 400 },
+        );
+      }
+      if (!patientPhone) {
+        return NextResponse.json(
+          { error: "Patient phone is required" },
+          { status: 400 },
+        );
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(patientEmail)) {
+        return NextResponse.json(
+          { error: "Invalid patient email format" },
           { status: 400 },
         );
       }
@@ -320,6 +366,17 @@ export async function POST(req: NextRequest) {
       data.payment.method = data.paymentMethod;
     }
 
+    // Loved-one account activation decision (admin validation for adults)
+    if (data.bookingFor === "loved-one" && data.lovedOneInfo?.dateOfBirth) {
+      const lovedOneIsMinor = isMinor({ dateOfBirth: data.lovedOneInfo.dateOfBirth as any });
+      data.accountActivationStatus = lovedOneIsMinor
+        ? "sent_to_requester"
+        : "pending_admin";
+      if (lovedOneIsMinor) {
+        data.accountActivationSentAt = new Date();
+      }
+    }
+
     // Handle guardian/account manager linking for minors
     let minorUserId: string | null = null;
     if (
@@ -432,7 +489,11 @@ export async function POST(req: NextRequest) {
         date: populatedAppointment.date?.toISOString(),
         time: populatedAppointment.time,
         duration: populatedAppointment.duration || 60,
-        type: populatedAppointment.type as "video" | "in-person" | "phone",
+        type: populatedAppointment.type as
+          | "video"
+          | "in-person"
+          | "phone"
+          | "both",
         meetingLink: populatedAppointment.meetingLink,
         location: populatedAppointment.location,
       };
@@ -442,6 +503,21 @@ export async function POST(req: NextRequest) {
         sendAppointmentConfirmation(emailData),
         sendProfessionalNotification(emailData),
       ]).catch((err) => console.error("Error sending notifications:", err));
+    } else if (
+      populatedAppointment.bookingFor === "loved-one" &&
+      populatedAppointment.accountActivationStatus === "sent_to_requester"
+    ) {
+      // Child: send onboarding link to the requester immediately
+      const requester = await User.findById(session.user.id).select(
+        "firstName lastName email language",
+      );
+      if (requester?.email) {
+        void sendServiceRequestOnboardingEmail({
+          toName: `${requester.firstName ?? ""} ${requester.lastName ?? ""}`.trim() || "Client",
+          toEmail: requester.email,
+          locale: requester.language === "fr" ? "fr" : "en",
+        }).catch((err) => console.error("Error sending service request onboarding:", err));
+      }
     }
 
     return NextResponse.json(populatedAppointment, { status: 201 });

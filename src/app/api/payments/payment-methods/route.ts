@@ -4,6 +4,10 @@ import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import User from "@/models/User";
 import connectToDatabase from "@/lib/mongodb";
+import {
+  markClientPaymentGuaranteeGreen,
+  syncPaymentGuaranteeStatusWithStripe,
+} from "@/lib/payment-guarantee";
 
 // GET - List payment methods for a customer
 export async function GET() {
@@ -153,13 +157,12 @@ export async function POST(req: NextRequest) {
     const totalPaymentMethods =
       cardPaymentMethods.data.length + acssPaymentMethods.data.length;
 
-    if (totalPaymentMethods === 1) {
-      await stripe.customers.update(customer.id, {
-        invoice_settings: {
-          default_payment_method: paymentMethodId,
-        },
-      });
-    }
+    await markClientPaymentGuaranteeGreen(
+      session.user.id,
+      customer.id,
+      paymentMethodId,
+      totalPaymentMethods === 1,
+    );
 
     return NextResponse.json({
       success: true,
@@ -199,8 +202,36 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
+    await connectToDatabase();
+
+    const user = await User.findById(session.user.id);
+    if (!user?.email) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     // Detach payment method
     await stripe.paymentMethods.detach(paymentMethodId);
+
+    const customerId =
+      user.stripeCustomerId ||
+      (
+        await stripe.customers.list({
+          email: user.email.toLowerCase(),
+          limit: 1,
+        })
+      ).data[0]?.id;
+
+    if (customerId) {
+      await syncPaymentGuaranteeStatusWithStripe(session.user.id, customerId);
+    } else {
+      const u = await User.findById(session.user.id);
+      if (u?.paymentGuaranteeStatus !== "pending_admin") {
+        await User.findByIdAndUpdate(session.user.id, {
+          $set: { paymentGuaranteeStatus: "none" },
+          $unset: { paymentGuaranteeSource: "" },
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,
