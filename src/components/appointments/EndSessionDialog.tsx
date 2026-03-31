@@ -88,7 +88,7 @@ export function EndSessionDialog({
       onCompleted(apt);
       onOpenChange(false);
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Error");
+      window.alert(e instanceof Error ? e.message : t("genericError"));
     } finally {
       setSaving(false);
     }
