@@ -1,13 +1,13 @@
 /**
- * SMS pour codes OTP (validation téléphone). En production : Twilio si les variables sont définies.
+ * SMS via Twilio API. En production : utilise les variables d'environnement.
  * Sinon : log serveur (dev uniquement).
  */
 
-export async function sendSmsOtp(toPhone: string, code: string): Promise<void> {
+/** Envoie un SMS générique via Twilio. */
+export async function sendSms(toPhone: string, body: string): Promise<void> {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const token = process.env.TWILIO_AUTH_TOKEN;
   const from = process.env.TWILIO_PHONE_NUMBER;
-  const body = `Votre code JeChemine : ${code} (valide 10 min). Ne le partagez pas.`;
 
   if (sid && token && from) {
     const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`;
@@ -40,6 +40,24 @@ export async function sendSmsOtp(toPhone: string, code: string): Promise<void> {
   }
 
   console.info(
-    `[sms] (dev) OTP pour ${toPhone} : ${code} — configurez TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER pour l’envoi réel.`,
+    `[sms] (dev) Vers ${toPhone} : ${body} — configurez TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER pour l’envoi réel.`,
   );
+}
+
+/** SMS pour codes OTP (validation téléphone). */
+export async function sendSmsOtp(toPhone: string, code: string, lang: "fr" | "en" = "fr"): Promise<void> {
+  const body = 
+    lang === "en"
+      ? `Your JeChemine code: ${code} (valid for 10 min). Do not share it.`
+      : `Votre code JeChemine : ${code} (valide 10 min). Ne le partagez pas.`;
+  return sendSms(toPhone, body);
+}
+
+/** SMS de bienvenue après inscription. */
+export async function sendWelcomeSms(toPhone: string, name: string, lang: "fr" | "en" = "fr"): Promise<void> {
+  const body = 
+    lang === "en"
+      ? `Welcome to JeChemine, ${name}! We're thrilled to accompany you on your wellness journey.`
+      : `Bienvenue chez JeChemine, ${name} ! Nous sommes ravis de vous accompagner dans votre cheminement vers le bien-être.`;
+  return sendSms(toPhone, body);
 }
