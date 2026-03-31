@@ -385,7 +385,8 @@
       "kindCredit": "Credit (Session)",
       "kindDebit": "Debit (Payout)",
       "lifetimeBalance": "Lifetime balance (since signup)",
-      "currentCycleBalance": "Current cycle balance"
+      "currentCycleBalance": "Current cycle balance",
+      "noEntries": "No transactions found."
     }
   },
   "AppointmentSelector": {
@@ -1990,7 +1991,9 @@
         "ageGroups": "Age Groups",
         "ageGroupsDesc": "Categories",
         "additionalInfo": "Additional Info",
-        "additionalInfoDesc": "Skills & Bio"
+        "additionalInfoDesc": "Skills & Bio",
+        "credentials": "Degrees & Services",
+        "credentialsDesc": "Pricing & certifications"
       },
       "step1": {
         "title": "Issue Types You Specialize In",
@@ -2041,6 +2044,23 @@
           "culturalCompetency": "Cultural competency",
           "lgbtqAffirmative": "LGBTQ+ affirmative therapy"
         }
+      },
+      "step5": {
+        "title": "Education, Certifications and Pricing",
+        "languages": "Languages Spoken",
+        "education": "Education / Degrees",
+        "addEducation": "+ Add degree",
+        "degree": "Degree",
+        "institution": "Institution",
+        "year": "Year",
+        "sessionTypes": "Session Types Offered",
+        "modalities": "Modalities",
+        "pricing": "Pricing (per hour / session)",
+        "individualSession": "Individual Session (CAD)",
+        "coupleSession": "Couple Session (CAD)",
+        "groupSession": "Group Session (CAD)",
+        "certifications": "Additional Certifications (optional)",
+        "certPlaceholder": "Type a certification and press Enter"
       },
       "buttons": {
         "back": "Back",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -52,6 +52,7 @@ interface Client {
 
 export default function ClientsPage() {
   const t = useTranslations("Dashboard.clients");
+  const locale = useLocale();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -135,7 +136,7 @@ export default function ClientsPage() {
   const formatDate = (dateString: string) => {
     if (dateString === "-") return "-";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale === "fr" ? "fr-CA" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",

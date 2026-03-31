@@ -4,7 +4,7 @@ import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/User";
 import Admin from "@/models/Admin";
 import { authOptions } from "@/lib/auth";
-import { sendWelcomeEmail } from "@/lib/notifications";
+import { sendResendInvitationEmail } from "@/lib/notifications";
 
 export async function POST(
   req: NextRequest,
@@ -31,10 +31,11 @@ export async function POST(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    await sendWelcomeEmail({
+    await sendResendInvitationEmail({
       name: `${user.firstName} ${user.lastName}`,
       email: user.email,
-      role: user.role as "client" | "professional" | "guest",
+      role: user.role as "client" | "professional",
+      locale: user.language as "fr" | "en" || "fr",
     });
 
     return NextResponse.json({ success: true });

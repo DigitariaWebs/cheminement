@@ -385,7 +385,8 @@
       "kindCredit": "Crédit (Séance)",
       "kindDebit": "Débit (Versement)",
       "lifetimeBalance": "Solde cumulé (depuis l'inscription)",
-      "currentCycleBalance": "Solde du cycle actuel"
+      "currentCycleBalance": "Solde du cycle actuel",
+      "noEntries": "Aucune transaction."
     }
   },
   "AppointmentSelector": {
@@ -1990,7 +1991,9 @@
         "ageGroups": "Groupes d'âge",
         "ageGroupsDesc": "Catégories",
         "additionalInfo": "Infos supplémentaires",
-        "additionalInfoDesc": "Compétences et bio"
+        "additionalInfoDesc": "Compétences et bio",
+        "credentials": "Diplômes et Services",
+        "credentialsDesc": "Tarifs et certifications"
       },
       "step1": {
         "title": "Types de problèmes dans lesquels vous vous spécialisez",
@@ -2041,6 +2044,23 @@
           "culturalCompetency": "Compétence culturelle",
           "lgbtqAffirmative": "Thérapie affirmative LGBTQ+"
         }
+      },
+      "step5": {
+        "title": "Formation, Certifications et Tarification",
+        "languages": "Langues parlées",
+        "education": "Éducation / Diplômes",
+        "addEducation": "+ Ajouter un diplôme",
+        "degree": "Diplôme",
+        "institution": "Institution",
+        "year": "Année",
+        "sessionTypes": "Types de séances offertes",
+        "modalities": "Modalités",
+        "pricing": "Tarification (par heure / séance)",
+        "individualSession": "Séance Individuelle (CAD)",
+        "coupleSession": "Séance Couple (CAD)",
+        "groupSession": "Séance Groupe (CAD)",
+        "certifications": "Certifications additionnelles (optionnel)",
+        "certPlaceholder": "Tapez une certification et appuyez sur Entrée"
       },
       "buttons": {
         "back": "Retour",
