@@ -15,6 +15,7 @@ interface ProfessionalProfileProps {
   setProfile?: (profile: IProfile) => void;
   isEditable?: boolean;
   onSaveOverride?: (data: IProfile) => Promise<IProfile | null>;
+  hideHeaderFields?: boolean;
 }
 
 const isProfileCompleted = (profile: IProfile | null): boolean => {
@@ -71,6 +72,7 @@ export default function ProfessionalProfile({
   setProfile,
   isEditable = false,
   onSaveOverride,
+  hideHeaderFields = false,
 }: ProfessionalProfileProps) {
   const t = useTranslations("Dashboard.profile");
   const tModal = useTranslations("Dashboard.profileModal");
@@ -163,26 +165,28 @@ export default function ProfessionalProfile({
         </div>
       )}
       {/* Professional Information */}
-      <div className="rounded-xl bg-card p-6">
-        <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          {t("professionalInfo")}
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <Label className="font-light mb-2">{t("license")}</Label>
-            <p className="text-foreground">
-              {professionalProfile?.license || t("notAvailable")}
-            </p>
-          </div>
+      {!hideHeaderFields && (
+        <div className="rounded-xl bg-card p-6">
+          <h2 className="text-xl font-serif font-light text-foreground mb-6">
+            {t("professionalInfo")}
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <Label className="font-light mb-2">{t("license")}</Label>
+              <p className="text-foreground">
+                {professionalProfile?.license || t("notAvailable")}
+              </p>
+            </div>
 
-          <div>
-            <Label className="font-light mb-2">{t("specialty")}</Label>
-            <p className="text-foreground capitalize">
-              {professionalProfile?.specialty || t("notAvailable")}
-            </p>
+            <div>
+              <Label className="font-light mb-2">{t("specialty")}</Label>
+              <p className="text-foreground capitalize">
+                {professionalProfile?.specialty || t("notAvailable")}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Professional Specialization */}
       <div className="rounded-xl bg-card p-6">
@@ -292,30 +296,32 @@ export default function ProfessionalProfile({
       </div>
 
       {/* About Section */}
-      <div className="rounded-xl bg-card p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-serif font-light text-foreground">
-            {t("about")}
-          </h2>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <Label className="font-light mb-2 text-base">{t("yearsExp")}</Label>
-            <p className="text-foreground">
-              {professionalProfile.yearsOfExperience || t("notAvailable")}{" "}
-              {professionalProfile.yearsOfExperience ? t("years") : ""}
-            </p>
+      {!hideHeaderFields && (
+        <div className="rounded-xl bg-card p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-serif font-light text-foreground">
+              {t("about")}
+            </h2>
           </div>
 
-          <div>
-            <Label className="font-light mb-2 text-base">{t("bio")}</Label>
-            <p className="text-foreground leading-relaxed">
-              {professionalProfile?.bio || t("notAvailable")}
-            </p>
+          <div className="space-y-4">
+            <div>
+              <Label className="font-light mb-2 text-base">{t("yearsExp")}</Label>
+              <p className="text-foreground">
+                {professionalProfile.yearsOfExperience || t("notAvailable")}{" "}
+                {professionalProfile.yearsOfExperience ? t("years") : ""}
+              </p>
+            </div>
+
+            <div>
+              <Label className="font-light mb-2 text-base">{t("bio")}</Label>
+              <p className="text-foreground leading-relaxed">
+                {professionalProfile?.bio || t("notAvailable")}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Education & Certifications */}
       <div className="rounded-xl bg-card p-6">

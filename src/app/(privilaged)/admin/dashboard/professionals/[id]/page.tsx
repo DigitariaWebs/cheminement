@@ -396,6 +396,7 @@ export default function ProfessionalDetailPage({
                 profile={data.profile} 
                 isEditable={true} 
                 userId={id} 
+                hideHeaderFields={true}
                 onSaveOverride={async (profileData) => {
                   try {
                     const res = await fetch(`/api/admin/users/${id}`, {
