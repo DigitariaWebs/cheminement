@@ -2,12 +2,10 @@ import jsPDF from "jspdf";
 import type { SessionActNature } from "@/lib/session-closure";
 
 const ACT_LABELS_FR: Record<SessionActNature, string> = {
-  psychotherapy_individual_couple_family:
-    "Psychothérapie individuelle / couple / familiale",
-  psychotherapy_child: "Psychothérapie pour enfant",
-  eval_psych_neuro: "Évaluation psychologique / neuropsychologique",
-  psychological_expertise: "Expertise psychologique",
-  report_followup_notes: "Rédaction de rapport / notes de suivi",
+  treatment: "Traitement / Psychothérapie",
+  evaluation: "Évaluation / Diagnostic",
+  consultation: "Conseil / Consultation ponctuelle",
+  administrative: "Tâches administratives liées au client",
 };
 
 export function getSessionActNatureLabelFr(
