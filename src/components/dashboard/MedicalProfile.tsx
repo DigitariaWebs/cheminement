@@ -27,6 +27,7 @@ interface MedicalProfileProps {
   userId?: string;
   setProfile?: (profile: IMedicalProfile) => void;
   isEditable?: boolean;
+  onSaveOverride?: (data: IMedicalProfile) => Promise<IMedicalProfile | null>;
 }
 
 export default function MedicalProfile({
@@ -34,6 +35,7 @@ export default function MedicalProfile({
   userId,
   setProfile,
   isEditable = false,
+  onSaveOverride,
 }: MedicalProfileProps) {
   const t = useTranslations("Client.profile");
   const tMp = useTranslations("Client.profileModal");
@@ -860,6 +862,7 @@ export default function MedicalProfile({
         setActiveTab={setActiveTab}
         profile={medicalProfile}
         setMedicalProfile={updateProfile}
+        onSaveOverride={onSaveOverride}
       />
     </>
   );
@@ -872,6 +875,7 @@ interface MedicalProfileModalProps {
   setActiveTab: (tab: string) => void;
   profile?: IMedicalProfile;
   setMedicalProfile: (profile: IMedicalProfile) => void;
+  onSaveOverride?: (data: IMedicalProfile) => Promise<IMedicalProfile | null>;
 }
 
 function MedicalProfileModal({
@@ -881,6 +885,7 @@ function MedicalProfileModal({
   setActiveTab,
   profile,
   setMedicalProfile,
+  onSaveOverride,
 }: MedicalProfileModalProps) {
   const tMp = useTranslations("Client.profileModal");
   const tProfile = useTranslations("Client.profile");
@@ -1067,8 +1072,19 @@ function MedicalProfileModal({
       ...matchingPreferencesData,
     };
     try {
-      const newProfile = await medicalProfileAPI.update(updatedProfile);
-      setMedicalProfile(newProfile as IMedicalProfile);
+      let newProfile;
+      if (onSaveOverride) {
+        newProfile = await onSaveOverride(updatedProfile as unknown as IMedicalProfile);
+        // Sometimes the override might just be doing side effects and returning void
+        if (newProfile) {
+          setMedicalProfile(newProfile);
+        } else {
+          setMedicalProfile(updatedProfile as unknown as IMedicalProfile);
+        }
+      } else {
+        newProfile = await medicalProfileAPI.update(updatedProfile);
+        setMedicalProfile(newProfile as IMedicalProfile);
+      }
       onClose();
     } catch (error) {
       console.error("Error updating profile:", error);

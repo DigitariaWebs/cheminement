@@ -17,6 +17,7 @@ interface ProfileCompletionModalProps {
   onClose: () => void;
   setProfessionalProfile: (data: IProfile) => void;
   profile?: IProfile;
+  onSaveOverride?: (data: IProfile) => Promise<IProfile | null>;
 }
 
 export interface ProfileData {
@@ -34,6 +35,7 @@ export default function ProfileCompletionModal({
   onClose,
   setProfessionalProfile,
   profile,
+  onSaveOverride,
 }: ProfileCompletionModalProps) {
   const t = useTranslations("Dashboard.profileModal");
   const [currentStep, setCurrentStep] = useState(0);
@@ -328,8 +330,18 @@ export default function ProfileCompletionModal({
 
   const handleSubmit = async (data: ProfileData) => {
     try {
-      const newProfile = (await profileAPI.update(data)) as IProfile;
-      setProfessionalProfile(newProfile);
+      let newProfile;
+      if (onSaveOverride) {
+        newProfile = await onSaveOverride(data as unknown as IProfile);
+        if (newProfile) {
+          setProfessionalProfile(newProfile);
+        } else {
+          setProfessionalProfile(data as unknown as IProfile);
+        }
+      } else {
+        newProfile = (await profileAPI.update(data)) as IProfile;
+        setProfessionalProfile(newProfile);
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
     }
