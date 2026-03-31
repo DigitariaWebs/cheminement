@@ -904,6 +904,9 @@ export default function ProfessionalSignupPage() {
             else if (treatsAdults) list = [...ADULT_DIAGNOSTICS];
             return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
           })();
+          const sortedApproaches = [...APPROACHES_ET_THERAPIES].sort((a, b) =>
+            a.localeCompare(b, "fr"),
+          );
 
           return (
             <div className="space-y-8">
@@ -913,7 +916,7 @@ export default function ProfessionalSignupPage() {
                   {t("expertiseCommonSubtitle")}
                 </Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
-                  {APPROACHES_ET_THERAPIES.map((approach) => (
+                  {sortedApproaches.map((approach) => (
                     <div key={approach} className="flex items-center space-x-2">
                       <Checkbox
                         id={`approach-${approach}`}
