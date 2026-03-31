@@ -1565,7 +1565,7 @@ export default function MemberSignupPage() {
                   }))
                 }
                 multiSelect
-                maxSelections={1}
+                maxSelections={3}
                 placeholder={t("therapyApproachOptional")}
                 items={MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
                   ({ msgKey }) => t(`therapyApproachOptions.${msgKey}`),
