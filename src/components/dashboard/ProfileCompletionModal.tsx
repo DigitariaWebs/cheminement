@@ -43,6 +43,8 @@ export interface ProfileData {
     year: number | string;
   }[];
   certifications: string[];
+  specialty: string;
+  license: string;
 }
 
 export default function ProfileCompletionModal({
@@ -87,6 +89,8 @@ export default function ProfileCompletionModal({
     },
     education: profile?.education || [{ degree: "", institution: "", year: "" }],
     certifications: profile?.certifications || [],
+    specialty: profile?.specialty || "",
+    license: profile?.license || "",
   });
 
   const problematics = [
@@ -655,6 +659,36 @@ export default function ProfileCompletionModal({
                       {t(`step4.skillLabels.${labelKey}`)}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Specialty & License */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                <div className="space-y-2">
+                  <Label htmlFor="specialty" className="font-light text-base">
+                    {t("step4.specialty")}
+                    <span className="text-primary ml-1">{t("step4.specialtyRequired")}</span>
+                  </Label>
+                  <Input
+                    id="specialty"
+                    name="specialty"
+                    value={formData.specialty}
+                    onChange={handleChange}
+                    placeholder={t("step4.specialtyPlaceholder")}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="license" className="font-light text-base">
+                    {t("step4.license")}
+                    <span className="text-primary ml-1">{t("step4.licenseRequired")}</span>
+                  </Label>
+                  <Input
+                    id="license"
+                    name="license"
+                    value={formData.license}
+                    onChange={handleChange}
+                    placeholder={t("step4.licensePlaceholder")}
+                  />
                 </div>
               </div>
 

@@ -103,6 +103,9 @@ export default function ProfessionalDetailPage({
     license: "",
     bio: "",
     yearsOfExperience: 0,
+    gender: "",
+    dateOfBirth: "",
+    language: "fr",
   });
 
   const fetchData = useCallback(async () => {
@@ -134,6 +137,9 @@ export default function ProfessionalDetailPage({
         license: userData.profile?.license || "",
         bio: userData.profile?.bio || "",
         yearsOfExperience: userData.profile?.yearsOfExperience || 0,
+        gender: userData.user.gender || "",
+        dateOfBirth: userData.user.dateOfBirth ? new Date(userData.user.dateOfBirth).toISOString().split('T')[0] : "",
+        language: userData.user.language || "fr",
       });
     } catch (error) {
       setFeedback({ type: "error", message: t("loadError") });
@@ -285,6 +291,10 @@ export default function ProfessionalDetailPage({
             </p>
           </div>
         </div>
+        <Button onClick={handleSave} disabled={saving} className="gap-2">
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {t("saveChanges")}
+        </Button>
       </div>
       
       {feedback && (
@@ -330,6 +340,52 @@ export default function ProfessionalDetailPage({
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label>{t("mainSpecialty")}</Label>
+                <Input name="specialty" value={formData.specialty} onChange={handleChange} />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("licenseNumber")}</Label>
+                <Input name="license" value={formData.license} onChange={handleChange} />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("yearsExperience")}</Label>
+                <Input name="yearsOfExperience" type="number" value={formData.yearsOfExperience} onChange={handleChange} />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("gender")}</Label>
+                <Select value={formData.gender} onValueChange={(v) => handleSelectChange("gender", v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">{t("male")}</SelectItem>
+                    <SelectItem value="female">{t("female")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
+                    <SelectItem value="prefer_not_to_say">{t("preferNotToSay")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("dateOfBirth")}</Label>
+                <Input name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("language")}</Label>
+                <Select value={formData.language} onValueChange={(v) => handleSelectChange("language", v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fr">{t("french")}</SelectItem>
+                    <SelectItem value="en">{t("english")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("bio")}</Label>
+                <Textarea name="bio" value={formData.bio} onChange={handleChange} rows={4} />
+              </div>
+              <Button onClick={handleSave} disabled={saving} className="w-full mt-4 gap-2">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {t("saveChanges")}
+              </Button>
             </div>
           </div>
 
