@@ -23,6 +23,7 @@ export interface IProfile extends Document {
     breakDurationMinutes: number;
     firstDayOfWeek: string;
   };
+  clinicalAvailability?: string[];
   languages?: string[];
   sessionTypes?: string[];
   modalities?: string[];
@@ -102,6 +103,7 @@ const ProfileSchema = new Schema<IProfile>(
         ],
       },
     },
+    clinicalAvailability: [String],
     languages: [String],
     sessionTypes: [String],
     modalities: [String],

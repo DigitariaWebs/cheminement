@@ -1302,7 +1302,13 @@ export default function MemberSignupPage() {
                     ),
                   };
 
-                  return conditionsList.map((condition) => (
+                  const sortedConditions = [...conditionsList].sort((a, b) => {
+                    const labelA = translatedConditionLabels[a] ?? a;
+                    const labelB = translatedConditionLabels[b] ?? b;
+                    return labelA.localeCompare(labelB, "fr");
+                  });
+
+                  return sortedConditions.map((condition) => (
                     <div key={condition} className="flex items-center space-x-2">
                       <Checkbox
                         id={`diagnosed-${condition}`}
@@ -1559,7 +1565,7 @@ export default function MemberSignupPage() {
                   }))
                 }
                 multiSelect
-                maxSelections={1}
+                maxSelections={3}
                 placeholder={t("therapyApproachOptional")}
                 items={MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS.map(
                   ({ msgKey }) => t(`therapyApproachOptions.${msgKey}`),

@@ -33,6 +33,7 @@ interface AvailabilityScheduleProps {
   profile: IProfile | null;
   setProfile: (profile: IProfile) => void;
   isEditable?: boolean;
+  onSaveOverride?: (data: Partial<IProfile>) => Promise<IProfile | null>;
 }
 
 const DEFAULT_DAYS: DayAvailability[] = [
@@ -49,6 +50,7 @@ const AvailabilitySchedule = ({
   profile,
   setProfile,
   isEditable = false,
+  onSaveOverride,
 }: AvailabilityScheduleProps) => {
   const t = useTranslations("Dashboard.profile");
   const tSchedule = useTranslations("Dashboard.schedule");
@@ -158,12 +160,22 @@ const AvailabilitySchedule = ({
         breakDurationMinutes: parseInt(breakBetweenSessions),
         firstDayOfWeek: profile.availability?.firstDayOfWeek || "Monday",
       };
-      await profileAPI.update({ availability });
-      const updatedProfile = {
-        ...profile,
-        availability,
-      } as IProfile;
-      setProfile(updatedProfile);
+      if (onSaveOverride) {
+        const updated = await onSaveOverride({ availability });
+        if (updated) {
+          setProfile(updated);
+        } else {
+          // If no profile returned but no error thrown, we assume success and update locally
+          setProfile({ ...profile, availability } as IProfile);
+        }
+      } else {
+        await profileAPI.update({ availability });
+        const updatedProfile = {
+          ...profile,
+          availability,
+        } as IProfile;
+        setProfile(updatedProfile);
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
     } finally {

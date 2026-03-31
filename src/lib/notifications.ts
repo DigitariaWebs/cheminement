@@ -75,6 +75,7 @@ interface WelcomeEmailData {
   name: string;
   email: string;
   role: "client" | "professional" | "guest";
+  locale?: "fr" | "en";
 }
 
 interface AccountEmailVerificationData {
@@ -2149,4 +2150,63 @@ export async function sendPaymentGuarantee48hProfessionalAlert(data: {
     { to: data.professionalEmail, subject, html, text },
     "payment_guarantee_48h_professional",
   );
+}
+
+export async function sendResendInvitationEmail(data: {
+  name: string;
+  email: string;
+  role: "client" | "professional";
+  locale?: "fr" | "en";
+}): Promise<boolean> {
+  const branding = await getBranding();
+  const lang = data.locale || "fr";
+  const loginUrl = "https://cheminement.vercel.app/login";
+
+  const titles = {
+    fr: "Finalisez votre inscription",
+    en: "Finalize your registration",
+  };
+  const greetings = {
+    fr: `Bonjour ${data.name},`,
+    en: `Hello ${data.name},`,
+  };
+  const intros = {
+    fr: `Vous avez été invité à rejoindre ${branding?.companyName || "JeChemine"}. Veuillez vous connecter pour compléter votre profil et accéder à votre tableau de bord.`,
+    en: `You have been invited to join ${branding?.companyName || "JeChemine"}. Please log in to complete your profile and access your dashboard.`,
+  };
+  const buttons = {
+    fr: "Se connecter au site",
+    en: "Log in to the site",
+  };
+  const outros = {
+    fr: "Si vous avez des questions, n'hésitez pas à nous contacter.",
+    en: "If you have any questions, feel free to contact us.",
+  };
+
+  const html = buildEmailHtml({
+    title: titles[lang],
+    subtitle: branding?.companyName || "JeChemine",
+    theme: "info",
+    greeting: greetings[lang],
+    intro: intros[lang],
+    button: { text: buttons[lang], url: loginUrl },
+    outro: outros[lang],
+    branding,
+  });
+
+  const text = buildEmailText([
+    titles[lang],
+    branding?.companyName || "JeChemine",
+    greetings[lang],
+    intros[lang],
+    `${buttons[lang]}: ${loginUrl}`,
+    outros[lang],
+  ]);
+
+  const subject =
+    lang === "fr"
+      ? `Invitation à rejoindre ${branding?.companyName || "JeChemine"}`
+      : `Invitation to join ${branding?.companyName || "JeChemine"}`;
+
+  return sendEmail({ to: data.email, subject, html, text }, "welcome");
 }

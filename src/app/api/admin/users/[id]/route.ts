@@ -120,26 +120,8 @@ export async function GET(
         return { color, label };
       })(),
 
-      profile: profile
-        ? {
-            specialty: profile.specialty || "",
-            license: profile.license || "",
-            bio: profile.bio || "",
-            approaches: profile.approaches || [],
-            problematics: profile.problematics || [],
-            languages: profile.languages || [],
-            yearsOfExperience: profile.yearsOfExperience || 0,
-            certifications: profile.certifications || [],
-            profileCompleted: profile.profileCompleted,
-          }
-        : null,
-      medicalProfile: medicalProfile
-        ? {
-            primaryIssue: medicalProfile.primaryIssue || "",
-            severity: medicalProfile.severity || "",
-            profileCompleted: medicalProfile.profileCompleted,
-          }
-        : null,
+      profile: profile || null,
+      medicalProfile: medicalProfile || null,
       stats: {
         totalAppointments,
         completedSessions,
@@ -179,34 +161,64 @@ export async function PUT(
     const { id: userId } = await params;
     const body = await req.json();
 
+    const userToUpdate = await User.findById(userId);
+    if (!userToUpdate) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     // Allowed user fields to update
     const allowedUserFields = [
       "firstName", "lastName", "email", "phone", "location",
       "gender", "dateOfBirth", "language", "status",
+      "professionalLicenseStatus", "paymentGuaranteeStatus", "paymentGuaranteeSource",
+      "image", "stripeCustomerId", "stripeConnectAccountId"
     ];
     // Allowed profile fields
     const allowedProfileFields = [
       "specialty", "license", "bio", "approaches", "problematics",
       "languages", "yearsOfExperience", "certifications",
+      "ageCategories", "diagnosedConditions", "skills", "availability",
+      "sessionTypes", "modalities", "paymentAgreement", "paymentFrequency",
+      "pricing", "education", "profileCompleted"
+    ];
+    // Allowed medical profile fields
+    const allowedMedicalProfileFields = [
+      "concernedPerson", "accountFor", "childFirstName", "childLastName",
+      "childDateOfBirth", "childServiceType", "medicalConditions", "currentMedications",
+      "allergies", "consultationMotifs", "substanceUse", "previousTherapy",
+      "previousTherapyDetails", "psychiatricHospitalization", "currentTreatment",
+      "diagnosedConditions", "primaryIssue", "secondaryIssues", "issueDescription",
+      "severity", "duration", "triggeringSituation", "symptoms", "dailyLifeImpact",
+      "sleepQuality", "appetiteChanges", "treatmentGoals", "therapyApproach",
+      "concernsAboutTherapy", "availability", "modality", "location", "sessionFrequency",
+      "notes", "emergencyContactName", "emergencyContactPhone", "emergencyContactRelation",
+      "crisisPlan", "suicidalThoughts", "preferredGender", "preferredAge", "languagePreference",
+      "culturalConsiderations", "paymentMethod", "profileCompleted"
     ];
 
     const userUpdates: Record<string, unknown> = {};
     const profileUpdates: Record<string, unknown> = {};
+    const medicalProfileUpdates: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(body)) {
       if (allowedUserFields.includes(key)) {
         userUpdates[key] = value;
-      } else if (allowedProfileFields.includes(key)) {
-        profileUpdates[key] = value;
+      }
+      
+      if (userToUpdate.role === "professional" || userToUpdate.role === "admin") {
+        if (allowedProfileFields.includes(key) && key !== "location") {
+          profileUpdates[key] = value;
+        }
+      } else if (userToUpdate.role === "client") {
+        if (allowedMedicalProfileFields.includes(key) && key !== "location") {
+          medicalProfileUpdates[key] = value;
+        }
       }
     }
 
     // Update user
     if (Object.keys(userUpdates).length > 0) {
-      const user = await User.findByIdAndUpdate(userId, { $set: userUpdates }, { new: true, runValidators: true });
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
+      await User.findByIdAndUpdate(userId, { $set: userUpdates }, { new: true, runValidators: true });
     }
 
     // Update profile if there are profile fields
@@ -214,7 +226,16 @@ export async function PUT(
       await Profile.findOneAndUpdate(
         { userId: userId },
         { $set: profileUpdates },
-        { new: true, upsert: true },
+        { new: true, upsert: true }
+      );
+    }
+    
+    // Update medical profile if there are medical profile fields
+    if (Object.keys(medicalProfileUpdates).length > 0) {
+      await MedicalProfile.findOneAndUpdate(
+        { userId: userId },
+        { $set: medicalProfileUpdates },
+        { new: true, upsert: true }
       );
     }
 

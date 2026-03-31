@@ -171,7 +171,7 @@ export default function SessionDetailsPage() {
       setAppointment(response);
       setIsEditingNotes(false);
     } catch (err) {
-      alert("Failed to save notes. Please try again.");
+      alert(t("failedSaveNotes"));
       console.error(err);
     } finally {
       setSaving(false);
@@ -190,7 +190,7 @@ export default function SessionDetailsPage() {
       setAppointment(response);
       setShowStatusDialog(false);
     } catch (err) {
-      alert("Failed to update status. Please try again.");
+      alert(t("failedUpdateStatus"));
       console.error(err);
     } finally {
       setSaving(false);
@@ -199,7 +199,7 @@ export default function SessionDetailsPage() {
 
   const handleReschedule = async () => {
     if (!appointment || !rescheduleDate || !rescheduleTime) {
-      alert("Please select both date and time");
+      alert(t("selectDateTime"));
       return;
     }
 
@@ -213,7 +213,7 @@ export default function SessionDetailsPage() {
       setAppointment(response);
       setShowRescheduleDialog(false);
     } catch (err) {
-      alert("Failed to reschedule. Please try again.");
+      alert(t("failedReschedule"));
       console.error(err);
     } finally {
       setSaving(false);
@@ -288,12 +288,12 @@ export default function SessionDetailsPage() {
     };
 
     const labels: Record<string, string> = {
-      paid: "Paid",
-      pending: "Pending",
-      processing: "Processing",
-      failed: "Failed",
-      refunded: "Refunded",
-      cancelled: "Cancelled",
+      paid: t("paid"),
+      pending: t("pending"),
+      processing: t("processing") || "Processing",
+      failed: t("failed") || "Failed",
+      refunded: t("refunded") || "Refunded",
+      cancelled: t("cancelled"),
     };
 
     return (
@@ -306,8 +306,9 @@ export default function SessionDetailsPage() {
   };
 
   const formatDate = (dateString: string) => {
+    const locale = t("locale") === "fr" ? "fr-CA" : "en-US";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale, {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -328,7 +329,7 @@ export default function SessionDetailsPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading session details...</p>
+          <p className="text-muted-foreground">{t("loadingDetails")}</p>
         </div>
       </div>
     );
@@ -339,9 +340,9 @@ export default function SessionDetailsPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center space-y-4">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
-          <p className="text-red-500">{error || "Appointment not found"}</p>
+          <p className="text-red-500">{error || t("appointmentNotFound")}</p>
           <Button onClick={() => router.back()} variant="outline">
-            Go Back
+            {t("goBack")}
           </Button>
         </div>
       </div>
@@ -363,10 +364,10 @@ export default function SessionDetailsPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-serif font-light text-foreground">
-              Session Details
+              {t("detailsTitle")}
             </h1>
             <p className="text-muted-foreground font-light mt-1">
-              Manage session information and notes
+              {t("detailsSubtitle")}
             </p>
           </div>
         </div>
@@ -388,7 +389,7 @@ export default function SessionDetailsPage() {
               className="gap-2 rounded-full"
             >
               <Video className="h-4 w-4" />
-              Start Session
+              {t("startSession")}
             </Button>
           )}
           {(appointment.status === "ongoing" ||
@@ -426,7 +427,7 @@ export default function SessionDetailsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-primary" />
-                Client Information
+                {t("clientInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -455,7 +456,7 @@ export default function SessionDetailsPage() {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Session Notes</CardTitle>
+                <CardTitle>{t("sessionNotes")}</CardTitle>
                 {!isEditingNotes ? (
                   <Button
                     variant="outline"
@@ -464,7 +465,7 @@ export default function SessionDetailsPage() {
                     className="gap-2"
                   >
                     <Edit className="h-4 w-4" />
-                    Edit
+                    {t("edit")}
                   </Button>
                 ) : (
                   <div className="flex gap-2">
@@ -478,7 +479,7 @@ export default function SessionDetailsPage() {
                       className="gap-2"
                     >
                       <X className="h-4 w-4" />
-                      Cancel
+                      {t("cancelAction")}
                     </Button>
                     <Button
                       size="sm"
@@ -487,13 +488,13 @@ export default function SessionDetailsPage() {
                       className="gap-2"
                     >
                       <Save className="h-4 w-4" />
-                      {saving ? "Saving..." : "Save"}
+                      {saving ? t("saving") : t("save")}
                     </Button>
                   </div>
                 )}
               </div>
               <CardDescription>
-                Keep track of session progress, observations, and follow-ups
+                {t("sessionNotesDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -501,7 +502,7 @@ export default function SessionDetailsPage() {
                 <Textarea
                   value={sessionNotes}
                   onChange={(e) => setSessionNotes(e.target.value)}
-                  placeholder="Enter your session notes here..."
+                  placeholder={t("notesPlaceholder")}
                   className="min-h-[300px] font-light"
                 />
               ) : (
@@ -512,7 +513,7 @@ export default function SessionDetailsPage() {
                     </p>
                   ) : (
                     <p className="text-sm text-muted-foreground font-light italic">
-                      No notes added yet. Click Edit to add session notes.
+                      {t("noNotesYet")}
                     </p>
                   )}
                 </div>
@@ -523,8 +524,8 @@ export default function SessionDetailsPage() {
           {/* Session History */}
           <Card>
             <CardHeader>
-              <CardTitle>Session History</CardTitle>
-              <CardDescription>Track of changes and updates</CardDescription>
+              <CardTitle>{t("sessionHistory")}</CardTitle>
+              <CardDescription>{t("trackChanges")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -533,7 +534,7 @@ export default function SessionDetailsPage() {
                     <Check className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium">Session Created</p>
+                    <p className="font-medium">{t("sessionCreated")}</p>
                     <p className="text-muted-foreground text-xs">
                       {new Date(appointment.createdAt).toLocaleString()}
                     </p>
@@ -544,7 +545,7 @@ export default function SessionDetailsPage() {
                     <Clock className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium">Last Updated</p>
+                    <p className="font-medium">{t("lastUpdated")}</p>
                     <p className="text-muted-foreground text-xs">
                       {new Date(appointment.updatedAt).toLocaleString()}
                     </p>
@@ -560,16 +561,16 @@ export default function SessionDetailsPage() {
           {/* Session Details */}
           <Card>
             <CardHeader>
-              <CardTitle>Session Details</CardTitle>
+              <CardTitle>{t("detailsTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="text-xs text-muted-foreground">Status</Label>
+                <Label className="text-xs text-muted-foreground">{t("status")}</Label>
                 <div className="mt-1">{getStatusBadge(appointment.status)}</div>
               </div>
 
               <div>
-                <Label className="text-xs text-muted-foreground">Payment</Label>
+                <Label className="text-xs text-muted-foreground">{t("payment")}</Label>
                 <div className="mt-1 flex items-center gap-2">
                   {getPaymentStatusBadge(appointment.payment.status)}
                   <span className="text-sm text-muted-foreground">
@@ -579,7 +580,7 @@ export default function SessionDetailsPage() {
               </div>
 
               <div>
-                <Label className="text-xs text-muted-foreground">Date</Label>
+                <Label className="text-xs text-muted-foreground">{t("dateTime").split(" & ")[0]}</Label>
                 <div className="flex items-center gap-2 mt-1 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>{formatDate(appointment.date)}</span>
@@ -587,21 +588,21 @@ export default function SessionDetailsPage() {
               </div>
 
               <div>
-                <Label className="text-xs text-muted-foreground">Time</Label>
+                <Label className="text-xs text-muted-foreground">{t("dateTime").split(" & ")[1]}</Label>
                 <div className="flex items-center gap-2 mt-1 text-sm">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span>
-                    {formatTime(appointment.time)} ({appointment.duration} min)
+                    {formatTime(appointment.time)} ({appointment.duration} {t("minutes")})
                   </span>
                 </div>
               </div>
 
               <div>
-                <Label className="text-xs text-muted-foreground">Type</Label>
+                <Label className="text-xs text-muted-foreground">{t("type")}</Label>
                 <div className="flex items-center gap-2 mt-1 text-sm">
                   {getTypeIcon(appointment.type)}
                   <span className="capitalize">
-                    {appointment.type.replace("-", " ")}
+                    {t(appointment.type)}
                   </span>
                 </div>
               </div>
@@ -609,7 +610,7 @@ export default function SessionDetailsPage() {
               {appointment.therapyType && (
                 <div>
                   <Label className="text-xs text-muted-foreground">
-                    Therapy Type
+                    {t("therapyType")}
                   </Label>
                   <p className="mt-1 text-sm capitalize">
                     {appointment.therapyType}
@@ -635,7 +636,7 @@ export default function SessionDetailsPage() {
               {appointment.issueType && (
                 <div>
                   <Label className="text-xs text-muted-foreground">
-                    Issue Type
+                    {t("issueType")}
                   </Label>
                   <p className="mt-1 text-sm">{appointment.issueType}</p>
                 </div>
@@ -644,7 +645,7 @@ export default function SessionDetailsPage() {
               {appointment.meetingLink && (
                 <div>
                   <Label className="text-xs text-muted-foreground">
-                    Meeting Link
+                    {t("meetingLinkUrl")}
                   </Label>
                   <a
                     href={appointment.meetingLink}
@@ -660,7 +661,7 @@ export default function SessionDetailsPage() {
               {appointment.location && (
                 <div>
                   <Label className="text-xs text-muted-foreground">
-                    Location
+                    {t("location")}
                   </Label>
                   <p className="mt-1 text-sm">{appointment.location}</p>
                 </div>
@@ -668,7 +669,7 @@ export default function SessionDetailsPage() {
 
               <div>
                 <Label className="text-xs text-muted-foreground">
-                  Payment Status
+                  {t("paymentStatus")}
                 </Label>
                 <p className="mt-1 text-sm capitalize">
                   {appointment.payment.status}
@@ -676,7 +677,7 @@ export default function SessionDetailsPage() {
               </div>
 
               <div>
-                <Label className="text-xs text-muted-foreground">Fee</Label>
+                <Label className="text-xs text-muted-foreground">{t("fee")}</Label>
                 <p className="mt-1 text-sm font-medium">
                   ${appointment.payment.price}
                 </p>
@@ -687,7 +688,7 @@ export default function SessionDetailsPage() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>{t("quickActions")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {(appointment.status === "ongoing" ||
@@ -707,7 +708,7 @@ export default function SessionDetailsPage() {
                 onClick={() => setShowStatusDialog(true)}
               >
                 <Edit className="h-4 w-4" />
-                Change Status
+                {t("changeStatus")}
               </Button>
               {appointment.status === "scheduled" && (
                 <Button
@@ -716,7 +717,7 @@ export default function SessionDetailsPage() {
                   onClick={() => setShowRescheduleDialog(true)}
                 >
                   <Calendar className="h-4 w-4" />
-                  Reschedule
+                  {t("reschedule")}
                 </Button>
               )}
             </CardContent>
@@ -728,14 +729,14 @@ export default function SessionDetailsPage() {
       <Dialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Session Status</DialogTitle>
+            <DialogTitle>{t("changeStatusTitle")}</DialogTitle>
             <DialogDescription>
-              Update the status of this session
+              {t("changeStatusDesc")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="status">New Status</Label>
+              <Label htmlFor="status">{t("newStatus")}</Label>
               <Select
                 value={newStatus}
                 onValueChange={(value) =>
@@ -757,7 +758,7 @@ export default function SessionDetailsPage() {
             </div>
             <div className="rounded-lg bg-muted/50 p-3">
               <p className="text-sm text-muted-foreground">
-                Current status: <strong>{appointment.status}</strong>
+                {t("currentStatus")} <strong>{appointment.status}</strong>
               </p>
             </div>
           </div>
@@ -767,10 +768,10 @@ export default function SessionDetailsPage() {
               onClick={() => setShowStatusDialog(false)}
               disabled={saving}
             >
-              Cancel
+              {t("cancelAction")}
             </Button>
             <Button onClick={() => handleStatusChange()} disabled={saving}>
-              {saving ? "Updating..." : "Update Status"}
+              {saving ? t("updating") : t("updateStatus")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -790,14 +791,14 @@ export default function SessionDetailsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reschedule Session</DialogTitle>
+            <DialogTitle>{t("rescheduleTitle")}</DialogTitle>
             <DialogDescription>
-              Choose a new date and time for this session
+              {t("rescheduleDesc")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="reschedule-date">Date</Label>
+              <Label htmlFor="reschedule-date">{t("dateTime").split(" & ")[0]}</Label>
               <Input
                 id="reschedule-date"
                 type="date"
@@ -806,7 +807,7 @@ export default function SessionDetailsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="reschedule-time">Time</Label>
+              <Label htmlFor="reschedule-time">{t("dateTime").split(" & ")[1]}</Label>
               <Input
                 id="reschedule-time"
                 type="time"
@@ -816,7 +817,7 @@ export default function SessionDetailsPage() {
             </div>
             <div className="rounded-lg bg-muted/50 p-3">
               <p className="text-sm text-muted-foreground">
-                Current: {formatDate(appointment.date)} at{" "}
+                {t("currentStatus")} {formatDate(appointment.date)} {t("at")}{" "}
                 {formatTime(appointment.time)}
               </p>
             </div>
@@ -827,10 +828,10 @@ export default function SessionDetailsPage() {
               onClick={() => setShowRescheduleDialog(false)}
               disabled={saving}
             >
-              Cancel
+              {t("cancelAction")}
             </Button>
             <Button onClick={handleReschedule} disabled={saving}>
-              {saving ? "Rescheduling..." : "Reschedule"}
+              {saving ? t("updating") : t("reschedule")}
             </Button>
           </DialogFooter>
         </DialogContent>

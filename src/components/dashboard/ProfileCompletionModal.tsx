@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
 import { useTranslations } from "next-intl";
 import { IProfile } from "@/models/Profile";
@@ -17,6 +18,7 @@ interface ProfileCompletionModalProps {
   onClose: () => void;
   setProfessionalProfile: (data: IProfile) => void;
   profile?: IProfile;
+  onSaveOverride?: (data: IProfile) => Promise<IProfile | null>;
 }
 
 export interface ProfileData {
@@ -27,6 +29,20 @@ export interface ProfileData {
   skills: string[];
   bio: string;
   yearsOfExperience: string;
+  languages: string[];
+  sessionTypes: string[];
+  modalities: string[];
+  pricing: {
+    individualSession: number;
+    coupleSession: number;
+    groupSession: number;
+  };
+  education: {
+    degree: string;
+    institution: string;
+    year: number | string;
+  }[];
+  certifications: string[];
 }
 
 export default function ProfileCompletionModal({
@@ -34,6 +50,7 @@ export default function ProfileCompletionModal({
   onClose,
   setProfessionalProfile,
   profile,
+  onSaveOverride,
 }: ProfileCompletionModalProps) {
   const t = useTranslations("Dashboard.profileModal");
   const [currentStep, setCurrentStep] = useState(0);
@@ -46,6 +63,10 @@ export default function ProfileCompletionModal({
       title: t("steps.additionalInfo"),
       description: t("steps.additionalInfoDesc"),
     },
+    {
+      title: t("steps.credentials"),
+      description: t("steps.credentialsDesc"),
+    },
   ];
 
   const [formData, setFormData] = useState<ProfileData>({
@@ -56,6 +77,16 @@ export default function ProfileCompletionModal({
     skills: profile?.skills || [],
     bio: profile?.bio || "",
     yearsOfExperience: profile?.yearsOfExperience?.toString() || "",
+    languages: profile?.languages || ["Français"],
+    sessionTypes: profile?.sessionTypes || ["Solo"],
+    modalities: profile?.modalities || ["En ligne"],
+    pricing: profile?.pricing || {
+      individualSession: 0,
+      coupleSession: 0,
+      groupSession: 0,
+    },
+    education: profile?.education || [{ degree: "", institution: "", year: "" }],
+    certifications: profile?.certifications || [],
   });
 
   const problematics = [
@@ -328,8 +359,18 @@ export default function ProfileCompletionModal({
 
   const handleSubmit = async (data: ProfileData) => {
     try {
-      const newProfile = (await profileAPI.update(data)) as IProfile;
-      setProfessionalProfile(newProfile);
+      let newProfile;
+      if (onSaveOverride) {
+        newProfile = await onSaveOverride(data as unknown as IProfile);
+        if (newProfile) {
+          setProfessionalProfile(newProfile);
+        } else {
+          setProfessionalProfile(data as unknown as IProfile);
+        }
+      } else {
+        newProfile = (await profileAPI.update(data)) as IProfile;
+        setProfessionalProfile(newProfile);
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -346,6 +387,8 @@ export default function ProfileCompletionModal({
         return formData.ageCategories.length > 0;
       case 3:
         return formData.bio.trim() !== "" && formData.yearsOfExperience !== "";
+      case 4:
+        return true; // Optional fields for now or validate at least one degree
       default:
         return false;
     }
@@ -635,6 +678,208 @@ export default function ProfileCompletionModal({
                   className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
                   placeholder={t("step4.bioPlaceholder")}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Professional credentials & Services */}
+          {currentStep === 4 && (
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-light text-foreground mb-6">{t("step5.title")}</h3>
+                
+                {/* Languages */}
+                <div className="space-y-3 mb-8">
+                  <Label>{t("step5.languages")}</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {["Français", "Anglais", "Arabe", "Espagnol", "Chinois", "Autre"].map(lang => (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => handleMultiSelect("languages", lang)}
+                        className={`rounded-full px-4 py-1.5 text-sm font-light transition-all ${
+                          formData.languages.includes(lang)
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-foreground hover:bg-muted/80"
+                        }`}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Education */}
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center justify-between">
+                    <Label>{t("step5.education")}</Label>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 text-primary" 
+                      onClick={() => setFormData({...formData, education: [...formData.education, { degree: "", institution: "", year: "" }]})}
+                    >
+                      {t("step5.addEducation")}
+                    </Button>
+                  </div>
+                  {formData.education.map((edu, idx) => (
+                    <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-muted/20 rounded-xl relative group">
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase text-muted-foreground font-semibold">{t("step5.degree")}</span>
+                        <Input 
+                          placeholder="ex: Maîtrise en Psychologie" 
+                          value={edu.degree} 
+                          onChange={(e) => {
+                            const newEdu = [...formData.education];
+                            newEdu[idx].degree = e.target.value;
+                            setFormData({...formData, education: newEdu});
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase text-muted-foreground font-semibold">{t("step5.institution")}</span>
+                        <Input 
+                          placeholder="ex: Université de Montréal" 
+                          value={edu.institution} 
+                          onChange={(e) => {
+                            const newEdu = [...formData.education];
+                            newEdu[idx].institution = e.target.value;
+                            setFormData({...formData, education: newEdu});
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase text-muted-foreground font-semibold">{t("step5.year")}</span>
+                        <Input 
+                          type="number" 
+                          placeholder="2015" 
+                          value={edu.year} 
+                          onChange={(e) => {
+                            const newEdu = [...formData.education];
+                            newEdu[idx].year = e.target.value;
+                            setFormData({...formData, education: newEdu});
+                          }}
+                        />
+                      </div>
+                      {formData.education.length > 1 && (
+                        <button 
+                          type="button"
+                          className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            const newEdu = formData.education.filter((_, i) => i !== idx);
+                            setFormData({...formData, education: newEdu});
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <hr className="border-border/40 my-8" />
+
+                {/* Session Types & Modalities */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label>{t("step5.sessionTypes")}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {["Solo", "Couple", "Famille", "Groupe"].map(type => (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => handleMultiSelect("sessionTypes", type)}
+                          className={`rounded-lg px-4 py-2 text-sm font-light transition-all ${
+                            formData.sessionTypes.includes(type)
+                              ? "bg-primary/10 text-primary border border-primary/20"
+                              : "bg-muted/50 text-foreground border border-transparent"
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label>{t("step5.modalities")}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {["En ligne", "En personne"].map(mod => (
+                        <button
+                          key={mod}
+                          type="button"
+                          onClick={() => handleMultiSelect("modalities", mod)}
+                          className={`rounded-lg px-4 py-2 text-sm font-light transition-all ${
+                            formData.modalities.includes(mod)
+                              ? "bg-primary/10 text-primary border border-primary/20"
+                              : "bg-muted/50 text-foreground border border-transparent"
+                          }`}
+                        >
+                          {mod}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing */}
+                <div className="mt-8 space-y-4">
+                  <Label>{t("step5.pricing")}</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-2">
+                        <Label className="text-xs font-semibold uppercase text-primary/70">{t("step5.individualSession")}</Label>
+                        <Input 
+                            type="number" 
+                            value={formData.pricing.individualSession}
+                            onChange={(e) => setFormData({...formData, pricing: {...formData.pricing, individualSession: parseFloat(e.target.value) || 0}})}
+                        />
+                    </div>
+                    <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-2">
+                        <Label className="text-xs font-semibold uppercase text-primary/70">{t("step5.coupleSession")}</Label>
+                        <Input 
+                            type="number" 
+                            value={formData.pricing.coupleSession}
+                            onChange={(e) => setFormData({...formData, pricing: {...formData.pricing, coupleSession: parseFloat(e.target.value) || 0}})}
+                        />
+                    </div>
+                    <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-2">
+                        <Label className="text-xs font-semibold uppercase text-primary/70">{t("step5.groupSession")}</Label>
+                        <Input 
+                            type="number" 
+                            value={formData.pricing.groupSession}
+                            onChange={(e) => setFormData({...formData, pricing: {...formData.pricing, groupSession: parseFloat(e.target.value) || 0}})}
+                        />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certifications */}
+                <div className="mt-8 space-y-3">
+                  <Label>{t("step5.certifications")}</Label>
+                  <Input 
+                    placeholder={t("step5.certPlaceholder")} 
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const val = e.currentTarget.value.trim();
+                        if (val && !formData.certifications.includes(val)) {
+                          setFormData({...formData, certifications: [...formData.certifications, val]});
+                          e.currentTarget.value = "";
+                        }
+                      }
+                    }}
+                  />
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.certifications.map(cert => (
+                      <span key={cert} className="px-3 py-1 bg-green-50 text-green-700 text-xs rounded-full border border-green-200 flex items-center gap-1">
+                        {cert}
+                        <button onClick={() => setFormData({...formData, certifications: formData.certifications.filter(c => c !== cert)})}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}

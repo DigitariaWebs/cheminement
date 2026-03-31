@@ -214,8 +214,8 @@ export async function POST(req: NextRequest) {
         specialty: professionalProfile?.specialty,
         license: professionalProfile?.license,
         certifications: professionalProfile?.certifications,
-        // Availability & Scheduling
         availability: professionalProfile?.availability,
+        clinicalAvailability: professionalProfile?.clinicalAvailability,
         // Languages & Session Types
         languages: professionalProfile?.languages,
         sessionTypes: professionalProfile?.sessionTypes,

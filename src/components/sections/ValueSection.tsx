@@ -84,7 +84,7 @@ export default function ValueSection() {
           <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
             {t("subtitle")}
           </p>
-          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed whitespace-nowrap">
+          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed">
             {t("description", {
               integratedPlatform: t("integratedPlatform"),
             })}

@@ -51,7 +51,10 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import ProfessionalProfile from "@/components/dashboard/ProfessionalProfile";
+import AvailabilitySchedule from "@/app/(privilaged)/professional/dashboard/profile/AvailabilitySchedule";
+import { IProfile } from "@/models/Profile";
 
 export default function ProfessionalDetailPage({
   params,
@@ -60,6 +63,7 @@ export default function ProfessionalDetailPage({
 }) {
   const router = useRouter();
   const t = useTranslations("AdminDashboard.professionalDetail");
+  const locale = useLocale();
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
@@ -327,34 +331,67 @@ export default function ProfessionalDetailPage({
                 </Select>
               </div>
             </div>
-            
-            <hr className="my-6 border-border" />
-            
-            <h2 className="text-xl font-serif font-light mb-4 text-primary">{t("profDetails")}</h2>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>{t("mainSpecialty")}</Label>
-                <Input name="specialty" value={formData.specialty} onChange={handleChange} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t("licenseNumber")}</Label>
-                <Input name="license" value={formData.license} onChange={handleChange} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t("yearsExperience")}</Label>
-                <Input name="yearsOfExperience" type="number" value={formData.yearsOfExperience} onChange={handleChange} min={0} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t("bio")}</Label>
-                <Textarea name="bio" value={formData.bio} onChange={handleChange} rows={4} />
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                {t("saveChanges")}
-              </Button>
-            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-xl font-serif font-light text-primary">{t("profDetails")} complets</h2>
+            {data.profile ? (
+              <ProfessionalProfile 
+                profile={data.profile} 
+                isEditable={true} 
+                userId={id} 
+                onSaveOverride={async (profileData) => {
+                  try {
+                    const res = await fetch(`/api/admin/users/${id}`, {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(profileData),
+                    });
+                    if (!res.ok) throw new Error();
+                    setFeedback({ type: "success", message: "Profil professionnel mis à jour avec succès." });
+                    setTimeout(() => setFeedback(null), 3000);
+                    fetchData();
+                    return null;
+                  } catch (e) {
+                    setFeedback({ type: "error", message: "Impossible de mettre à jour le profil professionnel." });
+                    setTimeout(() => setFeedback(null), 3000);
+                    return null;
+                  }
+                }} 
+              />
+            ) : (
+                <div className="bg-card border border-border/40 rounded-xl p-6">
+                  <p className="text-muted-foreground text-sm font-light">Le profil de ce professionnel n'a pas encore été créé.</p>
+                </div>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-xl font-serif font-light text-primary">Horaire et Disponibilité</h2>
+            <AvailabilitySchedule 
+              profile={data.profile} 
+              isEditable={true} 
+              setProfile={(updated) => setData({ ...data, profile: updated })}
+              onSaveOverride={async (profileData) => {
+                try {
+                  const res = await fetch(`/api/admin/users/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(profileData),
+                  });
+                  if (!res.ok) throw new Error();
+                  setFeedback({ type: "success", message: "Horaire mis à jour avec succès." });
+                  setTimeout(() => setFeedback(null), 3000);
+                  // Refresh the data to update visual schedule
+                  fetchData();
+                  return null;
+                } catch (e) {
+                  setFeedback({ type: "error", message: "Impossible de mettre à jour l'horaire." });
+                  setTimeout(() => setFeedback(null), 3000);
+                  return null;
+                }
+              }} 
+            />
           </div>
 
           <div className="bg-red-50 dark:bg-red-950/10 border border-red-200 dark:border-red-900 rounded-xl p-6">
@@ -479,14 +516,14 @@ export default function ProfessionalDetailPage({
                       ) : !ledger?.entries || ledger.entries.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
-                            {t("noEntries", { defaultValue: "Aucune transaction." })}
+                            {t("noEntries")}
                           </TableCell>
                         </TableRow>
                       ) : (
                         ledger.entries.map((entry: any) => (
                           <TableRow key={entry._id}>
                             <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
-                              {new Date(entry.createdAt).toLocaleDateString()}
+                              {new Date(entry.createdAt).toLocaleDateString(locale === "fr" ? "fr-CA" : "en-US")}
                             </TableCell>
                             <TableCell className="max-w-[200px] truncate" title={entry.notes || entry.reference}>
                               {entry.notes || entry.reference || "—"}

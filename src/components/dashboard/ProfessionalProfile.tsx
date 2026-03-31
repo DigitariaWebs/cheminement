@@ -14,6 +14,7 @@ interface ProfessionalProfileProps {
   userId?: string;
   setProfile?: (profile: IProfile) => void;
   isEditable?: boolean;
+  onSaveOverride?: (data: IProfile) => Promise<IProfile | null>;
 }
 
 const isProfileCompleted = (profile: IProfile | null): boolean => {
@@ -69,6 +70,7 @@ export default function ProfessionalProfile({
   userId,
   setProfile,
   isEditable = false,
+  onSaveOverride,
 }: ProfessionalProfileProps) {
   const t = useTranslations("Dashboard.profile");
   const tModal = useTranslations("Dashboard.profileModal");
@@ -529,6 +531,7 @@ export default function ProfessionalProfile({
         onClose={() => setIsModalOpen(false)}
         setProfessionalProfile={updateProfile}
         profile={professionalProfile}
+        onSaveOverride={onSaveOverride}
       />
     </>
   );

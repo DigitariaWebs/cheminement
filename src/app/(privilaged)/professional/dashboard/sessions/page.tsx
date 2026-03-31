@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -101,6 +101,7 @@ interface Session {
 export default function SessionsPage() {
   const router = useRouter();
   const t = useTranslations("Dashboard.sessions");
+  const locale = useLocale();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -326,13 +327,16 @@ export default function SessionsPage() {
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(":");
     const hour = parseInt(hours);
+    if (locale === "fr") {
+        return `${hour}h${minutes}`;
+    }
     const ampm = hour >= 12 ? "PM" : "AM";
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale === "fr" ? "fr-CA" : "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -340,7 +344,7 @@ export default function SessionsPage() {
   };
 
   const formatFullDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale === "fr" ? "fr-CA" : "en-US", {
       weekday: "long",
       month: "long",
       day: "numeric",
@@ -530,7 +534,7 @@ export default function SessionsPage() {
                   <div className="flex items-center gap-2">
                     {getTypeIcon(nextSession.type)}
                     <span className="text-sm font-light capitalize">
-                      {nextSession.type.replace("-", " ")}
+                      {t(nextSession.type)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -591,7 +595,7 @@ export default function SessionsPage() {
                       <div className="flex items-center gap-1">
                         {getTypeIcon(session.type)}
                         <span className="capitalize">
-                          {session.type.replace("-", " ")}
+                          {t(session.type)}
                         </span>
                       </div>
                       <span>•</span>
@@ -921,7 +925,7 @@ export default function SessionsPage() {
                     <div className="flex items-center gap-2">
                       {getTypeIcon(session.type)}
                       <span className="text-sm capitalize">
-                        {session.type.replace("-", " ")}
+                        {t(session.type)}
                       </span>
                     </div>
                   </TableCell>

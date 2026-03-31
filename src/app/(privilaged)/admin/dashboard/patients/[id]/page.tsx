@@ -42,6 +42,8 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import MedicalProfile from "@/components/dashboard/MedicalProfile";
+import { IMedicalProfile } from "@/models/MedicalProfile";
 
 export default function PatientDetailPage({
   params,
@@ -344,6 +346,39 @@ export default function PatientDetailPage({
                 {t("saveChanges")}
               </Button>
             </div>
+          </div>
+
+          <div className="bg-card border border-border/40 rounded-xl p-6">
+            <h2 className="text-xl font-serif font-light mb-4 flex items-center gap-2">
+              Profil Médical
+            </h2>
+            {data.medicalProfile ? (
+              <MedicalProfile 
+                profile={data.medicalProfile} 
+                isEditable={true} 
+                userId={id} 
+                onSaveOverride={async (profileData) => {
+                  try {
+                    const res = await fetch(`/api/admin/users/${id}`, {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(profileData),
+                    });
+                    if (!res.ok) throw new Error();
+                    setFeedback({ type: "success", message: "Profil médical mis à jour avec succès." });
+                    setTimeout(() => setFeedback(null), 3000);
+                    fetchData();
+                    return null;
+                  } catch (e) {
+                    setFeedback({ type: "error", message: "Impossible de mettre à jour le profil médical." });
+                    setTimeout(() => setFeedback(null), 3000);
+                    return null;
+                  }
+                }} 
+              />
+            ) : (
+                <p className="text-muted-foreground text-sm font-light">Le profil médical de ce patient n'a pas encore été créé.</p>
+            )}
           </div>
 
           <div className="bg-card border border-border/40 rounded-xl p-6">

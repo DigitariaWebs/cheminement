@@ -45,6 +45,7 @@ import {
   AuthCard,
   AuthFooter,
 } from "@/components/auth";
+import { ClinicalAvailabilityGrid } from "@/components/ui/ClinicalAvailabilityGrid";
 import { APPROACHES_ET_THERAPIES } from "@/data/approaches";
 import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
 import { ADULT_PROBLEMATICS } from "@/data/adultProblematics";
@@ -99,7 +100,13 @@ interface FormData {
   availableDays: string[];
   sessionDuration: string;
   breakDuration: string;
-
+  schedule: {
+    day: string;
+    isWorkDay: boolean;
+    startTime: string;
+    endTime: string;
+  }[];
+  clinicalAvailability: string[];
   agreeToTerms: boolean;
   acceptPrivacyPolicy: boolean;
 }
@@ -182,8 +189,18 @@ export default function ProfessionalSignupPage() {
     paymentFrequency: "",
     paymentAgreement: "",
     availableDays: [],
-    sessionDuration: "",
-    breakDuration: "",
+    sessionDuration: "60",
+    breakDuration: "0",
+    schedule: [
+      { day: "Monday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+      { day: "Tuesday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+      { day: "Wednesday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+      { day: "Thursday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+      { day: "Friday", isWorkDay: true, startTime: "09:00", endTime: "17:00" },
+      { day: "Saturday", isWorkDay: false, startTime: "09:00", endTime: "17:00" },
+      { day: "Sunday", isWorkDay: false, startTime: "09:00", endTime: "17:00" },
+    ],
+    clinicalAvailability: [],
     agreeToTerms: false,
     acceptPrivacyPolicy: false,
   });
@@ -192,8 +209,8 @@ export default function ProfessionalSignupPage() {
     { title: t("sections.basicInfo"), icon: User, required: true },
     { title: t("sections.professionalDetails"), icon: Briefcase, required: true },
     { title: t("sections.education"), icon: GraduationCap, required: true },
-    { title: t("sections.expertise"), icon: Target, required: false },
     { title: t("sections.sessionTypes"), icon: Users, required: false },
+    { title: t("sections.expertise"), icon: Target, required: false },
     { title: t("sections.pricing"), icon: DollarSign, required: false },
     { title: t("sections.availability"), icon: Clock, required: false },
     { title: t("sections.review"), icon: CheckCircle2, required: true },
@@ -252,10 +269,8 @@ export default function ProfessionalSignupPage() {
       case 2: // Education
         if (!formData.degree.trim()) return t("errors.degreeRequired");
         if (!formData.institution.trim()) return t("errors.institutionRequired");
-        if (formData.certifications.length === 0)
-          return t("errors.certificationsRequired");
         break;
-      case 4: // Session types & age categories
+      case 3: // Session types & age categories
         if (formData.ageCategories.length === 0)
           return t("errors.ageCategoryRequired");
         break;
@@ -375,32 +390,14 @@ export default function ProfessionalSignupPage() {
                   },
                 ]
               : undefined,
-          availability:
-            formData.availableDays.length > 0 || formData.sessionDuration || formData.breakDuration
-              ? {
-                  sessionDurationMinutes: formData.sessionDuration
-                    ? Number(formData.sessionDuration)
-                    : 60,
-                  breakDurationMinutes: formData.breakDuration
-                    ? Number(formData.breakDuration)
-                    : 15,
-                  days: [
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday",
-                    "Sunday",
-                  ].map((day) => ({
-                    day,
-                    isWorkDay: formData.availableDays.includes(day),
-                    startTime: "09:00",
-                    endTime: "17:00",
-                  })),
-                  firstDayOfWeek: "Monday",
-                }
-              : undefined,
+          availability: {
+            sessionDurationMinutes: formData.sessionDuration
+              ? Number(formData.sessionDuration)
+              : 60,
+            days: formData.schedule.filter((d) => d.isWorkDay),
+            firstDayOfWeek: "Monday",
+          },
+          clinicalAvailability: formData.clinicalAvailability,
         },
       });
 
@@ -805,126 +802,7 @@ export default function ProfessionalSignupPage() {
           </div>
         );
 
-      case 3: // Expertise & Approach (Expertises & Approches)
-        return (() => {
-          const treatsChildren = formData.ageCategories.some(
-            (c) => c === "0-12" || c === "13-17",
-          );
-          const treatsAdults = formData.ageCategories.some(
-            (c) => c === "18-64" || c === "65+",
-          );
-          const problematicsList = (() => {
-            let list: string[] = [];
-            if (treatsChildren && treatsAdults) list = [...CHILD_PROBLEMATICS, ...ADULT_PROBLEMATICS];
-            else if (treatsChildren) list = [...CHILD_PROBLEMATICS];
-            else if (treatsAdults) list = [...ADULT_PROBLEMATICS];
-            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
-          })();
-          const diagnosticsList = (() => {
-            let list: string[] = [];
-            if (treatsChildren && treatsAdults) list = [...CHILD_DIAGNOSTICS, ...ADULT_DIAGNOSTICS];
-            else if (treatsChildren) list = [...CHILD_DIAGNOSTICS];
-            else if (treatsAdults) list = [...ADULT_DIAGNOSTICS];
-            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
-          })();
-
-          return (
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <h4 className="font-medium text-foreground">{t("approachesTitle")}</h4>
-              <Label className="text-muted-foreground">
-                {t("expertiseCommonSubtitle")}
-              </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
-                {APPROACHES_ET_THERAPIES.map((approach) => (
-                  <div key={approach} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`approach-${approach}`}
-                      checked={formData.approaches.includes(approach)}
-                      onCheckedChange={() =>
-                        handleArrayChange("approaches", approach)
-                      }
-                    />
-                    <label
-                      htmlFor={`approach-${approach}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {approach}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="font-medium text-foreground">{t("problematicsTitle")}</h4>
-              <Label className="text-muted-foreground">
-                {t("expertiseCommonSubtitle")}
-              </Label>
-              {problematicsList.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
-                  {problematicsList.map((item) => (
-                    <div key={item} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`problematic-${item}`}
-                        checked={formData.problematics.includes(item)}
-                        onCheckedChange={() =>
-                          handleArrayChange("problematics", item)
-                        }
-                      />
-                      <label
-                        htmlFor={`problematic-${item}`}
-                        className="text-sm cursor-pointer"
-                      >
-                        {item}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t("selectAgeCategoryFirst")}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="font-medium text-foreground">{t("diagnosticsTitle")}</h4>
-              <Label className="text-muted-foreground">
-                {t("expertiseCommonSubtitle")}
-              </Label>
-              {diagnosticsList.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
-                  {diagnosticsList.map((diag) => (
-                    <div key={diag} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`diagnosed-${diag}`}
-                        checked={formData.diagnosedConditions.includes(diag)}
-                        onCheckedChange={() =>
-                          handleArrayChange("diagnosedConditions", diag)
-                        }
-                      />
-                      <label
-                        htmlFor={`diagnosed-${diag}`}
-                        className="text-sm cursor-pointer"
-                      >
-                        {diag}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t("selectAgeCategoryFirst")}
-                </p>
-              )}
-            </div>
-          </div>
-          );
-        })();
-
-      
-      case 4: // Session Types & Modalities
+      case 3: // Session Types & Modalities (Index swapped to 3)
         return (
           <div className="space-y-6">
             <div className="space-y-2">
@@ -1002,6 +880,128 @@ export default function ProfessionalSignupPage() {
             </div>
           </div>
         );
+
+      
+      case 4: // Expertise & Approach (Index swapped to 4)
+        return (() => {
+          const treatsChildren = formData.ageCategories.some(
+            (c) => c === "0-12" || c === "13-17",
+          );
+          const treatsAdults = formData.ageCategories.some(
+            (c) => c === "18-64" || c === "65+",
+          );
+          const problematicsList = (() => {
+            let list: string[] = [];
+            if (treatsChildren && treatsAdults) list = [...CHILD_PROBLEMATICS, ...ADULT_PROBLEMATICS];
+            else if (treatsChildren) list = [...CHILD_PROBLEMATICS];
+            else if (treatsAdults) list = [...ADULT_PROBLEMATICS];
+            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
+          })();
+          const diagnosticsList = (() => {
+            let list: string[] = [];
+            if (treatsChildren && treatsAdults) list = [...CHILD_DIAGNOSTICS, ...ADULT_DIAGNOSTICS];
+            else if (treatsChildren) list = [...CHILD_DIAGNOSTICS];
+            else if (treatsAdults) list = [...ADULT_DIAGNOSTICS];
+            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
+          })();
+          const sortedApproaches = [...APPROACHES_ET_THERAPIES].sort((a, b) =>
+            a.localeCompare(b, "fr"),
+          );
+
+          return (
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">{t("approachesTitle")}</h4>
+                <Label className="text-muted-foreground">
+                  {t("expertiseCommonSubtitle")}
+                </Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
+                  {sortedApproaches.map((approach) => (
+                    <div key={approach} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`approach-${approach}`}
+                        checked={formData.approaches.includes(approach)}
+                        onCheckedChange={() =>
+                          handleArrayChange("approaches", approach)
+                        }
+                      />
+                      <label
+                        htmlFor={`approach-${approach}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {approach}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">{t("problematicsTitle")}</h4>
+                <Label className="text-muted-foreground">
+                  {t("expertiseCommonSubtitle")}
+                </Label>
+                {problematicsList.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
+                    {problematicsList.map((item) => (
+                      <div key={item} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`problematic-${item}`}
+                          checked={formData.problematics.includes(item)}
+                          onCheckedChange={() =>
+                            handleArrayChange("problematics", item)
+                          }
+                        />
+                        <label
+                          htmlFor={`problematic-${item}`}
+                          className="text-sm cursor-pointer"
+                        >
+                          {item}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t("selectAgeCategoryFirst")}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">{t("diagnosticsTitle")}</h4>
+                <Label className="text-muted-foreground">
+                  {t("expertiseCommonSubtitle")}
+                </Label>
+                {diagnosticsList.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto p-2">
+                    {diagnosticsList.map((diag) => (
+                      <div key={diag} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`diagnosed-${diag}`}
+                          checked={formData.diagnosedConditions.includes(diag)}
+                          onCheckedChange={() =>
+                            handleArrayChange("diagnosedConditions", diag)
+                          }
+                        />
+                        <label
+                          htmlFor={`diagnosed-${diag}`}
+                          className="text-sm cursor-pointer"
+                        >
+                          {diag}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t("selectAgeCategoryFirst")}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })();
 
       case 5: // Pricing & Payment (Tarifs & Paiements)
         return (
@@ -1092,27 +1092,15 @@ export default function ProfessionalSignupPage() {
       case 6: // Availability
         return (
           <div className="space-y-6">
-            <div className="space-y-2">
-              <Label>{t("availableDaysLabel")}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {PROFESSIONAL_WEEKDAY_OPTIONS.map(({ value, msgKey }) => (
-                  <div key={value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`day-${msgKey}`}
-                      checked={formData.availableDays.includes(value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("availableDays", value)
-                      }
-                    />
-                    <label
-                      htmlFor={`day-${msgKey}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`weekdays.${msgKey}`)}
-                    </label>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-4">
+              <Label className="text-base font-medium">{t("availabilityTitle")}</Label>
+              <p className="text-xs text-muted-foreground -mt-2">
+                {t("availabilitySlotHint")}
+              </p>
+              <ClinicalAvailabilityGrid
+                value={formData.clinicalAvailability}
+                onChange={(val) => setFormData(prev => ({ ...prev, clinicalAvailability: val }))}
+              />
             </div>
 
             <div className="space-y-2">
@@ -1129,34 +1117,11 @@ export default function ProfessionalSignupPage() {
                   <SelectValue placeholder={t("sessionDurationSelectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="30">{t("sessionDurationOptions.minutes30")}</SelectItem>
-                  <SelectItem value="45">{t("sessionDurationOptions.minutes45")}</SelectItem>
-                  <SelectItem value="50">{t("sessionDurationOptions.minutes50")}</SelectItem>
-                  <SelectItem value="60">{t("sessionDurationOptions.minutes60")}</SelectItem>
-                  <SelectItem value="90">{t("sessionDurationOptions.minutes90")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="breakDuration">
-                {t("breakDurationLabel")}
-              </Label>
-              <Select
-                value={formData.breakDuration}
-                onValueChange={(val) =>
-                  handleSelectChange("breakDuration", val)
-                }
-              >
-                <SelectTrigger id="breakDuration">
-                  <SelectValue placeholder={t("breakDurationSelectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">{t("noBreak")}</SelectItem>
-                  <SelectItem value="5">{t("breakDurationOptions.minutes5")}</SelectItem>
-                  <SelectItem value="10">{t("breakDurationOptions.minutes10")}</SelectItem>
-                  <SelectItem value="15">{t("breakDurationOptions.minutes15")}</SelectItem>
-                  <SelectItem value="30">{t("breakDurationOptions.minutes30")}</SelectItem>
+                  <SelectItem value="30">30 {t("minutes")}</SelectItem>
+                  <SelectItem value="45">45 {t("minutes")}</SelectItem>
+                  <SelectItem value="50">50 {t("minutes")}</SelectItem>
+                  <SelectItem value="60">60 {t("minutes")}</SelectItem>
+                  <SelectItem value="90">90 {t("minutes")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

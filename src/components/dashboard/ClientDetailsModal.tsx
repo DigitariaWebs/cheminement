@@ -14,7 +14,7 @@ import {
   Download,
   Loader2,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { appointmentsAPI } from "@/lib/api-client";
 import { AppointmentResponse } from "@/types/api";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ export default function ClientDetailsModal({
 }: ClientDetailsModalProps) {
   const t = useTranslations("Dashboard.clientModal");
   const tClients = useTranslations("Dashboard.clients");
+  const locale = useLocale();
   const [sessions, setSessions] = useState<AppointmentResponse[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<
@@ -141,7 +142,7 @@ export default function ClientDetailsModal({
 
   const formatShortDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale === "fr" ? "fr-CA" : "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
