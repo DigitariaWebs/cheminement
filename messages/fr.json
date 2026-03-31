@@ -947,7 +947,7 @@
   },
   "QuickAccess": {
     "badge": "VOS AVANTAGES",
-    "title": "Obtenez le soutien dont vous avez besoin, quand vous en avez besoin",
+    "title": "Obtenez le soutien dont vous avez besoin, quand vous en avez le plus besoin",
     "subtitle": "Nous rendons les soins de santé mentale accessibles, pratiques et personnalisés selon votre situation unique.",
     "findHelp": "Trouvez de l'aide rapidement",
     "findHelpDesc": "Fini les longues listes d'attente. Connectez-vous avec des professionnels de la santé mentale qualifiés qui sont disponibles pour vous aider maintenant.",
@@ -1508,7 +1508,7 @@
       "institutionPlaceholder": "Nom de l'établissement",
       "graduationYear": "Année d'obtention",
       "graduationYearPlaceholder": "ex. 2020",
-      "certifications": "Certifications (sélectionnez toutes celles qui s'appliquent)",
+      "certifications": "Certifications (optionnel — sélectionnez toutes celles qui s'appliquent)",
       "certificationOptions": {
         "cbtCertified": "Certification TCC",
         "dbtCertified": "Certification TCD",
@@ -3955,6 +3955,7 @@
       "colStatus": "Statut",
       "colCycleBalance": "Solde Cycle",
       "colLifetimeBalance": "Solde Total",
+      "colActions": "Actions",
       "viewLedger": "Voir Grand Livre",
       "stripePaidTitle": "Encaissements Stripe",
       "stripePaidDesc": "Séances clôturées payées par carte ou PAD",

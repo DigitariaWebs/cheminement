@@ -947,7 +947,7 @@
   },
   "QuickAccess": {
     "badge": "YOUR BENEFITS",
-    "title": "Get the Support You Need, When You Need It",
+    "title": "Get the Support You Need, When You Need It Most",
     "subtitle": "We make mental health care accessible, convenient, and personalized to your unique situation.",
     "findHelp": "Find Help Quickly",
     "findHelpDesc": "No more endless waiting lists. Connect with qualified mental health professionals who are available to help you now.",
@@ -1507,7 +1507,7 @@
       "institutionPlaceholder": "University name",
       "graduationYear": "Graduation year",
       "graduationYearPlaceholder": "e.g., 2020",
-      "certifications": "Certifications (select all that apply)",
+      "certifications": "Certifications (Optional — select all that apply)",
       "certificationOptions": {
         "cbtCertified": "CBT certified",
         "dbtCertified": "DBT certified",
@@ -3955,6 +3955,7 @@
       "colStatus": "Status",
       "colCycleBalance": "Cycle Balance",
       "colLifetimeBalance": "Total Balance",
+      "colActions": "Actions",
       "viewLedger": "View Ledger",
       "stripePaidTitle": "Stripe collections",
       "stripePaidDesc": "Closed sessions paid by card or PAD",
