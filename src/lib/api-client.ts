@@ -221,6 +221,7 @@ export const authAPI = {
         breakDurationMinutes?: number;
         firstDayOfWeek?: string;
       };
+      clinicalAvailability?: string[];
       languages?: string[];
       sessionTypes?: string[];
       modalities?: string[];
