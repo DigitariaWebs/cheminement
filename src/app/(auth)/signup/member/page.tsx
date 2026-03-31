@@ -1302,7 +1302,13 @@ export default function MemberSignupPage() {
                     ),
                   };
 
-                  return conditionsList.map((condition) => (
+                  const sortedConditions = [...conditionsList].sort((a, b) => {
+                    const labelA = translatedConditionLabels[a] ?? a;
+                    const labelB = translatedConditionLabels[b] ?? b;
+                    return labelA.localeCompare(labelB, "fr");
+                  });
+
+                  return sortedConditions.map((condition) => (
                     <div key={condition} className="flex items-center space-x-2">
                       <Checkbox
                         id={`diagnosed-${condition}`}
