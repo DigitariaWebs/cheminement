@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { Award } from "lucide-react";
+import { Award, ShieldCheck, Globe, Lock, Fingerprint } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function HeroSection() {
@@ -85,6 +85,52 @@ export default function HeroSection() {
                   unoptimized
                 />
                 <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-linear-to-t from-accent to-transparent"></div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+        
+        {/* Trust Indicators at the bottom of Hero */}
+        <div className="mt-20 pt-10 border-t border-muted-foreground/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <ScrollReveal variant="fade-up" delayMs={600} duration={600}>
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <ShieldCheck className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug">
+                  {t("trustMentions.bill25")}
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={700} duration={600}>
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <Globe className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug">
+                  {t("trustMentions.canadaHosting")}
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={800} duration={600}>
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <Lock className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug">
+                  {t("trustMentions.encryption")}
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={900} duration={600}>
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <Fingerprint className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug">
+                  {t("trustMentions.twoFactor")}
+                </p>
               </div>
             </ScrollReveal>
           </div>

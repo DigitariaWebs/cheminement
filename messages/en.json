@@ -746,7 +746,13 @@
     "back": "Back",
     "personalizedCare": "Personalized Care",
     "flexibleScheduling": "Flexible Scheduling",
-    "confidentialSupport": "Confidential Support"
+    "confidentialSupport": "Confidential Support",
+    "trustMentions": {
+      "bill25": "Bill 25 Compliant (Quebec)",
+      "canadaHosting": "Data Hosted in Canada",
+      "encryption": "End-to-End Encryption",
+      "twoFactor": "Mandatory 2FA Authentication"
+    }
   },
   "ValueSection": {
     "title": "Integrated Health Platform",

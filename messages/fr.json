@@ -746,7 +746,13 @@
     "back": "Retour",
     "personalizedCare": "Démarche personnalisée",
     "flexibleScheduling": "Planification flexible",
-    "confidentialSupport": "Soutien confidentiel"
+    "confidentialSupport": "Soutien confidentiel",
+    "trustMentions": {
+      "bill25": "Conforme à la Loi 25 (Québec)",
+      "canadaHosting": "Données hébergées au Canada",
+      "encryption": "Chiffrement de bout en bout",
+      "twoFactor": "Double authentification (2FA) obligatoire"
+    }
   },
   "ValueSection": {
     "title": "Plateforme spécialisée en santé mentale",
