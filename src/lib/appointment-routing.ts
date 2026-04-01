@@ -7,7 +7,7 @@ import { sendProfessionalNotification } from "@/lib/notifications";
 /**
  * Calculate age from date of birth
  */
-function calculateAge(dateOfBirth: Date | string | undefined): number | null {
+export function calculateAge(dateOfBirth: Date | string | undefined): number | null {
   if (!dateOfBirth) return null;
   
   const birthDate = typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth;
@@ -27,7 +27,7 @@ function calculateAge(dateOfBirth: Date | string | undefined): number | null {
 /**
  * Determine if patient is a child (< 18 years) or adult (>= 18 years)
  */
-function isChild(age: number | null): boolean {
+export function isChild(age: number | null): boolean {
   if (age === null) return false; // Default to adult if age unknown
   return age < 18;
 }
@@ -35,7 +35,7 @@ function isChild(age: number | null): boolean {
 /**
  * Check if professional treats the patient's age category
  */
-function professionalTreatsAgeCategory(
+export function professionalTreatsAgeCategory(
   professionalAgeCategories: string[] | undefined,
   isPatientChild: boolean,
 ): boolean {
@@ -84,7 +84,7 @@ interface ProfessionalMatch {
 /**
  * Normalize a string for comparison (remove accents, lowercase, trim)
  */
-function normalizeString(str: string): string {
+export function normalizeString(str: string): string {
   return str
     .toLowerCase()
     .normalize("NFD")
@@ -97,7 +97,7 @@ function normalizeString(str: string): string {
  * Calculate string similarity using multiple methods
  * Returns a score between 0 and 1
  */
-function calculateStringSimilarity(str1: string, str2: string): number {
+export function calculateStringSimilarity(str1: string, str2: string): number {
   const normalized1 = normalizeString(str1);
   const normalized2 = normalizeString(str2);
 
@@ -164,7 +164,7 @@ function hasExactMatch(
  * Returns the best similarity score and the matched item
  * Priority: exact match first, then similarity
  */
-function findBestMatch(
+export function findBestMatch(
   clientPreference: string,
   professionalList: string[],
   threshold: number = 0.3,
@@ -209,7 +209,7 @@ function findBestMatch(
  * Calculate a relevancy score for a professional based on appointment requirements
  * and client medical profile preferences
  */
-function calculateRelevancyScore(
+export function calculateRelevancyScore(
   profile: {
     problematics?: string[];
     specialty?: string;

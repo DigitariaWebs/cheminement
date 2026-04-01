@@ -343,6 +343,15 @@
       "licenseNumber": "License Number",
       "yearsExperience": "Years of Experience",
       "bio": "Biography / Short description",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "language": "Language",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "preferNotToSay": "Prefer not to say",
+      "french": "French",
+      "english": "English",
       "saveChanges": "Save Changes",
       "dangerZone": "Danger Zone",
       "deleteWarning": "Deleting this professional is permanent. Their active patients will need to be reassigned.",
@@ -737,7 +746,13 @@
     "back": "Back",
     "personalizedCare": "Personalized Care",
     "flexibleScheduling": "Flexible Scheduling",
-    "confidentialSupport": "Confidential Support"
+    "confidentialSupport": "Confidential Support",
+    "trustMentions": {
+      "bill25": "Bill 25 Compliant (Quebec)",
+      "canadaHosting": "Data Hosted in Canada",
+      "encryption": "End-to-End Encryption",
+      "twoFactor": "Mandatory 2FA Authentication"
+    }
   },
   "ValueSection": {
     "title": "Integrated Health Platform",
@@ -2077,6 +2092,12 @@
         "yearsExp": "Years of Experience",
         "yearsExpRequired": "*",
         "yearsPlaceholder": "e.g., 5",
+        "specialty": "Specialty / Professional Title",
+        "specialtyRequired": "*",
+        "specialtyPlaceholder": "e.g., Psychologist, Social Worker",
+        "license": "License Number",
+        "licenseRequired": "*",
+        "licensePlaceholder": "e.g., 12345-67",
         "additionalSkills": "Additional Skills (Optional)",
         "additionalSkillsDesc": "Select any additional competencies you have",
         "bio": "Professional Bio",
@@ -2110,7 +2131,30 @@
         "coupleSession": "Couple Session (CAD)",
         "groupSession": "Group Session (CAD)",
         "certifications": "Additional Certifications (optional)",
-        "certPlaceholder": "Type a certification and press Enter"
+        "certPlaceholder": "Type a certification and press Enter",
+        "degreePlaceholder": "e.g., Master's in Psychology",
+        "institutionPlaceholder": "e.g., University of Toronto",
+        "sessionTypesList": {
+          "solo": "Individual",
+          "couple": "Couple",
+          "family": "Family",
+          "group": "Group",
+          "coaching": "Coaching"
+        },
+        "modalitiesList": {
+          "video": "Video Call",
+          "chat": "Chat / Messaging",
+          "inPerson": "In-Person (Office)",
+          "phone": "Phone Call"
+        },
+        "languagesList": {
+          "french": "French",
+          "english": "English",
+          "arabic": "Arabic",
+          "spanish": "Spanish",
+          "chinese": "Chinese",
+          "other": "Other"
+        }
       },
       "buttons": {
         "back": "Back",

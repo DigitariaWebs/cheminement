@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     try {
-      await sendSmsOtp(rawPhone, code);
+      await sendSmsOtp(rawPhone, code, (user.language as "fr" | "en") || "fr");
     } catch (smsErr) {
       console.error("send-sms Twilio:", smsErr);
       return NextResponse.json(

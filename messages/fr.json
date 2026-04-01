@@ -343,6 +343,15 @@
       "licenseNumber": "Numéro de permis (OPQ, Ordre...)",
       "yearsExperience": "Années d'expérience",
       "bio": "Biographie / Description courte",
+      "gender": "Genre",
+      "dateOfBirth": "Date de naissance",
+      "language": "Langue",
+      "male": "Homme",
+      "female": "Femme",
+      "other": "Autre",
+      "preferNotToSay": "Préfère ne pas dire",
+      "french": "Français",
+      "english": "Anglais",
       "saveChanges": "Sauvegarder les modifications",
       "dangerZone": "Danger Zone",
       "deleteWarning": "La suppression de ce professionnel est définitive. Ses patients actifs devront être réassignés.",
@@ -737,7 +746,13 @@
     "back": "Retour",
     "personalizedCare": "Démarche personnalisée",
     "flexibleScheduling": "Planification flexible",
-    "confidentialSupport": "Soutien confidentiel"
+    "confidentialSupport": "Soutien confidentiel",
+    "trustMentions": {
+      "bill25": "Conforme à la Loi 25 (Québec)",
+      "canadaHosting": "Données hébergées au Canada",
+      "encryption": "Chiffrement de bout en bout",
+      "twoFactor": "Double authentification (2FA) obligatoire"
+    }
   },
   "ValueSection": {
     "title": "Plateforme spécialisée en santé mentale",
@@ -2079,6 +2094,12 @@
         "yearsPlaceholder": "p. ex., 5",
         "additionalSkills": "Compétences supplémentaires (Facultatif)",
         "additionalSkillsDesc": "Sélectionnez toute compétence supplémentaire que vous possédez",
+        "specialty": "Spécialité / Titre professionnel",
+        "specialtyRequired": "*",
+        "specialtyPlaceholder": "ex: Psychologue, Travailleur social",
+        "license": "Numéro de permis",
+        "licenseRequired": "*",
+        "licensePlaceholder": "ex: 12345-67",
         "bio": "Biographie professionnelle",
         "bioRequired": "*",
         "bioPlaceholder": "Parlez-nous de votre approche, de votre expérience et de ce qui rend votre pratique unique...",
@@ -2110,7 +2131,30 @@
         "coupleSession": "Séance Couple (CAD)",
         "groupSession": "Séance Groupe (CAD)",
         "certifications": "Certifications additionnelles (optionnel)",
-        "certPlaceholder": "Tapez une certification et appuyez sur Entrée"
+        "certPlaceholder": "Tapez une certification et appuyez sur Entrée",
+        "degreePlaceholder": "ex: Maîtrise en Psychologie",
+        "institutionPlaceholder": "ex: Université de Montréal",
+        "sessionTypesList": {
+          "solo": "Individuelle",
+          "couple": "Couple",
+          "family": "Familiale",
+          "group": "Groupe",
+          "coaching": "Coaching"
+        },
+        "modalitiesList": {
+          "video": "Appel Vidéo",
+          "chat": "Chat / Messagerie",
+          "inPerson": "En personne (Bureau)",
+          "phone": "Appel Téléphonique"
+        },
+        "languagesList": {
+          "french": "Français",
+          "english": "Anglais",
+          "arabic": "Arabe",
+          "spanish": "Espagnol",
+          "chinese": "Chinois",
+          "other": "Autre"
+        }
       },
       "buttons": {
         "back": "Retour",

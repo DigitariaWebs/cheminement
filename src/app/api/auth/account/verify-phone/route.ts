@@ -90,7 +90,16 @@ export async function POST(req: NextRequest) {
       name: `${user.firstName} ${user.lastName}`,
       email: user.email,
       role: user.role as "client" | "professional" | "guest",
-    }).catch((err) => console.error("welcome after verify:", err));
+    }).catch((err) => console.error("welcome after verify email:", err));
+
+    if (user.phone) {
+      const { sendWelcomeSms } = await import("@/lib/sms");
+      sendWelcomeSms(
+        user.phone,
+        user.firstName,
+        (user.language as "fr" | "en") || "fr",
+      ).catch((err) => console.error("welcome after verify sms:", err));
+    }
 
     return NextResponse.json({ ok: true });
   } catch (e) {

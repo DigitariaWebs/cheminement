@@ -302,6 +302,15 @@ export async function POST(req: NextRequest) {
         email: user.email,
         role: user.role as "client" | "professional" | "guest",
       }).catch((err) => console.error("Welcome email:", err));
+
+      if (user.phone) {
+        const { sendWelcomeSms } = await import("@/lib/sms");
+        sendWelcomeSms(
+          user.phone,
+          user.firstName,
+          (user.language as "fr" | "en") || "fr",
+        ).catch((err) => console.error("Welcome SMS:", err));
+      }
     }
 
     if (emailVerifyPlainToken) {

@@ -15,6 +15,7 @@ interface ProfessionalProfileProps {
   setProfile?: (profile: IProfile) => void;
   isEditable?: boolean;
   onSaveOverride?: (data: IProfile) => Promise<IProfile | null>;
+  hideHeaderFields?: boolean;
 }
 
 const isProfileCompleted = (profile: IProfile | null): boolean => {
@@ -65,12 +66,50 @@ const SKILL_LABEL_KEYS: Record<string, string> = {
   "LGBTQ+ Affirmative Therapy": "lgbtqAffirmative",
 };
 
+const SESSION_TYPE_LABEL_KEYS: Record<string, string> = {
+  Solo: "solo",
+  Individual: "solo",
+  Couple: "couple",
+  Famille: "family",
+  Family: "family",
+  Groupe: "group",
+  Group: "group",
+  Coaching: "coaching",
+};
+
+const MODALITY_LABEL_KEYS: Record<string, string> = {
+  "En ligne": "video",
+  Vidéo: "video",
+  Video: "video",
+  Chat: "chat",
+  "En personne": "inPerson",
+  "In-person": "inPerson",
+  Téléphone: "phone",
+  Phone: "phone",
+};
+
+const LANGUAGE_LABEL_KEYS: Record<string, string> = {
+  Français: "french",
+  French: "french",
+  Anglais: "english",
+  English: "english",
+  Arabe: "arabic",
+  Arabic: "arabic",
+  Espagnol: "spanish",
+  Spanish: "spanish",
+  Chinois: "chinese",
+  Chinese: "chinese",
+  Autre: "other",
+  Other: "other",
+};
+
 export default function ProfessionalProfile({
   profile,
   userId,
   setProfile,
   isEditable = false,
   onSaveOverride,
+  hideHeaderFields = false,
 }: ProfessionalProfileProps) {
   const t = useTranslations("Dashboard.profile");
   const tModal = useTranslations("Dashboard.profileModal");
@@ -83,6 +122,21 @@ export default function ProfessionalProfile({
   const translateSkillLabel = (value: string) => {
     const key = SKILL_LABEL_KEYS[value];
     return key ? tModal(`step4.skillLabels.${key}`) : value;
+  };
+
+  const translateSessionTypeLabel = (value: string) => {
+    const key = SESSION_TYPE_LABEL_KEYS[value];
+    return key ? tModal(`step5.sessionTypesList.${key}`) : value;
+  };
+
+  const translateModalityLabel = (value: string) => {
+    const key = MODALITY_LABEL_KEYS[value];
+    return key ? tModal(`step5.modalitiesList.${key}`) : value;
+  };
+
+  const translateLanguageLabel = (value: string) => {
+    const key = LANGUAGE_LABEL_KEYS[value];
+    return key ? tModal(`step5.languagesList.${key}`) : value;
   };
   const [professionalProfile, setProfessionalProfile] =
     useState<IProfile | null>(profile || null);
@@ -163,26 +217,28 @@ export default function ProfessionalProfile({
         </div>
       )}
       {/* Professional Information */}
-      <div className="rounded-xl bg-card p-6">
-        <h2 className="text-xl font-serif font-light text-foreground mb-6">
-          {t("professionalInfo")}
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <Label className="font-light mb-2">{t("license")}</Label>
-            <p className="text-foreground">
-              {professionalProfile?.license || t("notAvailable")}
-            </p>
-          </div>
+      {!hideHeaderFields && (
+        <div className="rounded-xl bg-card p-6">
+          <h2 className="text-xl font-serif font-light text-foreground mb-6">
+            {t("professionalInfo")}
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <Label className="font-light mb-2">{t("license")}</Label>
+              <p className="text-foreground">
+                {professionalProfile?.license || t("notAvailable")}
+              </p>
+            </div>
 
-          <div>
-            <Label className="font-light mb-2">{t("specialty")}</Label>
-            <p className="text-foreground capitalize">
-              {professionalProfile?.specialty || t("notAvailable")}
-            </p>
+            <div>
+              <Label className="font-light mb-2">{t("specialty")}</Label>
+              <p className="text-foreground capitalize">
+                {professionalProfile?.specialty || t("notAvailable")}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Professional Specialization */}
       <div className="rounded-xl bg-card p-6">
@@ -292,30 +348,32 @@ export default function ProfessionalProfile({
       </div>
 
       {/* About Section */}
-      <div className="rounded-xl bg-card p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-serif font-light text-foreground">
-            {t("about")}
-          </h2>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <Label className="font-light mb-2 text-base">{t("yearsExp")}</Label>
-            <p className="text-foreground">
-              {professionalProfile.yearsOfExperience || t("notAvailable")}{" "}
-              {professionalProfile.yearsOfExperience ? t("years") : ""}
-            </p>
+      {!hideHeaderFields && (
+        <div className="rounded-xl bg-card p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-serif font-light text-foreground">
+              {t("about")}
+            </h2>
           </div>
 
-          <div>
-            <Label className="font-light mb-2 text-base">{t("bio")}</Label>
-            <p className="text-foreground leading-relaxed">
-              {professionalProfile?.bio || t("notAvailable")}
-            </p>
+          <div className="space-y-4">
+            <div>
+              <Label className="font-light mb-2 text-base">{t("yearsExp")}</Label>
+              <p className="text-foreground">
+                {professionalProfile.yearsOfExperience || t("notAvailable")}{" "}
+                {professionalProfile.yearsOfExperience ? t("years") : ""}
+              </p>
+            </div>
+
+            <div>
+              <Label className="font-light mb-2 text-base">{t("bio")}</Label>
+              <p className="text-foreground leading-relaxed">
+                {professionalProfile?.bio || t("notAvailable")}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Education & Certifications */}
       <div className="rounded-xl bg-card p-6">
@@ -400,7 +458,7 @@ export default function ProfessionalProfile({
                     key={type}
                     className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-light"
                   >
-                    {type}
+                    {translateSessionTypeLabel(type)}
                   </span>
                 ))}
               </div>
@@ -421,7 +479,7 @@ export default function ProfessionalProfile({
                     key={modality}
                     className="px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-light"
                   >
-                    {modality}
+                    {translateModalityLabel(modality)}
                   </span>
                 ))}
               </div>
@@ -442,7 +500,7 @@ export default function ProfessionalProfile({
                     key={lang}
                     className="px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-light"
                   >
-                    {lang}
+                    {translateLanguageLabel(lang)}
                   </span>
                 ))}
               </div>
