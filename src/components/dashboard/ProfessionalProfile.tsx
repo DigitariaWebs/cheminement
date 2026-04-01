@@ -66,6 +66,43 @@ const SKILL_LABEL_KEYS: Record<string, string> = {
   "LGBTQ+ Affirmative Therapy": "lgbtqAffirmative",
 };
 
+const SESSION_TYPE_LABEL_KEYS: Record<string, string> = {
+  Solo: "solo",
+  Individual: "solo",
+  Couple: "couple",
+  Famille: "family",
+  Family: "family",
+  Groupe: "group",
+  Group: "group",
+  Coaching: "coaching",
+};
+
+const MODALITY_LABEL_KEYS: Record<string, string> = {
+  "En ligne": "video",
+  Vidéo: "video",
+  Video: "video",
+  Chat: "chat",
+  "En personne": "inPerson",
+  "In-person": "inPerson",
+  Téléphone: "phone",
+  Phone: "phone",
+};
+
+const LANGUAGE_LABEL_KEYS: Record<string, string> = {
+  Français: "french",
+  French: "french",
+  Anglais: "english",
+  English: "english",
+  Arabe: "arabic",
+  Arabic: "arabic",
+  Espagnol: "spanish",
+  Spanish: "spanish",
+  Chinois: "chinese",
+  Chinese: "chinese",
+  Autre: "other",
+  Other: "other",
+};
+
 export default function ProfessionalProfile({
   profile,
   userId,
@@ -85,6 +122,21 @@ export default function ProfessionalProfile({
   const translateSkillLabel = (value: string) => {
     const key = SKILL_LABEL_KEYS[value];
     return key ? tModal(`step4.skillLabels.${key}`) : value;
+  };
+
+  const translateSessionTypeLabel = (value: string) => {
+    const key = SESSION_TYPE_LABEL_KEYS[value];
+    return key ? tModal(`step5.sessionTypesList.${key}`) : value;
+  };
+
+  const translateModalityLabel = (value: string) => {
+    const key = MODALITY_LABEL_KEYS[value];
+    return key ? tModal(`step5.modalitiesList.${key}`) : value;
+  };
+
+  const translateLanguageLabel = (value: string) => {
+    const key = LANGUAGE_LABEL_KEYS[value];
+    return key ? tModal(`step5.languagesList.${key}`) : value;
   };
   const [professionalProfile, setProfessionalProfile] =
     useState<IProfile | null>(profile || null);
@@ -406,7 +458,7 @@ export default function ProfessionalProfile({
                     key={type}
                     className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-light"
                   >
-                    {type}
+                    {translateSessionTypeLabel(type)}
                   </span>
                 ))}
               </div>
@@ -427,7 +479,7 @@ export default function ProfessionalProfile({
                     key={modality}
                     className="px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-light"
                   >
-                    {modality}
+                    {translateModalityLabel(modality)}
                   </span>
                 ))}
               </div>
@@ -448,7 +500,7 @@ export default function ProfessionalProfile({
                     key={lang}
                     className="px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-light"
                   >
-                    {lang}
+                    {translateLanguageLabel(lang)}
                   </span>
                 ))}
               </div>

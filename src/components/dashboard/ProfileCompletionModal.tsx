@@ -726,20 +726,29 @@ export default function ProfileCompletionModal({
                 <div className="space-y-3 mb-8">
                   <Label>{t("step5.languages")}</Label>
                   <div className="flex flex-wrap gap-2">
-                    {["Français", "Anglais", "Arabe", "Espagnol", "Chinois", "Autre"].map(lang => (
-                      <button
-                        key={lang}
-                        type="button"
-                        onClick={() => handleMultiSelect("languages", lang)}
-                        className={`rounded-full px-4 py-1.5 text-sm font-light transition-all ${
-                          formData.languages.includes(lang)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-foreground hover:bg-muted/80"
-                        }`}
-                      >
-                        {lang}
-                      </button>
-                    ))}
+                    {
+                      [
+                        { value: "Français", labelKey: "french" },
+                        { value: "Anglais", labelKey: "english" },
+                        { value: "Arabe", labelKey: "arabic" },
+                        { value: "Espagnol", labelKey: "spanish" },
+                        { value: "Chinois", labelKey: "chinese" },
+                        { value: "Autre", labelKey: "other" },
+                      ].map(opt => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => handleMultiSelect("languages", opt.value)}
+                          className={`rounded-full px-4 py-1.5 text-sm font-light transition-all ${
+                            formData.languages.includes(opt.value)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-foreground hover:bg-muted/80"
+                          }`}
+                        >
+                          {t(`step5.languagesList.${opt.labelKey}`)}
+                        </button>
+                      ))
+                    }
                   </div>
                 </div>
 
@@ -761,7 +770,7 @@ export default function ProfileCompletionModal({
                       <div className="space-y-1">
                         <span className="text-[10px] uppercase text-muted-foreground font-semibold">{t("step5.degree")}</span>
                         <Input 
-                          placeholder="ex: Maîtrise en Psychologie" 
+                          placeholder={t("step5.degreePlaceholder")} 
                           value={edu.degree} 
                           onChange={(e) => {
                             const newEdu = [...formData.education];
@@ -773,7 +782,7 @@ export default function ProfileCompletionModal({
                       <div className="space-y-1">
                         <span className="text-[10px] uppercase text-muted-foreground font-semibold">{t("step5.institution")}</span>
                         <Input 
-                          placeholder="ex: Université de Montréal" 
+                          placeholder={t("step5.institutionPlaceholder")} 
                           value={edu.institution} 
                           onChange={(e) => {
                             const newEdu = [...formData.education];
@@ -818,18 +827,24 @@ export default function ProfileCompletionModal({
                   <div className="space-y-3">
                     <Label>{t("step5.sessionTypes")}</Label>
                     <div className="flex flex-wrap gap-2">
-                      {["Solo", "Couple", "Famille", "Groupe"].map(type => (
+                      {[
+                        { value: "Solo", labelKey: "solo" },
+                        { value: "Couple", labelKey: "couple" },
+                        { value: "Famille", labelKey: "family" },
+                        { value: "Groupe", labelKey: "group" },
+                        { value: "Coaching", labelKey: "coaching" },
+                      ].map(opt => (
                         <button
-                          key={type}
+                          key={opt.value}
                           type="button"
-                          onClick={() => handleMultiSelect("sessionTypes", type)}
+                          onClick={() => handleMultiSelect("sessionTypes", opt.value)}
                           className={`rounded-lg px-4 py-2 text-sm font-light transition-all ${
-                            formData.sessionTypes.includes(type)
+                            formData.sessionTypes.includes(opt.value)
                               ? "bg-primary/10 text-primary border border-primary/20"
                               : "bg-muted/50 text-foreground border border-transparent"
                           }`}
                         >
-                          {type}
+                          {t(`step5.sessionTypesList.${opt.labelKey}`)}
                         </button>
                       ))}
                     </div>
@@ -838,18 +853,23 @@ export default function ProfileCompletionModal({
                   <div className="space-y-3">
                     <Label>{t("step5.modalities")}</Label>
                     <div className="flex flex-wrap gap-2">
-                      {["En ligne", "En personne"].map(mod => (
+                      {[
+                        { value: "Vidéo", labelKey: "video" },
+                        { value: "Chat", labelKey: "chat" },
+                        { value: "En personne", labelKey: "inPerson" },
+                        { value: "Téléphone", labelKey: "phone" },
+                      ].map(opt => (
                         <button
-                          key={mod}
+                          key={opt.value}
                           type="button"
-                          onClick={() => handleMultiSelect("modalities", mod)}
+                          onClick={() => handleMultiSelect("modalities", opt.value)}
                           className={`rounded-lg px-4 py-2 text-sm font-light transition-all ${
-                            formData.modalities.includes(mod)
+                            formData.modalities.includes(opt.value)
                               ? "bg-primary/10 text-primary border border-primary/20"
                               : "bg-muted/50 text-foreground border border-transparent"
                           }`}
                         >
-                          {mod}
+                          {t(`step5.modalitiesList.${opt.labelKey}`)}
                         </button>
                       ))}
                     </div>

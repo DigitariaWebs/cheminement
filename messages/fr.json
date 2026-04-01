@@ -2131,7 +2131,30 @@
         "coupleSession": "Séance Couple (CAD)",
         "groupSession": "Séance Groupe (CAD)",
         "certifications": "Certifications additionnelles (optionnel)",
-        "certPlaceholder": "Tapez une certification et appuyez sur Entrée"
+        "certPlaceholder": "Tapez une certification et appuyez sur Entrée",
+        "degreePlaceholder": "ex: Maîtrise en Psychologie",
+        "institutionPlaceholder": "ex: Université de Montréal",
+        "sessionTypesList": {
+          "solo": "Individuelle",
+          "couple": "Couple",
+          "family": "Familiale",
+          "group": "Groupe",
+          "coaching": "Coaching"
+        },
+        "modalitiesList": {
+          "video": "Appel Vidéo",
+          "chat": "Chat / Messagerie",
+          "inPerson": "En personne (Bureau)",
+          "phone": "Appel Téléphonique"
+        },
+        "languagesList": {
+          "french": "Français",
+          "english": "Anglais",
+          "arabic": "Arabe",
+          "spanish": "Espagnol",
+          "chinese": "Chinois",
+          "other": "Autre"
+        }
       },
       "buttons": {
         "back": "Retour",

@@ -2131,7 +2131,30 @@
         "coupleSession": "Couple Session (CAD)",
         "groupSession": "Group Session (CAD)",
         "certifications": "Additional Certifications (optional)",
-        "certPlaceholder": "Type a certification and press Enter"
+        "certPlaceholder": "Type a certification and press Enter",
+        "degreePlaceholder": "e.g., Master's in Psychology",
+        "institutionPlaceholder": "e.g., University of Toronto",
+        "sessionTypesList": {
+          "solo": "Individual",
+          "couple": "Couple",
+          "family": "Family",
+          "group": "Group",
+          "coaching": "Coaching"
+        },
+        "modalitiesList": {
+          "video": "Video Call",
+          "chat": "Chat / Messaging",
+          "inPerson": "In-Person (Office)",
+          "phone": "Phone Call"
+        },
+        "languagesList": {
+          "french": "French",
+          "english": "English",
+          "arabic": "Arabic",
+          "spanish": "Spanish",
+          "chinese": "Chinese",
+          "other": "Other"
+        }
       },
       "buttons": {
         "back": "Back",
