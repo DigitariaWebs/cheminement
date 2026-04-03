@@ -207,26 +207,14 @@ export async function POST(req: NextRequest) {
       }
 
       const patientEmail = referral.patientEmail?.trim();
-      const patientPhone = referral.patientPhone?.trim();
-      if (!patientEmail) {
-        return NextResponse.json(
-          { error: "Patient email is required" },
-          { status: 400 },
-        );
-      }
-      if (!patientPhone) {
-        return NextResponse.json(
-          { error: "Patient phone is required" },
-          { status: 400 },
-        );
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(patientEmail)) {
-        return NextResponse.json(
-          { error: "Invalid patient email format" },
-          { status: 400 },
-        );
+      if (patientEmail) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(patientEmail)) {
+          return NextResponse.json(
+            { error: "Invalid patient email format" },
+            { status: 400 },
+          );
+        }
       }
     }
 

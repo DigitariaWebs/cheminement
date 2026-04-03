@@ -525,20 +525,12 @@ export default function BookAppointmentPage() {
       setError(tB("errors.patientName"));
       return false;
     }
-    if (!referralInfo.patientEmail.trim()) {
-      setError(tB("errors.patientEmailRequired"));
-      return false;
-    }
-    {
+    if (referralInfo.patientEmail.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(referralInfo.patientEmail)) {
         setError(tB("errors.emailInvalid"));
         return false;
       }
-    }
-    if (!referralInfo.patientPhone.trim()) {
-      setError(tB("errors.patientPhoneRequired"));
-      return false;
     }
     if (issueType.length > 3) {
       setError(tB("errors.motifMax"));
@@ -1625,7 +1617,10 @@ export default function BookAppointmentPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="lovedOneEmail">
-                          {tB("emailOptional")}
+                          {tB("emailLabel")}{" "}
+                          <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                            {tB("optional")}
+                          </span>
                         </Label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1647,7 +1642,10 @@ export default function BookAppointmentPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="lovedOneNotes">
-                          {tB("additionalNotes")}
+                          {tB("additionalNotesLabel")}{" "}
+                          <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                            {tB("optional")}
+                          </span>
                         </Label>
                         <Textarea
                           id="lovedOneNotes"
@@ -1847,7 +1845,10 @@ export default function BookAppointmentPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="referrerLicense">
-                            {tB("licenseOptional")}
+                            {tB("licenseLabel")}{" "}
+                            <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                              {tB("optional")}
+                            </span>
                           </Label>
                           <Input
                             id="referrerLicense"
@@ -1867,7 +1868,7 @@ export default function BookAppointmentPage() {
                         <div className="space-y-2">
                           <Label htmlFor="referrerPhone">
                             {tB("contactPhone")}{" "}
-                            <span className="text-muted-foreground">
+                            <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
                               {tB("optional")}
                             </span>
                           </Label>
@@ -1891,7 +1892,7 @@ export default function BookAppointmentPage() {
                         <div className="space-y-2">
                           <Label htmlFor="referrerEmail">
                             {tB("contactEmail")}{" "}
-                            <span className="text-muted-foreground">
+                            <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
                               {tB("optional")}
                             </span>
                           </Label>
@@ -1916,7 +1917,10 @@ export default function BookAppointmentPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="referralReason">
-                          {tB("reasonReferral")}
+                          {tB("reasonReferralLabel")}{" "}
+                          <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                            {tB("optional")}
+                          </span>
                         </Label>
                         <Textarea
                           id="referralReason"
@@ -1976,14 +1980,15 @@ export default function BookAppointmentPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="patientEmail">
-                              {tB("contactEmail")}{" "}
-                              <span className="text-red-500">*</span>
+                              {tB("emailLabel")}{" "}
+                              <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                                {tB("optional")}
+                              </span>
                             </Label>
                             <Input
                               id="patientEmail"
                               type="email"
                               value={referralInfo.patientEmail}
-                              required
                               onChange={(e) =>
                                 setReferralInfo({
                                   ...referralInfo,
@@ -1995,14 +2000,15 @@ export default function BookAppointmentPage() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="patientPhone">
-                              {tB("contactPhone")}{" "}
-                              <span className="text-red-500">*</span>
+                              {tB("phoneLabel")}{" "}
+                              <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                                {tB("optional")}
+                              </span>
                             </Label>
                             <Input
                               id="patientPhone"
                               type="tel"
                               value={referralInfo.patientPhone}
-                              required
                               onChange={(e) =>
                                 setReferralInfo({
                                   ...referralInfo,
@@ -2033,7 +2039,12 @@ export default function BookAppointmentPage() {
 
                       {/* Document Upload Section */}
                       <div className="space-y-3 pt-4 border-t border-border/40">
-                        <Label>{tB("uploadReferralDoc")}</Label>
+                        <Label>
+                          {tB("uploadReferralDocLabel")}{" "}
+                          <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                            {tB("optional")}
+                          </span>
+                        </Label>
                         <div className="border-2 border-dashed border-border/60 rounded-xl p-6">
                           {referralInfo.documentUrl ? (
                             <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
@@ -2434,7 +2445,12 @@ export default function BookAppointmentPage() {
 
                   {/* Notes */}
                   <div className="space-y-2">
-                    <Label>{tB("notesLabel")}</Label>
+                    <Label>
+                      {tB("additionalNotesLabel")}{" "}
+                      <span className="text-muted-foreground text-[10px] font-normal uppercase letter-spacing-wider">
+                        {tB("optional")}
+                      </span>
+                    </Label>
                     <Textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
