@@ -92,7 +92,7 @@ export function AdminSidebar() {
       ],
     },
     {
-      title: "Administration",
+      title: t("administration"),
       items: [
         {
           title: "Admins",
@@ -100,7 +100,7 @@ export function AdminSidebar() {
           icon: Shield,
         },
         {
-          title: "Settings",
+          title: t("settings"),
           url: "/admin/dashboard/settings",
           icon: Settings,
         },

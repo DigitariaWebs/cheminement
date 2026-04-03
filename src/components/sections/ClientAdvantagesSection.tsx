@@ -295,9 +295,8 @@ export default function ClientAdvantagesSection() {
                   </div>
                   {/* Gradient overlay at bottom */}
                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-primary/95 via-primary/80 to-transparent"></div>
-                  {/* Title */}
-                  <div className="absolute inset-x-0 bottom-0 p-3 md:p-4">
-                    <h4 className="text-xs md:text-sm font-semibold text-white text-center leading-tight drop-shadow-lg">
+                  <div className="absolute inset-x-0 bottom-0 h-16 md:h-20 flex items-center justify-center p-2 md:p-3">
+                    <h4 className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-semibold text-white text-center leading-tight drop-shadow-lg break-words max-w-full px-0.5">
                       {t(professional.titleKey)}
                     </h4>
                   </div>

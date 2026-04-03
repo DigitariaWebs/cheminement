@@ -514,9 +514,17 @@ export default function MemberSignupPage() {
           setError(t("errors.languageRequired"));
           return false;
         }
+        if (!formData.phone.trim()) {
+          setError(t("errors.phoneRequiredMin10"));
+          return false;
+        }
         const phoneDigits = formData.phone.replace(/\D/g, "");
         if (phoneDigits.length < 10) {
           setError(t("errors.phoneRequiredMin10"));
+          return false;
+        }
+        if (!formData.dateOfBirth) {
+          setError(t("errors.dobRequired"));
           return false;
         }
         if (formData.accountFor === "child") {
@@ -797,7 +805,7 @@ export default function MemberSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  {t("phone")}
+                  {t("phone")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="phone"
@@ -815,7 +823,7 @@ export default function MemberSignupPage() {
                   className="flex items-center gap-2"
                 >
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {t("dateOfBirth")}
+                  {t("dateOfBirth")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -874,7 +882,7 @@ export default function MemberSignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>{t("accountFor")}</Label>
+              <Label>{t("accountFor")} <span className="text-red-500">*</span></Label>
               <Select
                 value={formData.accountFor}
                 onValueChange={(val) => handleSelectChange("accountFor", val)}

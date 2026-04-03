@@ -191,7 +191,7 @@ export function Header() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-52">
                     <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
-                      Signed in as {session.user.email}
+                      {t("userMenu.signedInAs", { email: session.user.email || "" })}
                     </div>
                     <DropdownMenuSeparator />
 
@@ -203,7 +203,7 @@ export function Header() {
                           className="flex items-center gap-2 cursor-pointer text-sm"
                         >
                           <Settings className="w-3.5 h-3.5" />
-                          Admin Dashboard
+                          {t("userMenu.adminDashboard")}
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -215,7 +215,7 @@ export function Header() {
                           className="flex items-center gap-2 cursor-pointer text-sm"
                         >
                           <Briefcase className="w-3.5 h-3.5" />
-                          Professional Dashboard
+                          {t("userMenu.professionalDashboard")}
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -227,7 +227,7 @@ export function Header() {
                           className="flex items-center gap-2 cursor-pointer text-sm"
                         >
                           <UserCircle className="w-3.5 h-3.5" />
-                          Client Dashboard
+                          {t("userMenu.clientDashboard")}
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -240,7 +240,7 @@ export function Header() {
                             className="flex items-center gap-2 cursor-pointer text-sm"
                           >
                             <UserCircle className="w-3.5 h-3.5" />
-                            Book Appointment
+                            {t("userMenu.bookAppointment")}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
@@ -249,7 +249,7 @@ export function Header() {
                             className="flex items-center gap-2 cursor-pointer text-sm text-primary"
                           >
                             <UserCircle className="w-3.5 h-3.5" />
-                            Create Full Account
+                            {t("userMenu.createFullAccount")}
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -261,7 +261,7 @@ export function Header() {
                       className="flex items-center gap-2 cursor-pointer text-sm text-red-600 focus:text-red-600"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      Logout
+                      {t("userMenu.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

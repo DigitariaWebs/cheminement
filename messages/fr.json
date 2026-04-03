@@ -542,12 +542,12 @@
     "relFriend": "Ami·e",
     "relOther": "Autre",
     "dateOfBirth": "Date de naissance",
-    "phoneOptional": "Téléphone (optionnel)",
-    "emailOptional": "Courriel (optionnel)",
-    "additionalNotes": "Notes additionnelles (optionnel)",
+    "phoneLabel": "Téléphone",
+    "emailLabel": "Courriel",
+    "additionalNotes": "Notes additionnelles",
     "notesLovedOnePlaceholder": "Tout renseignement utile sur votre proche pour le professionnel…",
-    "whatBringsThem": "Qu'est-ce qui les amène ici ?",
-    "whatBringsYou": "Qu'est-ce qui vous amène ici ?",
+    "whatBringsThem": "Raison(s) de consultation",
+    "whatBringsYou": "Raison(s) de consultation",
     "preFilledProfile": "(Prérempli depuis votre profil)",
     "motifPlaceholder": "Tapez vos motifs ex. : anxiété, épuisement…",
     "motifSearchButton": "Rechercher",
@@ -629,15 +629,15 @@
     "roleSpecialist": "Spécialiste",
     "roleOther": "Autre professionnel de la santé",
     "yourName": "Votre nom",
-    "licenseOptional": "Numéro de permis (optionnel)",
+    "licenseLabel": "Numéro de permis",
     "contactPhone": "Téléphone de contact",
     "contactEmail": "Courriel de contact",
     "patientContactInfo": "Coordonnées du patient",
     "optional": "(optionnel)",
-    "reasonReferral": "Motif de la référence (optionnel)",
+    "reasonReferralLabel": "Motif de la référence",
     "reasonReferralPlaceholder": "Brève description du motif de référence…",
     "primaryIssueDiagnosis": "Problématique / Approche souhaitée",
-    "uploadReferralDoc": "Téléverser une ordonnance ou un document de référence (optionnel)",
+    "uploadReferralDocLabel": "Document de référence",
     "documentUploaded": "Document téléversé avec succès",
     "uploading": "Téléversement…",
     "clickUpload": "Cliquez pour téléverser ou glissez-déposez",
@@ -666,7 +666,8 @@
       "submitFailed": "Échec de l'envoi de la demande",
       "motifRequiredSubmit": "Veuillez remplir tous les champs obligatoires, y compris au moins un motif",
       "contactGuest": "Veuillez remplir tous les champs de contact obligatoires",
-      "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités."
+      "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités.",
+      "modalityRequired": "Veuillez sélectionner une modalité de rencontre"
     }
   },
   "Header": {
@@ -688,7 +689,18 @@
     "memberLogin": "Connexion membre",
     "memberLoginDesc": "Accédez à votre parcours de bien-être",
     "professionalLogin": "Connexion professionnel",
-    "professionalLoginDesc": "Accédez à votre tableau de bord"
+    "professionalLoginDesc": "Accédez à votre tableau de bord",
+    "userMenu": {
+      "signedInAs": "Connecté en tant que {email}",
+      "adminDashboard": "Tableau de bord admin",
+      "professionalDashboard": "Tableau de bord professionnel",
+      "clientDashboard": "Tableau de bord patient",
+      "bookAppointment": "Prendre rendez-vous",
+      "createFullAccount": "Créer un compte complet",
+      "logout": "Déconnexion",
+      "myAccount": "Mon compte",
+      "settings": "Paramètres"
+    }
   },
   "Footer": {
     "partners": "Partenaires",
@@ -697,7 +709,6 @@
     "aboutUs": "À propos",
     "careers": "Carrières",
     "press": "Presse",
-    "culture": "Ma santé mentale, notre horizon commun",
     "brandGuidelines": "Directives de marque",
     "platform": "Plateforme",
     "integratedHealthPlatform": "Plateforme de santé mentale",
@@ -746,18 +757,12 @@
     "back": "Retour",
     "personalizedCare": "Démarche personnalisée",
     "flexibleScheduling": "Planification flexible",
-    "confidentialSupport": "Soutien confidentiel",
-    "trustMentions": {
-      "bill25": "Conforme à la Loi 25 (Québec)",
-      "canadaHosting": "Données hébergées au Canada",
-      "encryption": "Chiffrement de bout en bout",
-      "twoFactor": "Double authentification (2FA) obligatoire"
-    }
+    "confidentialSupport": "Soutien confidentiel"
   },
   "ValueSection": {
     "title": "Plateforme spécialisée en santé mentale",
     "subtitle": "Un jumelage intelligent",
-    "description": "Notre Plateforme offre un accès rapide à des professionnels de la santé mentale. Cheminez vers l'équilibre plus tôt.",
+    "description": "Notre Plateforme offre un accès rapide à des professionnels de la santé mentale.\nCheminez vers l'équilibre plus tôt.",
     "integratedPlatform": "Plateforme de santé mentale™"
   },
   "HowItWorksSection": {
@@ -767,6 +772,12 @@
     "cta": {
       "question": "Prêt à commencer votre parcours ?",
       "button": "Commencez aujourd'hui"
+    },
+    "trustIcons": {
+      "bill25": "Conforme à la Loi 25 (Québec)",
+      "canadaHosting": "Données hébergées au Canada",
+      "encryption": "Chiffrement de bout en bout",
+      "twoFactor": "Double authentification (2FA) obligatoire"
     }
   },
   "ClientAdvantagesSection": {
@@ -811,7 +822,7 @@
       "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques."
     },
     "professionalsSection": {
-      "title": "Nos professionnels à votre service",
+      "title": "Nos professionnels",
       "subtitle": "Une équipe multidisciplinaire de spécialistes reconnus par leurs ordres professionnels."
     },
     "professionals": {
@@ -1217,7 +1228,8 @@
         "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer.",
         "errorPreferredGender": "Veuillez indiquer si vous souhaitez consulter un professionnel homme, femme, autre ou sans préférence.",
         "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres).",
-        "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités."
+        "availabilityRequired": "Veuillez cocher au moins un créneau dans la grille de disponibilités.",
+        "dobRequired": "Veuillez indiquer votre date de naissance."
       },
       "objectivesLabel": "Objectifs de thérapie (recherche, plusieurs choix possibles)",
       "therapyApproachOptional": "Approche de thérapie préférée (optionnel)",
@@ -1629,7 +1641,8 @@
         "acceptPrivacyPolicyRequired": "Vous devez confirmer avoir lu et accepté la politique de confidentialité.",
         "accountCreatedButSignInFailed": "Compte créé mais la connexion a échoué. Veuillez réessayer.",
         "failedToCreateAccount": "Échec de la création du compte. Veuillez réessayer.",
-        "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres)."
+        "phoneRequiredMin10": "Un numéro de téléphone valide est requis (au moins 10 chiffres).",
+        "dobRequired": "La date de naissance est requise."
       },
       "noBreak": "Aucune pause",
       "gender": "Genre",
@@ -1728,7 +1741,8 @@
       "reports": "Rapports",
       "paymentTrust": "Garanties Interac / virement",
       "accounting": "Comptabilité & cycles",
-      "serviceRequests": "Demandes de service"
+      "serviceRequests": "Demandes de service",
+      "administration": "Administration"
     },
     "overview": {
       "title": "Bienvenue",
@@ -1742,7 +1756,10 @@
       "completeProfile": "Complétez votre profil",
       "completeProfileDesc": "Ajoutez vos spécialisations, approches et disponibilités pour commencer à jumeler avec des clients",
       "setSchedule": "Définissez votre horaire",
-      "setScheduleDesc": "Définissez vos plages horaires disponibles pour les réservations de clients"
+      "setScheduleDesc": "Définissez vos plages horaires disponibles pour les réservations de clients",
+      "verifiedStatus": "Profil actif",
+      "editProfile": "Gérer mon profil",
+      "editProfileDesc": "Mettez à jour vos informations professionnelles, approches et expertises"
     },
     "profile": {
       "title": "Profil professionnel",
@@ -3982,6 +3999,11 @@
       "chooseDate": "Choisir une date",
       "selectTime": "Choisir l'heure",
       "noSlotsForDate": "Aucun créneau disponible pour cette date",
+      "manualEntry": "Saisie manuelle",
+      "manualDateLabel": "Saisir une date",
+      "manualTimeLabel": "Saisir une heure (ex: 14:30)",
+      "manualTimeHint": "Saisissez une heure ou choisissez un créneau ci-dessus.",
+      "manualEntryDescription": "Liberté totale : saisissez n'importe quelle date ou heure.",
       "cancel": "Annuler",
       "confirm": "Confirmer",
       "notAvailable": "—",

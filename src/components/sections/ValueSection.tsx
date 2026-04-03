@@ -47,11 +47,9 @@ export default function ValueSection() {
     {
       icon: Lock,
       titleEn: "Confidentiality and ethics",
-      titleFr: "Confidentialité et éthique",
-      subtitleEn:
-        "Ethics and confidentiality: The foundation of our commitment",
-      subtitleFr:
-        "Éthique et confidentialité : La fondation de notre engagement",
+      titleFr: "Confidentialité et Éthique",
+      subtitleEn: "The foundation of our commitment",
+      subtitleFr: "La fondation de notre engagement",
       descriptionEn:
         "Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
       descriptionFr:
@@ -84,7 +82,7 @@ export default function ValueSection() {
           <p className="text-xl md:text-2xl text-foreground font-semibold mb-6">
             {t("subtitle")}
           </p>
-          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed">
+          <p className="text-base md:text-lg text-muted-foreground font-normal leading-relaxed whitespace-pre-line">
             {t("description", {
               integratedPlatform: t("integratedPlatform"),
             })}

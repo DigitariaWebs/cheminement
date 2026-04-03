@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, UserPlus, CalendarCheck, FileText } from "lucide-react";
+import { ArrowRight, UserPlus, CalendarCheck, FileText, ShieldCheck, Globe, Lock, Fingerprint } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { AnimationVariant } from "@/components/ui/ScrollReveal";
@@ -149,7 +149,7 @@ export default function HowItWorksSection() {
 
         {/* Bottom CTA */}
         <ScrollReveal variant="bounce-in" delayMs={600} duration={700}>
-          <div className="text-center mt-16">
+          <div className="text-center mt-16 pb-16 border-b border-muted-foreground/10">
             <p className="text-muted-foreground mb-6">{t("cta.question")}</p>
             <Link
               href="/signup"
@@ -160,6 +160,52 @@ export default function HowItWorksSection() {
             </Link>
           </div>
         </ScrollReveal>
+
+        {/* Trust Indicators moved here */}
+        <div className="mt-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <ScrollReveal variant="fade-up" delayMs={700} duration={600}>
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <ShieldCheck className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug max-w-[200px] sm:max-w-none">
+                  {t("trustIcons.bill25")}
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={800} duration={600}>
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <Globe className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug max-w-[200px] sm:max-w-none">
+                  {t("trustIcons.canadaHosting")}
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={900} duration={600}>
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <Lock className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug max-w-[200px] sm:max-w-none">
+                  {t("trustIcons.encryption")}
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fade-up" delayMs={1000} duration={600}>
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
+                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                  <Fingerprint className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-light text-muted-foreground leading-snug max-w-[200px] sm:max-w-none">
+                  {t("trustIcons.twoFactor")}
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
       </div>
     </section>
   );

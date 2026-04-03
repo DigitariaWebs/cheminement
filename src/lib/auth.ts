@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           isAdmin: user.isAdmin || false,
           adminId: user.adminId?.toString(),
+          professionalLicenseStatus: user.professionalLicenseStatus,
           image: user.image,
         };
       },
@@ -80,6 +81,7 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.isAdmin = user.isAdmin;
         token.adminId = user.adminId;
+        token.professionalLicenseStatus = user.professionalLicenseStatus;
       }
       return token;
     },
@@ -89,6 +91,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string;
         session.user.isAdmin = token.isAdmin as boolean;
         session.user.adminId = token.adminId as string;
+        session.user.professionalLicenseStatus = token.professionalLicenseStatus as string;
       }
       return session;
     },

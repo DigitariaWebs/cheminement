@@ -30,6 +30,7 @@ import {
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -141,6 +142,7 @@ export default function ProposalsPage() {
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [scheduling, setScheduling] = useState(false);
+  const [isManualEntry, setIsManualEntry] = useState(false);
 
   const fetchProposedAppointments = useCallback(async () => {
     try {
@@ -343,6 +345,7 @@ export default function ProposalsPage() {
     setSelectedDate("");
     setSelectedTime("");
     setAvailableSlots([]);
+    setIsManualEntry(false);
     setIsScheduleModalOpen(true);
   };
 
@@ -929,53 +932,117 @@ export default function ProposalsPage() {
                 </p>
               </div>
 
+              {/* Manual Entry Toggle */}
+              <div className="flex items-center space-x-2 pt-2 border-t border-border/10">
+                <Checkbox
+                  id="manual-entry"
+                  checked={isManualEntry}
+                  onCheckedChange={(checked) => {
+                    setIsManualEntry(!!checked);
+                    if (checked) {
+                      setAvailableSlots([]);
+                    } else if (selectedDate) {
+                      loadAvailableSlots(selectedDate);
+                    }
+                  }}
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <Label
+                    htmlFor="manual-entry"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {t("manualEntry")}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("manualEntryDescription")}
+                  </p>
+                </div>
+              </div>
+
               {/* Date Selection */}
               <div>
-                <Label className="text-sm">{t("selectDate")}</Label>
-                <Select value={selectedDate} onValueChange={handleDateChange}>
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder={t("chooseDate")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableDates().map((date) => (
-                      <SelectItem key={date.value} value={date.value}>
-                        {date.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-sm">
+                  {isManualEntry ? t("manualDateLabel") : t("selectDate")}
+                </Label>
+                {isManualEntry ? (
+                  <Input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="mt-1.5"
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                ) : (
+                  <Select value={selectedDate} onValueChange={handleDateChange}>
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue placeholder={t("chooseDate")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getAvailableDates().map((date) => (
+                        <SelectItem key={date.value} value={date.value}>
+                          {date.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               {/* Time Selection */}
-              {selectedDate && (
+              {(selectedDate || isManualEntry) && (
                 <div>
-                  <Label className="text-sm">{t("selectTime")}</Label>
-                  {loadingSlots ? (
-                    <div className="flex items-center justify-center py-4">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    </div>
-                  ) : availableSlots.length === 0 ? (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {t("noSlotsForDate")}
-                    </p>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-2 mt-2">
-                      {availableSlots
-                        .filter((slot) => slot.available)
-                        .map((slot) => (
-                          <Button
-                            key={slot.time}
-                            variant={
-                              selectedTime === slot.time ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setSelectedTime(slot.time)}
-                          >
-                            {slot.time}
-                          </Button>
-                        ))}
-                    </div>
+                  <Label className="text-sm">
+                    {t("selectTime")}
+                  </Label>
+
+                  {!isManualEntry && (
+                    <>
+                      {loadingSlots ? (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        </div>
+                      ) : availableSlots.length > 0 && (
+                        <div className="grid grid-cols-4 gap-2 mt-2 mb-3">
+                          {availableSlots
+                            .filter((slot) => slot.available)
+                            .map((slot) => (
+                              <Button
+                                key={slot.time}
+                                variant={
+                                  selectedTime === slot.time
+                                    ? "default"
+                                    : "outline"
+                                }
+                                size="sm"
+                                onClick={() => setSelectedTime(slot.time)}
+                                className="h-8 text-xs px-2"
+                              >
+                                {slot.time}
+                              </Button>
+                            ))}
+                        </div>
+                      )}
+                      {availableSlots.length === 0 && !loadingSlots && (
+                        <p className="text-xs text-muted-foreground mt-2 mb-3 italic">
+                          {t("noSlotsForDate")}
+                        </p>
+                      )}
+                    </>
                   )}
+
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="HH:MM"
+                      value={selectedTime}
+                      onChange={(e) => setSelectedTime(e.target.value)}
+                      className="mt-1.5"
+                    />
+                    <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {t("manualTimeHint")}
+                  </p>
                 </div>
               )}
 

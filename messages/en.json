@@ -542,12 +542,12 @@
     "relFriend": "Friend",
     "relOther": "Other",
     "dateOfBirth": "Date of Birth",
-    "phoneOptional": "Phone (Optional)",
-    "emailOptional": "Email (Optional)",
-    "additionalNotes": "Additional Notes (Optional)",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "additionalNotes": "Additional Notes",
     "notesLovedOnePlaceholder": "Any relevant information about your loved one that might help the professional...",
-    "whatBringsThem": "What brings them here?",
-    "whatBringsYou": "What brings you here?",
+    "whatBringsThem": "Reason(s) for consultation",
+    "whatBringsYou": "Reason(s) for consultation",
     "preFilledProfile": "(Pre-filled from your profile)",
     "motifPlaceholder": "Type your reasons e.g. anxiety, burnout...",
     "motifSearchButton": "Search",
@@ -629,15 +629,15 @@
     "roleSpecialist": "Specialist",
     "roleOther": "Other Healthcare Professional",
     "yourName": "Your Name",
-    "licenseOptional": "License Number (Optional)",
+    "licenseLabel": "License Number",
     "contactPhone": "Contact Phone",
     "contactEmail": "Contact Email",
     "patientContactInfo": "Patient Contact Information",
     "optional": "(Optional)",
-    "reasonReferral": "Reason for Referral (Optional)",
+    "reasonReferralLabel": "Reason for Referral",
     "reasonReferralPlaceholder": "Brief description of why you are referring this patient...",
     "primaryIssueDiagnosis": "Problem / Desired Approach",
-    "uploadReferralDoc": "Upload Referral/Prescription Document (Optional)",
+    "uploadReferralDocLabel": "Referral Document",
     "documentUploaded": "Document uploaded successfully",
     "uploading": "Uploading...",
     "clickUpload": "Click to upload or drag and drop",
@@ -666,7 +666,8 @@
       "submitFailed": "Failed to submit request",
       "motifRequiredSubmit": "Please fill in all required fields, including at least one motif",
       "contactGuest": "Please fill in all required contact information",
-      "availabilityRequired": "Please select at least one slot in the availability grid."
+      "availabilityRequired": "Please select at least one slot in the availability grid.",
+      "modalityRequired": "Please select a meeting modality"
     }
   },
   "Header": {
@@ -688,7 +689,18 @@
     "memberLogin": "Member Login",
     "memberLoginDesc": "Access your wellness journey",
     "professionalLogin": "Professional Login",
-    "professionalLoginDesc": "Access your dashboard"
+    "professionalLoginDesc": "Access your dashboard",
+    "userMenu": {
+      "signedInAs": "Signed in as {email}",
+      "adminDashboard": "Admin Dashboard",
+      "professionalDashboard": "Professional Dashboard",
+      "clientDashboard": "Client Dashboard",
+      "bookAppointment": "Book Appointment",
+      "createFullAccount": "Create Full Account",
+      "logout": "Logout",
+      "myAccount": "My Account",
+      "settings": "Settings"
+    }
   },
   "Footer": {
     "partners": "Partners",
@@ -697,7 +709,6 @@
     "aboutUs": "About Us",
     "careers": "Careers",
     "press": "Press",
-    "culture": "My mental health, our shared horizon",
     "brandGuidelines": "Brand guidelines",
     "platform": "Platform",
     "integratedHealthPlatform": "Integrated Health Platform",
@@ -746,13 +757,7 @@
     "back": "Back",
     "personalizedCare": "Personalized Care",
     "flexibleScheduling": "Flexible Scheduling",
-    "confidentialSupport": "Confidential Support",
-    "trustMentions": {
-      "bill25": "Bill 25 Compliant (Quebec)",
-      "canadaHosting": "Data Hosted in Canada",
-      "encryption": "End-to-End Encryption",
-      "twoFactor": "Mandatory 2FA Authentication"
-    }
+    "confidentialSupport": "Confidential Support"
   },
   "ValueSection": {
     "title": "Integrated Health Platform",
@@ -767,6 +772,12 @@
     "cta": {
       "question": "Ready to start your journey?",
       "button": "Get Started Today"
+    },
+    "trustIcons": {
+      "bill25": "Bill 25 Compliant (Quebec)",
+      "canadaHosting": "Data Hosted in Canada",
+      "encryption": "End-to-End Encryption",
+      "twoFactor": "Mandatory 2FA Authentication"
     }
   },
   "ClientAdvantagesSection": {
@@ -811,7 +822,7 @@
       "programDescription": "Even before your first appointment, benefit from our pre-therapy program and educational resources to better understand your situation and prepare for your follow-up."
     },
     "professionalsSection": {
-      "title": "Our Professionals at Your Service",
+      "title": "Our Professionals",
       "subtitle": "A multidisciplinary team of specialists recognized by their professional orders."
     },
     "professionals": {
@@ -1216,7 +1227,8 @@
         "failedToCreateAccount": "Failed to create account. Please try again.",
         "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference.",
         "phoneRequiredMin10": "A valid phone number is required (at least 10 digits).",
-        "availabilityRequired": "Please select at least one slot in the availability grid."
+        "availabilityRequired": "Please select at least one slot in the availability grid.",
+        "dobRequired": "Please provide your date of birth."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
       "therapyApproachOptional": "Preferred therapy approach (optional)",
@@ -1628,7 +1640,8 @@
         "acceptPrivacyPolicyRequired": "You must confirm that you have read and accepted the privacy policy.",
         "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
         "failedToCreateAccount": "Failed to create account. Please try again.",
-        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits)."
+        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits).",
+        "dobRequired": "Date of birth is required."
       },
       "noBreak": "No break",
       "gender": "Gender",
@@ -1727,7 +1740,8 @@
       "reports": "Reports",
       "paymentTrust": "Interac / transfer guarantees",
       "accounting": "Accounting & cycles",
-      "serviceRequests": "Service requests"
+      "serviceRequests": "Service requests",
+      "administration": "Administration"
     },
     "overview": {
       "title": "Welcome Back",
@@ -1741,7 +1755,10 @@
       "completeProfile": "Complete Your Profile",
       "completeProfileDesc": "Add your specializations, approaches, and availability to start matching with clients",
       "setSchedule": "Set Your Schedule",
-      "setScheduleDesc": "Define your available time slots for client bookings"
+      "setScheduleDesc": "Define your available time slots for client bookings",
+      "verifiedStatus": "Active Profile",
+      "editProfile": "Manage My Profile",
+      "editProfileDesc": "Update your professional information, approaches, and expertise"
     },
     "profile": {
       "title": "Professional Profile",
@@ -3982,6 +3999,11 @@
       "chooseDate": "Choose a date",
       "selectTime": "Select Time",
       "noSlotsForDate": "No available slots for this date",
+      "manualEntry": "Manual Entry",
+      "manualDateLabel": "Enter date",
+      "manualTimeLabel": "Enter time (e.g., 2:30 PM)",
+      "manualTimeHint": "Enter a time or choose a slot above.",
+      "manualEntryDescription": "Total freedom: enter any date or time.",
       "cancel": "Cancel",
       "confirm": "Confirm",
       "notAvailable": "—",
