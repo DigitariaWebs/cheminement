@@ -689,7 +689,18 @@
     "memberLogin": "Connexion membre",
     "memberLoginDesc": "Accédez à votre parcours de bien-être",
     "professionalLogin": "Connexion professionnel",
-    "professionalLoginDesc": "Accédez à votre tableau de bord"
+    "professionalLoginDesc": "Accédez à votre tableau de bord",
+    "userMenu": {
+      "signedInAs": "Connecté en tant que {email}",
+      "adminDashboard": "Tableau de bord admin",
+      "professionalDashboard": "Tableau de bord professionnel",
+      "clientDashboard": "Tableau de bord patient",
+      "bookAppointment": "Prendre rendez-vous",
+      "createFullAccount": "Créer un compte complet",
+      "logout": "Déconnexion",
+      "myAccount": "Mon compte",
+      "settings": "Paramètres"
+    }
   },
   "Footer": {
     "partners": "Partenaires",
@@ -1730,7 +1741,8 @@
       "reports": "Rapports",
       "paymentTrust": "Garanties Interac / virement",
       "accounting": "Comptabilité & cycles",
-      "serviceRequests": "Demandes de service"
+      "serviceRequests": "Demandes de service",
+      "administration": "Administration"
     },
     "overview": {
       "title": "Bienvenue",
@@ -3987,6 +3999,11 @@
       "chooseDate": "Choisir une date",
       "selectTime": "Choisir l'heure",
       "noSlotsForDate": "Aucun créneau disponible pour cette date",
+      "manualEntry": "Saisie manuelle",
+      "manualDateLabel": "Saisir une date",
+      "manualTimeLabel": "Saisir une heure (ex: 14:30)",
+      "manualTimeHint": "Saisissez une heure ou choisissez un créneau ci-dessus.",
+      "manualEntryDescription": "Liberté totale : saisissez n'importe quelle date ou heure.",
       "cancel": "Annuler",
       "confirm": "Confirmer",
       "notAvailable": "—",

@@ -689,7 +689,18 @@
     "memberLogin": "Member Login",
     "memberLoginDesc": "Access your wellness journey",
     "professionalLogin": "Professional Login",
-    "professionalLoginDesc": "Access your dashboard"
+    "professionalLoginDesc": "Access your dashboard",
+    "userMenu": {
+      "signedInAs": "Signed in as {email}",
+      "adminDashboard": "Admin Dashboard",
+      "professionalDashboard": "Professional Dashboard",
+      "clientDashboard": "Client Dashboard",
+      "bookAppointment": "Book Appointment",
+      "createFullAccount": "Create Full Account",
+      "logout": "Logout",
+      "myAccount": "My Account",
+      "settings": "Settings"
+    }
   },
   "Footer": {
     "partners": "Partners",
@@ -1729,7 +1740,8 @@
       "reports": "Reports",
       "paymentTrust": "Interac / transfer guarantees",
       "accounting": "Accounting & cycles",
-      "serviceRequests": "Service requests"
+      "serviceRequests": "Service requests",
+      "administration": "Administration"
     },
     "overview": {
       "title": "Welcome Back",
@@ -3987,6 +3999,11 @@
       "chooseDate": "Choose a date",
       "selectTime": "Select Time",
       "noSlotsForDate": "No available slots for this date",
+      "manualEntry": "Manual Entry",
+      "manualDateLabel": "Enter date",
+      "manualTimeLabel": "Enter time (e.g., 2:30 PM)",
+      "manualTimeHint": "Enter a time or choose a slot above.",
+      "manualEntryDescription": "Total freedom: enter any date or time.",
       "cancel": "Cancel",
       "confirm": "Confirm",
       "notAvailable": "—",
