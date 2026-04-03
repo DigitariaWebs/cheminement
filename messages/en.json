@@ -1743,7 +1743,10 @@
       "completeProfile": "Complete Your Profile",
       "completeProfileDesc": "Add your specializations, approaches, and availability to start matching with clients",
       "setSchedule": "Set Your Schedule",
-      "setScheduleDesc": "Define your available time slots for client bookings"
+      "setScheduleDesc": "Define your available time slots for client bookings",
+      "verifiedStatus": "Active Profile",
+      "editProfile": "Manage My Profile",
+      "editProfileDesc": "Update your professional information, approaches, and expertise"
     },
     "profile": {
       "title": "Professional Profile",

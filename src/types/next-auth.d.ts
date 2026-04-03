@@ -8,6 +8,7 @@ declare module "next-auth" {
       role: string;
       isAdmin: boolean;
       adminId?: string;
+      professionalLicenseStatus?: string;
     } & DefaultSession["user"];
   }
 
@@ -15,6 +16,7 @@ declare module "next-auth" {
     role: string;
     isAdmin: boolean;
     adminId?: string;
+    professionalLicenseStatus?: string;
   }
 }
 
@@ -24,5 +26,6 @@ declare module "next-auth/jwt" {
     role: string;
     isAdmin: boolean;
     adminId?: string;
+    professionalLicenseStatus?: string;
   }
 }
