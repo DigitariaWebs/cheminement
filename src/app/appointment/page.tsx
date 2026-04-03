@@ -496,6 +496,10 @@ export default function BookAppointmentPage() {
       setError(tB("errors.dateOfBirthRequired"));
       return false;
     }
+    if (!selectedType) {
+      setError(tB("errors.modalityRequired"));
+      return false;
+    }
     if (!issueType || !Array.isArray(issueType) || issueType.length === 0) {
       setError(tB("errors.motifRequired"));
       return false;
@@ -543,7 +547,11 @@ export default function BookAppointmentPage() {
   const handleSpecificInfoSubmit = () => {
     if (bookingFor === "loved-one" && !validateLovedOneInfo()) return;
     if (bookingFor === "patient" && !validateReferralInfo()) return;
-    setCurrentStep(3); // Move to appointment details
+    if (bookingFor === "loved-one") {
+      setCurrentStep(4); // Loved-one merged form: skip Step 3, go directly to review
+    } else {
+      setCurrentStep(3); // Move to appointment details
+    }
   };
 
   const handleGuestInfoSubmit = () => {
@@ -1640,6 +1648,76 @@ export default function BookAppointmentPage() {
                         </div>
                       </div>
 
+                      {/* Meeting Modality */}
+                      <div className="space-y-2 pt-4 border-t border-border/40">
+                        <Label>{tB("preferredAppointmentType")}</Label>
+                        <Select
+                          value={selectedType}
+                          onValueChange={(
+                            value: "video" | "in-person" | "phone",
+                          ) => setSelectedType(value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="video">
+                              <div className="flex items-center gap-2">
+                                <Video className="h-4 w-4" />
+                                {tB("videoCall")}
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="in-person">
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4" />
+                                {tB("inPerson")}
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="phone">
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4" />
+                                {tB("phoneCall")}
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Session Type */}
+                      <div className="space-y-2">
+                        <Label>{tB("sessionType")}</Label>
+                        <Select
+                          value={therapyType}
+                          onValueChange={(value: "solo" | "couple" | "group") =>
+                            setTherapyType(value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="solo">
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                {tB("individualSession")}
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="couple">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4" />
+                                {tB("coupleSession")}
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="group">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4" />
+                                {tB("groupSession")}
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="lovedOneNotes">
                           {tB("additionalNotesLabel")}{" "}
@@ -2666,7 +2744,7 @@ export default function BookAppointmentPage() {
                   </div>
 
                   <div className="flex justify-between pt-4">
-                    <Button variant="outline" onClick={() => setCurrentStep(3)}>
+                    <Button variant="outline" onClick={() => setCurrentStep(bookingFor === "loved-one" ? 2.5 : 3)}>
                       {tB("back")}
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>

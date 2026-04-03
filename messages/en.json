@@ -546,8 +546,8 @@
     "emailLabel": "Email",
     "additionalNotes": "Additional Notes",
     "notesLovedOnePlaceholder": "Any relevant information about your loved one that might help the professional...",
-    "whatBringsThem": "What brings them here?",
-    "whatBringsYou": "What brings you here?",
+    "whatBringsThem": "Reason(s) for consultation",
+    "whatBringsYou": "Reason(s) for consultation",
     "preFilledProfile": "(Pre-filled from your profile)",
     "motifPlaceholder": "Type your reasons e.g. anxiety, burnout...",
     "motifSearchButton": "Search",
@@ -666,7 +666,8 @@
       "submitFailed": "Failed to submit request",
       "motifRequiredSubmit": "Please fill in all required fields, including at least one motif",
       "contactGuest": "Please fill in all required contact information",
-      "availabilityRequired": "Please select at least one slot in the availability grid."
+      "availabilityRequired": "Please select at least one slot in the availability grid.",
+      "modalityRequired": "Please select a meeting modality"
     }
   },
   "Header": {
@@ -1215,7 +1216,8 @@
         "failedToCreateAccount": "Failed to create account. Please try again.",
         "errorPreferredGender": "Please indicate whether you prefer to consult a male, female, other professional or no preference.",
         "phoneRequiredMin10": "A valid phone number is required (at least 10 digits).",
-        "availabilityRequired": "Please select at least one slot in the availability grid."
+        "availabilityRequired": "Please select at least one slot in the availability grid.",
+        "dobRequired": "Please provide your date of birth."
       },
       "objectivesLabel": "Therapy objectives (search, multiple choices)",
       "therapyApproachOptional": "Preferred therapy approach (optional)",
@@ -1627,7 +1629,8 @@
         "acceptPrivacyPolicyRequired": "You must confirm that you have read and accepted the privacy policy.",
         "accountCreatedButSignInFailed": "Account created but sign-in failed. Please try again.",
         "failedToCreateAccount": "Failed to create account. Please try again.",
-        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits)."
+        "phoneRequiredMin10": "A valid phone number is required (at least 10 digits).",
+        "dobRequired": "Date of birth is required."
       },
       "noBreak": "No break",
       "gender": "Gender",

@@ -257,9 +257,11 @@ export default function ProfessionalSignupPage() {
         if (formData.password !== formData.confirmPassword)
           return t("errors.passwordsDoNotMatch");
         {
+          if (!formData.phone.trim()) return t("errors.phoneRequiredMin10");
           const digits = formData.phone.replace(/\D/g, "");
           if (digits.length < 10) return t("errors.phoneRequiredMin10");
         }
+        if (!formData.dateOfBirth) return t("errors.dobRequired");
         break;
       case 1: // Professional Details (Titre professionnel + permis)
         if (!formData.specialty) return t("errors.specialtyRequired");
@@ -504,7 +506,7 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  {t("phone")}
+                  {t("phone")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="phone"
@@ -522,7 +524,7 @@ export default function ProfessionalSignupPage() {
                   className="flex items-center gap-2"
                 >
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {t("dateOfBirth")}
+                  {t("dateOfBirth")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
