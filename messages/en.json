@@ -697,7 +697,6 @@
     "aboutUs": "About Us",
     "careers": "Careers",
     "press": "Press",
-    "culture": "My mental health, our shared horizon",
     "brandGuidelines": "Brand guidelines",
     "platform": "Platform",
     "integratedHealthPlatform": "Integrated Health Platform",
@@ -746,13 +745,7 @@
     "back": "Back",
     "personalizedCare": "Personalized Care",
     "flexibleScheduling": "Flexible Scheduling",
-    "confidentialSupport": "Confidential Support",
-    "trustMentions": {
-      "bill25": "Bill 25 Compliant (Quebec)",
-      "canadaHosting": "Data Hosted in Canada",
-      "encryption": "End-to-End Encryption",
-      "twoFactor": "Mandatory 2FA Authentication"
-    }
+    "confidentialSupport": "Confidential Support"
   },
   "ValueSection": {
     "title": "Integrated Health Platform",
@@ -767,6 +760,12 @@
     "cta": {
       "question": "Ready to start your journey?",
       "button": "Get Started Today"
+    },
+    "trustIcons": {
+      "bill25": "Bill 25 Compliant (Quebec)",
+      "canadaHosting": "Data Hosted in Canada",
+      "encryption": "End-to-End Encryption",
+      "twoFactor": "Mandatory 2FA Authentication"
     }
   },
   "ClientAdvantagesSection": {

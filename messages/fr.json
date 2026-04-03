@@ -697,7 +697,6 @@
     "aboutUs": "À propos",
     "careers": "Carrières",
     "press": "Presse",
-    "culture": "Ma santé mentale, notre horizon commun",
     "brandGuidelines": "Directives de marque",
     "platform": "Plateforme",
     "integratedHealthPlatform": "Plateforme de santé mentale",
@@ -746,13 +745,7 @@
     "back": "Retour",
     "personalizedCare": "Démarche personnalisée",
     "flexibleScheduling": "Planification flexible",
-    "confidentialSupport": "Soutien confidentiel",
-    "trustMentions": {
-      "bill25": "Conforme à la Loi 25 (Québec)",
-      "canadaHosting": "Données hébergées au Canada",
-      "encryption": "Chiffrement de bout en bout",
-      "twoFactor": "Double authentification (2FA) obligatoire"
-    }
+    "confidentialSupport": "Soutien confidentiel"
   },
   "ValueSection": {
     "title": "Plateforme spécialisée en santé mentale",
@@ -767,6 +760,12 @@
     "cta": {
       "question": "Prêt à commencer votre parcours ?",
       "button": "Commencez aujourd'hui"
+    },
+    "trustIcons": {
+      "bill25": "Conforme à la Loi 25 (Québec)",
+      "canadaHosting": "Données hébergées au Canada",
+      "encryption": "Chiffrement de bout en bout",
+      "twoFactor": "Double authentification (2FA) obligatoire"
     }
   },
   "ClientAdvantagesSection": {
