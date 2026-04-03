@@ -47,11 +47,9 @@ export default function ValueSection() {
     {
       icon: Lock,
       titleEn: "Confidentiality and ethics",
-      titleFr: "Confidentialité et éthique",
-      subtitleEn:
-        "Ethics and confidentiality: The foundation of our commitment",
-      subtitleFr:
-        "Éthique et confidentialité : La fondation de notre engagement",
+      titleFr: "Confidentialité et Éthique",
+      subtitleEn: "The foundation of our commitment",
+      subtitleFr: "La fondation de notre engagement",
       descriptionEn:
         "Your well-being and your trust are our absolute priorities. Your data is hosted exclusively on Canadian servers, ensuring full data sovereignty. We follow strict compliance with Bill 25 and apply rigorous protection of your privacy. These principles are the foundations of our service, ensuring that you evolve in a safe and respectful environment.",
       descriptionFr:
