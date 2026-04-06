@@ -13,7 +13,7 @@ export default function HeroSection() {
     <section className="relative bg-accent overflow-hidden">
       <div className="absolute inset-0 opacity-5"></div>
 
-      <div className="container mx-auto px-5 sm:px-7 py-24 md:py-32 relative z-10 max-w-7xl">
+      <div className="container mx-auto px-5 sm:px-7 pt-24 pb-6 md:pt-32 md:pb-10 relative z-10 max-w-7xl">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
           {/* Left Side: Content */}
           <div className="flex-1 w-full lg:max-w-[55%]">
