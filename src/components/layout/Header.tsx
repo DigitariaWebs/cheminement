@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   X,
@@ -29,8 +29,14 @@ export function Header() {
   const pathname = usePathname();
   const t = useTranslations("Header");
   const locale = useLocale();
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
 
   const aboutDropdownItems = [
     { href: "/who-we-are", label: t("nav.whoWeAre") },
@@ -260,7 +266,7 @@ export function Header() {
 
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => signOut({ callbackUrl: "/" })}
+                      onClick={() => handleSignOut()}
                       className="flex items-center gap-2 cursor-pointer text-sm text-red-600 focus:text-red-600"
                     >
                       <LogOut className="w-3.5 h-3.5" />
@@ -459,7 +465,7 @@ export function Header() {
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      signOut({ callbackUrl: "/" });
+                      handleSignOut();
                     }}
                     className="flex items-center gap-2 text-sm py-2 text-red-600"
                   >
