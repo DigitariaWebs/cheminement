@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
+  X,
   ChevronDown,
   UserCircle,
   Briefcase,
@@ -27,7 +29,14 @@ export function Header() {
   const pathname = usePathname();
   const t = useTranslations("Header");
   const locale = useLocale();
+  const router = useRouter();
   const { data: session, status } = useSession();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
 
   const aboutDropdownItems = [
     { href: "/who-we-are", label: t("nav.whoWeAre") },
@@ -257,7 +266,7 @@ export function Header() {
 
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => signOut({ callbackUrl: "/" })}
+                      onClick={() => handleSignOut()}
                       className="flex items-center gap-2 cursor-pointer text-sm text-red-600 focus:text-red-600"
                     >
                       <LogOut className="w-3.5 h-3.5" />
@@ -286,14 +295,206 @@ export function Header() {
 
             {/* Mobile menu button */}
             <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="Menu"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
-              <Menu className="h-5 w-5" />
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile menu panel */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border/20 bg-card">
+          <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-sm font-semibold py-2 ${
+                pathname === "/"
+                  ? "text-primary underline underline-offset-4"
+                  : "text-foreground"
+              }`}
+            >
+              {t("nav.home")}
+            </Link>
+
+            {/* About Us */}
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-semibold text-muted-foreground py-2">
+                {t("nav.aboutUs")}
+              </span>
+              {aboutDropdownItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-sm pl-4 py-1.5 ${
+                    pathname === item.href
+                      ? "text-primary font-medium"
+                      : "text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Services */}
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-semibold text-muted-foreground py-2">
+                {t("nav.services")}
+              </span>
+              {servicesDropdownItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-sm pl-4 py-1.5 ${
+                    item.highlight ? "text-primary font-medium" : "text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            <Link
+              href="/approaches"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-sm font-semibold py-2 ${
+                pathname === "/approaches"
+                  ? "text-primary underline underline-offset-4"
+                  : "text-foreground"
+              }`}
+            >
+              {t("nav.approaches")}
+            </Link>
+
+            <Link
+              href="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-sm font-semibold py-2 ${
+                pathname === "/contact"
+                  ? "text-primary underline underline-offset-4"
+                  : "text-foreground"
+              }`}
+            >
+              {t("nav.contact")}
+            </Link>
+
+            <Link
+              href="/professional"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-sm font-semibold py-2 ${
+                pathname === "/professional"
+                  ? "text-primary underline underline-offset-4"
+                  : "text-foreground"
+              }`}
+            >
+              {t("nav.professional")}
+            </Link>
+
+            {/* Auth buttons for mobile */}
+            <div className="border-t border-border/20 pt-3 mt-1 flex flex-col gap-2">
+              {status === "loading" ? (
+                <div className="w-full h-9 bg-muted animate-pulse rounded"></div>
+              ) : session?.user ? (
+                <>
+                  <div className="text-sm text-muted-foreground px-1 py-1">
+                    {session.user.name || session.user.email}
+                  </div>
+
+                  {session.user.role === "admin" && (
+                    <Link
+                      href="/admin/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 text-sm py-2 text-foreground"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                      {t("userMenu.adminDashboard")}
+                    </Link>
+                  )}
+                  {session.user.role === "professional" && (
+                    <Link
+                      href="/professional/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 text-sm py-2 text-foreground"
+                    >
+                      <Briefcase className="w-3.5 h-3.5" />
+                      {t("userMenu.professionalDashboard")}
+                    </Link>
+                  )}
+                  {session.user.role === "client" && (
+                    <Link
+                      href="/client/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 text-sm py-2 text-foreground"
+                    >
+                      <UserCircle className="w-3.5 h-3.5" />
+                      {t("userMenu.clientDashboard")}
+                    </Link>
+                  )}
+                  {session.user.role === "guest" && (
+                    <>
+                      <Link
+                        href="/appointment"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 text-sm py-2 text-foreground"
+                      >
+                        <UserCircle className="w-3.5 h-3.5" />
+                        {t("userMenu.bookAppointment")}
+                      </Link>
+                      <Link
+                        href="/signup"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 text-sm py-2 text-primary"
+                      >
+                        <UserCircle className="w-3.5 h-3.5" />
+                        {t("userMenu.createFullAccount")}
+                      </Link>
+                    </>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleSignOut();
+                    }}
+                    className="flex items-center gap-2 text-sm py-2 text-red-600"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    {t("userMenu.logout")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-accent"
+                  >
+                    {t("login")}
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    {t("getStarted")}
+                  </Link>
+                </>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

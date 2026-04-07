@@ -7,7 +7,20 @@
 export async function sendSms(toPhone: string, body: string): Promise<void> {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const token = process.env.TWILIO_AUTH_TOKEN;
-  const from = process.env.TWILIO_PHONE_NUMBER;
+  const from = process.env.TWILIO_FROM_NUMBER;
+
+  console.log("[sms] config check:", {
+    hasSid: !!sid,
+    hasToken: !!token,
+    hasFrom: !!from,
+    dryRun: process.env.SMS_DRY_RUN,
+    toPhone,
+  });
+
+  if (process.env.SMS_DRY_RUN === "true") {
+    console.info(`[sms] (dry-run) Vers ${toPhone} : ${body}`);
+    return;
+  }
 
   if (sid && token && from) {
     const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`;
@@ -26,8 +39,9 @@ export async function sendSms(toPhone: string, body: string): Promise<void> {
       body: params.toString(),
     });
     if (!res.ok) {
-      const t = await res.text();
-      throw new Error(`Twilio SMS failed: ${res.status} ${t}`);
+      const errText = await res.text();
+      console.error(`[sms] Twilio error: ${res.status}`, errText);
+      throw new Error(`Twilio SMS failed: ${res.status} ${errText}`);
     }
     return;
   }
@@ -40,7 +54,7 @@ export async function sendSms(toPhone: string, body: string): Promise<void> {
   }
 
   console.info(
-    `[sms] (dev) Vers ${toPhone} : ${body} — configurez TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER pour l’envoi réel.`,
+    `[sms] (dev) Vers ${toPhone} : ${body} — configurez TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER pour l’envoi réel.`,
   );
 }
 

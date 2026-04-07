@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home,
@@ -37,6 +37,7 @@ import Image from "next/image";
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { state } = useSidebar();
   const t = useTranslations("Dashboard.sidebar");
 
@@ -165,7 +166,10 @@ export function AdminSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => signOut()}
+              onClick={async () => {
+                await signOut({ redirect: false });
+                router.push("/");
+              }}
               className="font-light cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
