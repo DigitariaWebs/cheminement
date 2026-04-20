@@ -17,6 +17,8 @@ export function getSessionActNatureLabelFr(
   return ACT_LABELS_FR[key as SessionActNature];
 }
 
+export type ReceiptAudience = "client" | "professional" | "admin";
+
 export type FiscalReceiptPdfInput = {
   appointmentId: string;
   issuedAt: Date;
@@ -37,6 +39,8 @@ export type FiscalReceiptPdfInput = {
   paymentStatus: "paid" | "pending_transfer";
   paymentMethodLabel: string;
   stripePaymentIntentId?: string;
+  /** Hides client gross + platform fee; shows only the professional's net earnings. */
+  audience?: ReceiptAudience;
 };
 
 /** Données appointment peuplées (clientId, professionalId) + champs payment. */
@@ -148,6 +152,7 @@ export function buildFiscalReceiptPdfBuffer(
   const textColor: [number, number, number] = [31, 41, 55];
   const lightGray: [number, number, number] = [243, 244, 246];
   const { appointmentId } = input;
+  const isProVariant = input.audience === "professional";
 
   doc.setFillColor(...primaryColor);
   doc.rect(0, 0, 210, 40, "F");
@@ -164,7 +169,7 @@ export function buildFiscalReceiptPdfBuffer(
   doc.setTextColor(...textColor);
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text("REÇU FISCAL", 20, 55);
+  doc.text(isProVariant ? "RELEVÉ DE REVENU" : "REÇU FISCAL", 20, 55);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -248,23 +253,33 @@ export function buildFiscalReceiptPdfBuffer(
 
   let yPos = 210;
   doc.setFont("helvetica", "normal");
-  doc.text(`Prestation (séance)`, 25, yPos);
-  doc.text(`$${input.amountCad.toFixed(2)}`, 160, yPos, { align: "right" });
-  yPos += 10;
 
-  if (input.platformFeeCad > 0) {
-    doc.setTextColor(107, 114, 128);
-    doc.setFontSize(9);
-    doc.text("Frais plateforme", 30, yPos);
-    doc.text(`$${input.platformFeeCad.toFixed(2)}`, 160, yPos, {
-      align: "right",
-    });
-    yPos += 8;
-    doc.text("Montant net professionnel", 30, yPos);
+  if (isProVariant) {
+    // Professional sees only their net earnings — no gross, no platform fee.
+    doc.text("Revenu professionnel (séance)", 25, yPos);
     doc.text(`$${input.professionalPayoutCad.toFixed(2)}`, 160, yPos, {
       align: "right",
     });
     yPos += 10;
+  } else {
+    doc.text(`Prestation (séance)`, 25, yPos);
+    doc.text(`$${input.amountCad.toFixed(2)}`, 160, yPos, { align: "right" });
+    yPos += 10;
+
+    if (input.platformFeeCad > 0) {
+      doc.setTextColor(107, 114, 128);
+      doc.setFontSize(9);
+      doc.text("Frais plateforme", 30, yPos);
+      doc.text(`$${input.platformFeeCad.toFixed(2)}`, 160, yPos, {
+        align: "right",
+      });
+      yPos += 8;
+      doc.text("Montant net professionnel", 30, yPos);
+      doc.text(`$${input.professionalPayoutCad.toFixed(2)}`, 160, yPos, {
+        align: "right",
+      });
+      yPos += 10;
+    }
   }
 
   doc.setDrawColor(229, 231, 235);
@@ -275,7 +290,8 @@ export function buildFiscalReceiptPdfBuffer(
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.text("Total", 25, yPos);
-  doc.text(`$${input.amountCad.toFixed(2)} CAD`, 160, yPos, {
+  const totalCad = isProVariant ? input.professionalPayoutCad : input.amountCad;
+  doc.text(`$${totalCad.toFixed(2)} CAD`, 160, yPos, {
     align: "right",
   });
   yPos += 14;

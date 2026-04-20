@@ -3,6 +3,7 @@ import Fuse, { type IFuseOptions } from "fuse.js";
 import {
   expandUserMotifQuery,
   MOTIF_SEARCH_EXTRAS,
+  normalizeMotifSearchToken,
 } from "@/config/motifSearch";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -207,22 +208,54 @@ export function useDebouncedSmartMotifSearch(
     [records, fuseThreshold],
   );
 
+  const normalizedRecords = useMemo(
+    () =>
+      records.map((r) => ({
+        canonical: r.canonical,
+        normalizedCanonical: normalizeMotifSearchToken(r.canonical),
+        normalizedSearchText: normalizeMotifSearchToken(r.searchText),
+      })),
+    [records],
+  );
+
   const results = useMemo(() => {
     const trimmed = debouncedQuery.trim();
     if (!trimmed) return [];
+
+    const normalizedQuery = normalizeMotifSearchToken(trimmed);
+    const seen = new Set<string>();
+    const startsWith: string[] = [];
+    const contains: string[] = [];
+
+    // Substring pass (accent + case insensitive) — guarantees every item
+    // containing the typed word appears, even when the word is complete.
+    if (normalizedQuery) {
+      for (const r of normalizedRecords) {
+        if (seen.has(r.canonical)) continue;
+        if (r.normalizedCanonical.startsWith(normalizedQuery)) {
+          seen.add(r.canonical);
+          startsWith.push(r.canonical);
+        } else if (r.normalizedSearchText.includes(normalizedQuery)) {
+          seen.add(r.canonical);
+          contains.push(r.canonical);
+        }
+      }
+    }
+
+    // Fuzzy pass (typos, acronyms, synonyms) — appended after substring matches.
     const expanded = expandUserMotifQuery(trimmed);
     const hits = fuse.search(expanded);
-    const seen = new Set<string>();
-    const out: string[] = [];
+    const fuzzy: string[] = [];
     for (const h of hits) {
       const c = h.item.canonical;
       if (!seen.has(c)) {
         seen.add(c);
-        out.push(c);
+        fuzzy.push(c);
       }
     }
-    return out;
-  }, [debouncedQuery, fuse]);
+
+    return [...startsWith, ...contains, ...fuzzy];
+  }, [debouncedQuery, fuse, normalizedRecords]);
 
   return {
     inputQuery,

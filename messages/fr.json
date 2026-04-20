@@ -274,6 +274,48 @@
       "adminRole": "Rôle d'Administrateur",
       "promoting": "Promotion en cours..."
     },
+    "motifs": {
+      "title": "Motifs de consultation",
+      "subtitle": "Ajoutez, modifiez ou désactivez les motifs affichés dans l'outil de recherche.",
+      "refresh": "Rafraîchir",
+      "createButton": "Nouveau motif",
+      "statTotal": "Total",
+      "statActive": "Actifs",
+      "statMissingEn": "Sans traduction EN",
+      "searchPlaceholder": "Rechercher un motif, une traduction ou un alias…",
+      "filterLocaleAll": "Toutes les traductions",
+      "filterLocaleMissingEn": "Sans anglais",
+      "filterStatusAll": "Tous les statuts",
+      "filterStatusActive": "Actifs uniquement",
+      "filterStatusInactive": "Inactifs uniquement",
+      "empty": "Aucun motif ne correspond aux filtres.",
+      "statusActive": "Actif",
+      "statusInactive": "Inactif",
+      "missingEnBadge": "EN manquant",
+      "noEnTranslation": "Aucune traduction anglaise",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "createTitle": "Nouveau motif de consultation",
+      "editTitle": "Modifier le motif",
+      "editDescription": "Le libellé français et anglais sont obligatoires pour garantir un affichage correct dans les deux langues.",
+      "labelFrField": "Libellé français",
+      "labelFrPlaceholder": "Ex. : Anxiété sociale",
+      "labelEnField": "Libellé anglais",
+      "labelEnPlaceholder": "Ex. : Social anxiety",
+      "labelEnHelp": "Obligatoire — correspondance exacte pour la recherche et l'affichage en anglais.",
+      "aliasesField": "Alias (synonymes, acronymes)",
+      "aliasesPlaceholder": "Séparés par des virgules ou des retours à la ligne",
+      "aliasesHelp": "Mots-clés supplémentaires qui feront remonter ce motif dans la recherche.",
+      "activeField": "Visible publiquement dans la recherche",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "saveChanges": "Enregistrer",
+      "deleteTitle": "Supprimer le motif",
+      "deleteDescription": "Êtes-vous sûr de vouloir supprimer « {label} » ? Cette action est définitive.",
+      "confirmDelete": "Supprimer",
+      "errorFrRequired": "Le libellé français est obligatoire.",
+      "errorEnRequired": "Le libellé anglais est obligatoire."
+    },
     "paymentTrust": {
       "title": "Garantie de Paiement",
       "subtitle": "Gérer les garanties financières et approbations manuelles",
@@ -395,7 +437,28 @@
       "kindDebit": "Débit (Versement)",
       "lifetimeBalance": "Solde cumulé (depuis l'inscription)",
       "currentCycleBalance": "Solde du cycle actuel",
-      "noEntries": "Aucune transaction."
+      "noEntries": "Aucune transaction.",
+      "forceValidateButton": "Valider manuellement",
+      "forceValidateConfirmTitle": "Valider manuellement ce professionnel ?",
+      "forceValidateConfirmDesc": "Le statut du compte passera immédiatement à Actif et le permis sera marqué comme Vérifié, même si les vérifications automatiques ne sont pas terminées. À n'utiliser qu'après une révision manuelle du dossier.",
+      "forceValidateConfirm": "Confirmer la validation",
+      "forceValidateSuccess": "Professionnel validé manuellement. Le compte est désormais Actif.",
+      "forceValidateError": "Échec de la validation manuelle. Veuillez réessayer.",
+      "reviewTitle": "Liste de révision",
+      "reviewSubtitle": "Vérification rapide de la cohérence des informations soumises par ce professionnel.",
+      "reviewCheckStatus": "Statut du compte",
+      "reviewCheckLicense": "Vérification du permis",
+      "reviewCheckEmailVerified": "Courriel vérifié",
+      "reviewCheckLicenseNumber": "Numéro de permis renseigné",
+      "reviewCheckSpecialty": "Spécialité principale renseignée",
+      "reviewCheckBio": "Biographie fournie",
+      "reviewCheckExperience": "Années d'expérience renseignées",
+      "reviewCheckProfileComplete": "Profil professionnel complété",
+      "reviewCheckStripe": "Compte Stripe Connect lié",
+      "reviewLicenseStatus_verified": "Vérifié",
+      "reviewLicenseStatus_pending_review": "En attente de révision",
+      "reviewLicenseStatus_rejected": "Rejeté",
+      "reviewLicenseStatus_not_applicable": "Non applicable"
     }
   },
   "AppointmentSelector": {
@@ -732,7 +795,7 @@
     "privacyPolicy": "Politique de confidentialité",
     "termsOfUse": "Conditions d'utilisation",
     "aoda": "AODA",
-    "cookiePolicy": "Politique témoins de connexion",
+    "professionalTerms": "Conditions pour les professionnels",
     "rightsAndResponsibilities": "Droits et responsabilités",
     "socialX": "Je Chemine sur X"
   },
@@ -818,8 +881,7 @@
       "title": "Commencez votre parcours dès maintenant",
       "description": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques.",
       "topics": "Anxiété, Épuisement, Stress, Dépression, Estime de soi, TDAH, HPI, rôle parental, difficultés d'apprentissage, gestion des émotions, autres problématiques",
-      "note": "Ceci n’est pas une liste exhaustive",
-      "programDescription": "Nos professionnels peuvent vous accompagner pour mieux composer avec plusieurs problématiques."
+      "note": "Ceci n’est pas une liste exhaustive"
     },
     "professionalsSection": {
       "title": "Nos professionnels",
@@ -894,7 +956,7 @@
   },
   "ProfessionalHero": {
     "tagline": "POUR LES PROFESSIONNELS DE LA SANTÉ MENTALE",
-    "headline": "Concentrez-vous sur ce que vous faites de mieux : aider les gens",
+    "headline": "Concentrez-vous sur l'humain, nous nous occupons du reste.",
     "description": "Rejoignez notre plateforme et laissez-nous gérer le travail administratif. Connectez-vous avec des clients qui correspondent à votre expertise, optimisez votre pratique et augmentez votre impact.",
     "joinPlatform": "Rejoindre notre plateforme",
     "learnMore": "En savoir plus",
@@ -947,7 +1009,8 @@
     "financialDesc": "Tarifs préférentiels avec les comptables, soutien des frais d'adhésion à l'OPQ selon les séances et opportunités de fonds d'investissement.",
     "additionalPerksTitle": "Avantages et opportunités supplémentaires",
     "perk1": "Devenez actionnaire et bénéficiez collectivement de notre succès",
-    "perk2": "Contribution de 1 $ par séance à un fonds d'investissement"
+    "perk2": "Contribution de 1 $ par séance à un fonds d'investissement",
+    "disclaimer": "* Détails et conditions d'accès précisés lors de l'entente de collaboration"
   },
   "ProfessionalCTA": {
     "badge": "PRÊT À COMMENCER ?",
@@ -976,7 +1039,7 @@
     "title": "Obtenez le soutien dont vous avez besoin, quand vous en avez le plus besoin",
     "subtitle": "Nous rendons les soins de santé mentale accessibles, pratiques et personnalisés selon votre situation unique.",
     "findHelp": "Trouvez de l'aide rapidement",
-    "findHelpDesc": "Fini les longues listes d'attente. Connectez-vous avec des professionnels de la santé mentale qualifiés qui sont disponibles pour vous aider maintenant.",
+    "findHelpDesc": "Fini les longues attentes ! Connectez-vous avec des professionnels de la santé mentale qualifiés qui sont disponibles pour vous aider maintenant.",
     "accessAnywhere": "Accès de n'importe où",
     "accessAnywhereDesc": "Que vous soyez dans une région éloignée ou une grande ville, trouvez le bon professionnel qui correspond à vos besoins, quelle que soit la distance.",
     "startJourney": "Commencez votre parcours aujourd'hui",
@@ -1189,7 +1252,8 @@
       "accountFor": "Ce compte est pour",
       "accountForMe": "Pour moi",
       "accountForChild": "Pour mon enfant",
-      "childInfoTitle": "Informations concernant l'enfant",
+      "accountForChildNote": "Création de compte pour un mineur de moins de 14 ans uniquement.",
+      "childInfoTitle": "Informations concernant l'enfant (Moins de 14 ans)",
       "childFirstName": "Prénom de l'enfant",
       "childLastName": "Nom de l'enfant",
       "childDateOfBirth": "Date de naissance de l'enfant",
@@ -1221,6 +1285,7 @@
         "childNameRequired": "Le prénom et le nom de l'enfant sont requis.",
         "childDobRequired": "La date de naissance de l'enfant est requise.",
         "childServiceTypeRequired": "Veuillez indiquer si c'est pour une évaluation ou un suivi psychologique.",
+        "emergencyEmailRequired": "Un courriel valide pour le contact d'urgence est requis.",
         "paymentMethodRequired": "Veuillez choisir un mode de paiement.",
         "agreeToTermsRequired": "Vous devez accepter les conditions d'utilisation.",
         "acceptPrivacyPolicyRequired": "Vous devez confirmer avoir lu et accepté la politique de confidentialité.",
@@ -1290,7 +1355,8 @@
           "asthma": "Asthme",
           "thyroidDisorder": "Trouble thyroïdien",
           "chronicPain": "Douleur chronique",
-          "none": "Aucune"
+          "other": "Autre condition médicale",
+          "otherPlaceholder": "Précisez la condition médicale"
         },
         "medications": {
           "antidepressants": "Antidépresseurs",
@@ -1299,7 +1365,8 @@
           "antipsychotics": "Antipsychotiques",
           "sleepAids": "Somnifères / aide au sommeil",
           "painMedication": "Antidouleurs",
-          "none": "Aucun"
+          "other": "Autre médicament",
+          "otherPlaceholder": "Précisez le médicament"
         }
       },
       "therapyApproachOptions": {
@@ -1418,12 +1485,10 @@
           "emergencyContactNamePlaceholder": "Nom complet",
           "emergencyContactPhone": "Téléphone du contact d'urgence",
           "emergencyContactPhonePlaceholder": "Numéro de téléphone",
+          "emergencyContactEmail": "Courriel du contact d'urgence",
+          "emergencyContactEmailPlaceholder": "Adresse courriel",
           "emergencyContactRelation": "Relation",
-          "emergencyContactRelationPlaceholder": "ex. Conjoint, Parent",
-          "crisisPlan": "Plan de crise",
-          "crisisPlanPlaceholder": "Décrivez votre plan de crise",
-          "suicidalThoughts": "Avez-vous eu des pensées suicidaires?",
-          "crisisHotlinesTitle": "Si vous êtes en crise, veuillez appeler l'une de ces lignes d'urgence immédiatement :"
+          "emergencyContactRelationPlaceholder": "ex. Conjoint, Parent"
         },
         "step8": {
           "preferredGender": "Genre du professionnel préféré",
@@ -1523,6 +1588,15 @@
       },
       "professionalTitleLabel": "Titre professionnel",
       "professionalTitlePlaceholder": "Choisir votre titre",
+      "professionalTitleOptions": {
+        "psychologist": "Psychologue",
+        "psychotherapist": "Psychothérapeute",
+        "neuropsychologist": "Neuropsychologue",
+        "psychoeducator": "Psychoéducateur",
+        "occupationalTherapistMentalHealth": "Ergothérapeute en santé mentale",
+        "psychiatrist": "Psychiatre",
+        "otherProfessionals": "Autres professionnels"
+      },
       "licenseLabel": "Numéro de permis / exercice",
       "licenseHint": "Permis professionnel, statut d'étudiant au doctorat ou permis par équivalence en cours",
       "yearsOfExperience": "Années d'expérience",
@@ -1742,6 +1816,8 @@
       "paymentTrust": "Garanties Interac / virement",
       "accounting": "Comptabilité & cycles",
       "serviceRequests": "Demandes de service",
+      "legalDocuments": "Documents légaux",
+      "motifs": "Motifs de consultation",
       "administration": "Administration"
     },
     "overview": {
@@ -1956,11 +2032,11 @@
       "payment": "Paiement",
       "paid": "Payé",
       "pending": "En attente",
-      "overdue": "En retard",
       "client": "Client",
       "dateTime": "Date et heure",
       "duration": "Durée",
       "amount": "Montant",
+      "earnings": "Revenu",
       "issueType": "Type de problème",
       "actions": "Actions",
       "viewDetails": "Voir les détails",
@@ -2410,7 +2486,7 @@
         "label": "Notre différence",
         "title": "Une plateforme conçue par des psychologues"
       },
-      "headline": "Chez Je chemine, nous croyons que chaque personne mérite un accompagnement humain, sécuritaire et adapté à sa réalité.",
+      "headline": "Chez Je chemine, nous croyons que chaque personne mérite un accompagnement humain, confidentiel et adapté à sa réalité.",
       "description1": "Notre mission est de vous soutenir dans votre bien-être émotionnel et psychologique grâce à un parcours personnalisé, conçu pour répondre à vos besoins uniques et à votre rythme. Nous offrons un accès simple et bienveillant à une équipe d'experts dont la pratique est encadrée, reconnue et conforme aux exigences de leur ordre professionnel.",
       "description2": "Quelle que soit votre situation, vous êtes accompagné par un professionnel qualifié, prêt à cheminer avec vous vers une vie plus sereine, équilibrée et épanouie.",
       "trustIndicators": {
@@ -2812,7 +2888,7 @@
       "bookingTitle": "Prendre rendez-vous"
     },
     "ethics": {
-      "badge": "3 · Éthique et confidentialité",
+      "badge": "Éthique et confidentialité",
       "title": "Nous protégeons votre confiance, à chaque instant.",
       "description": "La confidentialité n'est pas une option, c'est notre fondation. Nous avons conçu notre plateforme et nos processus pour assurer une protection maximale de votre vie privée, du premier contact à la clôture de votre dossier.",
       "note": "Chaque professionnel est signataire d'engagements précis en matière de protection des données et bénéficie d'une formation continue sur la confidentialité.",
@@ -2968,7 +3044,11 @@
         "Préciser vos besoins, vos objectifs et le contexte de votre démarche.",
         "Recevoir de l'aide pour préparer votre premier rendez-vous."
       ],
-      "guidance": "Nous vous orienterons vers le bon professionnel et vous guiderons pour bien préparer votre première rencontre."
+      "guidance": "Nous vous orienterons vers le bon professionnel et vous guiderons pour bien préparer votre première rencontre.",
+      "submit": "Envoyer le message",
+      "submitting": "Envoi en cours...",
+      "successMessage": "Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.",
+      "errorMessage": "Une erreur est survenue. Veuillez réessayer plus tard."
     },
     "emergency": {
       "title": "En cas d'urgence",
@@ -3357,7 +3437,7 @@
         "appointmentPreferences": "Préférences de rendez-vous",
         "appointmentPreferencesDesc": "Disponibilité et modalité",
         "emergencyInfo": "Informations d'urgence",
-        "emergencyInfoDesc": "Contact et plan de crise",
+        "emergencyInfoDesc": "Contact d'urgence",
         "matchingPreferences": "Préférences de jumelage",
         "matchingPreferencesDesc": "Préférences de professionnel"
       },
@@ -3563,11 +3643,7 @@
         "emergencyContactPhone": "Téléphone du contact d'urgence",
         "emergencyContactPhonePlaceholder": "Numéro de téléphone",
         "emergencyContactRelation": "Relation",
-        "emergencyContactRelationPlaceholder": "ex. Conjoint, Parent",
-        "crisisPlan": "Plan de crise",
-        "crisisPlanPlaceholder": "Décrivez votre plan de crise",
-        "suicidalThoughts": "Avez-vous eu des pensées suicidaires?",
-        "crisisHotlinesTitle": "Si vous êtes en crise, veuillez appeler l'une de ces lignes d'urgence immédiatement :"
+        "emergencyContactRelationPlaceholder": "ex. Conjoint, Parent"
       },
       "step8": {
         "title": "Préférences de jumelage",
@@ -3709,8 +3785,7 @@
         "noConcernsReported": "Aucune préoccupation signalée",
         "normalSleep": "Normal",
         "noAdditionalNotes": "Aucune note supplémentaire",
-        "notProvided": "Non fourni",
-        "noCrisisPlan": "Aucun plan de crise indiqué"
+        "notProvided": "Non fourni"
       },
       "labels": {
         "triggeringEvent": "Événement déclencheur",
@@ -3721,15 +3796,12 @@
         "contactName": "Nom du contact",
         "phoneNumber": "Numéro de téléphone",
         "relationship": "Lien",
-        "crisisPlan": "Plan de crise",
         "matchingPrefsTitle": "Préférences de jumelage avec un professionnel",
         "preferredAgeRange": "Tranche d'âge préférée",
         "anyAge": "Tout âge",
         "ageYounger": "Plus jeune (20–35 ans)",
         "ageMiddle": "Milieu de vie (36–55 ans)",
-        "ageOlder": "Plus âgé (56 ans et +)",
-        "suicidalThoughtsWarning": "Le client a indiqué avoir eu des pensées suicidaires. Une attention immédiate peut être nécessaire.",
-        "suicidalThoughtsAck": "J'ai déjà eu des pensées suicidaires"
+        "ageOlder": "Plus âgé (56 ans et +)"
       }
     },
     "library": {
@@ -3927,19 +3999,18 @@
       "ledgerKind": "Type",
       "ledgerCredit": "Crédit",
       "ledgerDebit": "Débit",
-      "ledgerGross": "Brut",
       "ledgerBalanceCycle": "Solde du cycle (crédits − débits)",
       "ledgerBalanceLifetime": "Solde cumulé (historique)",
       "session": "Séance",
       "invoiceNumber": "Numéro de facture",
-      "grossAmount": "Montant brut",
-      "platformFee": "Frais de plateforme",
-      "netAmount": "Montant net",
+      "earnings": "Revenu",
       "paidDate": "Date de paiement",
       "downloadInvoice": "Télécharger la facture",
       "cancelReason": "Motif d'annulation",
       "show": "Afficher",
       "hide": "Masquer",
+      "paymentStatusPaid": "Payé",
+      "paymentStatusPending": "En attente",
       "status": {
         "paid": "Payé",
         "pending": "En attente",
@@ -4325,5 +4396,304 @@
     "submit": "Envoyer la demande",
     "submitting": "Envoi en cours…",
     "success": "Votre demande a été transmise. Nous vous contacterons sous peu."
+  },
+  "Legal": {
+    "ui": {
+      "lastUpdated": "Dernière mise à jour",
+      "backToTop": "Retour en haut",
+      "tableOfContents": "Sommaire",
+      "readFullDocument": "Lire le document complet",
+      "contactUs": "Nous contacter"
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "subtitle": "Politique d'utilisation des Services Clients – Plateforme Je chemine",
+      "lastUpdated": "13 avril 2026",
+      "sections": [
+        {
+          "title": "1. Préambule et mission",
+          "blocks": [
+            { "paragraph": "La plateforme Je chemine est un espace dédié au soutien de la santé mentale. Elle offre une infrastructure technologique permettant la mise en relation entre des clients et des professionnels qualifiés pour des services de consultations psychologiques et d'évaluation." }
+          ]
+        },
+        {
+          "title": "2. Distinction des responsabilités",
+          "blocks": [
+            { "paragraph": "Il est entendu que Je chemine agit exclusivement en tant qu'intermédiaire technique." },
+            { "bullets": [
+              { "term": "Responsabilité de la plateforme", "text": "assurer le bon fonctionnement des outils de prise de rendez-vous, de paiement, reçus et d'autoapprentissage." },
+              { "term": "Responsabilité du professionnel", "text": "chaque professionnel est seul responsable de ses actes cliniques, de ses jugements professionnels, de ses évaluations et de la qualité de son suivi." },
+              { "term": "Dossiers cliniques", "text": "la plateforme ne gère, ne stocke et ne consulte aucun dossier clinique. La tenue et la conservation des dossiers (notes évolutives, rapports d'évaluation, données brutes…) incombent exclusivement au professionnel, conformément aux normes de son ordre professionnel respectif." }
+            ]}
+          ]
+        },
+        {
+          "title": "3. Admissibilité et usage du compte",
+          "blocks": [
+            { "bullets": [
+              { "term": "Inscription", "text": "l'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants." },
+              { "term": "Usage personnel", "text": "le compte est strictement personnel. L'utilisateur est responsable de toute activité effectuée sous son compte." }
+            ]}
+          ]
+        },
+        {
+          "title": "4. Propriété intellectuelle",
+          "blocks": [
+            { "paragraph": "Tous les éléments constitutifs de la plateforme (textes, logos, graphismes, outils de cheminement, vidéos, logiciels…) sont la propriété exclusive de Je chemine." },
+            { "bullets": [
+              { "text": "L'utilisateur bénéficie d'une licence d'utilisation limitée, non exclusive et non transférable pour son usage personnel." },
+              { "text": "Toute reproduction, extraction ou diffusion non autorisée est formellement interdite." }
+            ]}
+          ]
+        },
+        {
+          "title": "5. Intégrité et sécurité de la plateforme",
+          "blocks": [
+            { "paragraph": "L'utilisateur s'engage à ne pas endommager la plateforme. Sont strictement interdits :" },
+            { "bullets": [
+              { "text": "toute tentative d'intrusion ou de piratage du système ;" },
+              { "text": "l'introduction de virus ou de codes malveillants ;" },
+              { "text": "toute action pouvant surcharger ou détériorer l'infrastructure technique de Je chemine." }
+            ]}
+          ]
+        },
+        {
+          "title": "6. Confidentialité et respect de la vie privée",
+          "blocks": [
+            { "bullets": [
+              { "term": "Confidentialité technique", "text": "la plateforme crypte les communications. Toutefois, l'utilisateur est responsable de s'assurer qu'il se trouve dans un environnement privé et d'agir pour protéger ses données." },
+              { "term": "Enregistrements", "text": "il est strictement interdit d'enregistrer les communications sans le consentement écrit et explicite d'un membre de la plateforme." },
+              { "term": "Secret professionnel", "text": "le secret professionnel lie le client et le professionnel de la santé mentale." }
+            ]}
+          ]
+        },
+        {
+          "title": "7. Modalités de service",
+          "blocks": [
+            { "bullets": [
+              { "term": "Évaluations", "text": "le client reconnaît que le processus d'évaluation initiale, dans l'objectif de bien aiguiller le client, suit des protocoles rigoureux sous la responsabilité d'un membre de la plateforme." },
+              { "term": "Annulations", "text": "les politiques d'annulation et les frais afférents sont déterminés par les conditions de la plateforme et les ententes avec le professionnel." },
+              { "term": "Paiements", "text": "les paiements s'effectuent via la plateforme (carte bancaire, virement Interac ou entente de prélèvement bancaire préautorisé). La plateforme est responsable de l'émission des reçus officiels de consultation." }
+            ]}
+          ]
+        },
+        {
+          "title": "8. Clause de non-urgence",
+          "blocks": [
+            { "callout": "IMPORTANT : La plateforme Je chemine n'est pas un service d'intervention d'urgence. En cas de crise suicidaire ou de danger immédiat pour vous-même ou autrui, vous devez contacter immédiatement les services d'urgence de votre région (ex. : 911) ou vous présenter à l'urgence la plus proche." }
+          ]
+        },
+        {
+          "title": "9. Sanctions et résiliation",
+          "blocks": [
+            { "paragraph": "Tout manquement aux présentes politiques, notamment en cas de comportement abusif envers un professionnel ou un membre administratif, ou de tentative d'endommager la plateforme, pourra entraîner la suspension ou la fermeture définitive du compte sans préavis." }
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "subtitle": "Politique de Confidentialité de Je chemine",
+      "lastUpdated": "13 avril 2026",
+      "intro": "Chez Je chemine, nous nous engageons à protéger votre vie privée et la confidentialité de vos renseignements personnels. Cette politique de confidentialité vise à vous informer de nos pratiques de collecte, d'utilisation, de traitement et de conservation des renseignements personnels et confidentiels que nous recueillons lorsque vous utilisez nos services, visitez notre site Web ou interagissez avec nous. Nous nous conformons rigoureusement aux lois applicables, notamment la Loi sur la protection des renseignements personnels dans le secteur privé, les lois de la province de Québec et les lois fédérales du Canada, y compris la Loi modernisant des dispositions législatives en matière de protection des renseignements personnels (Lois applicables) et les règlements de l'OPQ.",
+      "sections": [
+        {
+          "title": "Portée et application",
+          "blocks": [
+            { "paragraph": "Cette politique régit la collecte, l'utilisation et la conservation des renseignements obtenus par Je chemine concernant les individus qui accèdent à nos services, les utilisent ou communiquent avec nous (les « utilisateurs » ou « vous »). Votre utilisation de nos services est également soumise à nos conditions d'utilisation. Si vous ne consentez pas à ces modalités, veuillez ne pas utiliser nos services." }
+          ]
+        },
+        {
+          "title": "Qu'est-ce qu'un renseignement personnel ?",
+          "blocks": [
+            { "paragraph": "Un « renseignement personnel » est toute information qui vous identifie ou pourrait vous être associée, comme votre nom, votre numéro de téléphone, votre adresse résidentielle, votre courriel, votre date de naissance, votre sexe, des renseignements sur votre emploi ou votre éducation, vos antécédents psychiatriques et médicaux, ainsi que toute autre information devant être traitée comme un « renseignement personnel » conformément aux Lois applicables. Cela inclut également vos détails de paiement." }
+          ]
+        },
+        {
+          "title": "Pourquoi et comment recueillons-nous vos renseignements ?",
+          "blocks": [
+            { "paragraph": "Nous recueillons et utilisons vos renseignements personnels pour les raisons suivantes :" },
+            { "bullets": [
+              { "term": "Accès et utilisation des services", "text": "pour vous permettre d'accéder et d'utiliser nos services de manière appropriée, y compris le traitement de vos demandes de rendez-vous et de renseignements." },
+              { "term": "Administration des services cliniques", "text": "pour gérer les demandes de services, vous affecter à un professionnel approprié, et assurer le suivi des rendez-vous (rappels, confirmations, formulaires d'admission). Ces informations sont conservées sur des serveurs sécurisés et cryptés." },
+              { "term": "Informations cliniques", "text": "lors de votre premier rendez-vous, nous recueillons des informations pour faciliter l'évaluation et le jumelage avec un professionnel." },
+              { "term": "Paiement en ligne", "text": "pour traiter vos paiements et vous envoyer des factures via notre système de facturation sécurisé. Aucune information de carte de crédit n'est directement conservée par Je chemine." },
+              { "term": "Communication en ligne et télésanté", "text": "pour permettre aux professionnels et aux clients de communiquer via des serveurs de messagerie sécurisés et cryptés et de fournir des services virtuels via des solutions de conférence Web privées." },
+              { "term": "Marketing et communications", "text": "pour vous envoyer des communications marketing (infolettres…), selon votre choix." },
+              { "term": "Amélioration des services", "text": "pour évaluer, optimiser et améliorer le contenu, les fonctionnalités et la prestation de nos services et de notre site Web." },
+              { "term": "Gestion des relations clients (CRM)", "text": "pour gérer la relation avec les clients, générer des listes d'envoi et produire des rapports internes." },
+              { "term": "Recrutement", "text": "si vous postulez pour un poste, pour évaluer votre candidature et gérer nos besoins de recrutement." },
+              { "term": "Problèmes techniques", "text": "pour traiter les problèmes signalés, effectuer du dépannage, du soutien et des examens de sécurité." }
+            ]},
+            { "paragraph": "Nous n'utilisons les renseignements personnels que pour les fins auxquelles ils ont été recueillis et, de façon générale, nous demanderons votre permission pour toute autre utilisation." }
+          ]
+        },
+        {
+          "title": "Données recueillies automatiquement",
+          "blocks": [
+            { "paragraph": "Lorsque vous accédez à notre service, votre ordinateur et notre serveur échangent automatiquement des données (identification du fournisseur d'accès Internet, adresse IP, type de navigateur et de système d'exploitation, pages visitées, date et heure, adresse du site référent). Ces informations sont recueillies à des fins statistiques et technologiques et ne sont pas considérées comme des renseignements personnels identifiables." },
+            { "paragraph": "Nous utilisons des témoins (cookies) pour faciliter la navigation et optimiser l'expérience utilisateur, ainsi que des solutions d'analyse d'audience comme Google Analytics pour collecter des données statistiques agrégées (pages consultées, durée de visite, etc.). Votre adresse IP est anonymisée pour protéger votre confidentialité. Vous pouvez configurer votre navigateur pour bloquer les témoins, mais cela pourrait limiter certaines fonctionnalités." }
+          ]
+        },
+        {
+          "title": "Sécurité de vos renseignements personnels",
+          "blocks": [
+            { "paragraph": "Tous les renseignements personnels sont conservés sur des serveurs au Canada avec des garanties de haute sécurité, protégés contre les usages non conformes et l'accès non autorisé. Nous mettons en œuvre des mesures de sécurité physiques, administratives et techniques, telles que l'authentification à deux facteurs pour tous les systèmes impliqués (logiciel de gestion de la pratique électronique, messagerie cryptée, facturation en ligne). Vos renseignements personnels ne sont accessibles qu'aux employés ou agents qui en ont besoin pour s'acquitter de leurs responsabilités." },
+            { "paragraph": "Bien que nous déployions des mesures commercialement raisonnables, nous ne pouvons garantir une sécurité absolue. En cas d'incident de confidentialité (hameçonnage, vol d'identité), nous agirons rapidement pour atténuer les risques et vous informer si un préjudice important est probable ou requis par la loi." }
+          ]
+        },
+        {
+          "title": "Limitation de la collecte, de l'utilisation et de la divulgation",
+          "blocks": [
+            { "paragraph": "Sauf indication contraire dans cette politique, nous ne divulguons jamais vos renseignements personnels à quiconque en dehors de Je chemine sans votre consentement écrit explicite. Cependant, nous pouvons partager vos informations avec :" },
+            { "bullets": [
+              { "term": "Fournisseurs de services tiers", "text": "qui nous aident à fournir nos services (traitement de paiement, conservation de données, support client, marketing). Nous exigeons de ces tiers qu'ils appliquent des mesures de sécurité similaires et qu'ils n'utilisent vos renseignements que pour les fins que nous avons déterminées." },
+              { "term": "Partenaires d'affaires", "text": "pour soutenir nos opérations commerciales et intégrer des produits et services (ex. : Microsoft Cloud Solutions Provider, Google Suite, Google Cloud)." },
+              { "term": "Vente ou transfert d'entreprise", "text": "dans le cas d'une vente ou d'un transfert de tout ou partie de notre entreprise, vos renseignements personnels peuvent être communiqués aux fins de cette opération." },
+              { "term": "Respect et application des lois", "text": "nous pouvons divulguer des renseignements au gouvernement, aux responsables de l'application de la loi ou à des parties privées si requis par la loi, par une procédure judiciaire ou pour protéger nos droits, notre sécurité, nos biens ou ceux d'autrui, ou pour prévenir des activités frauduleuses ou illégales." }
+            ]},
+            { "paragraph": "Il existe des limites importantes à nos obligations de confidentialité dans des situations spécifiques : danger imminent (suicide, blessures graves, abus ou négligence d'un enfant ou d'une personne âgée), risque de fuite d'un enfant, conduite dangereuse d'un véhicule routier, demandes des parents/tuteurs pour un enfant de moins de 14 ans, ou accès nécessaire pour notre personnel administratif." }
+          ]
+        },
+        {
+          "title": "Conservation des données",
+          "blocks": [
+            { "paragraph": "Je chemine conserve les renseignements personnels aussi longtemps que nécessaire pour vous offrir nos services, gérer nos activités et nous conformer à nos obligations légales et réglementaires (notamment une période de cinq ans à compter de la date du dernier service professionnel fourni, conformément aux normes professionnelles). Après cette période, nous veillons à leur anonymisation ou à leur destruction." }
+          ]
+        },
+        {
+          "title": "Vos droits et vos choix",
+          "blocks": [
+            { "paragraph": "Vous avez le droit de consulter, modifier ou supprimer les renseignements personnels que nous détenons sur vous, et de corriger toute erreur, sous réserve des exceptions prévues par la loi. Les demandes d'accès ou de correction doivent être faites par écrit. Nous nous engageons à y répondre dans les 30 jours, des frais administratifs pouvant s'appliquer." },
+            { "paragraph": "Vous pouvez également retirer votre consentement à la conservation, à l'utilisation ou à la divulgation de vos renseignements personnels à tout moment, en nous contactant. Nous traiterons votre demande dans les 30 jours, mais sachez que cela pourrait affecter notre capacité à vous offrir certains services." }
+          ]
+        },
+        {
+          "title": "Hyperliens et tiers",
+          "blocks": [
+            { "paragraph": "Notre site Web peut contenir des liens vers des sites ou plateformes de tiers. En utilisant ou en activant ces liens, vous quittez notre site, et votre navigation est alors soumise aux politiques de confidentialité de ces tiers. Nous n'exerçons aucun contrôle sur ces plateformes et déclinons toute responsabilité quant à leurs pratiques en matière de renseignements personnels." }
+          ]
+        },
+        {
+          "title": "Changements à la politique",
+          "blocks": [
+            { "paragraph": "Cette politique peut être mise à jour occasionnellement pour refléter les changements législatifs ou nos pratiques. La version modifiée sera publiée sur notre site Web et entrera en vigueur dès sa publication." }
+          ]
+        },
+        {
+          "title": "Contactez-nous",
+          "blocks": [
+            { "paragraph": "Pour toute question ou commentaire concernant cette politique, pour mettre à jour ou corriger vos renseignements personnels, ou pour déposer une plainte, veuillez contacter la personne responsable de la protection de la vie privée chez Je chemine : SASSI ESSID, Psychologue — sassiessid1@gmail.com." },
+            { "paragraph": "Cette personne est également chargée d'informer les personnes concernées en cas d'incident de confidentialité et d'aviser la Commission d'accès à l'information du Québec si nécessaire." }
+          ]
+        }
+      ]
+    },
+    "professionalTerms": {
+      "title": "Conditions d'utilisation pour les professionnels",
+      "subtitle": "Conditions d'utilisation pour les professionnels – Plateforme Je chemine",
+      "lastUpdated": "13 avril 2026",
+      "intro": "La plateforme Je chemine agit comme un mandataire administratif et un intermédiaire technologique. En adhérant à la plateforme, le professionnel accepte les modalités suivantes pour encadrer sa pratique au sein de l'écosystème Je chemine.",
+      "sections": [
+        {
+          "title": "1. Qualifications et conformité professionnelle",
+          "blocks": [
+            { "paragraph": "Le professionnel certifie et s'engage à :" },
+            { "bullets": [
+              { "term": "Détention de permis", "text": "être membre en règle d'un ordre professionnel reconnu au Québec (ex. : OPQ, OTSTCFQ…) et détenir les permis nécessaires pour l'exercice de la psychothérapie ou de la relation d'aide." },
+              { "term": "Assurance responsabilité", "text": "maintenir en tout temps une assurance responsabilité professionnelle valide couvrant sa pratique, y compris les services rendus en télépratique." },
+              { "term": "Éthique et déontologie", "text": "respecter strictement les codes de déontologie propres à sa profession. La plateforme ne peut en aucun cas être utilisée pour contourner les obligations déontologiques (tenue de dossiers, secret professionnel, obligations professionnelles, responsabilités professionnelles, etc.)." }
+            ]}
+          ]
+        },
+        {
+          "title": "2. Gestion du profil et jumelage intelligent",
+          "blocks": [
+            { "paragraph": "Pour optimiser le système de jumelage de la plateforme :" },
+            { "bullets": [
+              { "term": "Exactitude des données", "text": "le professionnel doit remplir un formulaire complet (formation, approches, expertises, clientèles cibles, préférences…) et s'assurer que ces informations sont véridiques." },
+              { "term": "Mise à jour autonome", "text": "toute modification des compétences ou des disponibilités doit être effectuée par le professionnel via son compte." },
+              { "term": "Liberté de prise en charge", "text": "le professionnel peut, à sa seule discrétion et sans préavis, suspendre la réception de nouvelles références ou cesser d'accepter des dossiers sur la plateforme." }
+            ]}
+          ]
+        },
+        {
+          "title": "3. Obligation de continuité des soins",
+          "blocks": [
+            { "bullets": [
+              { "term": "Engagement de suivi", "text": "une fois qu'un processus thérapeutique est entamé avec un client référé par Je chemine, le professionnel a l'obligation professionnelle et contractuelle de mener le suivi à terme." },
+              { "term": "Interruption de service", "text": "toute fin de suivi doit être justifiée cliniquement ou faire l'objet d'un référencement approprié, conformément aux normes de pratique, pour garantir la sécurité de l'usager." }
+            ]}
+          ]
+        },
+        {
+          "title": "4. Exclusivité et non-sollicitation",
+          "blocks": [
+            { "bullets": [
+              { "term": "Cadre du service", "text": "tout client accepté initialement dans le cadre de l'entente avec Je chemine doit demeurer au sein de la plateforme pour la durée totale du suivi." },
+              { "term": "Interdiction de contournement", "text": "il est strictement interdit au professionnel de solliciter ou d'accepter de poursuivre un suivi avec un client référé en dehors du système de Je chemine. Toute démarche de suivi doit être validée et traitée administrativement par la plateforme." }
+            ]}
+          ]
+        },
+        {
+          "title": "5. Confidentialité et non-divulgation (entente commerciale)",
+          "blocks": [
+            { "paragraph": "Le professionnel reconnaît que dans le cadre de sa collaboration avec Je chemine, il a accès à des informations sensibles, stratégiques et confidentielles. En conséquence, le professionnel s'engage à :" },
+            { "bullets": [
+              { "term": "Secret des modalités", "text": "garder strictement confidentiels les termes de son entente avec la plateforme, incluant, sans s'y limiter : les tarifs et honoraires convenus (qu'ils soient fixes ou préférentiels) ; le fonctionnement interne et les mécanismes de l'algorithme de jumelage intelligent ; les modalités administratives spécifiques et les processus opérationnels de la plateforme." },
+              { "term": "Avantages et conditions", "text": "ne divulguer à aucun tiers (collègues, autres professionnels, clients ou plateformes concurrentes) les avantages perçus, les remises, ou toute condition particulière accordée par Je chemine." },
+              { "term": "Protection du modèle d'affaires", "text": "s'abstenir de partager toute documentation, capture d'écran de l'interface professionnel ou communication interne qui pourrait porter préjudice à la compétitivité de la plateforme." },
+              { "term": "Durée de l'obligation", "text": "cette obligation de confidentialité demeure en vigueur pendant toute la durée de l'adhésion du professionnel et survit à la résiliation de l'entente pour une période de 5 ans." },
+              { "term": "Manquement", "text": "tout manquement à cette clause de confidentialité pourra entraîner la résiliation immédiate de l'accès aux services, sans préjudice des recours en dommages-intérêts que la plateforme pourrait exercer." }
+            ]}
+          ]
+        }
+      ],
+      "acceptanceModal": {
+        "title": "Conditions d'utilisation pour les professionnels",
+        "description": "Avant de finaliser votre profil, veuillez lire et accepter les présentes conditions. Elles encadrent votre pratique au sein de l'écosystème Je chemine.",
+        "scrollHint": "Faites défiler jusqu'en bas pour activer l'acceptation.",
+        "readyToAccept": "Vous pouvez maintenant accepter les conditions.",
+        "checkboxLabel": "Je reconnais avoir lu et j'accepte les conditions d'utilisation pour les professionnels de Je chemine.",
+        "acceptButton": "Accepter et finaliser mon profil",
+        "laterButton": "Plus tard",
+        "openFullPage": "Ouvrir le document complet dans un nouvel onglet",
+        "versionLabel": "Version du 13 avril 2026",
+        "submitting": "Envoi en cours…",
+        "errorGeneric": "Une erreur est survenue. Veuillez réessayer."
+      }
+    }
+  },
+  "AdminLegalDocuments": {
+    "title": "Documents légaux",
+    "subtitle": "Gérez le contenu des documents juridiques publiés sur le site. Les modifications prennent effet immédiatement après enregistrement.",
+    "documents": {
+      "terms": {
+        "label": "Conditions d'utilisation",
+        "description": "Politique d'utilisation des Services Clients – applicable à tous les utilisateurs."
+      },
+      "privacy": {
+        "label": "Politique de confidentialité",
+        "description": "Politique de confidentialité de Je chemine – applicable à tous les utilisateurs."
+      },
+      "professionalTerms": {
+        "label": "Conditions pour les professionnels",
+        "description": "Conditions d'utilisation spécifiques aux professionnels, acceptées à la finalisation du profil."
+      }
+    },
+    "localeFrench": "Français",
+    "localeEnglish": "Anglais",
+    "lastUpdatedLabel": "Dernière mise à jour",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "backToList": "Retour aux documents",
+    "savedAt": "Enregistré à {time}. Les pages publiques sont à jour.",
+    "fieldTitle": "Titre",
+    "fieldSubtitle": "Sous-titre",
+    "fieldContent": "Contenu",
+    "contentHint": "Utilisez les titres de niveau 2 (H2) pour chaque section du document : ils deviennent les entrées du sommaire. Les citations deviennent des encadrés d'avertissement.",
+    "versionNote": "Version actuelle : {version}. La date et la version sont mises à jour automatiquement lors de l'enregistrement.",
+    "viewPublic": "Voir la page publique",
+    "empty": "Aucune entrée."
   }
 }

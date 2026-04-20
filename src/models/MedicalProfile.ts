@@ -55,9 +55,8 @@ export interface IMedicalProfile extends Document {
   // Emergency Information
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  emergencyContactEmail?: string;
   emergencyContactRelation?: string;
-  crisisPlan?: string;
-  suicidalThoughts?: boolean;
 
   // Professional Matching Preferences
   preferredGender?: "noPreference" | "male" | "female" | "other";
@@ -147,9 +146,8 @@ const MedicalProfileSchema = new Schema<IMedicalProfile>(
     // Emergency Information
     emergencyContactName: String,
     emergencyContactPhone: String,
+    emergencyContactEmail: String,
     emergencyContactRelation: String,
-    crisisPlan: String,
-    suicidalThoughts: Boolean,
 
     // Professional Matching Preferences
     preferredGender: {

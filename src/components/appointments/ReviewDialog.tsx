@@ -137,7 +137,7 @@ export function ReviewDialog({
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
-              className="resize-none"
+              className="w-full resize-y"
             />
           </div>
 

@@ -91,7 +91,15 @@ export async function GET(req: NextRequest) {
       license,
     );
 
-    const pdfBuffer = buildFiscalReceiptPdfBuffer(pdfInput);
+    // Professionals never see the client's gross amount or the platform fee.
+    const audience =
+      session.user.id === professionalId
+        ? "professional"
+        : session.user.role === "admin"
+          ? "admin"
+          : "client";
+
+    const pdfBuffer = buildFiscalReceiptPdfBuffer({ ...pdfInput, audience });
 
     return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,

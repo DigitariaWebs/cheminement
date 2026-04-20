@@ -145,8 +145,20 @@ export async function GET() {
 
     const pendingPayoutCad = pending[0]?.total ?? 0;
 
+    // Hide gross client amount + platform fee from professionals (commercial confidentiality)
+    const redactedEntries = entries.map((e) => {
+      const { grossAmountCad: _g, platformFeeCad: _p, ...rest } = e as {
+        grossAmountCad?: number;
+        platformFeeCad?: number;
+        [k: string]: unknown;
+      };
+      void _g;
+      void _p;
+      return rest;
+    });
+
     return NextResponse.json({
-      entries,
+      entries: redactedEntries,
       pendingPayoutCad,
       currentCycleKey,
       balanceLifetimeCad: Math.round((creditsLife - debitsLife) * 100) / 100,

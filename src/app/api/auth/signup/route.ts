@@ -16,6 +16,7 @@ import {
   sendWelcomeEmail,
   sendAccountEmailVerificationEmail,
 } from "@/lib/notifications";
+import { LEGAL_VERSIONS } from "@/lib/legal";
 
 export async function POST(req: NextRequest) {
   try {
@@ -67,9 +68,8 @@ export async function POST(req: NextRequest) {
       notes,
       emergencyContactName,
       emergencyContactPhone,
+      emergencyContactEmail,
       emergencyContactRelation,
-      crisisPlan,
-      suicidalThoughts,
       preferredGender,
       preferredAge,
       languagePreference,
@@ -183,6 +183,9 @@ export async function POST(req: NextRequest) {
                     : undefined,
       location: location,
       privacyPolicyAcceptedAt: new Date(),
+      privacyPolicyVersion: LEGAL_VERSIONS.privacy,
+      termsAcceptedAt: new Date(),
+      termsVersion: LEGAL_VERSIONS.terms,
     });
 
     await user.save();
@@ -281,9 +284,8 @@ export async function POST(req: NextRequest) {
         // Emergency Information
         emergencyContactName: emergencyContactName,
         emergencyContactPhone: emergencyContactPhone,
+        emergencyContactEmail: emergencyContactEmail,
         emergencyContactRelation: emergencyContactRelation,
-        crisisPlan: crisisPlan,
-        suicidalThoughts: suicidalThoughts,
         // Professional Matching Preferences
         preferredGender: preferredGender,
         preferredAge: preferredAge,

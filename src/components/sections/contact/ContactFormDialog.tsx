@@ -154,17 +154,17 @@ export default function ContactFormDialog({
               value={formData.message}
               onChange={handleChange}
               placeholder="Votre message..."
-              className="min-h-[120px] resize-none font-light"
+              className="min-h-[140px] w-full resize-y font-light"
             />
           </div>
           {submitStatus === "success" && (
             <p className="text-sm text-green-600 dark:text-green-400">
-              Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.
+              {t("successMessage")}
             </p>
           )}
           {submitStatus === "error" && (
             <p className="text-sm text-red-600 dark:text-red-400">
-              Une erreur est survenue. Veuillez réessayer plus tard.
+              {t("errorMessage")}
             </p>
           )}
           <Button
@@ -175,12 +175,12 @@ export default function ContactFormDialog({
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Envoi en cours...
+                {t("submitting")}
               </>
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Envoyer le message
+                {t("submit")}
               </>
             )}
           </Button>

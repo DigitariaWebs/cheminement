@@ -183,38 +183,21 @@ export default function ProfessionalBillingPage() {
     })
     .reduce((sum, p) => sum + p.payment.professionalPayout, 0);
 
-  const getStatusColor = (status: AppointmentResponse["payment"]["status"]) => {
-    switch (status) {
-      case "paid":
-        return "bg-green-500/15 text-green-700 dark:text-green-400";
-      case "pending":
-        return "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400";
-      case "processing":
-        return "bg-purple-500/15 text-purple-700 dark:text-purple-400";
-      case "refunded":
-        return "bg-red-500/15 text-red-700 dark:text-red-400";
-      case "cancelled":
-        return "bg-gray-500/15 text-gray-700 dark:text-gray-400";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
+  // Pros only need to know if a session is paid or pending — everything else collapses to pending.
+  const isPaid = (status: AppointmentResponse["payment"]["status"]) =>
+    status === "paid";
 
-  const getStatusIcon = (status: AppointmentResponse["payment"]["status"]) => {
-    switch (status) {
-      case "paid":
-        return <CheckCircle2 className="h-4 w-4" />;
-      case "pending":
-      case "processing":
-        return <Clock className="h-4 w-4" />;
-      case "refunded":
-        return <AlertCircle className="h-4 w-4" />;
-      case "cancelled":
-        return <AlertCircle className="h-4 w-4" />;
-      default:
-        return <Clock className="h-4 w-4" />;
-    }
-  };
+  const getStatusColor = (status: AppointmentResponse["payment"]["status"]) =>
+    isPaid(status)
+      ? "bg-green-500/15 text-green-700 dark:text-green-400"
+      : "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400";
+
+  const getStatusIcon = (status: AppointmentResponse["payment"]["status"]) =>
+    isPaid(status) ? (
+      <CheckCircle2 className="h-4 w-4" />
+    ) : (
+      <Clock className="h-4 w-4" />
+    );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -458,9 +441,7 @@ export default function ProfessionalBillingPage() {
                     <tr className="border-b border-border/40 text-left text-muted-foreground">
                       <th className="pb-2 pr-2 font-medium">{t("ledgerDate")}</th>
                       <th className="pb-2 pr-2 font-medium">{t("ledgerKind")}</th>
-                      <th className="pb-2 pr-2 font-medium">{t("ledgerGross")}</th>
-                      <th className="pb-2 pr-2 font-medium">{t("platformFee")}</th>
-                      <th className="pb-2 font-medium">{t("netAmount")}</th>
+                      <th className="pb-2 font-medium">{t("earnings")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -476,16 +457,6 @@ export default function ProfessionalBillingPage() {
                           </td>
                           <td className="py-2 pr-2 text-xs">
                             {isDebit ? t("ledgerDebit") : t("ledgerCredit")}
-                          </td>
-                          <td className="py-2 pr-2">
-                            {isDebit
-                              ? "—"
-                              : `${row.grossAmountCad.toFixed(2)} $`}
-                          </td>
-                          <td className="py-2 pr-2">
-                            {isDebit
-                              ? "—"
-                              : `${row.platformFeeCad.toFixed(2)} $`}
                           </td>
                           <td className="py-2">
                             {isDebit
@@ -683,12 +654,14 @@ export default function ProfessionalBillingPage() {
                       )}`}
                     >
                       {getStatusIcon(apt.payment.status)}
-                      {t(`status.${apt.status}`)}
+                      {isPaid(apt.payment.status)
+                        ? t("paymentStatusPaid")
+                        : t("paymentStatusPending")}
                     </span>
                   </div>
 
                   {/* Details Grid */}
-                  <div className="grid gap-4 rounded-2xl bg-muted/30 p-4 md:grid-cols-4">
+                  <div className="grid gap-4 rounded-2xl bg-muted/30 p-4 md:grid-cols-3">
                     <div>
                       <p className="text-xs text-muted-foreground">
                         {t("invoiceNumber")}
@@ -697,23 +670,7 @@ export default function ProfessionalBillingPage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">
-                        {t("grossAmount")}
-                      </p>
-                      <p className="font-medium text-foreground">
-                        {apt.payment.price.toFixed(2)} $
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        {t("platformFee")}
-                      </p>
-                      <p className="font-medium text-foreground">
-                        -{apt.payment.platformFee.toFixed(2)} $
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        {t("netAmount")}
+                        {t("earnings")}
                       </p>
                       <p className="font-medium text-primary">
                         {apt.payment.professionalPayout.toFixed(2)} $
@@ -730,7 +687,7 @@ export default function ProfessionalBillingPage() {
                       </div>
                     )}
                     {apt.status === "cancelled" && apt.cancelReason && (
-                      <div className="md:col-span-4">
+                      <div className="md:col-span-3">
                         <p className="text-xs text-muted-foreground">
                           {t("cancelReason")}
                         </p>

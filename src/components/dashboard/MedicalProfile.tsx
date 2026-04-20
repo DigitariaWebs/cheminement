@@ -774,21 +774,6 @@ export default function MedicalProfile({
               </p>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <Label>{tMv("labels.crisisPlan")}</Label>
-            <p className="text-foreground leading-relaxed">
-              {medicalProfile.crisisPlan || tMv("empty.noCrisisPlan")}
-            </p>
-          </div>
-
-          {medicalProfile.suicidalThoughts && (
-            <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-4 border border-red-200 dark:border-red-900">
-              <p className="text-sm text-red-800 dark:text-red-200 font-light">
-                ⚠️ {tMv("labels.suicidalThoughtsWarning")}
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
@@ -1043,8 +1028,6 @@ function MedicalProfileModal({
     emergencyContactName: profile?.emergencyContactName || "",
     emergencyContactPhone: profile?.emergencyContactPhone || "",
     emergencyContactRelation: profile?.emergencyContactRelation || "",
-    crisisPlan: profile?.crisisPlan || "",
-    suicidalThoughts: profile?.suicidalThoughts || false,
   });
 
   const [matchingPreferencesData, setMatchingPreferencesData] = useState({
@@ -2058,47 +2041,6 @@ function MedicalProfileModal({
                     placeholder={tMp("step7.emergencyContactRelationPlaceholder")}
                     />
                   </div>
-                </div>
-
-                <div>
-                  <Label
-                    htmlFor="crisisPlan"
-                    className="font-light mb-3 text-base"
-                  >
-                    {tMp("step7.crisisPlan")}
-                  </Label>
-                  <Textarea
-                    id="crisisPlan"
-                    name="crisisPlan"
-                    value={emergencyInfoData.crisisPlan}
-                    onChange={(e) =>
-                      setEmergencyInfoData((prev) => ({
-                        ...prev,
-                        crisisPlan: e.target.value,
-                      }))
-                    }
-                    rows={4}
-                    placeholder={tMp("step7.crisisPlanPlaceholder")}
-                  />
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      name="suicidalThoughts"
-                      checked={emergencyInfoData.suicidalThoughts}
-                      onChange={(e) =>
-                        setEmergencyInfoData((prev) => ({
-                          ...prev,
-                          suicidalThoughts: e.target.checked,
-                        }))
-                      }
-                    />
-                    <span className="text-sm font-light">
-                      {tMv("labels.suicidalThoughtsAck")}
-                    </span>
-                  </label>
                 </div>
               </div>
             </TabsContent>

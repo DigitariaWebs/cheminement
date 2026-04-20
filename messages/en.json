@@ -274,6 +274,48 @@
       "adminRole": "Admin Role",
       "promoting": "Promoting..."
     },
+    "motifs": {
+      "title": "Consultation reasons",
+      "subtitle": "Add, edit or disable the reasons displayed in the search tool.",
+      "refresh": "Refresh",
+      "createButton": "New reason",
+      "statTotal": "Total",
+      "statActive": "Active",
+      "statMissingEn": "Missing EN translation",
+      "searchPlaceholder": "Search by label, translation or alias…",
+      "filterLocaleAll": "All translations",
+      "filterLocaleMissingEn": "Missing English",
+      "filterStatusAll": "All statuses",
+      "filterStatusActive": "Active only",
+      "filterStatusInactive": "Inactive only",
+      "empty": "No reason matches the current filters.",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "missingEnBadge": "EN missing",
+      "noEnTranslation": "No English translation",
+      "edit": "Edit",
+      "delete": "Delete",
+      "createTitle": "New consultation reason",
+      "editTitle": "Edit reason",
+      "editDescription": "Both the French and English labels are required so the item displays correctly in every locale.",
+      "labelFrField": "French label",
+      "labelFrPlaceholder": "e.g. Anxiété sociale",
+      "labelEnField": "English label",
+      "labelEnPlaceholder": "e.g. Social anxiety",
+      "labelEnHelp": "Required — exact match used for search and display in English.",
+      "aliasesField": "Aliases (synonyms, acronyms)",
+      "aliasesPlaceholder": "Comma- or newline-separated",
+      "aliasesHelp": "Extra keywords that will surface this reason in searches.",
+      "activeField": "Visible to the public in the search tool",
+      "cancel": "Cancel",
+      "create": "Create",
+      "saveChanges": "Save changes",
+      "deleteTitle": "Delete reason",
+      "deleteDescription": "Are you sure you want to delete \"{label}\"? This cannot be undone.",
+      "confirmDelete": "Delete",
+      "errorFrRequired": "The French label is required.",
+      "errorEnRequired": "The English label is required."
+    },
     "paymentTrust": {
       "title": "Payment Trust",
       "subtitle": "Manage payment guarantees and manual trusts",
@@ -395,7 +437,28 @@
       "kindDebit": "Debit (Payout)",
       "lifetimeBalance": "Lifetime balance (since signup)",
       "currentCycleBalance": "Current cycle balance",
-      "noEntries": "No transactions found."
+      "noEntries": "No transactions found.",
+      "forceValidateButton": "Validate manually",
+      "forceValidateConfirmTitle": "Force-validate this professional?",
+      "forceValidateConfirmDesc": "This will immediately set the account status to Active and the license status to Verified, even if the automated onboarding checks have not been completed. Use this only after a manual review of the file.",
+      "forceValidateConfirm": "Confirm validation",
+      "forceValidateSuccess": "Professional validated manually. Account is now Active.",
+      "forceValidateError": "Manual validation failed. Please retry.",
+      "reviewTitle": "Review checklist",
+      "reviewSubtitle": "Quick consistency check on the information submitted by this professional.",
+      "reviewCheckStatus": "Account status",
+      "reviewCheckLicense": "License verification",
+      "reviewCheckEmailVerified": "Email address verified",
+      "reviewCheckLicenseNumber": "License number on file",
+      "reviewCheckSpecialty": "Main specialty filled in",
+      "reviewCheckBio": "Biography provided",
+      "reviewCheckExperience": "Years of experience provided",
+      "reviewCheckProfileComplete": "Professional profile completed",
+      "reviewCheckStripe": "Stripe Connect account linked",
+      "reviewLicenseStatus_verified": "Verified",
+      "reviewLicenseStatus_pending_review": "Pending review",
+      "reviewLicenseStatus_rejected": "Rejected",
+      "reviewLicenseStatus_not_applicable": "Not applicable"
     }
   },
   "AppointmentSelector": {
@@ -732,7 +795,7 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
     "aoda": "AODA",
-    "cookiePolicy": "Cookie Policy",
+    "professionalTerms": "Professional Terms",
     "rightsAndResponsibilities": "Rights and Responsibilities",
     "socialX": "Je Chemine on X"
   },
@@ -818,8 +881,7 @@
       "title": "Start Your Journey Now",
       "description": "Our professionals can support you in better managing multiple issues.",
       "topics": "Anxiety, Burnout, Stress, Depression, Self-esteem, ADHD, High Intellectual Potential, parenting role, learning difficulties, emotion management, other issues",
-      "note": "This is not an exhaustive list",
-      "programDescription": "Even before your first appointment, benefit from our pre-therapy program and educational resources to better understand your situation and prepare for your follow-up."
+      "note": "This is not an exhaustive list"
     },
     "professionalsSection": {
       "title": "Our Professionals",
@@ -894,7 +956,7 @@
   },
   "ProfessionalHero": {
     "tagline": "FOR MENTAL HEALTH PROFESSIONALS",
-    "headline": "Focus on What You Do Best: Helping People",
+    "headline": "Focus on people, we'll handle the rest.",
     "description": "Join our platform and let us handle the administrative work. Connect with clients who match your expertise, optimize your practice, and grow your impact.",
     "joinPlatform": "Join Our Platform",
     "learnMore": "Learn More",
@@ -947,7 +1009,8 @@
     "financialDesc": "Preferential rates with accountants, OPQ membership fee support based on sessions, and investment fund opportunities.",
     "additionalPerksTitle": "Additional Perks & Opportunities",
     "perk1": "Become a shareholder and collectively benefit from our success",
-    "perk2": "$1 per session contribution to an investment fund"
+    "perk2": "$1 per session contribution to an investment fund",
+    "disclaimer": "* Access details and conditions specified in the collaboration agreement"
   },
   "ProfessionalCTA": {
     "badge": "READY TO GET STARTED?",
@@ -976,7 +1039,7 @@
     "title": "Get the Support You Need, When You Need It Most",
     "subtitle": "We make mental health care accessible, convenient, and personalized to your unique situation.",
     "findHelp": "Find Help Quickly",
-    "findHelpDesc": "No more endless waiting lists. Connect with qualified mental health professionals who are available to help you now.",
+    "findHelpDesc": "No more endless waits! Connect with qualified mental health professionals who are available to help you now.",
     "accessAnywhere": "Access from Anywhere",
     "accessAnywhereDesc": "Whether you're in a remote region or a major city, find the right professional who matches your needs, no matter the distance.",
     "startJourney": "Start Your Journey Today",
@@ -1188,7 +1251,8 @@
       "accountFor": "This account is for",
       "accountForMe": "For myself",
       "accountForChild": "For my child",
-      "childInfoTitle": "Child information",
+      "accountForChildNote": "Account creation for a minor under 14 years old only.",
+      "childInfoTitle": "Child information (Under 14 years old)",
       "childFirstName": "Child's first name",
       "childLastName": "Child's last name",
       "childDateOfBirth": "Child's date of birth",
@@ -1220,6 +1284,7 @@
         "childNameRequired": "Child's first and last name are required.",
         "childDobRequired": "Child's date of birth is required.",
         "childServiceTypeRequired": "Please indicate whether this is for an evaluation or psychological follow-up.",
+        "emergencyEmailRequired": "A valid emergency contact email is required.",
         "paymentMethodRequired": "Please choose a payment method.",
         "agreeToTermsRequired": "You must accept the terms and conditions.",
         "acceptPrivacyPolicyRequired": "You must confirm that you have read and accepted the privacy policy.",
@@ -1289,7 +1354,8 @@
           "asthma": "Asthma",
           "thyroidDisorder": "Thyroid disorder",
           "chronicPain": "Chronic pain",
-          "none": "None"
+          "other": "Other medical condition",
+          "otherPlaceholder": "Specify the medical condition"
         },
         "medications": {
           "antidepressants": "Antidepressants",
@@ -1298,7 +1364,8 @@
           "antipsychotics": "Antipsychotics",
           "sleepAids": "Sleep aids",
           "painMedication": "Pain medication",
-          "none": "None"
+          "other": "Other medication",
+          "otherPlaceholder": "Specify the medication"
         }
       },
       "therapyApproachOptions": {
@@ -1323,7 +1390,7 @@
       "review": {
         "name": "Name:",
         "email": "Email:",
-        "reviewPhone": "Phone:",
+        "phone": "Phone:",
         "primaryConcern": "Primary concern:"
       },
       "profile": {
@@ -1417,12 +1484,10 @@
           "emergencyContactNamePlaceholder": "Full name",
           "emergencyContactPhone": "Emergency Contact Phone",
           "emergencyContactPhonePlaceholder": "Phone number",
+          "emergencyContactEmail": "Emergency Contact Email",
+          "emergencyContactEmailPlaceholder": "Email address",
           "emergencyContactRelation": "Relationship",
-          "emergencyContactRelationPlaceholder": "e.g., Spouse, Parent",
-          "crisisPlan": "Crisis Plan",
-          "crisisPlanPlaceholder": "Describe your crisis plan",
-          "suicidalThoughts": "Have you experienced suicidal thoughts?",
-          "crisisHotlinesTitle": "If you're in crisis, please call one of these hotlines immediately:"
+          "emergencyContactRelationPlaceholder": "e.g., Spouse, Parent"
         },
         "step8": {
           "preferredGender": "Preferred Professional Gender",
@@ -1522,6 +1587,15 @@
       },
       "professionalTitleLabel": "Professional title",
       "professionalTitlePlaceholder": "Select your title",
+      "professionalTitleOptions": {
+        "psychologist": "Psychologist",
+        "psychotherapist": "Psychotherapist",
+        "neuropsychologist": "Neuropsychologist",
+        "psychoeducator": "Psychoeducator",
+        "occupationalTherapistMentalHealth": "Occupational therapist (mental health)",
+        "psychiatrist": "Psychiatrist",
+        "otherProfessionals": "Other professionals"
+      },
       "licenseLabel": "Practice number / License",
       "licenseHint": "Professional license, doctoral student status, or permit by equivalency in progress",
       "yearsOfExperience": "Years of experience",
@@ -1741,6 +1815,8 @@
       "paymentTrust": "Interac / transfer guarantees",
       "accounting": "Accounting & cycles",
       "serviceRequests": "Service requests",
+      "legalDocuments": "Legal documents",
+      "motifs": "Consultation reasons",
       "administration": "Administration"
     },
     "overview": {
@@ -1956,11 +2032,11 @@
       "payment": "Payment",
       "paid": "Paid",
       "pending": "Pending",
-      "overdue": "Overdue",
       "client": "Client",
       "dateTime": "Date & Time",
       "duration": "Duration",
       "amount": "Amount",
+      "earnings": "Earnings",
       "issueType": "Issue Type",
       "actions": "Actions",
       "viewDetails": "View Details",
@@ -2410,7 +2486,7 @@
         "label": "Our Difference",
         "title": "A Platform Designed by Psychologists"
       },
-      "headline": "At Je chemine, we believe that everyone deserves human, safe, and personalized support tailored to their reality.",
+      "headline": "At Je chemine, we believe that everyone deserves human, confidential, and personalized support tailored to their reality.",
       "description1": "Our mission is to support your emotional and psychological well-being through a personalized journey designed to meet your unique needs and pace. We offer simple and caring access to a team of experts whose practice is regulated, recognized, and compliant with their professional order requirements.",
       "description2": "Whatever your situation, you are accompanied by a qualified professional, ready to walk with you towards a more serene, balanced, and fulfilling life.",
       "trustIndicators": {
@@ -2584,6 +2660,7 @@
           "Anxiety and emotional regulation support.",
           "Social skills development.",
           "School-related difficulties and learning support.",
+          "Cyber-addiction and substance dependencies.",
           "Parent collaboration and guidance."
         ]
       },
@@ -2811,7 +2888,7 @@
       "bookingTitle": "Book an Appointment"
     },
     "ethics": {
-      "badge": "3 · Ethics and Confidentiality",
+      "badge": "Ethics and Confidentiality",
       "title": "We protect your trust, at every moment.",
       "description": "Confidentiality is not an option, it's our foundation. We designed our platform and processes to ensure maximum protection of your privacy, from the first contact to the closure of your file.",
       "note": "Each professional is a signatory to specific commitments regarding data protection and benefits from ongoing training on confidentiality.",
@@ -2967,7 +3044,11 @@
         "Clarify your needs, objectives, and the context of your journey.",
         "Receive help to prepare for your first appointment."
       ],
-      "guidance": "We will guide you to the right professional and help you prepare well for your first meeting."
+      "guidance": "We will guide you to the right professional and help you prepare well for your first meeting.",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "successMessage": "Your message has been sent successfully. We will respond as soon as possible.",
+      "errorMessage": "An error occurred. Please try again later."
     },
     "emergency": {
       "title": "In Case of Emergency",
@@ -3357,7 +3438,7 @@
         "appointmentPreferences": "Appointment Preferences",
         "appointmentPreferencesDesc": "Availability and modality",
         "emergencyInfo": "Emergency Information",
-        "emergencyInfoDesc": "Contact and crisis plan",
+        "emergencyInfoDesc": "Emergency contact",
         "matchingPreferences": "Matching Preferences",
         "matchingPreferencesDesc": "Professional preferences"
       },
@@ -3563,11 +3644,7 @@
         "emergencyContactPhone": "Emergency Contact Phone",
         "emergencyContactPhonePlaceholder": "Phone number",
         "emergencyContactRelation": "Relationship",
-        "emergencyContactRelationPlaceholder": "e.g., Spouse, Parent",
-        "crisisPlan": "Crisis Plan",
-        "crisisPlanPlaceholder": "Describe your crisis plan",
-        "suicidalThoughts": "Have you experienced suicidal thoughts?",
-        "crisisHotlinesTitle": "If you're in crisis, please call one of these hotlines immediately:"
+        "emergencyContactRelationPlaceholder": "e.g., Spouse, Parent"
       },
       "step8": {
         "title": "Matching Preferences",
@@ -3709,8 +3786,7 @@
         "noConcernsReported": "No concerns reported",
         "normalSleep": "Normal",
         "noAdditionalNotes": "No additional notes",
-        "notProvided": "Not provided",
-        "noCrisisPlan": "No crisis plan specified"
+        "notProvided": "Not provided"
       },
       "labels": {
         "triggeringEvent": "Triggering event",
@@ -3721,15 +3797,12 @@
         "contactName": "Contact name",
         "phoneNumber": "Phone number",
         "relationship": "Relationship",
-        "crisisPlan": "Crisis plan",
         "matchingPrefsTitle": "Professional matching preferences",
         "preferredAgeRange": "Preferred age range",
         "anyAge": "Any age",
         "ageYounger": "Younger (20–35)",
         "ageMiddle": "Middle-aged (36–55)",
-        "ageOlder": "Older (56+)",
-        "suicidalThoughtsWarning": "The client has reported experiencing suicidal thoughts. Immediate attention may be required.",
-        "suicidalThoughtsAck": "I have experienced suicidal thoughts"
+        "ageOlder": "Older (56+)"
       }
     },
     "library": {
@@ -3927,19 +4000,18 @@
       "ledgerKind": "Type",
       "ledgerCredit": "Credit",
       "ledgerDebit": "Debit",
-      "ledgerGross": "Gross",
       "ledgerBalanceCycle": "Cycle balance (credits − debits)",
       "ledgerBalanceLifetime": "Lifetime balance (history)",
       "session": "Session",
       "invoiceNumber": "Invoice Number",
-      "grossAmount": "Gross Amount",
-      "platformFee": "Platform Fee",
-      "netAmount": "Net Amount",
+      "earnings": "Earnings",
       "paidDate": "Paid Date",
       "downloadInvoice": "Download Invoice",
       "cancelReason": "Cancellation reason",
       "show": "Show",
       "hide": "Hide",
+      "paymentStatusPaid": "Paid",
+      "paymentStatusPending": "Pending",
       "status": {
         "paid": "Paid",
         "pending": "Pending",
@@ -4325,5 +4397,304 @@
     "submit": "Submit Request",
     "submitting": "Sending…",
     "success": "Your request has been sent. We will contact you shortly."
+  },
+  "Legal": {
+    "ui": {
+      "lastUpdated": "Last updated",
+      "backToTop": "Back to top",
+      "tableOfContents": "Contents",
+      "readFullDocument": "Read the full document",
+      "contactUs": "Contact us"
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "subtitle": "Client Services Usage Policy – Je chemine Platform",
+      "lastUpdated": "April 13, 2026",
+      "sections": [
+        {
+          "title": "1. Preamble and mission",
+          "blocks": [
+            { "paragraph": "The Je chemine platform is a space dedicated to supporting mental health. It provides a technological infrastructure enabling the connection between clients and qualified professionals for psychological consultation and assessment services." }
+          ]
+        },
+        {
+          "title": "2. Distinction of responsibilities",
+          "blocks": [
+            { "paragraph": "It is understood that Je chemine acts exclusively as a technical intermediary." },
+            { "bullets": [
+              { "term": "Platform's responsibility", "text": "ensuring the proper operation of the tools for appointment booking, payment, receipts, and self-learning." },
+              { "term": "Professional's responsibility", "text": "each professional is solely responsible for their clinical acts, professional judgment, assessments, and the quality of their follow-up." },
+              { "term": "Clinical records", "text": "the platform does not manage, store, or access any clinical records. The keeping and preservation of records (progress notes, assessment reports, raw data, etc.) rest exclusively with the professional, in accordance with the standards of their respective professional order." }
+            ]}
+          ]
+        },
+        {
+          "title": "3. Eligibility and account use",
+          "blocks": [
+            { "bullets": [
+              { "term": "Registration", "text": "the user agrees to provide accurate information and to maintain the confidentiality of their credentials." },
+              { "term": "Personal use", "text": "the account is strictly personal. The user is responsible for any activity carried out under their account." }
+            ]}
+          ]
+        },
+        {
+          "title": "4. Intellectual property",
+          "blocks": [
+            { "paragraph": "All elements that make up the platform (texts, logos, graphics, journey tools, videos, software, etc.) are the exclusive property of Je chemine." },
+            { "bullets": [
+              { "text": "The user benefits from a limited, non-exclusive, and non-transferable license for personal use." },
+              { "text": "Any unauthorized reproduction, extraction, or distribution is strictly prohibited." }
+            ]}
+          ]
+        },
+        {
+          "title": "5. Integrity and security of the platform",
+          "blocks": [
+            { "paragraph": "The user agrees not to damage the platform. The following are strictly prohibited:" },
+            { "bullets": [
+              { "text": "any attempt to intrude or hack into the system;" },
+              { "text": "the introduction of viruses or malicious code;" },
+              { "text": "any action that could overload or damage Je chemine's technical infrastructure." }
+            ]}
+          ]
+        },
+        {
+          "title": "6. Confidentiality and privacy",
+          "blocks": [
+            { "bullets": [
+              { "term": "Technical confidentiality", "text": "the platform encrypts communications. However, the user is responsible for ensuring they are in a private environment and for taking steps to protect their data." },
+              { "term": "Recordings", "text": "it is strictly forbidden to record communications without the explicit written consent of a platform member." },
+              { "term": "Professional secrecy", "text": "professional secrecy binds the client and the mental health professional." }
+            ]}
+          ]
+        },
+        {
+          "title": "7. Service terms",
+          "blocks": [
+            { "bullets": [
+              { "term": "Assessments", "text": "the client acknowledges that the initial assessment process, aimed at properly directing the client, follows rigorous protocols under the responsibility of a platform member." },
+              { "term": "Cancellations", "text": "cancellation policies and associated fees are determined by the platform's conditions and agreements with the professional." },
+              { "term": "Payments", "text": "payments are made via the platform (credit card, Interac transfer, or pre-authorized bank debit agreement). The platform is responsible for issuing official consultation receipts." }
+            ]}
+          ]
+        },
+        {
+          "title": "8. Non-emergency clause",
+          "blocks": [
+            { "callout": "IMPORTANT: The Je chemine platform is not an emergency response service. In the event of a suicidal crisis or immediate danger to yourself or others, you must immediately contact your local emergency services (e.g., 911) or go to the nearest emergency room." }
+          ]
+        },
+        {
+          "title": "9. Sanctions and termination",
+          "blocks": [
+            { "paragraph": "Any breach of these policies, in particular abusive behavior toward a professional or an administrative member, or any attempt to damage the platform, may result in the suspension or permanent closure of the account without notice." }
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "subtitle": "Je chemine Privacy Policy",
+      "lastUpdated": "April 13, 2026",
+      "intro": "At Je chemine, we are committed to protecting your privacy and the confidentiality of your personal information. This privacy policy is intended to inform you of our practices regarding the collection, use, processing, and retention of the personal and confidential information we gather when you use our services, visit our website, or interact with us. We strictly comply with applicable laws, including the Act respecting the protection of personal information in the private sector, the laws of the province of Quebec and the federal laws of Canada, including the Act to modernize legislative provisions as regards the protection of personal information (the Applicable Laws) and the regulations of the OPQ.",
+      "sections": [
+        {
+          "title": "Scope and application",
+          "blocks": [
+            { "paragraph": "This policy governs the collection, use, and retention of information obtained by Je chemine regarding individuals who access, use, or communicate with our services (the “users” or “you”). Your use of our services is also subject to our terms of use. If you do not consent to these terms, please do not use our services." }
+          ]
+        },
+        {
+          "title": "What is personal information?",
+          "blocks": [
+            { "paragraph": "“Personal information” is any information that identifies you or could be associated with you, such as your name, telephone number, home address, email, date of birth, gender, information about your employment or education, your psychiatric and medical history, and any other information that must be treated as “personal information” in accordance with the Applicable Laws. This also includes your payment details." }
+          ]
+        },
+        {
+          "title": "Why and how do we collect your information?",
+          "blocks": [
+            { "paragraph": "We collect and use your personal information for the following reasons:" },
+            { "bullets": [
+              { "term": "Access to and use of services", "text": "to enable you to access and use our services appropriately, including processing your appointment and inquiry requests." },
+              { "term": "Administration of clinical services", "text": "to manage service requests, assign you to an appropriate professional, and ensure appointment follow-up (reminders, confirmations, intake forms). This information is stored on secure, encrypted servers." },
+              { "term": "Clinical information", "text": "during your first appointment, we collect information to facilitate the assessment and matching with a professional." },
+              { "term": "Online payment", "text": "to process your payments and send you invoices through our secure billing system. No credit card information is directly retained by Je chemine." },
+              { "term": "Online communication and telehealth", "text": "to enable professionals and clients to communicate via secure, encrypted messaging servers and to provide virtual services through private web conferencing solutions." },
+              { "term": "Marketing and communications", "text": "to send you marketing communications (newsletters, etc.), based on your choice." },
+              { "term": "Service improvement", "text": "to evaluate, optimize, and improve the content, features, and delivery of our services and website." },
+              { "term": "Customer relationship management (CRM)", "text": "to manage the client relationship, generate mailing lists, and produce internal reports." },
+              { "term": "Recruitment", "text": "if you apply for a position, to evaluate your application and manage our recruitment needs." },
+              { "term": "Technical issues", "text": "to address reported issues, perform troubleshooting, support, and security reviews." }
+            ]},
+            { "paragraph": "We use personal information only for the purposes for which it was collected and, as a general rule, will ask for your permission for any other use." }
+          ]
+        },
+        {
+          "title": "Information collected automatically",
+          "blocks": [
+            { "paragraph": "When you access our service, your computer and our server automatically exchange data (Internet service provider identification, IP address, type of browser and operating system, pages visited, date and time, referring site address). This information is collected for statistical and technological purposes and is not considered identifiable personal information." },
+            { "paragraph": "We use cookies to facilitate navigation and optimize the user experience, as well as audience analytics solutions such as Google Analytics to collect aggregated statistical data (pages viewed, duration of visit, etc.). Your IP address is anonymized to protect your privacy. You may configure your browser to block cookies, but this may limit some features." }
+          ]
+        },
+        {
+          "title": "Security of your personal information",
+          "blocks": [
+            { "paragraph": "All personal information is stored on servers in Canada with high-security safeguards, protected against improper use and unauthorized access. We implement physical, administrative, and technical security measures, such as two-factor authentication for all involved systems (electronic practice management software, encrypted messaging, online billing). Your personal information is only accessible to employees or agents who need it to fulfill their responsibilities." },
+            { "paragraph": "While we deploy commercially reasonable measures, we cannot guarantee absolute security. In the event of a privacy incident (phishing, identity theft), we will act quickly to mitigate the risks and notify you if significant harm is likely or required by law." }
+          ]
+        },
+        {
+          "title": "Limits on collection, use, and disclosure",
+          "blocks": [
+            { "paragraph": "Except as otherwise indicated in this policy, we never disclose your personal information to anyone outside Je chemine without your explicit written consent. However, we may share your information with:" },
+            { "bullets": [
+              { "term": "Third-party service providers", "text": "who help us deliver our services (payment processing, data storage, customer support, marketing). We require these third parties to apply similar security measures and to use your information only for the purposes we determine." },
+              { "term": "Business partners", "text": "to support our business operations and integrate products and services (e.g., Microsoft Cloud Solutions Provider, Google Suite, Google Cloud)." },
+              { "term": "Sale or transfer of business", "text": "in the event of a sale or transfer of all or part of our business, your personal information may be disclosed for the purposes of that transaction." },
+              { "term": "Compliance with and enforcement of laws", "text": "we may disclose information to the government, law enforcement, or private parties if required by law, by legal process, or to protect our rights, safety, property, or those of others, or to prevent fraudulent or illegal activities." }
+            ]},
+            { "paragraph": "There are important limits to our confidentiality obligations in specific situations: imminent danger (suicide, serious injury, abuse or neglect of a child or elderly person), risk of a child running away, dangerous driving of a motor vehicle, requests by parents/guardians for a child under 14, or access required for our administrative staff." }
+          ]
+        },
+        {
+          "title": "Data retention",
+          "blocks": [
+            { "paragraph": "Je chemine retains personal information for as long as necessary to provide our services, manage our activities, and comply with our legal and regulatory obligations (notably a period of five years from the date of the last professional service provided, in accordance with professional standards). After this period, we ensure its anonymization or destruction." }
+          ]
+        },
+        {
+          "title": "Your rights and choices",
+          "blocks": [
+            { "paragraph": "You have the right to access, modify, or delete the personal information we hold about you, and to correct any errors, subject to the exceptions provided by law. Requests for access or correction must be made in writing. We undertake to respond within 30 days, and administrative fees may apply." },
+            { "paragraph": "You may also withdraw your consent to the retention, use, or disclosure of your personal information at any time, by contacting us. We will process your request within 30 days, but please note that this may affect our ability to provide you with certain services." }
+          ]
+        },
+        {
+          "title": "Hyperlinks and third parties",
+          "blocks": [
+            { "paragraph": "Our website may contain links to third-party sites or platforms. By using or activating these links, you leave our site, and your navigation is then subject to those third parties' privacy policies. We exercise no control over these platforms and disclaim any responsibility for their personal information practices." }
+          ]
+        },
+        {
+          "title": "Changes to this policy",
+          "blocks": [
+            { "paragraph": "This policy may be updated occasionally to reflect legislative changes or changes in our practices. The updated version will be published on our website and will take effect upon publication." }
+          ]
+        },
+        {
+          "title": "Contact us",
+          "blocks": [
+            { "paragraph": "For any question or comment regarding this policy, to update or correct your personal information, or to file a complaint, please contact the person responsible for privacy protection at Je chemine: SASSI ESSID, Psychologist — sassiessid1@gmail.com." },
+            { "paragraph": "This person is also responsible for informing affected individuals in the event of a privacy incident and for notifying the Commission d'accès à l'information du Québec when required." }
+          ]
+        }
+      ]
+    },
+    "professionalTerms": {
+      "title": "Professional Terms of Use",
+      "subtitle": "Terms of Use for Professionals – Je chemine Platform",
+      "lastUpdated": "April 13, 2026",
+      "intro": "The Je chemine platform acts as an administrative agent and a technological intermediary. By joining the platform, the professional accepts the following terms governing their practice within the Je chemine ecosystem.",
+      "sections": [
+        {
+          "title": "1. Professional qualifications and compliance",
+          "blocks": [
+            { "paragraph": "The professional certifies and undertakes to:" },
+            { "bullets": [
+              { "term": "Licensure", "text": "be a member in good standing of a professional order recognized in Quebec (e.g., OPQ, OTSTCFQ, etc.) and hold the permits necessary to practice psychotherapy or helping relationships." },
+              { "term": "Professional liability insurance", "text": "maintain at all times valid professional liability insurance covering their practice, including services provided via telepractice." },
+              { "term": "Ethics and deontology", "text": "strictly comply with the codes of ethics of their profession. The platform may in no case be used to circumvent ethical obligations (record keeping, professional secrecy, professional obligations, professional responsibilities, etc.)." }
+            ]}
+          ]
+        },
+        {
+          "title": "2. Profile management and smart matching",
+          "blocks": [
+            { "paragraph": "To optimize the platform's matching system:" },
+            { "bullets": [
+              { "term": "Accuracy of data", "text": "the professional must complete a comprehensive form (training, approaches, areas of expertise, target clienteles, preferences, etc.) and ensure this information is truthful." },
+              { "term": "Self-service updates", "text": "any modification of skills or availability must be made by the professional through their account." },
+              { "term": "Freedom to accept cases", "text": "the professional may, at their sole discretion and without notice, suspend receiving new referrals or cease accepting cases on the platform." }
+            ]}
+          ]
+        },
+        {
+          "title": "3. Continuity of care obligation",
+          "blocks": [
+            { "bullets": [
+              { "term": "Commitment to follow-up", "text": "once a therapeutic process has begun with a client referred by Je chemine, the professional has a professional and contractual obligation to complete the follow-up." },
+              { "term": "Interruption of service", "text": "any end of follow-up must be clinically justified or subject to an appropriate referral, in accordance with practice standards, to ensure user safety." }
+            ]}
+          ]
+        },
+        {
+          "title": "4. Exclusivity and non-solicitation",
+          "blocks": [
+            { "bullets": [
+              { "term": "Service framework", "text": "any client initially accepted under the agreement with Je chemine must remain within the platform for the entire duration of the follow-up." },
+              { "term": "No circumvention", "text": "the professional is strictly prohibited from soliciting or agreeing to continue follow-up with a referred client outside the Je chemine system. Any follow-up arrangement must be validated and administratively processed by the platform." }
+            ]}
+          ]
+        },
+        {
+          "title": "5. Confidentiality and non-disclosure (commercial agreement)",
+          "blocks": [
+            { "paragraph": "The professional acknowledges that, in the course of their collaboration with Je chemine, they have access to sensitive, strategic, and confidential information. Accordingly, the professional undertakes to:" },
+            { "bullets": [
+              { "term": "Confidentiality of terms", "text": "keep strictly confidential the terms of their agreement with the platform, including but not limited to: agreed-upon rates and fees (whether fixed or preferential); the internal workings and mechanisms of the smart-matching algorithm; the specific administrative terms and operational processes of the platform." },
+              { "term": "Benefits and conditions", "text": "not disclose to any third party (colleagues, other professionals, clients, or competing platforms) the benefits received, rebates, or any special condition granted by Je chemine." },
+              { "term": "Protection of the business model", "text": "refrain from sharing any documentation, screenshots of the professional interface, or internal communications that could harm the platform's competitiveness." },
+              { "term": "Duration of the obligation", "text": "this confidentiality obligation remains in force for the entire duration of the professional's membership and survives the termination of the agreement for a period of 5 years." },
+              { "term": "Breach", "text": "any breach of this confidentiality clause may result in the immediate termination of access to services, without prejudice to the damages remedies the platform may pursue." }
+            ]}
+          ]
+        }
+      ],
+      "acceptanceModal": {
+        "title": "Professional Terms of Use",
+        "description": "Before finalizing your profile, please read and accept these terms. They govern your practice within the Je chemine ecosystem.",
+        "scrollHint": "Scroll to the bottom to enable acceptance.",
+        "readyToAccept": "You can now accept the terms.",
+        "checkboxLabel": "I acknowledge having read and accept Je chemine's Professional Terms of Use.",
+        "acceptButton": "Accept and finalize my profile",
+        "laterButton": "Later",
+        "openFullPage": "Open the full document in a new tab",
+        "versionLabel": "Version of April 13, 2026",
+        "submitting": "Submitting…",
+        "errorGeneric": "An error occurred. Please try again."
+      }
+    }
+  },
+  "AdminLegalDocuments": {
+    "title": "Legal documents",
+    "subtitle": "Manage the content of the legal documents published on the site. Changes take effect immediately after saving.",
+    "documents": {
+      "terms": {
+        "label": "Terms of Use",
+        "description": "Client Services Usage Policy – applies to all users."
+      },
+      "privacy": {
+        "label": "Privacy Policy",
+        "description": "Je chemine Privacy Policy – applies to all users."
+      },
+      "professionalTerms": {
+        "label": "Professional Terms",
+        "description": "Terms of Use specific to professionals, accepted when finalizing the profile."
+      }
+    },
+    "localeFrench": "French",
+    "localeEnglish": "English",
+    "lastUpdatedLabel": "Last updated",
+    "edit": "Edit",
+    "save": "Save",
+    "backToList": "Back to documents",
+    "savedAt": "Saved at {time}. Public pages are up to date.",
+    "fieldTitle": "Title",
+    "fieldSubtitle": "Subtitle",
+    "fieldContent": "Content",
+    "contentHint": "Use level-2 headings (H2) for each section of the document: they become the table-of-contents entries. Blockquotes become highlighted callouts.",
+    "versionNote": "Current version: {version}. The date and version are updated automatically on save.",
+    "viewPublic": "View public page",
+    "empty": "No entries."
   }
 }

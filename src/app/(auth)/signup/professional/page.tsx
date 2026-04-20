@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { translateFromMap } from "@/lib/bilingual";
 import { authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,7 +25,6 @@ import {
   GraduationCap,
   Target,
   Clock,
-  DollarSign,
   CheckCircle2,
   Users,
 } from "lucide-react";
@@ -46,11 +46,26 @@ import {
   AuthFooter,
 } from "@/components/auth";
 import { ClinicalAvailabilityGrid } from "@/components/ui/ClinicalAvailabilityGrid";
-import { APPROACHES_ET_THERAPIES } from "@/data/approaches";
-import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
-import { ADULT_PROBLEMATICS } from "@/data/adultProblematics";
-import { CHILD_DIAGNOSTICS } from "@/data/childDiagnostics";
-import { ADULT_DIAGNOSTICS } from "@/data/adultDiagnostics";
+import {
+  APPROACHES_ET_THERAPIES,
+  APPROACHES_ET_THERAPIES_EN,
+} from "@/data/approaches";
+import {
+  CHILD_PROBLEMATICS,
+  CHILD_PROBLEMATICS_EN,
+} from "@/data/childProblematics";
+import {
+  ADULT_PROBLEMATICS,
+  ADULT_PROBLEMATICS_EN,
+} from "@/data/adultProblematics";
+import {
+  CHILD_DIAGNOSTICS,
+  CHILD_DIAGNOSTICS_EN,
+} from "@/data/childDiagnostics";
+import {
+  ADULT_DIAGNOSTICS,
+  ADULT_DIAGNOSTICS_EN,
+} from "@/data/adultDiagnostics";
 import { PROFESSIONAL_TITLES, AGE_CATEGORIES } from "@/data/professionalTitles";
 
 interface FormData {
@@ -88,13 +103,6 @@ interface FormData {
   sessionTypes: string[];
   modalities: string[];
   languages: string[];
-
-  // Pricing
-  individualSessionRate: string;
-  coupleSessionRate: string;
-  groupSessionRate: string;
-  paymentFrequency: string;
-  paymentAgreement: string;
 
   // Availability
   availableDays: string[];
@@ -150,6 +158,7 @@ const PROFESSIONAL_WEEKDAY_OPTIONS = [
 
 export default function ProfessionalSignupPage() {
   const t = useTranslations("Auth.professionalSignup");
+  const locale = useLocale();
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -183,11 +192,6 @@ export default function ProfessionalSignupPage() {
     sessionTypes: [],
     modalities: [],
     languages: [],
-    individualSessionRate: "",
-    coupleSessionRate: "",
-    groupSessionRate: "",
-    paymentFrequency: "",
-    paymentAgreement: "",
     availableDays: [],
     sessionDuration: "60",
     breakDuration: "0",
@@ -211,7 +215,6 @@ export default function ProfessionalSignupPage() {
     { title: t("sections.education"), icon: GraduationCap, required: true },
     { title: t("sections.sessionTypes"), icon: Users, required: false },
     { title: t("sections.expertise"), icon: Target, required: false },
-    { title: t("sections.pricing"), icon: DollarSign, required: false },
     { title: t("sections.availability"), icon: Clock, required: false },
     { title: t("sections.review"), icon: CheckCircle2, required: true },
   ];
@@ -276,11 +279,7 @@ export default function ProfessionalSignupPage() {
         if (formData.ageCategories.length === 0)
           return t("errors.ageCategoryRequired");
         break;
-      case 5: // Pricing
-        if (!formData.paymentFrequency)
-          return t("errors.paymentFrequencyRequired");
-        break;
-      case 7:
+      case 6:
         if (!formData.agreeToTerms) return t("errors.agreeToTermsRequired");
         if (!formData.acceptPrivacyPolicy)
           return t("errors.acceptPrivacyPolicyRequired");
@@ -368,18 +367,6 @@ export default function ProfessionalSignupPage() {
             formData.certifications.length > 0
               ? formData.certifications
               : undefined,
-          paymentFrequency: formData.paymentFrequency || undefined,
-          pricing: {
-            individualSession: formData.individualSessionRate
-              ? Number(formData.individualSessionRate)
-              : undefined,
-            coupleSession: formData.coupleSessionRate
-              ? Number(formData.coupleSessionRate)
-              : undefined,
-            groupSession: formData.groupSessionRate
-              ? Number(formData.groupSessionRate)
-              : undefined,
-          },
           education:
             formData.degree || formData.institution
               ? [
@@ -673,7 +660,7 @@ export default function ProfessionalSignupPage() {
                 <SelectContent>
                   {PROFESSIONAL_TITLES.map((title) => (
                     <SelectItem key={title.value} value={title.value}>
-                      {title.label}
+                      {t(`professionalTitleOptions.${title.msgKey}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -723,7 +710,7 @@ export default function ProfessionalSignupPage() {
                 value={formData.bio}
                 onChange={handleChange}
                 placeholder={t("professionalBioPlaceholder")}
-                className="min-h-[120px] resize-none"
+                className="min-h-[140px] w-full resize-y"
                 maxLength={1000}
               />
               <p className="text-xs text-muted-foreground">
@@ -892,22 +879,45 @@ export default function ProfessionalSignupPage() {
           const treatsAdults = formData.ageCategories.some(
             (c) => c === "18-64" || c === "65+",
           );
+          const problematicsMap: Record<string, string> = {
+            ...CHILD_PROBLEMATICS_EN,
+            ...ADULT_PROBLEMATICS_EN,
+          };
+          const diagnosticsMap: Record<string, string> = {
+            ...CHILD_DIAGNOSTICS_EN,
+            ...ADULT_DIAGNOSTICS_EN,
+          };
+          const sortLabel = (value: string, map: Record<string, string>) =>
+            translateFromMap(value, map, locale);
           const problematicsList = (() => {
             let list: string[] = [];
             if (treatsChildren && treatsAdults) list = [...CHILD_PROBLEMATICS, ...ADULT_PROBLEMATICS];
             else if (treatsChildren) list = [...CHILD_PROBLEMATICS];
             else if (treatsAdults) list = [...ADULT_PROBLEMATICS];
-            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
+            return [...new Set(list)].sort((a, b) =>
+              sortLabel(a, problematicsMap).localeCompare(
+                sortLabel(b, problematicsMap),
+                locale,
+              ),
+            );
           })();
           const diagnosticsList = (() => {
             let list: string[] = [];
             if (treatsChildren && treatsAdults) list = [...CHILD_DIAGNOSTICS, ...ADULT_DIAGNOSTICS];
             else if (treatsChildren) list = [...CHILD_DIAGNOSTICS];
             else if (treatsAdults) list = [...ADULT_DIAGNOSTICS];
-            return [...new Set(list)].sort((a, b) => a.localeCompare(b, "fr"));
+            return [...new Set(list)].sort((a, b) =>
+              sortLabel(a, diagnosticsMap).localeCompare(
+                sortLabel(b, diagnosticsMap),
+                locale,
+              ),
+            );
           })();
           const sortedApproaches = [...APPROACHES_ET_THERAPIES].sort((a, b) =>
-            a.localeCompare(b, "fr"),
+            translateFromMap(a, APPROACHES_ET_THERAPIES_EN, locale).localeCompare(
+              translateFromMap(b, APPROACHES_ET_THERAPIES_EN, locale),
+              locale,
+            ),
           );
 
           return (
@@ -931,7 +941,11 @@ export default function ProfessionalSignupPage() {
                         htmlFor={`approach-${approach}`}
                         className="text-sm cursor-pointer"
                       >
-                        {approach}
+                        {translateFromMap(
+                          approach,
+                          APPROACHES_ET_THERAPIES_EN,
+                          locale,
+                        )}
                       </label>
                     </div>
                   ))}
@@ -958,7 +972,7 @@ export default function ProfessionalSignupPage() {
                           htmlFor={`problematic-${item}`}
                           className="text-sm cursor-pointer"
                         >
-                          {item}
+                          {translateFromMap(item, problematicsMap, locale)}
                         </label>
                       </div>
                     ))}
@@ -990,7 +1004,7 @@ export default function ProfessionalSignupPage() {
                           htmlFor={`diagnosed-${diag}`}
                           className="text-sm cursor-pointer"
                         >
-                          {diag}
+                          {translateFromMap(diag, diagnosticsMap, locale)}
                         </label>
                       </div>
                     ))}
@@ -1005,93 +1019,7 @@ export default function ProfessionalSignupPage() {
           );
         })();
 
-      case 5: // Pricing & Payment (Tarifs & Paiements)
-        return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="individualSessionRate">
-                {t("tarifSouhaité")}
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  $
-                </span>
-                <Input
-                  id="individualSessionRate"
-                  name="individualSessionRate"
-                  type="number"
-                  min="0"
-                  value={formData.individualSessionRate}
-                  onChange={handleChange}
-                  placeholder="100"
-                  className="pl-7"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="coupleSessionRate">{t("couple")}</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  $
-                </span>
-                <Input
-                  id="coupleSessionRate"
-                  name="coupleSessionRate"
-                  type="number"
-                  min="0"
-                  value={formData.coupleSessionRate}
-                  onChange={handleChange}
-                  placeholder="150"
-                  className="pl-7"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="groupSessionRate">{t("groupe")}</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  $
-                </span>
-                <Input
-                  id="groupSessionRate"
-                  name="groupSessionRate"
-                  type="number"
-                  min="0"
-                  value={formData.groupSessionRate}
-                  onChange={handleChange}
-                  placeholder="75"
-                  className="pl-7"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="paymentFrequency">
-                {t("paymentFrequencyLabel")} <span className="text-red-500">*</span>
-              </Label>
-              <Select
-                value={formData.paymentFrequency}
-                onValueChange={(val) =>
-                  handleSelectChange("paymentFrequency", val)
-                }
-              >
-                <SelectTrigger id="paymentFrequency">
-                  <SelectValue placeholder={t("paymentFrequencyPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">{t("paymentFrequencyWeekly")}</SelectItem>
-                  <SelectItem value="bi-weekly">{t("paymentFrequencyBiWeekly")}</SelectItem>
-                  <SelectItem value="monthly">{t("paymentFrequencyMonthly")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-          </div>
-        );
-
-      case 6: // Availability
+      case 5: // Availability
         return (
           <div className="space-y-6">
             <div className="space-y-4">
@@ -1136,7 +1064,7 @@ export default function ProfessionalSignupPage() {
           </div>
         );
 
-      case 7: // Review & Confirm
+      case 6: // Review & Confirm
         return (
           <div className="space-y-6">
             <div className="space-y-4">

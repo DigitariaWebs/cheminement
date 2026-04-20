@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { apiClient, authAPI } from "@/lib/api-client";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -83,7 +83,9 @@ interface FormData {
 
   // Health Background
   medicalConditions: string[];
+  otherMedicalCondition: string;
   currentMedications: string[];
+  otherMedication: string;
   substanceUse: string;
   consultationMotifs: string[]; // motifs de consultation (max 10)
 
@@ -122,8 +124,8 @@ interface FormData {
   // Emergency Information
   emergencyContactName: string;
   emergencyContactPhone: string;
+  emergencyContactEmail: string;
   emergencyContactRelation: string;
-  crisisPlan: string;
 
   // Professional Matching Preferences
   preferredGender: string;
@@ -145,7 +147,7 @@ const MEMBER_SIGNUP_MEDICAL_OPTIONS = [
   { value: "Asthma", msgKey: "asthma" },
   { value: "Thyroid Disorder", msgKey: "thyroidDisorder" },
   { value: "Chronic Pain", msgKey: "chronicPain" },
-  { value: "None", msgKey: "none" },
+  { value: "Other", msgKey: "other" },
 ] as const;
 
 const MEMBER_SIGNUP_MEDICATION_OPTIONS = [
@@ -155,7 +157,7 @@ const MEMBER_SIGNUP_MEDICATION_OPTIONS = [
   { value: "Antipsychotics", msgKey: "antipsychotics" },
   { value: "Sleep aids", msgKey: "sleepAids" },
   { value: "Pain medication", msgKey: "painMedication" },
-  { value: "None", msgKey: "none" },
+  { value: "Other", msgKey: "other" },
 ] as const;
 
 const MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS = [
@@ -170,7 +172,6 @@ const MEMBER_SIGNUP_THERAPY_APPROACH_OPTIONS = [
 ] as const;
 
 const EXCLUSIVE_MULTISELECT_VALUES = new Set([
-  "None",
   "No Preference",
 ]);
 
@@ -274,6 +275,8 @@ function GuestCardSetupForm({
 
 export default function MemberSignupPage() {
   const t = useTranslations("Auth.memberSignup");
+  const locale = useLocale();
+  const stripeLocale: "fr" | "en" = locale === "fr" ? "fr" : "en";
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentSection, setCurrentSection] = useState(0);
@@ -309,7 +312,9 @@ export default function MemberSignupPage() {
     childServiceType: "",
     concernedPerson: "",
     medicalConditions: [],
+    otherMedicalCondition: "",
     currentMedications: [],
+    otherMedication: "",
     substanceUse: "",
     consultationMotifs: [],
     previousTherapy: "",
@@ -336,8 +341,8 @@ export default function MemberSignupPage() {
     notes: "",
     emergencyContactName: "",
     emergencyContactPhone: "",
+    emergencyContactEmail: "",
     emergencyContactRelation: "",
-    crisisPlan: "",
     preferredGender: "",
     preferredAge: "",
     culturalConsiderations: "",
@@ -438,8 +443,13 @@ export default function MemberSignupPage() {
     { title: t("sections.reviewConfirm"), icon: CheckCircle2, required: true },
   ];
 
-  const isChildEvaluation = formData.accountFor === "child" && formData.childServiceType === "evaluation";
-  const stepIndices = isChildEvaluation ? [0, 1, 2, 3, 4, 6, 7, 8, 9, 10] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const isChild = formData.accountFor === "child";
+  const isChildEvaluation = isChild && formData.childServiceType === "evaluation";
+  const stepIndices = isChildEvaluation
+    ? [0, 1, 4, 6, 8, 9, 10]
+    : isChild
+      ? [0, 1, 4, 5, 6, 8, 9, 10]
+      : [0, 1, 2, 3, 4, 5, 6, 8, 9, 10];
   const actualSection = stepIndices[currentSection];
   const totalSteps = stepIndices.length;
 
@@ -557,6 +567,13 @@ export default function MemberSignupPage() {
           setError(t("errors.availabilityRequired"));
           return false;
         }
+        if (
+          !formData.emergencyContactEmail.trim() ||
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emergencyContactEmail)
+        ) {
+          setError(t("errors.emergencyEmailRequired"));
+          return false;
+        }
         return true;
       case 7:
         return true;
@@ -633,10 +650,12 @@ export default function MemberSignupPage() {
           formData.medicalConditions.length > 0
             ? formData.medicalConditions
             : undefined,
+        otherMedicalCondition: formData.otherMedicalCondition || undefined,
         currentMedications:
           formData.currentMedications.length > 0
             ? formData.currentMedications
             : undefined,
+        otherMedication: formData.otherMedication || undefined,
         consultationMotifs:
           formData.consultationMotifs.length > 0
             ? formData.consultationMotifs
@@ -683,9 +702,9 @@ export default function MemberSignupPage() {
         notes: formData.notes || undefined,
         emergencyContactName: formData.emergencyContactName || undefined,
         emergencyContactPhone: formData.emergencyContactPhone || undefined,
+        emergencyContactEmail: formData.emergencyContactEmail || undefined,
         emergencyContactRelation:
           formData.emergencyContactRelation || undefined,
-        crisisPlan: formData.crisisPlan || undefined,
         preferredGender: formData.preferredGender || undefined,
         preferredAge: formData.preferredAge || undefined,
         // Aligne le jumelage avec la langue choisie à l’étape 1 (infos de base)
@@ -895,6 +914,7 @@ export default function MemberSignupPage() {
                   <SelectItem value="child">{t("accountForChild")}</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">{t("accountForChildNote")}</p>
             </div>
 
             {formData.accountFor === "child" && (
@@ -1034,58 +1054,79 @@ export default function MemberSignupPage() {
                 <SelectContent>
                   <SelectItem value="myself">{t("accountForMe")}</SelectItem>
                   <SelectItem value="child">{t("accountForChild")}</SelectItem>
-                  <SelectItem value="partner">{t("spouse")}</SelectItem>
-                  <SelectItem value="parent">{t("parent")}</SelectItem>
-                  <SelectItem value="other">{t("other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label>{t("profileModal.step1.medicalConditions")}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {MEMBER_SIGNUP_MEDICAL_OPTIONS.map(({ value, msgKey }) => (
-                  <div key={value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`condition-${value}`}
-                      checked={formData.medicalConditions.includes(value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("medicalConditions", value)
-                      }
-                    />
-                    <label
-                      htmlFor={`condition-${value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`healthOptions.medical.${msgKey}`)}
-                    </label>
-                  </div>
-                ))}
+            {!isChild && (
+              <div className="space-y-2">
+                <Label>{t("profileModal.step1.medicalConditions")}</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {MEMBER_SIGNUP_MEDICAL_OPTIONS.map(({ value, msgKey }) => (
+                    <div key={value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`condition-${value}`}
+                        checked={formData.medicalConditions.includes(value)}
+                        onCheckedChange={() =>
+                          handleArrayChange("medicalConditions", value)
+                        }
+                      />
+                      <label
+                        htmlFor={`condition-${value}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {t(`healthOptions.medical.${msgKey}`)}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {formData.medicalConditions.includes("Other") && (
+                  <Textarea
+                    id="otherMedicalCondition"
+                    name="otherMedicalCondition"
+                    value={formData.otherMedicalCondition}
+                    onChange={handleChange}
+                    placeholder={t("healthOptions.medical.otherPlaceholder")}
+                    className="min-h-[100px] w-full resize-y"
+                  />
+                )}
               </div>
-            </div>
+            )}
 
-            <div className="space-y-2">
-              <Label>{t("profileModal.step1.currentMedications")}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {MEMBER_SIGNUP_MEDICATION_OPTIONS.map(({ value, msgKey }) => (
-                  <div key={value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`med-${value}`}
-                      checked={formData.currentMedications.includes(value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("currentMedications", value)
-                      }
-                    />
-                    <label
-                      htmlFor={`med-${value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`healthOptions.medications.${msgKey}`)}
-                    </label>
-                  </div>
-                ))}
+            {!isChild && (
+              <div className="space-y-2">
+                <Label>{t("profileModal.step1.currentMedications")}</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {MEMBER_SIGNUP_MEDICATION_OPTIONS.map(({ value, msgKey }) => (
+                    <div key={value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`med-${value}`}
+                        checked={formData.currentMedications.includes(value)}
+                        onCheckedChange={() =>
+                          handleArrayChange("currentMedications", value)
+                        }
+                      />
+                      <label
+                        htmlFor={`med-${value}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {t(`healthOptions.medications.${msgKey}`)}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {formData.currentMedications.includes("Other") && (
+                  <Textarea
+                    id="otherMedication"
+                    name="otherMedication"
+                    value={formData.otherMedication}
+                    onChange={handleChange}
+                    placeholder={t("healthOptions.medications.otherPlaceholder")}
+                    className="min-h-[100px] w-full resize-y"
+                  />
+                )}
               </div>
-            </div>
+            )}
 
             <div className="space-y-2">
               <Label>
@@ -1105,17 +1146,19 @@ export default function MemberSignupPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="substanceUse">{t("profileModal.step1.substanceUse")}</Label>
-              <Textarea
-                id="substanceUse"
-                name="substanceUse"
-                value={formData.substanceUse}
-                onChange={handleChange}
-                placeholder={t("profileModal.step1.substanceUsePlaceholder")}
-                className="min-h-[100px] resize-none"
-              />
-            </div>
+            {!isChild && (
+              <div className="space-y-2">
+                <Label htmlFor="substanceUse">{t("profileModal.step1.substanceUse")}</Label>
+                <Textarea
+                  id="substanceUse"
+                  name="substanceUse"
+                  value={formData.substanceUse}
+                  onChange={handleChange}
+                  placeholder={t("profileModal.step1.substanceUsePlaceholder")}
+                  className="min-h-[140px] w-full resize-y"
+                />
+              </div>
+            )}
           </div>
         );
 
@@ -1153,7 +1196,7 @@ export default function MemberSignupPage() {
                   value={formData.previousTherapyDetails}
                   onChange={handleChange}
                   placeholder={t("profileModal.step2.previousTherapyDetailsPlaceholder")}
-                  className="min-h-[100px] resize-none"
+                  className="min-h-[120px] w-full resize-y"
                 />
               </div>
             )}
@@ -1186,7 +1229,7 @@ export default function MemberSignupPage() {
                 value={formData.currentTreatment}
                 onChange={handleChange}
                 placeholder={t("profileModal.step2.currentTreatmentPlaceholder")}
-                className="min-h-[100px] resize-none"
+                className="min-h-[140px] w-full resize-y"
               />
             </div>
 
@@ -1350,7 +1393,7 @@ export default function MemberSignupPage() {
                 value={formData.primaryIssue}
                 onChange={handleChange}
                 placeholder={t("profileModal.step3.primaryIssuePlaceholder")}
-                className="min-h-[120px] resize-none"
+                className="min-h-[140px] w-full resize-y"
               />
             </div>
 
@@ -1394,7 +1437,7 @@ export default function MemberSignupPage() {
                 value={formData.issueDescription}
                 onChange={handleChange}
                 placeholder={t("profileModal.step3.issueDescriptionPlaceholder")}
-                className="min-h-[120px] resize-none"
+                className="min-h-[160px] w-full resize-y"
               />
             </div>
 
@@ -1450,7 +1493,7 @@ export default function MemberSignupPage() {
                 value={formData.triggeringSituation}
                 onChange={handleChange}
                 placeholder={t("profileModal.step3.triggeringSituationPlaceholder")}
-                className="min-h-[100px] resize-none"
+                className="min-h-[140px] w-full resize-y"
               />
             </div>
           </div>
@@ -1459,39 +1502,41 @@ export default function MemberSignupPage() {
       case 4: // Symptoms & Impact
         return (
           <div className="space-y-6">
-            <div className="space-y-2">
-              <Label>{t("profileModal.step4.symptoms")}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  { key: "sadness", value: "Sadness" },
-                  { key: "worry", value: "Worry" },
-                  { key: "panicAttacks", value: "Panic attacks" },
-                  { key: "moodSwings", value: "Mood swings" },
-                  { key: "irritability", value: "Irritability" },
-                  { key: "fatigue", value: "Fatigue" },
-                  { key: "concentrationIssues", value: "Concentration issues" },
-                  { key: "memoryProblems", value: "Memory problems" },
-                  { key: "nightmares", value: "Nightmares" },
-                  { key: "flashbacks", value: "Flashbacks" },
-                ].map((symptom) => (
-                  <div key={symptom.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`symptom-${symptom.value}`}
-                      checked={formData.symptoms.includes(symptom.value)}
-                      onCheckedChange={() =>
-                        handleArrayChange("symptoms", symptom.value)
-                      }
-                    />
-                    <label
-                      htmlFor={`symptom-${symptom.value}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {t(`symptomOptions.${symptom.key}`)}
-                    </label>
-                  </div>
-                ))}
+            {!isChild && (
+              <div className="space-y-2">
+                <Label>{t("profileModal.step4.symptoms")}</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {[
+                    { key: "sadness", value: "Sadness" },
+                    { key: "worry", value: "Worry" },
+                    { key: "panicAttacks", value: "Panic attacks" },
+                    { key: "moodSwings", value: "Mood swings" },
+                    { key: "irritability", value: "Irritability" },
+                    { key: "fatigue", value: "Fatigue" },
+                    { key: "concentrationIssues", value: "Concentration issues" },
+                    { key: "memoryProblems", value: "Memory problems" },
+                    { key: "nightmares", value: "Nightmares" },
+                    { key: "flashbacks", value: "Flashbacks" },
+                  ].map((symptom) => (
+                    <div key={symptom.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`symptom-${symptom.value}`}
+                        checked={formData.symptoms.includes(symptom.value)}
+                        onCheckedChange={() =>
+                          handleArrayChange("symptoms", symptom.value)
+                        }
+                      />
+                      <label
+                        htmlFor={`symptom-${symptom.value}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {t(`symptomOptions.${symptom.key}`)}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="dailyLifeImpact">{t("profileModal.step4.dailyLifeImpact")}</Label>
@@ -1501,7 +1546,7 @@ export default function MemberSignupPage() {
                 value={formData.dailyLifeImpact}
                 onChange={handleChange}
                 placeholder={t("profileModal.step4.dailyLifeImpactPlaceholder")}
-                className="min-h-[120px] resize-none"
+                className="min-h-[140px] w-full resize-y"
               />
             </div>
 
@@ -1591,7 +1636,7 @@ export default function MemberSignupPage() {
                 value={formData.concernsAboutTherapy}
                 onChange={handleChange}
                 placeholder={t("profileModal.step5.concernsAboutTherapyPlaceholder")}
-                className="min-h-[120px] resize-none"
+                className="min-h-[140px] w-full resize-y"
               />
             </div>
           </div>
@@ -1665,75 +1710,76 @@ export default function MemberSignupPage() {
                 value={formData.notes}
                 onChange={handleChange}
                 placeholder={t("profileModal.step6.notesPlaceholder")}
-                className="min-h-[100px] resize-none"
+                className="min-h-[120px] w-full resize-y"
               />
             </div>
-          </div>
-        );
 
-      case 7: // Emergency Contact
-        return (
-          <div className="space-y-6">
-            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-900">
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                {t("profileModal.step7.subtitle")}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContactName">
-                  {t("profileModal.step7.emergencyContactName")}
-                </Label>
-                <Input
-                  id="emergencyContactName"
-                  name="emergencyContactName"
-                  value={formData.emergencyContactName}
-                  onChange={handleChange}
-                  placeholder={t("profileModal.step7.emergencyContactNamePlaceholder")}
-                />
+            <div className="pt-2 border-t border-border/50 space-y-6">
+              <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-900">
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  {t("profileModal.step7.subtitle")}
+                </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContactPhone">
-                  {t("profileModal.step7.emergencyContactPhone")}
-                </Label>
-                <Input
-                  id="emergencyContactPhone"
-                  name="emergencyContactPhone"
-                  type="tel"
-                  value={formData.emergencyContactPhone}
-                  onChange={handleChange}
-                  placeholder={t("profileModal.step7.emergencyContactPhonePlaceholder")}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContactName">
+                    {t("profileModal.step7.emergencyContactName")}
+                  </Label>
+                  <Input
+                    id="emergencyContactName"
+                    name="emergencyContactName"
+                    value={formData.emergencyContactName}
+                    onChange={handleChange}
+                    placeholder={t("profileModal.step7.emergencyContactNamePlaceholder")}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContactPhone">
+                    {t("profileModal.step7.emergencyContactPhone")}
+                  </Label>
+                  <Input
+                    id="emergencyContactPhone"
+                    name="emergencyContactPhone"
+                    type="tel"
+                    value={formData.emergencyContactPhone}
+                    onChange={handleChange}
+                    placeholder={t("profileModal.step7.emergencyContactPhonePlaceholder")}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContactEmail">
+                    {t("profileModal.step7.emergencyContactEmail")} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="emergencyContactEmail"
+                    name="emergencyContactEmail"
+                    type="email"
+                    required
+                    value={formData.emergencyContactEmail}
+                    onChange={handleChange}
+                    placeholder={t("profileModal.step7.emergencyContactEmailPlaceholder")}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContactRelation">
+                    {t("profileModal.step7.emergencyContactRelation")}
+                  </Label>
+                  <Input
+                    id="emergencyContactRelation"
+                    name="emergencyContactRelation"
+                    value={formData.emergencyContactRelation}
+                    onChange={handleChange}
+                    placeholder={t("profileModal.step7.emergencyContactRelationPlaceholder")}
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="emergencyContactRelation">
-                {t("profileModal.step7.emergencyContactRelation")}
-              </Label>
-              <Input
-                id="emergencyContactRelation"
-                name="emergencyContactRelation"
-                value={formData.emergencyContactRelation}
-                onChange={handleChange}
-                placeholder={t("profileModal.step7.emergencyContactRelationPlaceholder")}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="crisisPlan">{t("profileModal.step7.crisisPlan")}</Label>
-              <Textarea
-                id="crisisPlan"
-                name="crisisPlan"
-                value={formData.crisisPlan}
-                onChange={handleChange}
-                placeholder={t("profileModal.step7.crisisPlanPlaceholder")}
-                className="min-h-[120px] resize-none"
-              />
-            </div>
-
           </div>
         );
 
@@ -1799,7 +1845,7 @@ export default function MemberSignupPage() {
                 value={formData.culturalConsiderations}
                 onChange={handleChange}
                 placeholder={t("profileModal.step8.culturalConsiderationsPlaceholder")}
-                className="min-h-[120px] resize-none"
+                className="min-h-[140px] w-full resize-y"
               />
             </div>
           </div>
@@ -1871,6 +1917,7 @@ export default function MemberSignupPage() {
                         options={{
                           clientSecret: stripeCardClientSecret,
                           appearance: stripeAppearance,
+                          locale: stripeLocale,
                         }}
                         stripe={stripePromise}
                       >

@@ -5,11 +5,10 @@ import {
   buildMotifSearchRecords,
   useDebouncedSmartMotifSearch,
 } from "@/hooks/useMotifSearch";
-import { MOTIFS } from "@/data/motif";
+import { useMotifs, pickMotifLabel } from "@/hooks/useMotifs";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { MOTIF_SEARCH_EXTRAS } from "@/config/motifSearch";
+import { useTranslations, useLocale } from "next-intl";
 
 interface MotifSearchProps {
   value: string | string[];
@@ -44,15 +43,36 @@ export const MotifSearch = React.forwardRef<HTMLDivElement, MotifSearchProps>(
     ref,
   ) => {
     const t = useTranslations("MotifSearch");
+    const locale = useLocale();
+    const { motifs: fetchedMotifs } = useMotifs();
     const maxSelections =
       maxSelectionsProp ?? (multiSelect ? 10 : 1);
 
-    const searchItems = customItems ?? MOTIFS;
-    const records = useMemo(() => {
-      const extras =
-        customItems === undefined ? MOTIF_SEARCH_EXTRAS : {};
-      return buildMotifSearchRecords(searchItems, extras);
-    }, [searchItems, customItems]);
+    const { searchItems, dynamicExtras } = useMemo(() => {
+      if (customItems) {
+        return { searchItems: customItems, dynamicExtras: {} as Partial<Record<string, string>> };
+      }
+      const items: string[] = [];
+      const extras: Record<string, string> = {};
+      for (const m of fetchedMotifs) {
+        const label = pickMotifLabel(m, locale);
+        items.push(label);
+        const extraParts = [
+          ...(m.aliases ?? []),
+          m.labelFr,
+          m.labelEn,
+        ].filter((s): s is string => Boolean(s) && s !== label);
+        if (extraParts.length > 0) {
+          extras[label] = extraParts.join(" ");
+        }
+      }
+      return { searchItems: items, dynamicExtras: extras };
+    }, [customItems, fetchedMotifs, locale]);
+
+    const records = useMemo(
+      () => buildMotifSearchRecords(searchItems, dynamicExtras),
+      [searchItems, dynamicExtras],
+    );
 
     const { inputQuery, setInputQuery, debouncedQuery, results } =
       useDebouncedSmartMotifSearch(records, { debounceMs: 300 });

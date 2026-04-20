@@ -16,26 +16,26 @@ export default function ExpertiseSection() {
       </div>
 
       <div className="container relative z-10 mx-auto px-6">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
-          <ScrollReveal variant="slide-right" duration={800}>
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
-                <ShieldCheck className="h-5 w-5 text-foreground" />
-                <span>{t("badge")}</span>
+        <div className="mx-auto max-w-6xl space-y-16">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+            <ScrollReveal variant="slide-right" duration={800}>
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-muted-foreground/70">
+                  <ShieldCheck className="h-5 w-5 text-foreground" />
+                  <span>{t("badge")}</span>
+                </div>
+                <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
+                  {t("title")}
+                </h2>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  {t("description1")}
+                </p>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  {t("description2")}
+                </p>
               </div>
-              <h2 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-                {t("title")}
-              </h2>
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                {t("description1")}
-              </p>
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                {t("description2")}
-              </p>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
-          <div className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <ScrollReveal variant="zoom-in" delayMs={200} duration={700}>
                 <div className="relative aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
@@ -58,22 +58,33 @@ export default function ExpertiseSection() {
                 </div>
               </ScrollReveal>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2">
-              <ScrollReveal variant="fade-left" delayMs={500} duration={700}>
-                <ExpertiseCard
-                  icon={<ShieldCheck className="h-6 w-6 text-card" />}
-                  title={t("cards.confidentiality.title")}
-                  description={t("cards.confidentiality.description")}
-                />
-              </ScrollReveal>
-              <ScrollReveal variant="fade-left" delayMs={650} duration={700}>
-                <ExpertiseCard
-                  icon={<LibraryBig className="h-6 w-6 text-card" />}
-                  title={t("cards.quality.title")}
-                  description={t("cards.quality.description")}
-                />
-              </ScrollReveal>
-            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 items-stretch">
+            <ScrollReveal
+              variant="fade-up"
+              delayMs={200}
+              duration={700}
+              className="flex h-full"
+            >
+              <ExpertiseCard
+                icon={<ShieldCheck className="h-7 w-7 text-card" />}
+                title={t("cards.confidentiality.title")}
+                description={t("cards.confidentiality.description")}
+              />
+            </ScrollReveal>
+            <ScrollReveal
+              variant="fade-up"
+              delayMs={350}
+              duration={700}
+              className="flex h-full"
+            >
+              <ExpertiseCard
+                icon={<LibraryBig className="h-7 w-7 text-card" />}
+                title={t("cards.quality.title")}
+                description={t("cards.quality.description")}
+              />
+            </ScrollReveal>
           </div>
         </div>
       </div>
@@ -91,11 +102,11 @@ function ExpertiseCard({
   description: string;
 }) {
   return (
-    <div className="rounded-3xl bg-card/80 p-6 shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-foreground p-3">
+    <div className="flex h-full w-full flex-col rounded-3xl border border-border/10 bg-card/80 p-8 shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground">
         {icon}
       </div>
-      <h3 className="font-serif text-xl font-medium text-foreground">
+      <h3 className="font-serif text-xl font-medium text-foreground md:text-2xl">
         {title}
       </h3>
       <p className="mt-3 text-base leading-relaxed text-muted-foreground">

@@ -316,10 +316,8 @@ export function Header() {
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={`text-sm font-semibold py-2 ${
-                pathname === "/"
-                  ? "text-primary underline underline-offset-4"
-                  : "text-foreground"
+              className={`text-sm font-semibold py-2 text-primary ${
+                pathname === "/" ? "underline underline-offset-4" : ""
               }`}
             >
               {t("nav.home")}
@@ -327,7 +325,13 @@ export function Header() {
 
             {/* About Us */}
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground py-2">
+              <span
+                className={`text-sm font-semibold text-primary py-2 ${
+                  aboutDropdownItems.some((item) => item.href === pathname)
+                    ? "underline underline-offset-4"
+                    : ""
+                }`}
+              >
                 {t("nav.aboutUs")}
               </span>
               {aboutDropdownItems.map((item) => (
@@ -348,7 +352,13 @@ export function Header() {
 
             {/* Services */}
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-muted-foreground py-2">
+              <span
+                className={`text-sm font-semibold text-primary py-2 ${
+                  pathname.startsWith("/services")
+                    ? "underline underline-offset-4"
+                    : ""
+                }`}
+              >
                 {t("nav.services")}
               </span>
               {servicesDropdownItems.map((item) => (
@@ -357,7 +367,9 @@ export function Header() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`text-sm pl-4 py-1.5 ${
-                    item.highlight ? "text-primary font-medium" : "text-foreground"
+                    pathname === item.href
+                      ? "text-primary font-medium"
+                      : "text-foreground"
                   }`}
                 >
                   {item.label}
@@ -368,10 +380,8 @@ export function Header() {
             <Link
               href="/approaches"
               onClick={() => setMobileMenuOpen(false)}
-              className={`text-sm font-semibold py-2 ${
-                pathname === "/approaches"
-                  ? "text-primary underline underline-offset-4"
-                  : "text-foreground"
+              className={`text-sm font-semibold py-2 text-primary ${
+                pathname === "/approaches" ? "underline underline-offset-4" : ""
               }`}
             >
               {t("nav.approaches")}
@@ -380,10 +390,8 @@ export function Header() {
             <Link
               href="/contact"
               onClick={() => setMobileMenuOpen(false)}
-              className={`text-sm font-semibold py-2 ${
-                pathname === "/contact"
-                  ? "text-primary underline underline-offset-4"
-                  : "text-foreground"
+              className={`text-sm font-semibold py-2 text-primary ${
+                pathname === "/contact" ? "underline underline-offset-4" : ""
               }`}
             >
               {t("nav.contact")}
@@ -392,10 +400,8 @@ export function Header() {
             <Link
               href="/professional"
               onClick={() => setMobileMenuOpen(false)}
-              className={`text-sm font-semibold py-2 ${
-                pathname === "/professional"
-                  ? "text-primary underline underline-offset-4"
-                  : "text-foreground"
+              className={`text-sm font-semibold py-2 text-primary ${
+                pathname === "/professional" ? "underline underline-offset-4" : ""
               }`}
             >
               {t("nav.professional")}

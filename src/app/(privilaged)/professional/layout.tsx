@@ -30,6 +30,12 @@ export default async function ProfessionalLayout({
   ) {
     redirect("/professional/account-pending");
   }
+  if (
+    dbUser?.status !== "pending" &&
+    pathname.startsWith("/professional/account-pending")
+  ) {
+    redirect("/professional/dashboard");
+  }
 
   const locale = await getLocale();
 

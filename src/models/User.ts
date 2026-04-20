@@ -37,6 +37,12 @@ export interface IUser extends Document {
     | "rejected";
   /** Consentement explicite à la politique de confidentialité (Loi 25), à l’inscription. */
   privacyPolicyAcceptedAt?: Date;
+  /** Version de la politique de confidentialité acceptée (ex. "2026-04-13"). */
+  privacyPolicyVersion?: string;
+  /** Consentement aux conditions d’utilisation générales, à l’inscription. */
+  termsAcceptedAt?: Date;
+  /** Version des CG acceptées (ex. "2026-04-13"). */
+  termsVersion?: string;
   image?: string;
   stripeCustomerId?: string; // For clients to store payment methods
   /**
@@ -139,6 +145,9 @@ const UserSchema = new Schema<IUser>(
       default: "not_applicable",
     },
     privacyPolicyAcceptedAt: Date,
+    privacyPolicyVersion: String,
+    termsAcceptedAt: Date,
+    termsVersion: String,
     image: String,
     stripeCustomerId: String, // For clients to store payment methods
     paymentGuaranteeStatus: {

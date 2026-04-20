@@ -57,7 +57,7 @@ export default function AccessibilitySection() {
           </div>
         </ScrollReveal>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-stretch">
           {accessibilityOptions.map(
             ({ icon: Icon, title, description, details }, index) => (
               <ScrollReveal
@@ -65,8 +65,9 @@ export default function AccessibilitySection() {
                 variant={cardAnimations[index % cardAnimations.length]}
                 delayMs={200 + index * 150}
                 duration={700}
+                className="flex h-full"
               >
-                <div className="flex h-full flex-col gap-4 rounded-3xl bg-linear-to-b from-card to-card/90 p-8 text-left shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                <div className="flex h-full w-full flex-col gap-4 rounded-3xl border border-border/10 bg-linear-to-b from-card to-card/90 p-8 text-left shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-card">
                     <Icon className="h-6 w-6" />
                   </div>

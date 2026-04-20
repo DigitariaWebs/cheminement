@@ -1,15 +1,18 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Instagram, Linkedin, Facebook } from "lucide-react";
 import { XLogoIcon } from "@/components/icons/XLogoIcon";
+import { getLegalTitles } from "@/lib/legal-content";
+import type { LegalDocumentLocale } from "@/models/LegalDocument";
 
-export function Footer() {
+export async function Footer() {
   const currentYear = new Date().getFullYear();
-  const t = useTranslations("Footer");
-  const tNav = useTranslations("Header.nav");
+  const t = await getTranslations("Footer");
+  const tNav = await getTranslations("Header.nav");
+  const rawLocale = await getLocale();
+  const locale: LegalDocumentLocale = rawLocale === "fr" ? "fr" : "en";
+  const legalTitles = await getLegalTitles(locale);
 
   return (
     <footer className="bg-primary text-primary-foreground pt-16 pb-8">
@@ -158,13 +161,13 @@ export function Footer() {
           </p>
           <div className="flex flex-wrap gap-6 text-xs text-primary-foreground/50 font-semibold justify-center">
             <Link href="/privacy" className="hover:text-primary-foreground transition-colors uppercase">
-              {t("privacyPolicy")}
+              {legalTitles.privacy || t("privacyPolicy")}
             </Link>
             <Link href="/terms" className="hover:text-primary-foreground transition-colors uppercase">
-              {t("termsOfUse")}
+              {legalTitles.terms || t("termsOfUse")}
             </Link>
-            <Link href="/cookies" className="hover:text-primary-foreground transition-colors uppercase">
-              {t("cookiePolicy")}
+            <Link href="/professional-terms" className="hover:text-primary-foreground transition-colors uppercase">
+              {legalTitles.professionalTerms || t("professionalTerms")}
             </Link>
           </div>
         </div>
