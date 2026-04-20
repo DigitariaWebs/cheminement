@@ -191,8 +191,8 @@ export async function PUT(
       "severity", "duration", "triggeringSituation", "symptoms", "dailyLifeImpact",
       "sleepQuality", "appetiteChanges", "treatmentGoals", "therapyApproach",
       "concernsAboutTherapy", "availability", "modality", "location", "sessionFrequency",
-      "notes", "emergencyContactName", "emergencyContactPhone", "emergencyContactRelation",
-      "crisisPlan", "suicidalThoughts", "preferredGender", "preferredAge", "languagePreference",
+      "notes", "emergencyContactName", "emergencyContactPhone", "emergencyContactEmail", "emergencyContactRelation",
+      "preferredGender", "preferredAge", "languagePreference",
       "culturalConsiderations", "paymentMethod", "profileCompleted"
     ];
 
@@ -204,7 +204,7 @@ export async function PUT(
       if (allowedUserFields.includes(key)) {
         userUpdates[key] = value;
       }
-      
+
       if (userToUpdate.role === "professional" || userToUpdate.role === "admin") {
         if (allowedProfileFields.includes(key) && key !== "location") {
           profileUpdates[key] = value;
@@ -214,6 +214,23 @@ export async function PUT(
           medicalProfileUpdates[key] = value;
         }
       }
+    }
+
+    if (
+      userToUpdate.role === "professional" &&
+      userUpdates.status === "active" &&
+      userToUpdate.status === "pending" &&
+      userUpdates.professionalLicenseStatus === undefined
+    ) {
+      userUpdates.professionalLicenseStatus = "verified";
+    }
+    if (
+      userToUpdate.role === "professional" &&
+      userUpdates.status === "inactive" &&
+      userToUpdate.status === "pending" &&
+      userUpdates.professionalLicenseStatus === undefined
+    ) {
+      userUpdates.professionalLicenseStatus = "rejected";
     }
 
     // Update user

@@ -188,9 +188,8 @@ export const authAPI = {
     notes?: string;
     emergencyContactName?: string;
     emergencyContactPhone?: string;
+    emergencyContactEmail?: string;
     emergencyContactRelation?: string;
-    crisisPlan?: string;
-    suicidalThoughts?: boolean;
     preferredGender?: string;
     preferredAge?: string;
     languagePreference?: string;
@@ -322,8 +321,7 @@ export type ProfessionalLedgerEntryResponse = {
   cycleKey?: string;
   appointmentId?: string;
   sessionActNature?: string;
-  grossAmountCad: number;
-  platformFeeCad: number;
+  // grossAmountCad + platformFeeCad are stripped by the API for professional callers.
   netToProfessionalCad: number;
   paymentChannel: "stripe" | "transfer" | "none";
   payoutAmountCad?: number;

@@ -16,6 +16,8 @@ import {
   Banknote,
   BookOpen,
   Inbox,
+  FileText,
+  Tags,
 } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
@@ -89,6 +91,16 @@ export function AdminSidebar() {
           title: t("paymentTrust"),
           url: "/admin/dashboard/payment-trust",
           icon: Banknote,
+        },
+        {
+          title: t("legalDocuments"),
+          url: "/admin/dashboard/legal-documents",
+          icon: FileText,
+        },
+        {
+          title: t("motifs"),
+          url: "/admin/dashboard/motifs",
+          icon: Tags,
         },
       ],
     },

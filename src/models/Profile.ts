@@ -40,6 +40,10 @@ export interface IProfile extends Document {
     year: number;
   }[];
   profileCompleted: boolean;
+  /** Acceptation des Conditions d’utilisation pour les professionnels (finalisation profil). */
+  professionalTermsAcceptedAt?: Date;
+  /** Version des CU pros acceptée (ex. "2026-04-13"). */
+  professionalTermsVersion?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -125,6 +129,8 @@ const ProfileSchema = new Schema<IProfile>(
       type: Boolean,
       default: false,
     },
+    professionalTermsAcceptedAt: Date,
+    professionalTermsVersion: String,
   },
   {
     timestamps: true,

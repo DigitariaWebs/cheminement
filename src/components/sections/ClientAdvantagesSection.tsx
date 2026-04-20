@@ -250,11 +250,8 @@ export default function ClientAdvantagesSection() {
                       })}
                   </ul>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {t("educationalHighlight.note")}
-                </p>
-                <p className="text-base text-muted-foreground leading-relaxed">
-                  {t("educationalHighlight.programDescription")}
                 </p>
               </div>
             </div>

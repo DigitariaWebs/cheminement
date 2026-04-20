@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Profile from "@/models/Profile";
 import { authOptions } from "@/lib/auth";
+import { LEGAL_VERSIONS } from "@/lib/legal";
 
 export async function GET() {
   try {
@@ -46,11 +47,28 @@ export async function PUT(req: NextRequest) {
 
     await connectToDatabase();
 
-    const data = await req.json();
+    const { acceptProfessionalTerms, ...data } = await req.json();
+
+    const existing = await Profile.findOne({ userId: session.user.id });
+    const now = new Date();
+
+    const update: Record<string, unknown> = { ...data };
+    if (acceptProfessionalTerms === true) {
+      update.professionalTermsAcceptedAt = now;
+      update.professionalTermsVersion = LEGAL_VERSIONS.professionalTerms;
+    }
+
+    const termsAccepted =
+      Boolean(existing?.professionalTermsAcceptedAt) ||
+      acceptProfessionalTerms === true;
+
+    if (termsAccepted) {
+      update.profileCompleted = true;
+    }
 
     const profile = await Profile.findOneAndUpdate(
       { userId: session.user.id },
-      { ...data, profileCompleted: true },
+      update,
       { new: true, upsert: true },
     );
 

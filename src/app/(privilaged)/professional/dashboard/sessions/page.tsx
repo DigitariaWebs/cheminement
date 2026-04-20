@@ -57,8 +57,7 @@ interface ApiAppointment {
   type: "video" | "in-person" | "phone";
   status: string;
   payment: {
-    price: number;
-    platformFee: number;
+    // price + platformFee are stripped by the API for professional callers.
     professionalPayout: number;
     status:
       | "pending"
@@ -91,7 +90,7 @@ interface Session {
     | "no-show"
     | "pending"
     | "ongoing";
-  paymentStatus: "paid" | "pending" | "overdue";
+  paymentStatus: "paid" | "pending";
   amount: number;
   issueType?: string;
   notes?: string;
@@ -127,16 +126,9 @@ export default function SessionsPage() {
         const data = await response.json();
         const transformedSessions: Session[] = data.map(
           (appointment: ApiAppointment) => {
-            // Map payment status from API to display status
-            let paymentStatus: "paid" | "pending" | "overdue" = "pending";
-            if (appointment.payment?.status === "paid") {
-              paymentStatus = "paid";
-            } else if (
-              appointment.payment?.status === "failed" ||
-              appointment.payment?.status === "cancelled"
-            ) {
-              paymentStatus = "overdue";
-            }
+            // Pros see only Paid vs Pending; anything non-paid collapses to pending.
+            const paymentStatus: "paid" | "pending" =
+              appointment.payment?.status === "paid" ? "paid" : "pending";
 
             return {
               id: appointment._id,
@@ -148,7 +140,7 @@ export default function SessionsPage() {
               type: appointment.type,
               status: appointment.status,
               paymentStatus,
-              amount: appointment.payment?.price || 0,
+              amount: appointment.payment?.professionalPayout || 0,
               issueType: appointment.issueType,
               notes: appointment.notes,
               meetingLink: appointment.meetingLink,
@@ -301,7 +293,6 @@ export default function SessionsPage() {
     const styles = {
       paid: "bg-green-100 text-green-700",
       pending: "bg-yellow-100 text-yellow-700",
-      overdue: "bg-red-100 text-red-700",
     };
 
     return (
@@ -492,10 +483,10 @@ export default function SessionsPage() {
         </div>
         <div className="rounded-xl bg-card p-4">
           <p className="text-sm font-light text-muted-foreground">
-            {t("payment")}
+            {t("earnings")}
           </p>
           <p className="text-2xl font-serif font-light text-foreground mt-2">
-            ${stats.revenue}
+            ${stats.revenue.toFixed(2)}
           </p>
         </div>
       </div>
@@ -837,9 +828,6 @@ export default function SessionsPage() {
                     <SelectItem value="pending">
                       <span className="font-light">{t("pending")}</span>
                     </SelectItem>
-                    <SelectItem value="overdue">
-                      <span className="font-light">{t("overdue")}</span>
-                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -882,7 +870,7 @@ export default function SessionsPage() {
               <TableHead className="font-light">{t("duration")}</TableHead>
               <TableHead className="font-light">{t("status")}</TableHead>
               <TableHead className="font-light">{t("payment")}</TableHead>
-              <TableHead className="font-light">{t("amount")}</TableHead>
+              <TableHead className="font-light">{t("earnings")}</TableHead>
               <TableHead className="font-light">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -940,7 +928,7 @@ export default function SessionsPage() {
                   </TableCell>
                   <TableCell className="font-light">
                     <span className="text-sm font-medium">
-                      ${session.amount}
+                      ${session.amount.toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell>

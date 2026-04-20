@@ -106,7 +106,7 @@ export default function EthicsSection() {
             </div>
           </ScrollReveal>
 
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2 items-stretch">
             {commitments.map(({ icon: Icon, title, description }, index) => {
               const cardAnimations: AnimationVariant[] = [
                 "fade-right",
@@ -120,8 +120,9 @@ export default function EthicsSection() {
                   variant={cardAnimations[index % cardAnimations.length]}
                   delayMs={400 + index * 100}
                   duration={700}
+                  className="flex h-full"
                 >
-                  <div className="rounded-4xl border border-border/15 bg-card/85 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                  <div className="flex h-full w-full flex-col rounded-4xl border border-border/15 bg-card/85 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                     <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-card">
                       <Icon className="h-5 w-5" />
                     </div>

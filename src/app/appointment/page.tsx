@@ -48,7 +48,6 @@ import {
   migrateLegacyAvailabilitySlots,
 } from "@/config/clinical-availability-grid";
 import { cn } from "@/lib/utils";
-import { MOTIFS } from "@/data/motif";
 import AppointmentForm from "@/components/appointments/AppointmentForm";
 import ProfileSelectionCard from "@/components/appointments/ProfileSelectionCard";
 import { useTranslations, useLocale } from "next-intl";

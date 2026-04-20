@@ -79,8 +79,8 @@ export default function PlatformBenefitsSection() {
     },
     {
       icon: Calendar,
-      titleEn: "Practice Management Tools",
-      titleFr: "Outils de gestion de la pratique",
+      titleEn: "Practice Management Tools*",
+      titleFr: "Outils de gestion de la pratique*",
       descriptionEn:
         "Access OWL Practice-style features including record keeping, scheduling, billing, and payroll management—all in one place.",
       descriptionFr:
@@ -88,8 +88,8 @@ export default function PlatformBenefitsSection() {
     },
     {
       icon: FileText,
-      titleEn: "Virtual Library Access",
-      titleFr: "Accès à la bibliothèque virtuelle",
+      titleEn: "Virtual Library Access*",
+      titleFr: "Accès à la bibliothèque virtuelle*",
       descriptionEn:
         "Unlimited access to PDF books, research articles, psychological tests, and test correction platforms when needed.",
       descriptionFr:
@@ -106,8 +106,8 @@ export default function PlatformBenefitsSection() {
     },
     {
       icon: Award,
-      titleEn: "Professional Development",
-      titleFr: "Développement professionnel",
+      titleEn: "Professional Development*",
+      titleFr: "Développement professionnel*",
       descriptionEn:
         "Free training programs and receive a note-taking tablet after completing a certain number of sessions.",
       descriptionFr:
@@ -124,8 +124,8 @@ export default function PlatformBenefitsSection() {
     },
     {
       icon: Users,
-      titleEn: "Free Supervision Access",
-      titleFr: "Accès gratuit à la supervision",
+      titleEn: "Free Supervision Access*",
+      titleFr: "Accès gratuit à la supervision*",
       descriptionEn:
         "Get access to professional supervision when you need it, included in your membership at no extra cost.",
       descriptionFr:
@@ -151,8 +151,8 @@ export default function PlatformBenefitsSection() {
     },
     {
       icon: DollarSign,
-      titleEn: "Financial Benefits",
-      titleFr: "Avantages financiers",
+      titleEn: "Financial Benefits*",
+      titleFr: "Avantages financiers*",
       descriptionEn:
         "Preferential rates with accountants, OPQ membership fee support based on sessions, and investment fund opportunities.",
       descriptionFr:
@@ -249,6 +249,15 @@ export default function PlatformBenefitsSection() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Disclaimer */}
+          <motion.p
+            variants={fadeInUp}
+            transition={{ duration: 0.6 }}
+            className="text-sm text-muted-foreground text-center italic mb-12 max-w-3xl mx-auto"
+          >
+            {t("disclaimer")}
+          </motion.p>
 
           {/* Additional Perks */}
           <motion.div

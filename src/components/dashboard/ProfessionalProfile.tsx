@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { IProfile } from "@/models/Profile";
 import { profileAPI } from "@/lib/api-client";
 import ProfileCompletionModal from "./ProfileCompletionModal";
+import ProfessionalTermsAcceptanceModal from "@/components/legal/ProfessionalTermsAcceptanceModal";
 
 interface ProfessionalProfileProps {
   profile?: IProfile;
@@ -142,6 +143,7 @@ export default function ProfessionalProfile({
     useState<IProfile | null>(profile || null);
   const [isLoading, setIsLoading] = useState(!profile);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const updateProfile = useCallback(
     (updatedProfile: IProfile) => {
@@ -150,6 +152,26 @@ export default function ProfessionalProfile({
     },
     [setProfile],
   );
+
+  const needsTermsAcceptance =
+    !!professionalProfile &&
+    isProfileCompleted(professionalProfile) &&
+    !professionalProfile.professionalTermsAcceptedAt;
+
+  useEffect(() => {
+    if (isEditable && needsTermsAcceptance && !isModalOpen) {
+      setIsTermsModalOpen(true);
+    }
+  }, [isEditable, needsTermsAcceptance, isModalOpen]);
+
+  const handleTermsAccept = useCallback(async () => {
+    const updated = (await profileAPI.update({
+      acceptProfessionalTerms: true,
+    })) as IProfile;
+    setProfessionalProfile(updated);
+    if (setProfile) setProfile(updated);
+    setIsTermsModalOpen(false);
+  }, [setProfile]);
 
   const fetchProfile = useCallback(async () => {
     if (profile) return;
@@ -590,6 +612,13 @@ export default function ProfessionalProfile({
         setProfessionalProfile={updateProfile}
         profile={professionalProfile}
         onSaveOverride={onSaveOverride}
+      />
+
+      {/* Professional Terms Acceptance Modal */}
+      <ProfessionalTermsAcceptanceModal
+        open={isEditable && isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
+        onAccept={handleTermsAccept}
       />
     </>
   );

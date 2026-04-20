@@ -76,6 +76,17 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    if (session.user.role === "professional") {
+      const obj = appointment.toObject();
+      if (obj.payment) {
+        const p = obj.payment as unknown as Record<string, unknown>;
+        delete p.price;
+        delete p.platformFee;
+        delete p.listPrice;
+      }
+      return NextResponse.json(obj);
+    }
+
     return NextResponse.json(appointment);
   } catch (error: unknown) {
     console.error("Get appointment error:", error);
@@ -449,6 +460,17 @@ export async function PATCH(
         appointment.payment.status = "cancelled";
         await appointment.save();
       }
+    }
+
+    if (session.user.role === "professional") {
+      const obj = appointment.toObject();
+      if (obj.payment) {
+        const p = obj.payment as unknown as Record<string, unknown>;
+        delete p.price;
+        delete p.platformFee;
+        delete p.listPrice;
+      }
+      return NextResponse.json(obj);
     }
 
     return NextResponse.json(appointment);

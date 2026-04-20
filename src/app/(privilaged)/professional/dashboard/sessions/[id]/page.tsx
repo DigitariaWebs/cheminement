@@ -278,29 +278,17 @@ export default function SessionDetailsPage() {
   const getPaymentStatusBadge = (
     paymentStatus: AppointmentResponse["payment"]["status"],
   ) => {
-    const styles: Record<string, string> = {
-      paid: "bg-green-100 text-green-700",
-      pending: "bg-yellow-100 text-yellow-700",
-      processing: "bg-blue-100 text-blue-700",
-      failed: "bg-red-100 text-red-700",
-      refunded: "bg-purple-100 text-purple-700",
-      cancelled: "bg-gray-100 text-gray-700",
-    };
-
-    const labels: Record<string, string> = {
-      paid: t("paid"),
-      pending: t("pending"),
-      processing: t("processing") || "Processing",
-      failed: t("failed") || "Failed",
-      refunded: t("refunded") || "Refunded",
-      cancelled: t("cancelled"),
-    };
-
+    // Pros only need Paid vs Pending — everything non-paid collapses to pending.
+    const isPaid = paymentStatus === "paid";
     return (
       <span
-        className={`px-3 py-1 rounded-full text-xs font-medium ${styles[paymentStatus] || styles.pending}`}
+        className={`px-3 py-1 rounded-full text-xs font-medium ${
+          isPaid
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
+        }`}
       >
-        {labels[paymentStatus] || paymentStatus}
+        {isPaid ? t("paid") : t("pending")}
       </span>
     );
   };
@@ -573,9 +561,6 @@ export default function SessionDetailsPage() {
                 <Label className="text-xs text-muted-foreground">{t("payment")}</Label>
                 <div className="mt-1 flex items-center gap-2">
                   {getPaymentStatusBadge(appointment.payment.status)}
-                  <span className="text-sm text-muted-foreground">
-                    ${appointment.payment.price.toFixed(2)} CAD
-                  </span>
                 </div>
               </div>
 
@@ -668,18 +653,9 @@ export default function SessionDetailsPage() {
               )}
 
               <div>
-                <Label className="text-xs text-muted-foreground">
-                  {t("paymentStatus")}
-                </Label>
-                <p className="mt-1 text-sm capitalize">
-                  {appointment.payment.status}
-                </p>
-              </div>
-
-              <div>
-                <Label className="text-xs text-muted-foreground">{t("fee")}</Label>
+                <Label className="text-xs text-muted-foreground">{t("earnings")}</Label>
                 <p className="mt-1 text-sm font-medium">
-                  ${appointment.payment.price}
+                  ${appointment.payment.professionalPayout.toFixed(2)}
                 </p>
               </div>
             </CardContent>

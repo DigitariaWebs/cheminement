@@ -9,11 +9,14 @@ import {
   Trash2,
   Users2,
   ShieldAlert,
+  ShieldCheck,
   CheckCircle2,
+  XCircle,
   Clock,
   PlayCircle,
   Inbox,
   History,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +86,8 @@ export default function ProfessionalDetailPage({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteConfirmName, setDeleteConfirmName] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [forceValidateOpen, setForceValidateOpen] = useState(false);
+  const [forceValidating, setForceValidating] = useState(false);
 
   // Ledger states
   const [ledger, setLedger] = useState<any>(null);
@@ -202,6 +207,25 @@ export default function ProfessionalDetailPage({
     }
   };
 
+  const handleForceValidate = async () => {
+    setForceValidating(true);
+    try {
+      const res = await fetch(`/api/admin/professionals/${id}/validate`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error();
+      setFeedback({ type: "success", message: t("forceValidateSuccess") });
+      setTimeout(() => setFeedback(null), 3000);
+      setForceValidateOpen(false);
+      fetchData();
+    } catch {
+      setFeedback({ type: "error", message: t("forceValidateError") });
+      setTimeout(() => setFeedback(null), 3000);
+    } finally {
+      setForceValidating(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (deleteConfirmName !== `${data?.user?.firstName} ${data?.user?.lastName}`) {
       setFeedback({ type: "error", message: t("deleteNameMismatch") });
@@ -291,10 +315,37 @@ export default function ProfessionalDetailPage({
             </p>
           </div>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="gap-2">
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {t("saveChanges")}
-        </Button>
+        <div className="flex items-center gap-2">
+          {user.status !== "active" && (
+            <Dialog open={forceValidateOpen} onOpenChange={setForceValidateOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2 border-green-600/40 text-green-700 hover:bg-green-50 dark:hover:bg-green-950/20">
+                  <ShieldCheck className="h-4 w-4" />
+                  {t("forceValidateButton")}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t("forceValidateConfirmTitle")}</DialogTitle>
+                  <DialogDescription>
+                    {t("forceValidateConfirmDesc")}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setForceValidateOpen(false)}>{t("cancel")}</Button>
+                  <Button onClick={handleForceValidate} disabled={forceValidating} className="gap-2 bg-green-600 hover:bg-green-700 text-white">
+                    {forceValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                    {t("forceValidateConfirm")}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+          <Button onClick={handleSave} disabled={saving} className="gap-2">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("saveChanges")}
+          </Button>
+        </div>
       </div>
       
       {feedback && (
@@ -306,6 +357,95 @@ export default function ProfessionalDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Col - Info */}
         <div className="lg:col-span-1 space-y-6">
+          {(() => {
+            const checks: Array<{ key: string; label: string; state: "ok" | "warn" | "fail"; hint?: string }> = [];
+            checks.push({
+              key: "status",
+              label: t("reviewCheckStatus"),
+              state: user.status === "active" ? "ok" : user.status === "pending" ? "warn" : "fail",
+              hint: t(`status${user.status === "active" ? "Active" : user.status === "pending" ? "Pending" : "Inactive"}`),
+            });
+            const licenseStatus: string = user.professionalLicenseStatus || "not_applicable";
+            checks.push({
+              key: "license",
+              label: t("reviewCheckLicense"),
+              state: licenseStatus === "verified" ? "ok" : licenseStatus === "rejected" ? "fail" : "warn",
+              hint: t(`reviewLicenseStatus_${licenseStatus}`),
+            });
+            checks.push({
+              key: "emailVerified",
+              label: t("reviewCheckEmailVerified"),
+              state: user.emailVerified ? "ok" : "warn",
+            });
+            checks.push({
+              key: "licenseNumber",
+              label: t("reviewCheckLicenseNumber"),
+              state: formData.license?.trim() ? "ok" : "fail",
+            });
+            checks.push({
+              key: "specialty",
+              label: t("reviewCheckSpecialty"),
+              state: formData.specialty?.trim() ? "ok" : "fail",
+            });
+            checks.push({
+              key: "bio",
+              label: t("reviewCheckBio"),
+              state: formData.bio?.trim() && formData.bio.trim().length >= 40 ? "ok" : formData.bio?.trim() ? "warn" : "fail",
+            });
+            checks.push({
+              key: "experience",
+              label: t("reviewCheckExperience"),
+              state: (formData.yearsOfExperience || 0) > 0 ? "ok" : "warn",
+            });
+            checks.push({
+              key: "profile",
+              label: t("reviewCheckProfileComplete"),
+              state: (data.profile as IProfile | null)?.profileCompleted ? "ok" : "warn",
+            });
+            checks.push({
+              key: "stripe",
+              label: t("reviewCheckStripe"),
+              state: user.stripeConnectAccountId ? "ok" : "warn",
+            });
+
+            const passed = checks.filter((c) => c.state === "ok").length;
+            return (
+              <div className="bg-card border border-border/40 rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-serif font-light text-primary flex items-center gap-2">
+                    <ClipboardCheck className="h-5 w-5" />
+                    {t("reviewTitle")}
+                  </h2>
+                  <Badge variant="secondary" className="font-mono">
+                    {passed}/{checks.length}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground font-light mb-4">
+                  {t("reviewSubtitle")}
+                </p>
+                <ul className="space-y-2">
+                  {checks.map((c) => (
+                    <li key={c.key} className="flex items-start gap-2 text-sm">
+                      {c.state === "ok" ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+                      ) : c.state === "fail" ? (
+                        <XCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-light text-foreground">{c.label}</p>
+                        {c.hint && (
+                          <p className="text-xs text-muted-foreground truncate">{c.hint}</p>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
+
           <div className="bg-card border border-border/40 rounded-xl p-6">
             <h2 className="text-xl font-serif font-light mb-4 text-primary">{t("basicInfo")}</h2>
             <div className="space-y-4">

@@ -90,7 +90,7 @@ export default function AccessExperienceSection() {
           </ScrollReveal>
 
           <div className="space-y-12">
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 items-stretch">
               {modes.map(
                 ({ icon: Icon, title, description, highlight }, index) => (
                   <ScrollReveal
@@ -98,8 +98,9 @@ export default function AccessExperienceSection() {
                     variant={cardAnimations[index % cardAnimations.length]}
                     delayMs={400 + index * 150}
                     duration={700}
+                    className="flex h-full"
                   >
-                    <div className="relative overflow-hidden rounded-4xl border border-border/20 bg-card/90 p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                    <div className="relative flex h-full w-full flex-col overflow-hidden rounded-4xl border border-border/20 bg-card/90 p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                       <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-300 hover:opacity-100" />
                       <div className="relative z-10 flex h-full flex-col gap-5">
                         <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-card shadow-md">

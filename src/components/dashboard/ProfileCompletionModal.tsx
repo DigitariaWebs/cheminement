@@ -6,12 +6,22 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { IProfile } from "@/models/Profile";
 import { profileAPI } from "@/lib/api-client";
-import { APPROACHES_ET_THERAPIES } from "@/data/approaches";
-import { CHILD_PROBLEMATICS } from "@/data/childProblematics";
-import { ADULT_PROBLEMATICS } from "@/data/adultProblematics";
+import {
+  APPROACHES_ET_THERAPIES,
+  APPROACHES_ET_THERAPIES_EN,
+} from "@/data/approaches";
+import {
+  CHILD_PROBLEMATICS,
+  CHILD_PROBLEMATICS_EN,
+} from "@/data/childProblematics";
+import {
+  ADULT_PROBLEMATICS,
+  ADULT_PROBLEMATICS_EN,
+} from "@/data/adultProblematics";
+import { translateFromMap } from "@/lib/bilingual";
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
@@ -55,6 +65,11 @@ export default function ProfileCompletionModal({
   onSaveOverride,
 }: ProfileCompletionModalProps) {
   const t = useTranslations("Dashboard.profileModal");
+  const locale = useLocale();
+  const problematicsMap: Record<string, string> = {
+    ...CHILD_PROBLEMATICS_EN,
+    ...ADULT_PROBLEMATICS_EN,
+  };
   const [currentStep, setCurrentStep] = useState(0);
 
   const STEPS = [
@@ -487,7 +502,11 @@ export default function ProfileCompletionModal({
                         : "bg-muted/50 text-foreground hover:bg-muted"
                     }`}
                   >
-                    {item}
+                    {translateFromMap(
+                      item,
+                      APPROACHES_ET_THERAPIES_EN,
+                      locale,
+                    )}
                   </button>
                 ))}
               </div>
@@ -587,7 +606,7 @@ export default function ProfileCompletionModal({
                               : "bg-muted/50 text-foreground hover:bg-muted"
                           }`}
                         >
-                          {item}
+                          {translateFromMap(item, problematicsMap, locale)}
                         </button>
                       ))
                     ) : (
@@ -709,7 +728,7 @@ export default function ProfileCompletionModal({
                   value={formData.bio}
                   onChange={handleChange}
                   rows={6}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                   placeholder={t("step4.bioPlaceholder")}
                 />
               </div>

@@ -104,9 +104,10 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    // Validate all motifs are from the valid MOTIFS list
-    const { MOTIFS } = await import("@/data/motif");
-    const invalidMotifs = motifs.filter((motif) => !MOTIFS.includes(motif));
+    // Validate all motifs are from the active list in the DB (FR or EN labels)
+    const { getValidMotifLabels } = await import("@/lib/motifs");
+    const validLabels = await getValidMotifLabels();
+    const invalidMotifs = motifs.filter((motif) => !validLabels.has(motif));
     if (invalidMotifs.length > 0) {
       return NextResponse.json(
         { error: `Invalid motifs: ${invalidMotifs.join(", ")}` },

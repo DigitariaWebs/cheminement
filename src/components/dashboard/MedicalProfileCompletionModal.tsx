@@ -8,8 +8,16 @@ import { Stepper } from "@/components/ui/stepper";
 import { useTranslations } from "next-intl";
 import { IMedicalProfile } from "@/models/MedicalProfile";
 import { medicalProfileAPI } from "@/lib/api-client";
-import { CHILD_DIAGNOSTICS } from "@/data/childDiagnostics";
-import { ADULT_DIAGNOSTICS } from "@/data/adultDiagnostics";
+import {
+  CHILD_DIAGNOSTICS,
+  CHILD_DIAGNOSTICS_EN,
+} from "@/data/childDiagnostics";
+import {
+  ADULT_DIAGNOSTICS,
+  ADULT_DIAGNOSTICS_EN,
+} from "@/data/adultDiagnostics";
+import { useLocale } from "next-intl";
+import { translateFromMap } from "@/lib/bilingual";
 
 interface MedicalProfileCompletionModalProps {
   isOpen: boolean;
@@ -50,8 +58,6 @@ export interface MedicalProfileData {
   emergencyContactName: string;
   emergencyContactPhone: string;
   emergencyContactRelation: string;
-  crisisPlan: string;
-  suicidalThoughts: boolean;
   preferredGender: string;
   preferredAge: string;
   languagePreference: string;
@@ -65,6 +71,11 @@ export default function MedicalProfileCompletionModal({
   profile,
 }: MedicalProfileCompletionModalProps) {
   const t = useTranslations("Client.profileModal");
+  const locale = useLocale();
+  const diagnosticsMap: Record<string, string> = {
+    ...CHILD_DIAGNOSTICS_EN,
+    ...ADULT_DIAGNOSTICS_EN,
+  };
   const [currentStep, setCurrentStep] = useState(0);
 
   const STEPS = [
@@ -134,8 +145,6 @@ export default function MedicalProfileCompletionModal({
     emergencyContactName: profile?.emergencyContactName || "",
     emergencyContactPhone: profile?.emergencyContactPhone || "",
     emergencyContactRelation: profile?.emergencyContactRelation || "",
-    crisisPlan: profile?.crisisPlan || "",
-    suicidalThoughts: profile?.suicidalThoughts || false,
     preferredGender: profile?.preferredGender || "",
     preferredAge: profile?.preferredAge || "",
     languagePreference: profile?.languagePreference || "",
@@ -614,7 +623,7 @@ export default function MedicalProfileCompletionModal({
                     value={formData.previousTherapyDetails}
                     onChange={handleChange}
                     rows={4}
-                    className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                    className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                     placeholder={t("step2.previousTherapyDetailsPlaceholder")}
                   />
                 </div>
@@ -657,7 +666,7 @@ export default function MedicalProfileCompletionModal({
                           : "bg-muted/50 text-foreground hover:bg-muted"
                       }`}
                     >
-                      {item}
+                      {translateFromMap(item, diagnosticsMap, locale)}
                     </button>
                   ))}
                 </div>
@@ -737,7 +746,7 @@ export default function MedicalProfileCompletionModal({
                   value={formData.issueDescription}
                   onChange={handleChange}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                   placeholder={t("step3.issueDescriptionPlaceholder")}
                 />
               </div>
@@ -850,7 +859,7 @@ export default function MedicalProfileCompletionModal({
                   value={formData.dailyLifeImpact}
                   onChange={handleChange}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                   placeholder={t("step4.dailyLifeImpactPlaceholder")}
                 />
               </div>
@@ -975,7 +984,7 @@ export default function MedicalProfileCompletionModal({
                   value={formData.concernsAboutTherapy}
                   onChange={handleChange}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                   placeholder={t("step5.concernsAboutTherapyPlaceholder")}
                 />
               </div>
@@ -1091,7 +1100,7 @@ export default function MedicalProfileCompletionModal({
                   value={formData.notes}
                   onChange={handleChange}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                   placeholder={t("step6.notesPlaceholder")}
                 />
               </div>
@@ -1163,38 +1172,6 @@ export default function MedicalProfileCompletionModal({
                     placeholder={t("step7.emergencyContactRelationPlaceholder")}
                   />
                 </div>
-              </div>
-
-              <div>
-                <Label
-                  htmlFor="crisisPlan"
-                  className="font-light mb-3 text-base"
-                >
-                  {t("step7.crisisPlan")}
-                </Label>
-                <textarea
-                  id="crisisPlan"
-                  name="crisisPlan"
-                  value={formData.crisisPlan}
-                  onChange={handleChange}
-                  rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
-                  placeholder={t("step7.crisisPlanPlaceholder")}
-                />
-              </div>
-
-              <div>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="suicidalThoughts"
-                    checked={formData.suicidalThoughts}
-                    onChange={handleChange}
-                  />
-                  <span className="text-sm font-light">
-                    {t("step7.suicidalThoughts")}
-                  </span>
-                </label>
               </div>
             </div>
           )}
@@ -1284,7 +1261,7 @@ export default function MedicalProfileCompletionModal({
                   value={formData.culturalConsiderations}
                   onChange={handleChange}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none"
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y"
                   placeholder={t("step8.culturalConsiderationsPlaceholder")}
                 />
               </div>

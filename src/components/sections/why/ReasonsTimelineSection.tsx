@@ -45,7 +45,7 @@ export default function ReasonsTimelineSection() {
         <div className="absolute right-0 bottom-0 h-104 w-104 translate-x-1/3 translate-y-1/4 rounded-full bg-accent blur-3xl" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-6">
+      <div className="container relative z-10 mx-auto px-4 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
           <ScrollReveal variant="fade-right" duration={800}>
             <div className="sticky top-32 flex flex-col gap-6 self-start">
@@ -81,11 +81,11 @@ export default function ReasonsTimelineSection() {
                   delayMs={200 + index * 150}
                   duration={700}
                 >
-                  <article className="group relative overflow-hidden rounded-4xl border border-border/20 bg-card/90 p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                  <article className="group relative overflow-hidden rounded-4xl border border-border/20 bg-card/90 p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:p-8">
                     <div className="absolute inset-0 bg-linear-to-br from-accent/10 via-transparent to-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-                    <div className="relative z-10 flex items-start gap-6">
-                      <div className="flex flex-col items-center gap-4">
+                    <div className="relative z-10 flex items-start gap-4 sm:gap-6">
+                      <div className="flex shrink-0 flex-col items-center gap-4">
                         <span className="font-serif text-2xl font-medium text-muted-foreground">
                           {id}
                         </span>
@@ -95,15 +95,15 @@ export default function ReasonsTimelineSection() {
                         <div className="hidden h-full w-px bg-border/50 lg:block" />
                       </div>
 
-                      <div className="space-y-5">
-                        <h3 className="font-serif text-2xl font-medium text-foreground">
+                      <div className="min-w-0 flex-1 space-y-5">
+                        <h3 className="font-serif text-xl font-medium text-foreground break-words sm:text-2xl">
                           {title}
                         </h3>
-                        <p className="text-base leading-relaxed text-muted-foreground">
+                        <p className="text-base leading-relaxed text-muted-foreground break-words">
                           {descriptionLead != null &&
                           descriptionBody != null ? (
                             <>
-                              <span className="whitespace-nowrap">
+                              <span className="lg:whitespace-nowrap">
                                 {descriptionLead}
                               </span>{" "}
                               {descriptionBody}

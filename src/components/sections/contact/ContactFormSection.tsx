@@ -180,20 +180,20 @@ export default function ContactFormSection() {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Votre message..."
-                    className="min-h-[150px] resize-none font-light"
+                    className="min-h-[150px] w-full resize-y font-light"
                   />
                 </div>
               </ScrollReveal>
 
               {submitStatus === "success" && (
                 <div className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 p-4 text-sm text-green-800 dark:text-green-200">
-                  Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.
+                  {t("successMessage")}
                 </div>
               )}
 
               {submitStatus === "error" && (
                 <div className="rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 p-4 text-sm text-red-800 dark:text-red-200">
-                  Une erreur est survenue. Veuillez réessayer plus tard.
+                  {t("errorMessage")}
                 </div>
               )}
 
@@ -206,12 +206,12 @@ export default function ContactFormSection() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Envoi en cours...
+                      {t("submitting")}
                     </>
                   ) : (
                     <>
                       <Send className="mr-2 h-5 w-5" />
-                      Envoyer le message
+                      {t("submit")}
                     </>
                   )}
                 </Button>

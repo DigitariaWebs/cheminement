@@ -315,7 +315,7 @@ export default function CancelAppointmentDialog({
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   rows={3}
-                  className="resize-none"
+                  className="w-full resize-y"
                 />
               </div>
 
